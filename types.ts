@@ -1,4 +1,4 @@
-import type { RefObject, Dispatch, SetStateAction } from "react";
+import type { RefObject } from "react";
 
 export type CellId = string | "terminator";
 
@@ -42,21 +42,15 @@ export type EditableCanvasChangeEvent = {
 	change: EditableCanvasChange,
 }
 
-export type EditableChangeHandler = ( e: EditableCanvasChangeEvent | null, data: EditableCanvasData ) => void;
+export type DataChangeHandler = ( data: EditableCanvasData ) => void;
+export type ChangeEventHandler = ( e: EditableCanvasChangeEvent ) => void;
 
-interface EditableCanvasCoreProps {
-	cachedData: EditableCanvasData,
-	onChange: EditableChangeHandler,
-	sessionId: string,
-	receivedChanges: FirebaseChange[],
-}
-
-export interface UseEditableCanvasProps extends EditableCanvasCoreProps {
+export interface UseEditableCanvasProps {
 	ref: RefObject<HTMLCanvasElement>,
-}
-
-export interface EditableCanvasProps extends EditableCanvasCoreProps {
-	setMarkdown: Dispatch<SetStateAction<string>>,
+	cachedData: EditableCanvasData,
+	onDataChange: DataChangeHandler,
+	onEvent: ChangeEventHandler,
+	sessionId: string,
 }
 
 export enum FirebaseCollections {
@@ -79,3 +73,5 @@ export interface FirebaseChange {
 export interface ReceivedChangeEvent extends FirebaseChange {
 	processed: boolean,	
 }
+
+export type Directions = "up" | "right" | "down" | "left"

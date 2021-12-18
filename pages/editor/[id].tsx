@@ -1,19 +1,20 @@
 
-import { EditableCanvasData, EditableCanvasProps, EditableChangeHandler, FirebaseChange, FirebaseCollections, FirebaseNote } from "types";
+import { DataChangeHandler, EditableCanvasData, ChangeEventHandler, FirebaseChange, FirebaseCollections, FirebaseNote } from "types";
 import { socketServerUrl } from "socket-server/constants";
 
 import type { UpdateNoteAPIBody } from "pages/api/editor/publish-change";
 import type { GetServerSideProps } from "next";
 
-import { useEffect, useState } from "react";
+import useEditableCanvas from "components/editable-canvas/use-editable-canvas";
+import { useEffect, useState, useRef } from "react";
 import dynamic from "next/dynamic";
-import EditableCanvas from "components/editable-canvas";
 import { firebase } from "lib/firebase-admin";
 import { processChangeEvent } from "components/editable-canvas/helpers";
 import { nanoid } from "nanoid";
 const MarkdownRenderer = dynamic( import( /* webpackPrefetch: true */ "components/markdown-renderer" ));
 
 import { io } from "socket.io-client";
+import { serialise } from "components/editable-canvas/helpers/data-processing";
 
 const getDateValueString = () => String( new Date().valueOf());
 
@@ -23,28 +24,7 @@ const uploadChangeEvent = async ( body: UpdateNoteAPIBody ) => fetch( "/api/edit
 	body: JSON.stringify({ ...body, uploaded_at: getDateValueString() }),
 });
 
-function postChangeEventThrottle () {
-	const queue: UpdateNoteAPIBody[] = [];
-
-	async function start ( data: UpdateNoteAPIBody ) {
-		await uploadChangeEvent( data );
-		queue.shift();
-		if ( queue.length ) {
-			start( queue[ 0 ]);
-			queue.sort(( a, b ) => Number( a.created_at ) - Number( b.created_at ));
-		}
-	}
-
-	return function ( data: UpdateNoteAPIBody ) {
-		if ( queue.length ) {
-			queue.push( data );
-		} else {
-			start( data );
-		}
-	}; 
-}
-
-const postChangeEvent = postChangeEventThrottle();
+const postChangeEvent = serialise( uploadChangeEvent, "created_at" );
 
 interface EditorProps {
 	id: string,
@@ -52,35 +32,29 @@ interface EditorProps {
 }
 
 export default function Editor ({ id, initialData }: EditorProps ) {
-	const [ markdown, setMarkdown ] = useState( "" );
+	const $_ref = useRef<HTMLCanvasElement>( null );
+
 	const [ cachedData, setCachedData ] = useState( initialData );
 	const [ sessionId ] = useState( nanoid());
 
-	const [ receivedChanges, setReceivedChanges ] = useState<FirebaseChange[]>([]);
-
-	const [ tab, setTab ] = useState<"editor" | "viewer">( "editor" );
-
-	const onChange: EditableChangeHandler = ( e, data ) => {
+	const onDataChange: DataChangeHandler = ( data ) => {
 		setTimeout(() => {
 			setCachedData( data );
-			if ( e ) {
-				postChangeEvent({
-					noteId: id || e.id,
-					change: e,
-					created_at: getDateValueString(),
-					uploaded_at: "",
-				});
-			}
 		}, 0 );
 	};
-
-	const editableCanvasProps: EditableCanvasProps = {
-		cachedData, 
-		setMarkdown,
-		onChange,
-		sessionId,
-		receivedChanges,
+	
+	const onEvent: ChangeEventHandler = ( e ) => {
+		postChangeEvent({
+			noteId: id || e.id,
+			change: e,
+			created_at: getDateValueString(),
+			uploaded_at: "",
+		});
 	};
+
+	const { markdown, height, hasFocus, processChange } = useEditableCanvas({ ref: $_ref, cachedData, onDataChange, onEvent, sessionId });
+
+	const [ tab, setTab ] = useState<"editor" | "viewer">( "editor" );
 
 	useEffect(() => {
 		const socket = io( socketServerUrl );
@@ -89,10 +63,7 @@ export default function Editor ({ id, initialData }: EditorProps ) {
 
 		socket.on( "change", ( message: FirebaseChange ) => {
 			if ( message.data.sessionId !== sessionId ) {
-				setReceivedChanges( current => {
-					return [ ...current, message ]
-						.sort(( a, b ) => Number( a.uploaded_at ) - Number( b.uploaded_at ));
-				});
+				processChange( message );
 			}
 		});
 
@@ -102,6 +73,11 @@ export default function Editor ({ id, initialData }: EditorProps ) {
 	}, []);
 
 	const href = `https://www.chriskerr.com.au/editor/${ id }`;
+
+	const classes = `
+		p-8 border-2 mt-2 w-full
+		${ hasFocus ? "border-brand" : "" }
+	`;
 
 	return (
 		<>
@@ -128,7 +104,9 @@ export default function Editor ({ id, initialData }: EditorProps ) {
 			<div className="flex items-center justify-center display-width divider-before">
 				{ tab === "editor" &&
 					<div className="w-full pb-16 mr-0 2xl:mr-4 2xl:pb-0">
-						<EditableCanvas { ...editableCanvasProps } />
+						<div className={ classes }>
+							<canvas ref={ $_ref } height={ height } width="auto" className="outline-none" />
+						</div>
 					</div>
 				}
 				{ tab === "viewer" && 

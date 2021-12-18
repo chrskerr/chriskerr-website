@@ -1,14 +1,13 @@
 
 import { nanoid } from "nanoid";
-import type { RefObject } from "react";
 import type { EditableCanvasData, Cell, CursorPos, RowCol, CellId, EditableCanvasChangeEvent } from "types";
 
 export const cellWidth = 14;
 export const cellHeight = 16;
 export const rowGap = 8;
 
-export const splitDataIntoRows = ( data: EditableCanvasData, ref: RefObject<HTMLCanvasElement> ): Cell[][] => {
-	const width = ref.current?.width;
+export const splitDataIntoRows = ( data: EditableCanvasData, ref: HTMLCanvasElement ): Cell[][] => {
+	const width = ref.width;
 	if ( !width ) return [];
 
 	const availableWidth = width - ( 2 * cellWidth );
