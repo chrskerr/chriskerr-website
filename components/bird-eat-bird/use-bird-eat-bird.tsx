@@ -8,7 +8,7 @@ interface UseBirdEatBirdProps {
 export default function useBirdEatBird ({ ref }: UseBirdEatBirdProps ) {
 
 	useEffect(() => {
-		init({ ref })
-	}, [])
+		init({ ref });
+	}, []);
 
 }

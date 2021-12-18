@@ -25,7 +25,6 @@ module.exports = {
 	"plugins": [
 		"react",
 		"@typescript-eslint",
-		"eslint-plugin-tsdoc",
 	],
 	"rules": {
 		"indent": "off",
@@ -48,6 +47,5 @@ module.exports = {
 		"@typescript-eslint/adjacent-overload-signatures": "error",
 		"@typescript-eslint/ban-ts-comment": "off",
 		"@typescript-eslint/no-extra-non-null-assertion": [ "error" ],
-		"tsdoc/syntax": "warn",
 	},
 };

@@ -7,21 +7,21 @@ interface InitProps {
 }
 
 export async function init ({ ref }: InitProps ) {
-	let canvas = ref.current
+	let canvas = ref.current;
 
 	while ( !canvas ) {
-		await new Promise( resolve => setTimeout( resolve, 10 ))
-		canvas = ref.current
+		await new Promise( resolve => setTimeout( resolve, 10 ));
+		canvas = ref.current;
 	}
 
 	refitCanvasToScreen();
 
-	const ctx = canvas.getContext('2d');
+	const ctx = canvas.getContext( "2d" );
 
 
 
-	console.log( canvas )
+	console.log( canvas );
 
-	window.addEventListener( 'resize', windowResize, { passive: true } )
+	window.addEventListener( "resize", windowResize, { passive: true });
 
 }

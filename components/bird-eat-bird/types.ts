@@ -1,6 +1,6 @@
 
 export enum ElementIds {
-	CANVAS = 'canvas',
-	FOOTER = 'footer',
+	CANVAS = "canvas",
+	FOOTER = "footer",
 }
 
