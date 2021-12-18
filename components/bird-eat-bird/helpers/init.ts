@@ -39,6 +39,8 @@ export async function init ({ ref }: InitProps ) {
 	let lastTimestamp = 0;
 	let avgGap = 0;
 
+	let isRunning = true;
+
 	const render = ( timestamp: number ) => {
 		if ( !canvas ) return;
 
@@ -57,10 +59,10 @@ export async function init ({ ref }: InitProps ) {
 		ctx.font = "30px 'Open Sans'";
 		ctx.fillText(( 1 / avgGap ).toFixed( 1 ) + " FPS", canvas.width - 200, 50 );
 
-		requestAnimationFrame( render );
+		if ( isRunning ) requestAnimationFrame( render );
 	};
 
-	const reference = requestAnimationFrame( render );
+	requestAnimationFrame( render );
 
 	const onMouseMove = throttle(( e: MouseEvent ) => {
 		if ( e.type === "mouseout" ) {
@@ -76,5 +78,5 @@ export async function init ({ ref }: InitProps ) {
 	canvas.addEventListener( "mouseout", onMouseMove, { passive: true });
 	window.addEventListener( "resize", windowResize, { passive: true });
 
-	return reference;
+	return () => isRunning = false;
 }

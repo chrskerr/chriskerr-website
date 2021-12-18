@@ -7,13 +7,13 @@ export default function BirdEatBird (): ReactElement {
 	const ref = useRef<HTMLCanvasElement>( null );
 
 	useEffect(() => {
-		let reference: number | undefined = undefined;
+		let cancel: (() => void ) | undefined = undefined;
 		( async () => {
-			reference = await init({ ref });
+			cancel = await init({ ref });
 		})();
 
 		return () => {
-			if ( reference ) cancelAnimationFrame( reference );
+			if ( cancel ) cancel();
 		};
 	}, []);
 
