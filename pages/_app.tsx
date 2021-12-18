@@ -11,6 +11,7 @@ import { DefaultSeo } from "next-seo";
 import { Screensaver } from "components";
 import "tailwindcss/tailwind.css";
 import "../styles/index.css";
+import { ElementIds } from "components/bird-eat-bird/types";
 
 export const defaultTitle = "Chris Kerr";
 export const shortCacheSeconds = 60 * 60; // 1 hour
@@ -39,8 +40,8 @@ export default function App ({ Component, pageProps }: AppProps ): ReactElement 
 					],
 				}}
 			/>
-			<Screensaver />
-			<div className="relative w-full">
+			{/* <Screensaver /> */}
+			<div className="relative flex flex-col w-full min-h-screen">
 				<div className="sticky top-0 z-10 w-full pb-0 before:absolute before:inset-0 before:bg-gradient-to-r before:from-brand before:via-[#89ffea] before:to-brand-secondary before:blur mb-16 sm:mb-32">
 					<nav className="flex justify-center w-full bg-white blur-0">
 						<div className="flex items-center p-3 sm:p-6 display-width">
@@ -48,8 +49,10 @@ export default function App ({ Component, pageProps }: AppProps ): ReactElement 
 						</div>
 					</nav>
 				</div>
-				<Component { ...pageProps } />
-				<footer className="flex flex-col items-center pb-12 mx-auto sm:flex-row sm:justify-between display-width divider-before">
+				<div className="flex-1">
+					<Component { ...pageProps } />
+				</div>
+				<footer id={ ElementIds.FOOTER } className="flex flex-col items-center pb-12 mx-auto sm:flex-row sm:justify-between display-width divider-before">
 					<Link href="/uncopyright" passHref>
 						<a className="mb-4 sm:mb-0">
 							<Image 

@@ -99,7 +99,7 @@ html, body {
 }
 
 .display-width {
-  @apply max-w-4xl w-full px-10 mx-auto;
+  @apply max-w-5xl w-full px-10 mx-auto;
 }
 
 .display-width.narrower {
