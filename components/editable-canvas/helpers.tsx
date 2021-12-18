@@ -201,6 +201,7 @@ export const xor = ( a: boolean, b: boolean ) => ( a || b ) && !( a && b );
 export const invertChange = ( input: EditableCanvasChangeEvent ): EditableCanvasChangeEvent => {
 	return {
 		...input,
+		id: nanoid(),
 		change: {
 			up: input.change.down,
 			down: input.change.up,

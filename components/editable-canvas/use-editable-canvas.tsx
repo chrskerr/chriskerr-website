@@ -290,8 +290,6 @@ const useEditableCanvas = ({ ref, cachedData, onChange, sessionId, receivedChang
 
 			const updatedData = await new Promise<EditableCanvasData | undefined>( resolve => {
 				setUndoneHistory( u => {
-					const undoes = [ ...u ];
-
 					const invertedChange = invertChange( latestChange );
 
 					const result = processChangeEvent( dataRef.current, invertedChange );
@@ -299,7 +297,7 @@ const useEditableCanvas = ({ ref, cachedData, onChange, sessionId, receivedChang
 					resolve( result );
 					onChange( invertedChange, result );
 
-					return [ ...undoes, latestChange ];
+					return [ ...u, invertedChange ];
 
 				});
 			});
@@ -322,15 +320,15 @@ const useEditableCanvas = ({ ref, cachedData, onChange, sessionId, receivedChang
 			if ( !latestUndo ) return;
 
 			const updatedData = await new Promise<EditableCanvasData | undefined>( resolve => {
-				setHistory( h => {
-					const history = [ ...h ];
-			
-					const result = processChangeEvent( dataRef.current, latestUndo );
+				setHistory( h => {			
+					const invertedUndo = invertChange( latestUndo );
+
+					const result = processChangeEvent( dataRef.current, invertedUndo );
 
 					resolve( result );
-					onChange( latestUndo, result );
+					onChange( invertedUndo, result );
 
-					return [ ...history, latestUndo ];
+					return [ ...h, invertedUndo ];
 
 				});
 			});
