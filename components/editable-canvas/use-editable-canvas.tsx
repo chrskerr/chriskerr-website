@@ -120,6 +120,8 @@ const useEditableCanvas = ({ ref, cachedData, onDataChange, onEvent, sessionId }
 		let isControlDepressed = false;
 		let isMetaDepressed = false;
 
+		let animationFrameReference: number | undefined = undefined;
+
 		const onResize = throttle(() => {
 			if ( !ref.current ) return;
 
@@ -237,7 +239,7 @@ const useEditableCanvas = ({ ref, cachedData, onDataChange, onEvent, sessionId }
 				requestAnimationFrame( render );
 			};
 
-			requestAnimationFrame( render );
+			animationFrameReference = requestAnimationFrame( render );
 
 			canvas.addEventListener( "keydown", onKeypress, false );
 			canvas.addEventListener( "keyup", onKeyup, false );
@@ -263,6 +265,8 @@ const useEditableCanvas = ({ ref, cachedData, onDataChange, onEvent, sessionId }
 			ref.current?.removeEventListener( "mouseup", onMouseUp );
 			ref.current?.removeEventListener( "mouseout", onMouseUp );
 			window.removeEventListener( "resize", onResize );
+
+			if ( animationFrameReference ) cancelAnimationFrame( animationFrameReference );
 		};
 	}, []);
 

@@ -60,7 +60,7 @@ export async function init ({ ref }: InitProps ) {
 		requestAnimationFrame( render );
 	};
 
-	requestAnimationFrame( render );
+	const reference = requestAnimationFrame( render );
 
 	const onMouseMove = throttle(( e: MouseEvent ) => {
 		if ( e.type === "mouseout" ) {
@@ -76,4 +76,5 @@ export async function init ({ ref }: InitProps ) {
 	canvas.addEventListener( "mouseout", onMouseMove, { passive: true });
 	window.addEventListener( "resize", windowResize, { passive: true });
 
+	return reference;
 }
