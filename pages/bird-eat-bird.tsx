@@ -1,14 +1,16 @@
 
+import { init } from "components/bird-eat-bird/helpers/init";
 import { ElementIds } from "components/bird-eat-bird/types";
-import useBirdEatBird from "components/bird-eat-bird/use-bird-eat-bird";
-import { ReactElement, useRef } from "react";
+import { ReactElement, useRef, useEffect } from "react";
 
 export default function BirdEatBird (): ReactElement {
-	const $_ref = useRef<HTMLCanvasElement>( null );
+	const ref = useRef<HTMLCanvasElement>( null );
 
-	const something = useBirdEatBird({ ref: $_ref });
+	useEffect(() => {
+		init({ ref });
+	}, []);
 
 	return (
-		<canvas ref={ $_ref } id={ ElementIds.CANVAS } className="min-w-full min-h-full bg-blue-200" />
+		<canvas ref={ ref } id={ ElementIds.CANVAS } className="min-w-full min-h-full bg-blue-200" />
 	);
 }

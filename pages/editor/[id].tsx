@@ -11,7 +11,7 @@ import dynamic from "next/dynamic";
 import { firebase } from "lib/firebase-admin";
 import { processChangeEvent } from "components/editable-canvas/helpers";
 import { nanoid } from "nanoid";
-const MarkdownRenderer = dynamic( import( /* webpackPrefetch: true */ "components/markdown-renderer" ));
+const MarkdownRenderer = dynamic( import( /* webpackPrefetch: true */ "components/editable-canvas/markdown-renderer" ));
 
 import { io } from "socket.io-client";
 import { serialise } from "components/editable-canvas/helpers/data-processing";

@@ -15,3 +15,26 @@ export function refitCanvasToScreen () {
 		canvas.height = Math.min( parentEl.clientHeight, maxHeight );
 	}
 }
+
+export function getBackgroundSize ( img: HTMLImageElement ) {
+	return ( canvasWidth: number, canvasHeight: number ) => {
+		const widthIfSameHeightAsCanvas = img.width * canvasHeight / img.height;
+
+		if ( widthIfSameHeightAsCanvas > canvasWidth ) {
+			return {
+				width: widthIfSameHeightAsCanvas,
+				height: canvasHeight,
+			};
+
+		} else {
+			return {
+				width: canvasWidth,
+				height: img.height * canvasWidth / img.width,  
+			};
+		}
+	};
+}
+
+export const getHeightFromTargetWidth = ( el: HTMLImageElement, targetWidth: number ) => {
+	return el.height * targetWidth / el.width;
+};
