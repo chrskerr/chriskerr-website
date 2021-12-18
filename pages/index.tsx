@@ -54,7 +54,7 @@ export default function Landing (): ReactElement {
 									sizes="1033w"
 									className="transition-all duration-700 group-hover:scale-[1.15]"
 								/>
-								<p className="absolute flex items-center justify-center px-5 py-3 text-2xl -translate-x-1/2 -translate-y-1/2 bg-white rounded sm:text-lg top-1/2 left-1/2">Collaborative Markdown Editor</p>
+								<p className="absolute flex items-center justify-center px-5 py-3 text-2xl text-center -translate-x-1/2 -translate-y-1/2 bg-white rounded sm:text-lg top-1/2 left-1/2">Collaborative Markdown Editor</p>
 							</div>
 						</a>
 					</Link>
@@ -70,7 +70,7 @@ export default function Landing (): ReactElement {
 									sizes="1033w"
 									className="transition-all duration-700 group-hover:scale-[1.15]"
 								/>
-								<p className="absolute flex items-center justify-center px-5 py-3 text-2xl -translate-x-1/2 -translate-y-1/2 bg-white rounded top-1/2 left-1/2">Bird Eat Bird</p>
+								<p className="absolute flex items-center justify-center px-5 py-3 text-2xl text-center -translate-x-1/2 -translate-y-1/2 bg-white rounded sm:text-lg top-1/2 left-1/2">Bird Eat Bird</p>
 							</div>
 						</a>
 					</Link>
