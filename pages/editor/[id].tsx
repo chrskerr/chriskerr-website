@@ -107,7 +107,7 @@ export default function Editor ({ id, initialData }: EditorProps ) {
 		<>
 			<div className="display-width">
 				<p className="mb-4">This is a work in progress of a fully custom canvas based text editor.</p>
-				<p className="mb-2 text-lg">Ideas / Problems list:</p>
+				<p className="mb-2 text-lg">Ideas &amp; Problems list:</p>
 				<ul className="list-disc sm:columns-3">
 					<li className="ml-4">Copy &amp; paste</li>
 					<li className="ml-4">Pressing forward after typing skips two letters</li>
