@@ -40,10 +40,10 @@ export default function App ({ Component, pageProps }: AppProps ): ReactElement 
 				}}
 			/>
 			<div className="relative flex flex-col w-full min-h-screen">
-				<div className="sticky top-0 z-10 w-full pb-0 before:absolute before:inset-0 before:bg-gradient-to-r before:from-brand before:via-[#89ffea] before:to-brand-secondary before:blur mb-16 sm:mb-32">
+				<div className="sticky top-0 z-10 w-full pb-0 before:absolute before:inset-0 before:bg-gradient-to-r before:from-brand before:via-[#89ffea] before:to-brand-secondary before:blur mb-16 sm:mb-24">
 					<nav className="flex justify-center w-full bg-white blur-0">
-						<div className="flex items-center p-3 sm:p-6 display-width">
-							<Link href="/" passHref><a className="text-4xl font-extrabold transition sm:text-6xl font-heading hover:text-brand">CK</a></Link>
+						<div className="flex items-center w-full p-3 px-10 lg:px-24 sm:p-6">
+							<Link href="/" passHref><a className="text-3xl font-extrabold uppercase transition sm:text-4xl font-heading hover:text-brand">Chris Kerr</a></Link>
 						</div>
 					</nav>
 				</div>

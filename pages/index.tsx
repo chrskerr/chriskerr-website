@@ -36,8 +36,7 @@ export default function Landing (): ReactElement {
 			/>
 			<section className="w-full">
 				<div className="text-center display-width">
-					<h1 className="mb-8 text-4xl uppercase">Chris Kerr</h1>
-					<p className="mb-6 text-xl">{ description }</p>
+					<p className="mb-6 text-2xl">{ description }</p>
 				</div>
 			</section>
 			<section className="w-full">
