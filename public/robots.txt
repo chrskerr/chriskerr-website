@@ -1,0 +1,13 @@
+User-Agent: *
+Allow: /
+Crawl-delay: 10
+
+User-Agent: *
+User-agent: APIs-Google
+User-agent: Mediapartners-Google
+User-agent: AdsBot-Google-Mobile
+User-agent: Googlebot
+User-agent: AdsBot-Google
+Disallow: /api/
+
+Sitemap: https://www.chriskerr.com.au/sitemap.xml

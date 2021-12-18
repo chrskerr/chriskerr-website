@@ -1,0 +1,66 @@
+{
+	"name": "chriskerr.com.au",
+	"version": "1.0.0",
+	"private": false,
+	"homepage": "https://www.chriskerr.com.au",
+	"author": "Chris Kerr",
+	"license": "GPL-3.0",
+	"scripts": {
+		"predev": "npm i && cd socket-server && npm i && npm run tsc",
+		"dev": "next dev",
+		"build": "next build",
+		"start": "next start",
+		"lint": "next lint"
+	},
+	"dependencies": {
+		"firebase-admin": "^10.0.0",
+		"lodash": "^4.17.21",
+		"marked": "^4.0.7",
+		"nanoid": "^3.1.30",
+		"next": "^12.0.7",
+		"next-seo": "^4.26.0",
+		"nextjs-cors": "^2.0.0",
+		"node-cache": "^5.1.2",
+		"nprogress": "^0.2.0",
+		"random-word-slugs": "^0.1.6",
+		"react": "^17.0.2",
+		"react-dom": "^17.0.2",
+		"sanitize-html": "^2.5.1",
+		"socket.io-client": "^4.4.0"
+	},
+	"devDependencies": {
+		"@tailwindcss/forms": "^0.4.0",
+		"@tailwindcss/line-clamp": "^0.3.0",
+		"@tailwindcss/typography": "^0.5.0",
+		"@types/cors": "^2.8.12",
+		"@types/lodash": "^4.14.172",
+		"@types/marked": "^4.0.1",
+		"@types/nprogress": "^0.2.0",
+		"@types/prismic-dom": "^2.1.1",
+		"@types/react": "^17.0.37",
+		"@types/sanitize-html": "^2.3.2",
+		"@typescript-eslint/eslint-plugin": "^5.6.0",
+		"@typescript-eslint/parser": "^5.6.0",
+		"autoprefixer": "^10.4.0",
+		"codegen-prismic-fetch": "^1.0.5",
+		"eslint": "^8.4.1",
+		"eslint-config-next": "^12.0.7",
+		"eslint-plugin-next": "^0.0.0",
+		"eslint-plugin-react": "^7.27.1",
+		"eslint-plugin-tsdoc": "^0.2.14",
+		"postcss": "^8.4.4",
+		"postcss-import": "^14.0.2",
+		"tailwindcss": "^3.0.0",
+		"typescript": "^4.5.2"
+	},
+	"browserslist": {
+		"production": [
+			"defaults"
+		],
+		"development": [
+			"last 1 chrome version",
+			"last 1 firefox version",
+			"last 1 safari version"
+		]
+	}
+}

@@ -1,0 +1,69 @@
+
+		uid: nextjs-ssr-prismic-with-highlight-js
+		title: Getting NextJS, Prismic and Highlight.js to create beautiful pages
+		description: This is how I set up NextJS to statically build my blog from Prismic with full code highlighting from Highlight.js, without client-side processing.
+		first_publication: 2021-09-16T15:27:51+10:00
+		html: <p>This is how I set up NextJS to statically build my blog from Prismic with full code highlighting from Highlight.js, without client-side processing. The process will probably be adaptable to most Headless CMS which output Rich Text and to any Node-based HTML rendering / serialising pipeline.</p><p></p><h3>Why:</h3><p>I wanted to have beautifully highlighted code snippets embedded within these pages, without the weight of importing Highlight.js client-side.</p><p>The documentation for doing this cleanly was surprisingly sparse, so after extended fiddling, I'm writing down my process in help of easing someone else's path.</p><p></p><h3>How:</h3><p></p><pre><code><span class="hljs-comment">// ./pages/blog/[slug].tsx</span>
+
+<span class="hljs-keyword">import</span> sanitizeHtml <span class="hljs-keyword">from</span> <span class="hljs-string">"sanitize-html"</span>;
+<span class="hljs-keyword">import</span> prismicDOM <span class="hljs-keyword">from</span> <span class="hljs-string">"prismic-dom"</span>;
+<span class="hljs-keyword">import</span> { decode } <span class="hljs-keyword">from</span> <span class="hljs-string">"entities"</span>;
+<span class="hljs-keyword">import</span> hljs <span class="hljs-keyword">from</span> <span class="hljs-string">"highlight.js"</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">"highlight.js/styles/vs2015.css"</span>; <span class="hljs-comment">// change this to whichever stylesheet you prefer</span>
+
+<span class="hljs-keyword">interface</span> <span class="hljs-title class_">Props</span> {
+   <span class="hljs-attr">html</span>: <span class="hljs-built_in">string</span>,
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">BlogPost</span> ({ html }: <span class="hljs-title class_">Props</span> ): <span class="hljs-title class_">ReactElement</span> {
+   <span class="hljs-keyword">return</span> ( <span class="language-xml"><span class="hljs-tag">&lt;&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+         <span class="hljs-tag">&lt;<span class="hljs-name">span</span> <span class="hljs-attr">dangerouslySetInnerHTML</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">__html:</span> <span class="hljs-attr">html</span> }} /&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+   <span class="hljs-tag">&lt;/&gt;</span></span> );
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> <span class="hljs-attr">getStaticProps</span>: <span class="hljs-title class_">GetStaticProps</span> = <span class="hljs-keyword">async</span> ({ params }) =&gt; {
+   <span class="hljs-keyword">const</span> { content } = <span class="hljs-keyword">await</span> <span class="hljs-title function_">getDataFromPrismic</span>( params?.<span class="hljs-property">slug</span> );
+   <span class="hljs-comment">// this function is a placeholder. Write something here which fetches the data that you wish to display from Prismic using their graphql or api</span>
+   <span class="hljs-comment">// content here is defined by the field JSON below</span>
+
+   <span class="hljs-comment">// you'll get a typescript error here due to how asHtml is set up, I just ignored it, maybe it's better to solve it, but the error was out of line with documented behaviour.</span>
+   <span class="hljs-comment">// the serialiser is supposed to return null to notify asHtml() to use the default serialiser, yet the typing doesn't support that use case 🤷‍♂️</span>
+   <span class="hljs-comment">// @ts-ignore</span>
+   <span class="hljs-keyword">const</span> <span class="hljs-attr">htmlSerialiser</span>: <span class="hljs-keyword">typeof</span> <span class="hljs-title class_">HTMLSerializer</span> = <span class="hljs-function">(<span class="hljs-params"> <span class="hljs-keyword">type</span>, element, content, children </span>) =&gt;</span> {
+      <span class="hljs-keyword">if</span> ( element.<span class="hljs-property">label</span>?.<span class="hljs-title function_">startsWith</span>( <span class="hljs-string">"language"</span> )) {
+         <span class="hljs-keyword">return</span> <span class="hljs-string">`&lt;pre&gt;&lt;code&gt;<span class="hljs-subst">${ hljs.highlight(
+            decode( children.join( <span class="hljs-string">""</span> ).replace( /&lt;br \/&gt;/g, <span class="hljs-string">"\n"</span> )),
+            { language: element.label.replace( <span class="hljs-string">"language-"</span>, <span class="hljs-string">""</span> ) },
+         ).value }</span>&lt;/code&gt;&lt;/pre&gt;`</span>;
+      }
+
+      <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;
+   };
+
+   <span class="hljs-keyword">const</span> html = <span class="hljs-title function_">sanitizeHtml</span>(
+      prismicDOM.<span class="hljs-property">RichText</span>.<span class="hljs-title function_">asHtml</span>( node.<span class="hljs-property">content</span>, <span class="hljs-literal">undefined</span>, htmlSerialiser ),
+      { <span class="hljs-attr">allowedClasses</span>: { <span class="hljs-string">"*"</span>: [ <span class="hljs-string">"*"</span> ]}},
+   );
+
+   <span class="hljs-keyword">const</span> <span class="hljs-attr">props</span>: <span class="hljs-title class_">Props</span> = { html };
+
+   <span class="hljs-keyword">return</span> {
+      props,
+   }
+}</code></pre><p></p><pre><code><span class="hljs-comment">// Prismic repeatable-type JSON</span>
+
+<span class="hljs-punctuation">{</span>
+   ...<span class="hljs-punctuation">,</span>
+   <span class="hljs-attr">"content"</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">"type"</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">"StructuredText"</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">"config"</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+         <span class="hljs-attr">"multi"</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">"paragraph,preformatted,heading1,heading2,heading3,heading4,heading5,heading6,strong,em,hyperlink,image,embed,list-item,o-list-item,rtl"</span><span class="hljs-punctuation">,</span>
+         <span class="hljs-attr">"allowTargetBlank"</span> <span class="hljs-punctuation">:</span> <span class="hljs-keyword">true</span><span class="hljs-punctuation">,</span>
+         <span class="hljs-attr">"label"</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">"content"</span><span class="hljs-punctuation">,</span>
+         <span class="hljs-attr">"labels"</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span> <span class="hljs-string">"language-html"</span><span class="hljs-punctuation">,</span> <span class="hljs-string">"language-typescript"</span><span class="hljs-punctuation">,</span> <span class="hljs-string">"language-yml"</span><span class="hljs-punctuation">,</span> <span class="hljs-string">"language-bash"</span><span class="hljs-punctuation">,</span> <span class="hljs-string">"language-json"</span> <span class="hljs-punctuation">]</span>
+      <span class="hljs-punctuation">}</span>
+   <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span></code></pre><p></p><h3>Explanation:</h3><p>I have set up my repeatable type in Prismic to add the "language- ..." labels, based on the languages I anticipate using in my writing. I'll add more here as I need them. </p><p>I paste my code snippets into a Preformatted block within the Prismic editor, and then label that block with the relevant language, eg "language-typescript" for the first one above.</p><p>The TypeScript code about then grabs the "content" data type out of my repeatable type, and runs it through prismicDOM.RichText.asHtml() using a custom serialiser. This serialiser runs over each block within content to:</p><ol><li>Checks if the block has a label starting with "language", if not, return null which triggers the default serialiser behaviour. </li><li>Otherwise, it then joins the children with an empty string.</li><li>Then replaces the &lt;br /&gt; line breaks which Prismic gives us with new lines \n.</li><li>Then runs this string through decode() which replaces all of the HTML entities (eg. &amp;apos;) with their respective character. This string should now be a clean string of code.</li><li>And finally, runs this code string though hljs.highlight() with the language specified from the "lanuage-..." label and wraps it all in &lt;pre&gt;&lt;code&gt;...&lt;/code&gt;&lt;/pre&gt;, which gives us an HTML block with all the nice Highlight.JS classes.</li></ol><p>We then sanitise the HTML with "sanitize-html", ensuring that we retain the Highlight.js classes, just in case. </p><p>This is then returned to the React section of NextJS via props, which inserts into into the document.</p>
+		

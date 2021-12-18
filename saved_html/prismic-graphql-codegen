@@ -1,0 +1,58 @@
+
+		uid: prismic-graphql-codegen
+		title: How I got graphql-codegen working with Prismic
+		description: Getting graphql-codgegen to successfully introspect and generate types on Prismic was a fiddly pain. Here's how I did it.
+		first_publication: 2021-09-13T18:03:20+10:00
+		html: <p>I found getting graphql-codgegen to successfully introspect and generate types on Prismic to be an unclear, trial-and-error, frustrating process.</p><p>Most of the necessary settings are not clearly explained and the errors which come back are pretty unhelpful, so I'm sharing this in the hope that it helps someone else avoid these issues.</p><p></p><h3>Goals:</h3><p>Use graphql-codegen to verify/compile gql queries against my repository's Prismic schema, and to produce full TypeScript types to match against query results, in Node.</p><p> </p><h3>High level:</h3><pre><code>$ npm i apollo-client apollo-cache-inmemory graphql-tag graphql apollo-link-prismic
+$ npm i -D @graphql-codegen/cli @graphql-codegen/typescript @graphql-codegen/typescript-operations codegen-prismic-fetch</code></pre><p></p><pre><code><span class="hljs-comment">// ./package.json</span>
+
+<span class="hljs-punctuation">{</span>
+   ...<span class="hljs-punctuation">,</span>
+   scripts<span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      ...<span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">"predev"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"graphql-codegen --require dotenv/config --config codegen.yml dotenv_config_path=.env.local"</span><span class="hljs-punctuation">,</span>
+   <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+   ...
+<span class="hljs-punctuation">}</span> </code></pre><p></p><pre><code><span class="hljs-string">//</span> <span class="hljs-string">./codegen.yml</span>
+
+<span class="hljs-attr">overwrite:</span> <span class="hljs-literal">true</span>
+<span class="hljs-attr">schema:</span> 
+  <span class="hljs-bullet">-</span> <span class="hljs-string">${PRISMIC_ENDPOINT}:</span>
+      <span class="hljs-attr">headers:</span>
+        <span class="hljs-attr">Authorization:</span> <span class="hljs-string">Token</span> <span class="hljs-string">${PRISMIC_ENDPOINT_TOKEN}</span>
+        <span class="hljs-attr">Prismic-Ref:</span> <span class="hljs-string">${PRISMIC_MASTER_REF}</span>
+      <span class="hljs-attr">method:</span> <span class="hljs-string">GET</span>
+<span class="hljs-attr">documents:</span> <span class="hljs-string">"lib/cached-actions.ts"</span>
+<span class="hljs-attr">generates:</span>
+  <span class="hljs-attr">types/prismic-graphql.ts:</span>
+    <span class="hljs-attr">plugins:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">"typescript"</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">"typescript-operations"</span>
+<span class="hljs-attr">customFetch:</span> <span class="hljs-string">codegen-prismic-fetch</span></code></pre><p></p><h3>Specifics:</h3><ul><li>The package.json script will open .env.local to interpolate into the ${ } within codegen.yml, and then run graphql-codegen using this config. I have set it up as 'predev' so that it runs every time I start the dev server, but it can be renamed to whatever you prefer.</li><li>I have all of my gql documents (const query = gql`...`) saved in lib/cached-actions.ts. Update this to the appropriate location for your needs, using ** and * wildcards to match folders and files. eg, src/**/*.ts.</li><li>To successfully connect to Prismic you need to: use method: GET, supply a Prismic-Ref header (<a target="_blank" href="https://prismic.io/docs/technologies/intro-to-the-graphql-api#prismic-api-ref">ref</a>), and an Authorization header in the format 'Token &lt;token&gt;'. </li><li>Unfortunately, this will not pull a complete schema, and you will likely find many of your types missing. I am using <a target="_blank" href="https://www.npmjs.com/package/codegen-prismic-fetch">codegen-prismic-fetch</a> here to fix this and grab a full schema.</li></ul><p></p><h3>Usage:</h3><pre><code><span class="hljs-keyword">import</span> { <span class="hljs-title class_">AllBlogsQuery</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">"../types/prismic-graphql"</span>; 
+<span class="hljs-comment">// this is the output file that I specified in codegen.yml, but this should be changed to wherever you save you types. Whatever you specify in codegen.yml will carry over to here.</span>
+
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">InMemoryCache</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">"apollo-cache-inmemory"</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">ApolloClient</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">"apollo-client"</span>;
+<span class="hljs-keyword">import</span> gql <span class="hljs-keyword">from</span> <span class="hljs-string">"graphql-tag"</span>;
+<span class="hljs-comment">// @ts-ignore - since apollo-link-prismic doesn't have types</span>
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">PrismicLink</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">"apollo-link-prismic"</span>;
+
+<span class="hljs-keyword">const</span> allBlogsQuery = gql<span class="hljs-string">`
+   query AllBlogs {
+      ...
+   }
+`</span>
+
+<span class="hljs-keyword">const</span> doQuery = <span class="hljs-keyword">async</span> () =&gt; {
+   <span class="hljs-keyword">const</span> client = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ApolloClient</span>({
+      <span class="hljs-attr">link</span>: <span class="hljs-title class_">PrismicLink</span>({
+         <span class="hljs-attr">uri</span>: process.<span class="hljs-property">env</span>.<span class="hljs-property">PRISMIC_ENDPOINT</span> || <span class="hljs-string">""</span>,
+         <span class="hljs-attr">accessToken</span>: process.<span class="hljs-property">env</span>.<span class="hljs-property">PRISMIC_ENDPOINT_TOKEN</span> || <span class="hljs-string">""</span>,
+      }),
+      <span class="hljs-attr">cache</span>: <span class="hljs-keyword">new</span> <span class="hljs-title class_">InMemoryCache</span>(),
+   });
+
+   <span class="hljs-keyword">const</span> res = <span class="hljs-keyword">await</span> client.<span class="hljs-property">query</span>&lt;<span class="hljs-title class_">AllBlogsQuery</span>&gt;({ <span class="hljs-attr">query</span>: allBlogsQuery });
+   <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>( res );
+}</code></pre><p></p><p>Let me know if you have any issues, maybe I dealt with the same one!</p>
+		

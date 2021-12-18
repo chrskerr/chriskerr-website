@@ -1,0 +1,102 @@
+
+		uid: typing-apollo-server-with-graphql-codegen-typescript
+		title: Typing Apollo-Server with graphql-codegen & TypeScript
+		description: I found it took a lot of trial, error, and redoing things to get the types on Apollo-Server to a point where I felt that they were almost close to correct, so here's how I did it.
+		first_publication: 2021-09-16T22:33:20+10:00
+		html: <p>I found it took a lot of trial, error, and redoing things to get the types on Apollo-Server to a point where I felt that they were almost close to correct, so here's how I did it. </p><p>I hope to both help someone else save some time, and hopefully learn some tips for how to do better myself here!</p><p></p><h3>Snippets:</h3><pre><code><span class="hljs-string">//</span> <span class="hljs-string">./codegen.yml</span>
+
+<span class="hljs-attr">overwrite:</span> <span class="hljs-literal">true</span>
+<span class="hljs-attr">generates:</span>
+  <span class="hljs-attr">types/graphql.ts:</span>
+    <span class="hljs-attr">schema:</span> <span class="hljs-string">"src/graphql/type-defs.ts"</span>
+    <span class="hljs-attr">plugins:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">"typescript"</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">"typescript-resolvers"</span></code></pre><p></p><pre><code><span class="hljs-comment">// ./src/typedefs.ts</span>
+
+<span class="hljs-keyword">import</span> { gql } <span class="hljs-keyword">from</span> <span class="hljs-string">"apollo-server-express"</span>;
+
+<span class="hljs-keyword">const</span> typeDefs = gql<span class="hljs-string">`
+	type User {
+		id: ID!
+		name: String!
+		email: String!
+	}
+
+	type Query {
+		users: [User]!
+		user ( id: ID! ): User 
+	}
+
+	input UserInsertInput {
+		name: String!
+		email: String!
+	}
+
+	input UserUpdateSetInput {
+		name: String
+		email: String
+	}
+
+	type Mutation {
+		insert_user ( data: UserInsertInput! ): User
+		update_user ( id: ID!, _set: UserUpdateSetInput! ): User
+	}
+`</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> typeDefs;</code></pre><p></p><pre><code><span class="hljs-comment">// ./src/index.ts</span>
+
+<span class="hljs-keyword">import</span> typeDefs <span class="hljs-keyword">from</span> <span class="hljs-string">"./typedefs.ts"</span>
+<span class="hljs-keyword">import</span> resolvers <span class="hljs-keyword">from</span> <span class="hljs-string">"./resolvers.ts"</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">CustomContext</span> {
+	<span class="hljs-attr">isAuthenticated</span>: <span class="hljs-built_in">boolean</span>,
+}
+
+<span class="hljs-keyword">const</span> server = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ApolloServer</span>({ 
+	typeDefs, resolvers,
+	<span class="hljs-attr">context</span>: <span class="hljs-keyword">async</span> ({ req }): <span class="hljs-title class_">Promise</span>&lt;<span class="hljs-title class_">CustomContext</span>&gt; =&gt; {
+		<span class="hljs-keyword">const</span> isAuthenticated = <span class="hljs-keyword">await</span> <span class="hljs-title function_">checkUserAuth</span>( req ); <span class="hljs-comment">// fake function			</span>
+		<span class="hljs-keyword">return</span> { isAuthenticated };
+	},
+});</code></pre><p></p><pre><code><span class="hljs-comment">// ./src/resolvers.ts</span>
+
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">Resolvers</span>, <span class="hljs-title class_">MutationResolvers</span>, <span class="hljs-title class_">QueryResolvers</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">"../types/graphql.ts"</span>
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">CustomContext</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">"./index.ts"</span>
+
+<span class="hljs-keyword">const</span> <span class="hljs-attr">resolvers</span>: <span class="hljs-title class_">Resolvers</span>&lt;<span class="hljs-title class_">CustomContext</span>&gt; = {
+	<span class="hljs-title class_">Query</span>: {
+		<span class="hljs-attr">users</span>: <span class="hljs-keyword">async</span> ( parent, args, context ) =&gt; {
+			<span class="hljs-keyword">const</span> users = <span class="hljs-keyword">await</span> <span class="hljs-title function_">getUsers</span>(); <span class="hljs-comment">// fake function</span>
+			<span class="hljs-keyword">return</span> users;
+		},
+		<span class="hljs-attr">user</span>: getUserResolver,
+	},
+	<span class="hljs-title class_">Mutation</span>: {
+		<span class="hljs-attr">insert_user</span>: <span class="hljs-keyword">async</span> ( parent, args, context ) =&gt; {
+			<span class="hljs-keyword">const</span> newUser = <span class="hljs-keyword">await</span> <span class="hljs-title function_">createUser</span>( args.<span class="hljs-property">data</span> ); <span class="hljs-comment">// fake function</span>
+			<span class="hljs-keyword">return</span> newUser;
+		},
+		<span class="hljs-attr">update_user</span>: updateUserResolver,
+	},
+}
+
+<span class="hljs-keyword">const</span> <span class="hljs-attr">getUserResolver</span>: <span class="hljs-title class_">QueryResolvers</span>&lt;<span class="hljs-title class_">CustomContext</span>&gt;[<span class="hljs-string">"user"</span>] = <span class="hljs-keyword">async</span> ( parent, args, context ) =&gt; {
+	<span class="hljs-keyword">const</span> { id } = args;
+	<span class="hljs-keyword">const</span> user = <span class="hljs-keyword">await</span> <span class="hljs-title function_">getUsers</span>( id ); <span class="hljs-comment">// fake function</span>
+
+	<span class="hljs-keyword">return</span> user ? user : <span class="hljs-literal">null</span>;
+}
+
+<span class="hljs-keyword">const</span> <span class="hljs-attr">updateUserResolver</span>: <span class="hljs-title class_">MutationResolvers</span>&lt;<span class="hljs-title class_">CustomContext</span>&gt;[<span class="hljs-string">"user"</span>] = <span class="hljs-keyword">async</span> ( parent, args, context ) =&gt; {
+	<span class="hljs-keyword">const</span> { id, _set } = args;
+
+	<span class="hljs-keyword">const</span> userUpdateObject = {
+		...( _set.<span class="hljs-property">name</span> &amp;&amp; { <span class="hljs-attr">name</span>: _set.<span class="hljs-property">name</span> }),
+		...( _set.<span class="hljs-property">email</span> &amp;&amp; { <span class="hljs-attr">email</span>: _set.<span class="hljs-property">email</span> }),
+	};
+
+	<span class="hljs-keyword">const</span> updatedUser = <span class="hljs-keyword">await</span> <span class="hljs-title function_">updateUser</span>( id, userUpdateObject ); <span class="hljs-comment">// fake function</span>
+
+	<span class="hljs-keyword">return</span> updatedUser ? updatedUser : <span class="hljs-literal">null</span>;
+}</code></pre><p></p><p>Please let me know how I did 🙂</p>
+		
