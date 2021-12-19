@@ -20,7 +20,7 @@ const io = new socket_io_1.Server(server, {
 });
 app.use(body_parser_1.default.json());
 app.use((0, cors_1.default)(corsSettings));
-app.post("/", (req, res) => {
+app.post("/editor", (req, res) => {
     if (req.headers.token !== constants_1.apiToken)
         return res.status(500).end();
     const body = req.body;
