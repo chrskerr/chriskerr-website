@@ -1,4 +1,5 @@
 
+import { gameHeight } from "../constants";
 import { Element } from "../types";
 
 export function moveElement ( 
@@ -7,13 +8,13 @@ export function moveElement (
 	canvas: HTMLCanvasElement, 
 	inputYVel?: number, 
 	inputXVel?: number, 
-	
+
 ): Element {
 	let yVelocity = inputYVel || element.yVelocity;
 	let y = element.y + ( yVelocity * timestampGap );
 
-	if ( y + element.height > canvas.height ) {
-		y = canvas.height - element.height;
+	if ( y + element.height > gameHeight ) {
+		y = gameHeight - element.height;
 		yVelocity = 0;
 	}
 	else if ( y < 0 ) {

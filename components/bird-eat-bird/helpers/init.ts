@@ -2,6 +2,8 @@
 import { RefObject } from "react";
 import { windowResize } from "./events";
 import { getBackgroundSize, refitCanvasToScreen } from "./sizing";
+import { gameHeight } from "../constants";
+import { Element } from "../types";
 
 import memoize from "lodash/memoize";
 import throttle from "lodash/throttle";
@@ -40,11 +42,16 @@ export async function init ({ ref }: InitProps ) {
 	let user = await userPromise;
 
 	let { x: mouseX, y: mouseY } = getDefaultMousePos( canvas );
+	let viewPortHeightOffset = 0;
 
 	let lastTimestamp = 0;
 	let avgGap = 0;
 
 	let isRunning = true;
+
+	const drawElement = ( el: Element ) => {
+		ctx.drawImage( el.img, el.x, el.y - viewPortHeightOffset, el.width, el.height );
+	};
 
 	const render = ( timestamp: number ) => {
 		if ( !canvas ) return;
@@ -53,17 +60,19 @@ export async function init ({ ref }: InitProps ) {
 		avgGap = (( timestampGap / 1000 ) + ( 99 * avgGap )) / 100;
 		lastTimestamp = timestamp; 
 
-		const backgroundSize = memoizedGetBackgroundSize( canvas.width, canvas.height );
+		const backgroundSize = memoizedGetBackgroundSize( gameHeight );
 		
-		ctx.drawImage( backgroundImg, 0, 0, backgroundSize.width, backgroundSize.height );
+		ctx.drawImage( backgroundImg, canvas.width - backgroundSize.width, -1 * viewPortHeightOffset, backgroundSize.width, gameHeight );
 
 		const clouds = updateClouds( timestampGap );
-		clouds.forEach( cloud => {
-			ctx.drawImage( cloud.img, cloud.x, cloud.y, cloud.width, cloud.height );
-		});
+		clouds.forEach( drawElement );
 
-		user = moveUser( user, mouseY, mouseX, timestampGap, canvas );
-		ctx.drawImage( user.img, user.x, user.y, user.width, user.height );
+		const { updatedUser, updatedViewPortHeightOffset } = moveUser( user, mouseY, mouseX, timestampGap, canvas, viewPortHeightOffset );
+
+		user = updatedUser;
+		viewPortHeightOffset = updatedViewPortHeightOffset;
+
+		drawElement( user );
 
 		ctx.font = "30px 'Open Sans'";
 		ctx.fillText(( 1 / avgGap ).toFixed( 1 ) + " FPS", canvas.width - 200, 50 );
@@ -74,22 +83,11 @@ export async function init ({ ref }: InitProps ) {
 	requestAnimationFrame( render );
 
 	const onMouseMove = throttle(( e: MouseEvent ) => {
-		if ( e.type === "mouseout" ) {
-			setTimeout(() => {
-				if ( !canvas ) return;
-				const { x, y } = getDefaultMousePos( canvas );
-				mouseY = y;
-				mouseX = x;
-			}, 100 );
-		}
-		else {
-			mouseY = e.offsetY;
-			mouseX = e.offsetX;
-		}
-	}, 25 );
+		mouseY = e.offsetY;
+		mouseX = e.offsetX;
+	}, 40 );
 
 	canvas.addEventListener( "mousemove", onMouseMove, { passive: true });
-	canvas.addEventListener( "mouseout", onMouseMove, { passive: true });
 	window.addEventListener( "resize", windowResize, { passive: true });
 
 	return () => isRunning = false;

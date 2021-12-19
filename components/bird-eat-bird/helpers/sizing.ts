@@ -1,3 +1,4 @@
+import { maxGameWidth } from "../constants";
 import { ElementIds } from "../types";
 
 export function refitCanvasToScreen () {
@@ -11,30 +12,28 @@ export function refitCanvasToScreen () {
 	const maxHeight = window.innerHeight - canvas.offsetTop - footer.offsetHeight;
 
 	if ( parentEl ) {
-		canvas.width = Math.min( parentEl.clientWidth, window.innerWidth );
+		canvas.width = Math.min( Math.min( parentEl.clientWidth, window.innerWidth, maxGameWidth ));
 		canvas.height = Math.min( parentEl.clientHeight, maxHeight );
 	}
 }
 
 export function getBackgroundSize ( img: HTMLImageElement ) {
-	return ( canvasWidth: number, canvasHeight: number ) => {
-		const widthIfSameHeightAsCanvas = img.width * canvasHeight / img.height;
-
-		if ( widthIfSameHeightAsCanvas > canvasWidth ) {
-			return {
-				width: widthIfSameHeightAsCanvas,
-				height: canvasHeight,
-			};
-
-		} else {
-			return {
-				width: canvasWidth,
-				height: img.height * canvasWidth / img.width,  
-			};
-		}
+	return ( canvasHeight: number ) => {
+		return {
+			width: img.width * canvasHeight / img.height,
+			height: canvasHeight,
+		};
 	};
 }
 
 export const getHeightFromTargetWidth = ( el: HTMLImageElement, targetWidth: number ) => {
 	return el.height * targetWidth / el.width;
 };
+
+export const getValueFromRange = ( median: number, range: number ) => {
+	return median + (( Math.random() * range * 2 ) - range );
+};
+
+export function getRandomValue<T>( range: T[]): T {
+	return range[ Math.floor( Math.random() * range.length ) ];
+}

@@ -1,4 +1,4 @@
-import { getDefaultMousePos } from "../constants";
+import { gameHeight, getDefaultMousePos } from "../constants";
 import { Element } from "../types";
 import { moveElement } from "./elements";
 import { getImage } from "./images";
@@ -24,6 +24,7 @@ export async function getUser ( canvas: HTMLCanvasElement ): Promise<Element> {
 }
 
 const damping = 0.95;
+const edgeSize = 100;
 
 export function moveUser ( 
 	user: Element, 
@@ -31,11 +32,35 @@ export function moveUser (
 	mouseX: number, 
 	timestampGap: number, 
 	canvas: HTMLCanvasElement,
+	viewPortHeightOffset: number,
 
-): Element {
-	const yDistanceFromUser = mouseY - user.y - ( user.height / 2 );
+): {
+		updatedUser: Element,
+		updatedViewPortHeightOffset: number,
+	} {
+	const yDistanceFromUser = mouseY - user.y - ( user.height / 2 ) + viewPortHeightOffset;
 	const yVelocityChange = yDistanceFromUser / 50_000 * timestampGap;
 	const yVelocity = ( user.yVelocity + yVelocityChange ) * damping;
+	
+	const xDistanceFromUser = mouseX - user.x - ( user.width / 2 );
+	const xVelocityChange = xDistanceFromUser / 200_000 * timestampGap;
+	const xVelocity = Math.min( user.xVelocity + xVelocityChange ) * damping;
 
-	return moveElement( user, timestampGap, canvas, yVelocity, 0 );
+	const updatedUser = moveElement( user, timestampGap, canvas, yVelocity, xVelocity );
+
+	const userBottom = updatedUser.y + user.height;
+
+	let updatedViewPortHeightOffset = viewPortHeightOffset;
+	if ( userBottom + edgeSize > viewPortHeightOffset + canvas.height ) {
+		updatedViewPortHeightOffset = Math.min( userBottom + edgeSize, gameHeight ) - canvas.height;
+
+	} else if ( updatedUser.y - edgeSize < viewPortHeightOffset ) {
+		updatedViewPortHeightOffset = Math.max( updatedUser.y - edgeSize, 0 );
+
+	}
+
+	return {
+		updatedUser,
+		updatedViewPortHeightOffset,
+	};
 }

@@ -18,6 +18,6 @@ export default function BirdEatBird (): ReactElement {
 	}, []);
 
 	return (
-		<canvas ref={ ref } id={ ElementIds.CANVAS } className="min-w-full min-h-full bg-gray-50" />
+		<canvas ref={ ref } id={ ElementIds.CANVAS } className="w-auto h-auto mx-auto bg-gray-50" />
 	);
 }
