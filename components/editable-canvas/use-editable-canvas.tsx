@@ -55,7 +55,7 @@ const useEditableCanvas = ({ ref, cachedData, onDataChange, onEvent, sessionId }
 	const processChange = useMemo(() => serialise(( event: FirebaseChange ) => {
 		const updatedData = processChangeEvent( dataRef.current, event.data );
 		setData( updatedData );
-	}, "created_at" ),[]);
+	}, { sortByKey: "created_at" }),[]);
 
 	const addToHistory = ( item: EditableCanvasChangeEvent ) => {
 		history.current = [ ...history.current, item ];

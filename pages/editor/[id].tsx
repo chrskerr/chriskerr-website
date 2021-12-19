@@ -24,7 +24,7 @@ const uploadChangeEvent = async ( body: UpdateNoteAPIBody ) => fetch( "/api/edit
 	body: JSON.stringify({ ...body, uploaded_at: getDateValueString() }),
 });
 
-const postChangeEvent = serialise( uploadChangeEvent, "created_at" );
+const postChangeEvent = serialise( uploadChangeEvent, { sortByKey: "created_at" });
 
 interface EditorProps {
 	id: string,

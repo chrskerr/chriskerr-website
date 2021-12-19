@@ -1,12 +1,6 @@
 
+export const getProbability = ( frequencySeconds: number, timestampGap: number ) => {
+	const probabilityWillHappen = timestampGap / ( frequencySeconds * 1000 ) ;
 
-export const createGetFractionOfSecond = () => {
-	let prevTimestamp = 0;
-
-	return ( newTimestamp: number ) => {
-		const gap = newTimestamp - prevTimestamp;
-		prevTimestamp = newTimestamp;
-
-		return gap / 1000;
-	};
+	return Math.random() < probabilityWillHappen;
 };
