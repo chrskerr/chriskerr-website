@@ -26,7 +26,7 @@ export const renderer = ({
 	if ( !canvas || !ctx ) return;
 
 	ctx.clearRect( 0, 0, canvas.width, canvas.height );
-	ctx.font = "16px 'IBM Plex Mono'";
+	ctx.font = "16px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace";
 
 	const isSelecting = ( selectedTextStart.row || selectedTextStart.col ) && ( selectedTextEnd.row || selectedTextEnd.col );
 
