@@ -41,10 +41,11 @@ export default function Landing (): ReactElement {
 				</div>
 			</section>
 			<section className="w-full">
-				<div className="grid grid-cols-1 gap-16 sm:grid-cols-2 grid-rows-auto display-width divider-before">
+				<div className="grid grid-cols-1 gap-16 md:grid-cols-2 grid-rows-auto display-width divider-before">
 					<Tile url="/editor" title="Collaborative Markdown Editor" image="/images/stacked-waves.png" />
 					<Tile url="/bird-eat-bird" title="Bird Eat Bird" image="/images/bird-eat-bird.png" />
 					<Tile url={ `/${ BlogPostSlugs.ASYNC_FUNCTIONS }` } title={ BlogPostTitles.ASYNC_FUNCTIONS} image="/images/asynchronous_function_tile.png" />
+					<Tile url='/quick-and-dead-generator' title="Quick &amp; Dead Generator" image="/images/q&amp;d_tile.png" />
 				</div>
 			</section>
 		</>
@@ -62,7 +63,7 @@ function Tile ({ url, title, image }: { url: string, title: string, image: strin
 						layout="fill" 
 						objectFit="cover"
 						objectPosition="center"
-						sizes="1033w"
+						sizes="(max-width: 768px) 100vw, 440px"
 						className="transition-all duration-700 group-hover:scale-[1.15]"
 					/>
 					<p className="absolute flex items-center justify-center px-5 py-3 text-2xl text-center -translate-x-1/2 -translate-y-1/2 bg-white rounded sm:text-lg top-1/2 left-1/2">{title }</p>
