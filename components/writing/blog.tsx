@@ -7,30 +7,23 @@ import { NextSeo, BlogJsonLd } from "next-seo";
 
 import "highlight.js/styles/vs2015.css";
 
-import type { Maybe } from "types/prismic-graphql";
-import type { Blog } from "parked/fetch-data";
+import type { Blog } from "types";
 
 import { defaultTitle } from "pages/_app";
 
 export interface BlogProps {
 	blog: Blog,
-	next: Maybe<{
+	next?: {
 		title: string;
 		uid: string;
-	}>,
-	prev: Maybe<{
+	},
+	prev?: {
 		title: string;
 		uid: string;
-	}>,
-	isPreview: boolean;
+	},
 }
 
-const _stopPreview = async () => {
-	await fetch( "/api/exit-preview" );
-	window.location.reload();
-};
-
-export default function BlogPost ({ blog, prev, next, isPreview }: BlogProps ): ReactElement {
+export default function BlogPost ({ blog, prev, next }: BlogProps ): ReactElement {
 	const { title, description, url, tags, publishedAtISO, modifiedAtISO, htmlContent, publishedAtString } = blog;
 	const trimmedTitle = title.slice( 0, 70 - defaultTitle.length - 3 ) || title;
 	const prefetchData = useMemo(() => [ ...htmlContent.matchAll( /data-prefetch-href=\S+/g ) ], [ htmlContent ]);
@@ -74,14 +67,6 @@ export default function BlogPost ({ blog, prev, next, isPreview }: BlogProps ): 
 				);
 			})}
 		</Head>
-		{ isPreview && 
-			<div className="fixed z-50 top-24 right-8">
-				<button 
-					className="px-3 py-1 text-white transition-all bg-red-600 rounded-lg shadow hover:bg-red-800"
-					onClick={ _stopPreview }
-				>Stop Preview</button>
-			</div>
-		}
 		<div className="flex flex-col items-center w-full">
 			<h1 className="mb-6 text-2xl font-bold text-center sm:text-3xl display-width">{ title }</h1>
 			<p className="text-lg text-center display-width narrower">{ description }</p>

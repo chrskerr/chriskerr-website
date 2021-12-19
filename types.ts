@@ -75,3 +75,28 @@ export interface ReceivedChangeEvent extends FirebaseChange {
 }
 
 export type Directions = "up" | "right" | "down" | "left"
+
+export type Blog = {
+	url: string,
+
+	title: string,
+	description: string,
+
+	htmlContent: string,
+
+	tags: string[],
+
+	publishedAtISO: string,
+	modifiedAtISO: string,
+
+	publishedAtString: string,
+	modifiedAtString: string,
+}
+
+export enum  BlogPostSlugs {
+	ASYNC_FUNCTIONS = "serialising-async-functions"
+}
+
+export enum BlogPostTitles {
+	ASYNC_FUNCTIONS = "Serialising Async Functions"
+}

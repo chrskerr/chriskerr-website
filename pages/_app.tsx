@@ -16,7 +16,6 @@ export const defaultTitle = "Chris Kerr";
 export const shortCacheSeconds = 60 * 60; // 1 hour
 export const longCacheSeconds = 12 * 60 * 60; // 12 hours
 
-
 Router.events.on( "routeChangeStart", () => nProgress.start());
 Router.events.on( "routeChangeComplete", () => nProgress.done());
 Router.events.on( "routeChangeError", () => nProgress.done());

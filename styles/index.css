@@ -15,11 +15,11 @@ html, body {
 .prose pre {
   word-wrap: break-word;
   line-break: after-white-space;
-  padding: 2rem;
+  @apply bg-transparent p-0;
 }
 
 .prose pre code {
-  @apply font-code;
+  @apply font-code rounded;
 }
 
 .prose a {
