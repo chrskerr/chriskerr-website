@@ -29,7 +29,7 @@ import type {
 	Directions,
 } from "types";
 
-import { serialise } from "./helpers/data-processing";
+import serialize from "async-function-serializer";
 import { navigate } from "./helpers/navigate";
 import { renderer } from "./helpers/render";
 import { processDeleteEvent, processInsertEvent, processRedo, processUndo } from "./helpers/keypress";
@@ -52,10 +52,10 @@ const useEditableCanvas = ({ ref, cachedData, onDataChange, onEvent, sessionId }
 	const cursorRowCol = useRef<RowCol>( getRowColForCursorPos( cursorPos, dataAsRowsRef.current ));
 	const retainedCol = useRef( 0 );
 
-	const processChange = useMemo(() => serialise(( event: FirebaseChange ) => {
+	const processChange = useMemo(() => serialize(( event: FirebaseChange ) => {
 		const updatedData = processChangeEvent( dataRef.current, event.data );
 		setData( updatedData );
-	}, { sortByKey: "created_at" }),[]);
+	}, { sortBy: { key: "created_at" }}),[]);
 
 	const addToHistory = ( item: EditableCanvasChangeEvent ) => {
 		history.current = [ ...history.current, item ];

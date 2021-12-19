@@ -45,7 +45,7 @@ export default function Landing (): ReactElement {
 					<Tile url="/editor" title="Collaborative Markdown Editor" image="/images/stacked-waves.png" />
 					<Tile url="/bird-eat-bird" title="Bird Eat Bird" image="/images/bird-eat-bird.png" />
 					<Tile url={ `/${ BlogPostSlugs.ASYNC_FUNCTIONS }` } title={ BlogPostTitles.ASYNC_FUNCTIONS} image="/images/asynchronous_function_tile.png" />
-					<Tile url='/quick-and-dead-generator' title="Quick &amp; Dead Generator" image="/images/q&amp;d_tile.png" />
+					<Tile url='/quick-and-dead' title="Quick &amp; Dead Generator" image="/images/q&amp;d_tile.png" />
 				</div>
 			</section>
 		</>

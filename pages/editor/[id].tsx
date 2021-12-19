@@ -14,7 +14,7 @@ import { nanoid } from "nanoid";
 const MarkdownRenderer = dynamic( import( /* webpackPrefetch: true */ "components/editable-canvas/markdown-renderer" ));
 
 import { io } from "socket.io-client";
-import { serialise } from "components/editable-canvas/helpers/data-processing";
+import serialize from "async-function-serializer";
 
 const getDateValueString = () => String( new Date().valueOf());
 
@@ -24,7 +24,7 @@ const uploadChangeEvent = async ( body: UpdateNoteAPIBody ) => fetch( "/api/edit
 	body: JSON.stringify({ ...body, uploaded_at: getDateValueString() }),
 });
 
-const postChangeEvent = serialise( uploadChangeEvent, { sortByKey: "created_at" });
+const postChangeEvent = serialize( uploadChangeEvent, { sortBy:{ key: "created_at" }});
 
 interface EditorProps {
 	id: string,

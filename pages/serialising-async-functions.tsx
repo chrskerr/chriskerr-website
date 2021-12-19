@@ -48,19 +48,16 @@ export const getStaticProps: GetStaticProps = () => {
 const markdown = `
 To be written...
 
+A slightly extended version of the below can be found at [Async Function Serializer](https://www.npmjs.com/package/async-function-serializer).
+
 \`\`\`ts
 type Queue<T, R> = {
 	resolve: ( data: R ) => void,
 	input: T,
 }[]
 
-type Options<T> = {
-	sortByKey?: keyof T,
-}
-
 export function serialise<T, R>( 
 	functionToSerialise: ( input: T ) => R, 
-	options?: Options<T>,
 ): (( input: T ) => Promise<R> ) {
 	let queue: Queue<T, R> = [];
 	let isRunning = false;
@@ -82,16 +79,7 @@ export function serialise<T, R>(
 		return await new Promise<R>( resolve => {
 			
 			const item = { resolve, input };
-
-			if ( options?.sortByKey ) {
-				const key = options.sortByKey;
-				queue = [ ...queue, item ]
-					.sort(( a, b ) => Number( a.input[ key ]) - Number( b.input[ key ]));
-
-			} else {
-				queue.push( item );
-
-			}
+			queue.push( item );
 
 			if ( !isRunning ) run();
 		});
