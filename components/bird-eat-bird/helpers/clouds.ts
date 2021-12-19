@@ -37,24 +37,24 @@ async function getCloudEl ( canvas: HTMLCanvasElement, name: CloudFileNames ) {
 
 export async function initClouds ( canvas: HTMLCanvasElement ) {
 	const cloudEls = [ 
-		await getCloudEl( canvas,"cloud.svg" ),
-		await getCloudEl( canvas,"cloud_2.svg" ),
-		await getCloudEl( canvas,"cloud_3.svg" ),
+		await getCloudEl( canvas, "cloud.svg" ),
+		await getCloudEl( canvas, "cloud_2.svg" ),
+		await getCloudEl( canvas, "cloud_3.svg" ),
 	];
 
-	let clouds: ( Element | false )[] = [ cloudEls[ 0 ]() ];
-
+	let clouds: ( Element | false )[] = [ getRandomValue( cloudEls )() ];
 
 	return ( timeStampGap: number ): ( Element | false )[] => {
 		if ( getProbability( 2, timeStampGap )) {
-			const newCloud = getRandomValue( cloudEls )();
-			clouds.push( newCloud );
+			clouds.push( getRandomValue( cloudEls )());
 			clouds = clouds.filter( Boolean );
 		} 
+
+		const canvasWidth = canvas.width;
 		
 		clouds = clouds.map( cloud =>  {
 			if ( !cloud ) return false;
-			const updatedCloud = moveElement( cloud, timeStampGap, canvas );
+			const updatedCloud = moveElement( cloud, timeStampGap, canvasWidth );
 			return cloud.x + cloud.width > 0 ? updatedCloud : false;
 		});
 

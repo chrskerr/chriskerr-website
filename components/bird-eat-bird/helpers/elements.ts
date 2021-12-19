@@ -5,7 +5,7 @@ import { Element } from "../types";
 export function moveElement ( 
 	element: Element, 
 	timestampGap: number, 
-	canvas: HTMLCanvasElement, 
+	canvasWidth: number, 
 	inputYVel?: number, 
 	inputXVel?: number, 
 
@@ -28,8 +28,8 @@ export function moveElement (
 	let x = xVelocity ? element.x + ( xVelocity * timestampGap ) : element.x;
 
 	if ( element.type === "user" && xVelocity ) {
-		if ( x + element.width > canvas.width ) {
-			x = canvas.width - element.width;
+		if ( x + element.width > canvasWidth ) {
+			x = canvasWidth - element.width;
 			xVelocity = 0;
 		}
 		else if ( x < 0 ) {

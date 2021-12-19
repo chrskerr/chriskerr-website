@@ -1,3 +1,4 @@
+
 import { gameHeight, getDefaultMousePos } from "../constants";
 import { Element } from "../types";
 import { moveElement } from "./elements";
@@ -6,7 +7,7 @@ import { getHeightFromTargetWidth } from "./sizing";
 
 export async function getUser ( canvas: HTMLCanvasElement ): Promise<Element> {
 	const img = await getImage( "bald_eagle.svg" );
-	const width = 150;
+	const width = 75;
 	const height = getHeightFromTargetWidth( img, width );
 
 	const { x, y } = getDefaultMousePos( canvas );
@@ -46,7 +47,7 @@ export function moveUser (
 	const xVelocityChange = xDistanceFromUser / 200_000 * timestampGap;
 	const xVelocity = Math.min( user.xVelocity + xVelocityChange ) * damping;
 
-	const updatedUser = moveElement( user, timestampGap, canvas, yVelocity, xVelocity );
+	const updatedUser = moveElement( user, timestampGap, canvas.width, yVelocity, xVelocity );
 
 	const userBottom = updatedUser.y + user.height;
 

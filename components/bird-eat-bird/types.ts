@@ -4,7 +4,7 @@ export enum ElementIds {
 	FOOTER = "footer",
 }
 
-export type ElementTypes = "user" | "cloud";
+export type ElementTypes = "user" | "cloud" | "bird";
 
 export type Element = {
 	type: ElementTypes,

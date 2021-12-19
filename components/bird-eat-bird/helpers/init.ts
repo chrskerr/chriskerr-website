@@ -16,6 +16,7 @@ import { getImage } from "./images";
 import { getUser, moveUser } from "./user";
 import { initClouds } from "./clouds";
 import { getDefaultMousePos } from "../constants";
+import { initBirds } from "./birds";
 
 export async function init ({ ref }: InitProps ) {
 	let canvas = ref.current;
@@ -33,11 +34,13 @@ export async function init ({ ref }: InitProps ) {
 
 	const userPromise = getUser( canvas );
 	const updateCloudsPromise = initClouds( canvas );
+	const updateBirdsPromise = initBirds( canvas );
 
 	const backgroundImg = await getImage( "background.svg" );
 	const memoizedGetBackgroundSize = memoize( getBackgroundSize( backgroundImg ));
 
 	const updateClouds = await updateCloudsPromise;
+	const updateBirds = await updateBirdsPromise;
 	
 	let user = await userPromise;
 
@@ -46,6 +49,7 @@ export async function init ({ ref }: InitProps ) {
 
 	let lastTimestamp = 0;
 	let avgGap = 0;
+	let points = 0;
 
 	let isRunning = true;
 
@@ -64,8 +68,11 @@ export async function init ({ ref }: InitProps ) {
 		
 		ctx.drawImage( backgroundImg, canvas.width - backgroundSize.width, -1 * viewPortHeightOffset, backgroundSize.width, gameHeight );
 
-		const clouds = updateClouds( timestampGap );
-		clouds.forEach( drawElement );
+		updateClouds( timestampGap ).forEach( drawElement );
+		const { birds, extraPoints } = updateBirds( timestampGap, user );
+		points = extraPoints + points;
+
+		birds.forEach( drawElement );
 
 		const { updatedUser, updatedViewPortHeightOffset } = moveUser( user, mouseY, mouseX, timestampGap, canvas, viewPortHeightOffset );
 
@@ -76,6 +83,7 @@ export async function init ({ ref }: InitProps ) {
 
 		ctx.font = "30px 'Open Sans'";
 		ctx.fillText(( 1 / avgGap ).toFixed( 1 ) + " FPS", canvas.width - 200, 50 );
+		ctx.fillText( "Points: " + points, 50, 50 );
 
 		if ( isRunning ) requestAnimationFrame( render );
 	};
