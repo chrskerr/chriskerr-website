@@ -13,21 +13,16 @@ export default function AsyncFunctionSerialiser ( props: Blog ) {
 	);
 }
 
-export const getStaticProps: GetStaticProps = ( context ) => {
-
-	console.log( context );
-
+export const getStaticProps: GetStaticProps = () => {
 	const createdAt = new Date( 2021, 11, 19 );
 	const modifiedAt = new Date( 2021, 11, 19 );
-
-
 
 	const htmlContent = marked.parse( markdown, {
 		highlight: ( code, lang ) => {
 			const language = hljs.getLanguage( lang ) ? lang : "plaintext";
 			return hljs.highlight( code, { language }).value;
 		},
-		langPrefix: "hljs lanuage-",
+		langPrefix: "hljs language-",
 	});
 
 	const props: Blog = {
@@ -53,7 +48,7 @@ export const getStaticProps: GetStaticProps = ( context ) => {
 const markdown = `
 To be written...
 
-\`\`\`tsx
+\`\`\`ts
 type Queue<T, R> = {
 	resolve: ( data: R ) => void,
 	input: T,

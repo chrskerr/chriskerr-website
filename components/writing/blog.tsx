@@ -5,7 +5,7 @@ import Head from "next/head";
 
 import { NextSeo, BlogJsonLd } from "next-seo";
 
-import "highlight.js/styles/vs2015.css";
+import "highlight.js/styles/github.css";
 
 import type { Blog } from "types";
 
