@@ -51,7 +51,7 @@ export async function initBirds ( canvas: HTMLCanvasElement ) {
 
 
 	return ( timeStampGap: number, user: Element ): { birds: ( Element | false )[], extraPoints: number, dead: boolean } => {
-		if ( getProbability( 1.75, timeStampGap )) {
+		if ( getProbability( 1.5, timeStampGap )) {
 			birds.push( getRandomValue( birdEls )( user ));
 			birds = birds.filter( Boolean );
 		} 
