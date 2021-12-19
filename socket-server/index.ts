@@ -22,7 +22,7 @@ const io = new Server( server, {
 app.use( bodyParser.json());
 app.use( cors( corsSettings ));
 
-app.post( "/", ( req, res ) => {
+app.post( "/editor", ( req, res ) => {
 	if ( req.headers.token !== apiToken ) return res.status( 500 ).end();
 
 	const body = req.body as FirebaseChange;

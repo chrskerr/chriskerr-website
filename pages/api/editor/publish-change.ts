@@ -35,7 +35,7 @@ const handler: NextApiHandler = async ( req, res ) => {
 		firebase.firestore()
 			.collection( FirebaseCollections.NOTES ).doc( body.noteId )
 			.collection( FirebaseCollections.CHANGES ).add( insert ),
-		fetch( socketServerUrl, {
+		fetch( socketServerUrl + "/editor", {
 			method: "post",
 			headers: { "content-type": "application/json", token: apiToken },
 			body: JSON.stringify( insert ),

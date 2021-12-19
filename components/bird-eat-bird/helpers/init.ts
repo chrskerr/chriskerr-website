@@ -49,8 +49,8 @@ export async function init ({ ref }: InitProps ) {
 
 	let isRunning = true;
 
-	const drawElement = ( el: Element ) => {
-		ctx.drawImage( el.img, el.x, el.y - viewPortHeightOffset, el.width, el.height );
+	const drawElement = ( el: Element | false ) => {
+		if ( el ) ctx.drawImage( el.img, el.x, el.y - viewPortHeightOffset, el.width, el.height );
 	};
 
 	const render = ( timestamp: number ) => {

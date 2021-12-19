@@ -11,21 +11,23 @@ export function moveElement (
 
 ): Element {
 	let yVelocity = inputYVel || element.yVelocity;
-	let y = element.y + ( yVelocity * timestampGap );
+	let y = yVelocity ? element.y + ( yVelocity * timestampGap ) : element.y;
 
-	if ( y + element.height > gameHeight ) {
-		y = gameHeight - element.height;
-		yVelocity = 0;
-	}
-	else if ( y < 0 ) {
-		y = 0;
-		yVelocity = 0;
+	if ( yVelocity ) {
+		if ( y + element.height > gameHeight ) {
+			y = gameHeight - element.height;
+			yVelocity = 0;
+		}
+		else if ( y < 0 ) {
+			y = 0;
+			yVelocity = 0;
+		}
 	}
 
 	let xVelocity = inputXVel || element.xVelocity;
-	let x = element.x + ( xVelocity * timestampGap );
+	let x = xVelocity ? element.x + ( xVelocity * timestampGap ) : element.x;
 
-	if ( element.type === "user" ) {
+	if ( element.type === "user" && xVelocity ) {
 		if ( x + element.width > canvas.width ) {
 			x = canvas.width - element.width;
 			xVelocity = 0;

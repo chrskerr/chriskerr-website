@@ -42,19 +42,21 @@ export async function initClouds ( canvas: HTMLCanvasElement ) {
 		await getCloudEl( canvas,"cloud_3.svg" ),
 	];
 
-	let clouds: Element[] = [ cloudEls[ 0 ]() ];
+	let clouds: ( Element | false )[] = [ cloudEls[ 0 ]() ];
 
 
-	return ( delta: number ): Element[] => {
-		if ( getProbability( 2, delta )) {
+	return ( timeStampGap: number ): ( Element | false )[] => {
+		if ( getProbability( 2, timeStampGap )) {
 			const newCloud = getRandomValue( cloudEls )();
 			clouds.push( newCloud );
+			clouds = clouds.filter( Boolean );
 		} 
 		
-		clouds = [ ...clouds ]
-			.map( cloud =>  moveElement( cloud, delta, canvas ))
-			.filter( cloud => cloud.x + cloud.width > 0 );
-
+		clouds = clouds.map( cloud =>  {
+			if ( !cloud ) return false;
+			const updatedCloud = moveElement( cloud, timeStampGap, canvas );
+			return cloud.x + cloud.width > 0 ? updatedCloud : false;
+		});
 
 		return clouds;
 	};
