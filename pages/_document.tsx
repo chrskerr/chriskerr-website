@@ -16,7 +16,7 @@ export default function Document(): ReactElement {
 				<link rel="preconnect" href="https://fonts.googleapis.com" /> 
 				<link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" /> 
 					
-				<link href="https://fonts.googleapis.com/css2?family=Open+Sans&family=Passion+One&family=Source+Code+Pro&display=swap" rel="stylesheet" />
+				<link href="https://fonts.googleapis.com/css2?family=Open+Sans&family=Passion+One&family=Source+Code+Pro&family=IBM+Plex+Mono&display=swap" rel="stylesheet" />
 			</Head>
 			<body>
 				<Main />
