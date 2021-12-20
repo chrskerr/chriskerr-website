@@ -8,9 +8,11 @@ import { gameHeight } from "../constants";
 
 type BirdFileNames = "hummingbird.svg"
 
+const initialWidth = 50;
+
 async function createBird ( canvas: HTMLCanvasElement, name: BirdFileNames ): Promise<Element> {
 	const img = await getImage( name );
-	const width = 50;
+	const width = initialWidth;
 	const height = getHeightFromTargetWidth( img, width );
 
 	return {
@@ -82,12 +84,13 @@ export async function initBirds ( canvas: HTMLCanvasElement ) {
 
 			} else {
 				updatedPoints ++;
-				user.width += 5;
-				user.height = getHeightFromTargetWidth( user.img, user.width );
 
 				updatedHealth = Math.min( 3, health + 1 );
 
 			}
+
+			user.width = initialWidth + updatedPoints * 5;
+			user.height = getHeightFromTargetWidth( user.img, user.width );
 
 			return false;
 		});
