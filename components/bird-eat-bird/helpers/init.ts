@@ -50,7 +50,7 @@ export async function init ({ ref }: InitProps ) {
 	let lastTimestamp = 0;
 	let avgGap = 0;
 	let points = 0;
-	let health = 3;
+	let health = 30;
 
 	let isRunning = true;
 
@@ -86,7 +86,7 @@ export async function init ({ ref }: InitProps ) {
 		ctx.font = "30px 'Open Sans'";
 		ctx.fillText(( 1 / avgGap ).toFixed( 1 ) + " FPS", canvas.width - 200, 50 );
 		ctx.fillText( "Points: " + points, 50, 50 );
-		ctx.fillText( "Health: " + health, 50, 100 );
+		ctx.fillText( "Health: " + Math.round( health ) / 10, 50, 100 );
 
 		if ( isRunning ) requestAnimationFrame( render );
 	};

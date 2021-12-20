@@ -78,14 +78,14 @@ export async function initBirds ( canvas: HTMLCanvasElement ) {
 
 			if ( bird.width > user.width ) {
 				updatedPoints = 0;
-				updatedHealth --;
+				updatedHealth -= 10;
 
 			} else {
 				updatedPoints ++;
 				user.width += 5;
 				user.height = getHeightFromTargetWidth( user.img, user.width );
 
-				updatedHealth = Math.min( 3, health + 0.1 );
+				updatedHealth = Math.min( 3, health + 1 );
 
 			}
 
