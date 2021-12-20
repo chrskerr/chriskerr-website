@@ -50,7 +50,7 @@ export async function initBirds ( canvas: HTMLCanvasElement ) {
 	let birds: ( Element | false )[] = [ getRandomValue( birdEls )() ];
 
 
-	return ( timeStampGap: number, user: Element, points: number ): { birds: ( Element | false )[], updatedPoints: number, dead: boolean } => {
+	return ( timeStampGap: number, user: Element, points: number, health: number ): { birds: ( Element | false )[], updatedPoints: number, updatedHealth: number } => {
 		if ( getProbability( 1.5, timeStampGap )) {
 			birds.push( getRandomValue( birdEls )( user ));
 			birds = birds.filter( Boolean );
@@ -58,8 +58,8 @@ export async function initBirds ( canvas: HTMLCanvasElement ) {
 
 		const canvasWidth = canvas.width;
 		
+		let updatedHealth = health;
 		let updatedPoints = points;
-		let dead = false;
 
 		const userLeft = user.x;
 		const userRight = userLeft + user.width;
@@ -77,19 +77,21 @@ export async function initBirds ( canvas: HTMLCanvasElement ) {
 			if ( bird.x + bird.width < userLeft ) return updatedBird;
 
 			if ( bird.width > user.width ) {
-				dead = true;
 				updatedPoints = 0;
+				updatedHealth --;
 
 			} else {
 				updatedPoints ++;
 				user.width += 5;
 				user.height = getHeightFromTargetWidth( user.img, user.width );
 
+				updatedHealth = Math.min( 3, health + 0.1 );
+
 			}
 
 			return false;
 		});
 
-		return { birds, updatedPoints, dead };
+		return { birds, updatedPoints, updatedHealth };
 	};
 }

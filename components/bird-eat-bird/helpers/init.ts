@@ -50,6 +50,7 @@ export async function init ({ ref }: InitProps ) {
 	let lastTimestamp = 0;
 	let avgGap = 0;
 	let points = 0;
+	let health = 3;
 
 	let isRunning = true;
 
@@ -69,8 +70,9 @@ export async function init ({ ref }: InitProps ) {
 		ctx.drawImage( backgroundImg, canvas.width - backgroundSize.width, -1 * viewPortHeightOffset, backgroundSize.width, gameHeight );
 
 		updateClouds( timestampGap ).forEach( drawElement );
-		const { birds, updatedPoints } = updateBirds( timestampGap, user, points );
+		const { birds, updatedPoints, updatedHealth } = updateBirds( timestampGap, user, points, health );
 		points = updatedPoints;
+		health = updatedHealth;
 
 		birds.forEach( drawElement );
 
@@ -84,6 +86,7 @@ export async function init ({ ref }: InitProps ) {
 		ctx.font = "30px 'Open Sans'";
 		ctx.fillText(( 1 / avgGap ).toFixed( 1 ) + " FPS", canvas.width - 200, 50 );
 		ctx.fillText( "Points: " + points, 50, 50 );
+		ctx.fillText( "Health: " + health, 50, 100 );
 
 		if ( isRunning ) requestAnimationFrame( render );
 	};
