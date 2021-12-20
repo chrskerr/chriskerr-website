@@ -1,5 +1,6 @@
 
-import { Rounds, Type, RepSplit, Day, Week, MinifiedType, MinifiedDay } from "./types";
+import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string";
+import { Rounds, Type, RepSplit, Day, Week, MinifiedType, MinifiedDay, MinifiedWeek } from "./types";
 
 const roundOptions: Rounds[] = [ 
 	Rounds.TWO, 
@@ -60,29 +61,30 @@ const expandDayObject = ( day: MinifiedDay ): Day => {
 };
 
 export const encode = ( data: Day | Week ): string | undefined => {
-	let json = "";
+	let jsonString = "";
 
 	if ( !data ) return;
 
 	if ( Array.isArray( data )) {
 		const minifiedData = data.map( day => day ? minifyDayObject( day ) : null );
-		json = JSON.stringify( minifiedData );
+		jsonString = JSON.stringify( minifiedData );
 	} else {
-		json = JSON.stringify( minifyDayObject( data ));
+		jsonString = JSON.stringify( minifyDayObject( data ));
 	}
 
-	return encodeURIComponent( btoa( json ));
+	return compressToEncodedURIComponent( jsonString );
 };
 
 export const decode = ( input: string | string[] | undefined ) => {
 	if ( typeof input !== "string" ) return;
 	try {
-		const data = JSON.parse( atob( decodeURIComponent( input )));
+		const jsonString = decompressFromEncodedURIComponent( input );
+		const data = jsonString ? JSON.parse( jsonString ) as MinifiedWeek | MinifiedDay : null;
 
 		if ( !data ) return;
 
 		if ( Array.isArray( data )) {
-			return data.map( day => day ? expandDayObject( day ) : undefined ) as Week;
+			return data.map( day => day ? expandDayObject( day ) : null );
 		} else {
 			return expandDayObject( data ) as Day;
 		}

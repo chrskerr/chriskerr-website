@@ -4,9 +4,14 @@ import { Day, Week } from "./types";
 
 import { createSession, createWeek, encode } from "./helpers";
 
+const baseUrl = `${ process.env.NEXT_PUBLIC_URL_BASE || "http://localhost:3000" }/quick-and-dead`;
+
 export default function QuickAndDead ({ urlDay, urlWeek }: { urlDay?: Day, urlWeek?: Week }): ReactElement {
 	const [ day, setDay ] = useState<Day | undefined>( urlDay ); 
+	const [ dayUrl, setDayUrl ] = useState<string | undefined>( undefined );
+
 	const [ week, setWeek ] = useState<Week | undefined>( urlWeek );
+	const [ weekUrl, setWeekUrl ] = useState<string | undefined>( undefined );
 
 	const doGenerate = () => {
 		setDay( createSession());
@@ -24,8 +29,13 @@ export default function QuickAndDead ({ urlDay, urlWeek }: { urlDay?: Day, urlWe
 		setWeek( urlWeek );
 	}, [ urlWeek ]);
 
-	const dayUrl = day && `http://localhost:3000/quick-and-dead/${ encode( day )}`;
-	const weekUrl = week && `https://www.chriskerr.com.au/quick-and-dead/${ encode( week )}`;
+	useEffect(() => {
+		setDayUrl( day ? `${baseUrl}/${ encode( day )}` : undefined );
+	}, [ day ]);
+
+	useEffect(() => {
+		setWeekUrl( week ? `${baseUrl}/${ encode( week )}` : undefined );
+	}, [ week ]);
 
 	return (
 		<div className="display-width">

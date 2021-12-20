@@ -33,4 +33,6 @@ export type MinifiedDay = {
 	s: RepSplit,
 }
 
+export type MinifiedWeek = ( MinifiedDay | null )[]
+
 export type Week = ( Day | null )[]
