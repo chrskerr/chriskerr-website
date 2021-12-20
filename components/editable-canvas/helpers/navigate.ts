@@ -1,6 +1,7 @@
 
 import type { CursorPos, Directions, EditableCanvasData, RowCol } from "types";
-import { getCursorPosFromRowCol, getRowColForCursorPos, splitDataIntoRows } from ".";
+import { splitDataIntoRows } from ".";
+import { getCursorPosFromRowCol, getRowColForCursorPos  } from "./cursor";
 
 interface NavigateProps {
 	dir: Directions,

@@ -23,3 +23,7 @@ export const createDeleteEvent = ( insert_before: string, cells: Cell[], session
 		id: nanoid(),
 	};
 };
+
+export const convertCellsToString = ( cells: Cell[]) => {
+	return cells.map( cell => cell.value ).join( "" );
+};

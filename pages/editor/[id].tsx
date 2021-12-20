@@ -85,8 +85,6 @@ export default function Editor ({ id, initialData }: EditorProps ) {
 				<p className="mb-4">This is a work in progress of a fully custom canvas based text editor.</p>
 				<p className="mb-2 text-lg">Ideas &amp; Problems list:</p>
 				<ul className="list-disc sm:columns-3">
-					<li className="ml-4">Copy &amp; paste</li>
-					<li className="ml-4">Pressing forward after typing skips two letters</li>
 					<li className="ml-4">Pretty sure it doesn&apos;t work on iPhone</li>
 				</ul>
 			</div>
@@ -102,13 +100,11 @@ export default function Editor ({ id, initialData }: EditorProps ) {
 				</div>
 			</div>
 			<div className="flex items-center justify-center display-width divider-before">
-				{ tab === "editor" &&
-					<div className="w-full pb-16 mr-0 2xl:mr-4 2xl:pb-0">
-						<div className={ classes }>
-							<canvas ref={ $_ref } height={ height } width="auto" className="outline-none" />
-						</div>
+				<div className={ `w-full pb-16 mr-0 2xl:mr-4 2xl:pb-0 ${ tab === "editor" ? "" : "hidden" }` }>
+					<div className={ classes }>
+						<canvas ref={ $_ref } height={ height } width="auto" className="outline-none" />
 					</div>
-				}
+				</div>
 				{ tab === "viewer" && 
 					<div className="w-full ml-0 2xl:ml-4">
 						<MarkdownRenderer markdown={ markdown } />

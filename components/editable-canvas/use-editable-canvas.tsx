@@ -1,6 +1,5 @@
 
 import throttle from "lodash/throttle";
-import clamp from "lodash/clamp";
 
 import { nanoid } from "nanoid";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -10,15 +9,19 @@ import {
 	rowGap,
 
 	splitDataIntoRows,
-	getRowColForCursorPos,
-	getCursorPosFromRowCol,
-	getRowColAtMousePos,
 
 	getParentInnerWidth,
 
 	processChangeEvent,
 	xor,
 } from "./helpers";
+
+import {
+	getRowColForCursorPos,
+	getCursorPosFromRowCol,
+	getRowColAtMousePos,
+
+} from "./helpers/cursor";
 
 import type {
 	UseEditableCanvasProps, 
@@ -27,12 +30,14 @@ import type {
 	EditableCanvasChangeEvent,
 	FirebaseChange,
 	Directions,
+	EditableCanvasData,
 } from "types";
 
 import serialize from "async-function-serializer";
 import { navigate } from "./helpers/navigate";
 import { renderer } from "./helpers/render";
-import { processDeleteEvent, processInsertEvent, processRedo, processUndo } from "./helpers/keypress";
+import { processDeleteEvent, processDeleteMany, processInsertEvent, processRedo, processUndo, processPaste } from "./helpers/data";
+import { convertCellsToString } from "./helpers/transforms";
 
 const useEditableCanvas = ({ ref, cachedData, onDataChange, onEvent, sessionId }: UseEditableCanvasProps ) => {
 	const history = useRef<EditableCanvasChangeEvent[]>([]);
@@ -52,6 +57,24 @@ const useEditableCanvas = ({ ref, cachedData, onDataChange, onEvent, sessionId }
 	const cursorRowCol = useRef<RowCol>( getRowColForCursorPos( cursorPos, dataAsRowsRef.current ));
 	const retainedCol = useRef( 0 );
 
+	const immediatelyUpdateData = ( data: EditableCanvasData ) => {
+		if ( !ref.current ) return;
+
+		setData( data );
+		dataRef.current = data;
+
+		const dataRows = splitDataIntoRows( data, ref.current );
+		setDataRows( dataRows );
+		dataAsRowsRef.current = dataRows;
+	};
+
+	const immediatelyUpdateCursorPos = ( pos?: CursorPos ) => {
+		if ( !pos || !dataRef.current.cells.some(({ id }) => id === pos )) return; 
+		setCursorPos( pos );
+		cursorPosRef.current = pos;
+		cursorRowCol.current = getRowColForCursorPos( pos, dataAsRowsRef.current );
+	};
+
 	const processChange = useMemo(() => serialize(( event: FirebaseChange ) => {
 		const updatedData = processChangeEvent( dataRef.current, event.data );
 		setData( updatedData );
@@ -59,20 +82,6 @@ const useEditableCanvas = ({ ref, cachedData, onDataChange, onEvent, sessionId }
 
 	const addToHistory = ( item: EditableCanvasChangeEvent ) => {
 		history.current = [ ...history.current, item ];
-	};
-
-	const navigateTo = ({ row, col }: RowCol ) => {
-		setTimeout(() => {
-			const currRow = dataAsRowsRef.current[ row ];
-			const currRowLength = currRow?.length || 0;
-
-			setCursorPos( 
-				getCursorPosFromRowCol(
-					{ row: clamp( row, 0, dataAsRowsRef.current.length - 1 ), col: clamp( col, 0, currRowLength ) }, 
-					dataAsRowsRef.current, 
-				),
-			);
-		}, 0 );
 	};
 
 	const doNavigate = ( dir: Directions ) => {
@@ -115,10 +124,12 @@ const useEditableCanvas = ({ ref, cachedData, onDataChange, onEvent, sessionId }
 
 	useEffect(() => {
 		let isMouseDown = false;
-		let selectedTextStart: RowCol = { row: 0, col: 0 };
-		let selectedTextEnd: RowCol = { row: 0, col: 0 };
+		let selectedTextStart: RowCol | undefined = undefined;
+		let selectedTextEnd: RowCol | undefined = undefined;
+		
 		let isControlDepressed = false;
 		let isMetaDepressed = false;
+		let isAltDepressed = false;
 
 		let isRunning = true;
 
@@ -142,18 +153,21 @@ const useEditableCanvas = ({ ref, cachedData, onDataChange, onEvent, sessionId }
 		};
 
 		const onClick = ( e: MouseEvent ) => {
-			navigateTo( getRowColAtMousePos( e ));
+			const clickedRowCol = getRowColAtMousePos( e, dataAsRowsRef.current );
+			const updatedCursorPos = getCursorPosFromRowCol( clickedRowCol, dataAsRowsRef.current );
+			immediatelyUpdateCursorPos( updatedCursorPos );
 		};
 
-		const onMouseStart = ( e: MouseEvent ) => {
-			isMouseDown = true;
-			selectedTextStart = getRowColAtMousePos( e );
-			selectedTextEnd = { row: 0, col: 0 };
+		const onMouseStart = () => {
+			isMouseDown = true; 
+			selectedTextStart = undefined;
+			selectedTextEnd = undefined;
 		};
 
 		const onMouseMove = throttle(( e: MouseEvent ) => {
 			if ( !isMouseDown ) return;
-			selectedTextEnd = getRowColAtMousePos( e );
+			if ( !selectedTextStart ) selectedTextStart = getRowColAtMousePos( e, dataAsRowsRef.current );
+			selectedTextEnd = getRowColAtMousePos( e, dataAsRowsRef.current );
 		}, 20 );
 
 		const onMouseUp = () => {
@@ -162,12 +176,26 @@ const useEditableCanvas = ({ ref, cachedData, onDataChange, onEvent, sessionId }
 
 		const processInsertDelete = ( char: string ) => {
 			if ( char.length > 1 && char !== "Enter" && char !== "Backspace" ) return;
+
+			if ( selectedTextStart && selectedTextEnd ) {
+				const cutCopyResults = processDeleteMany({ data: dataRef.current, dataAsRows: dataAsRowsRef.current, selectedTextStart, selectedTextEnd, sessionId });
+				if ( cutCopyResults ) {
+					const { updatedData, event, updatedCursorPos } = cutCopyResults;
+					immediatelyUpdateData( updatedData );
+					immediatelyUpdateCursorPos( updatedCursorPos );
+					addToHistory( event );
+					onEvent( event );
+
+				}
+			}
+
+			if ( selectedTextStart && selectedTextEnd && char === "Backspace" ) return;
 			
 			const { result, event } = char === "Backspace" ? 
 				processDeleteEvent( cursorRowCol.current, dataRef.current, dataAsRowsRef.current, sessionId ) :
 				processInsertEvent( char, cursorRowCol.current, dataRef.current, dataAsRowsRef.current, sessionId );
 			
-			setData( result );
+			immediatelyUpdateData( result );
 			addToHistory( event );
 			onEvent( event );
 			
@@ -184,20 +212,70 @@ const useEditableCanvas = ({ ref, cachedData, onDataChange, onEvent, sessionId }
 			undoStack.current = result.updatedUndoStack;
 
 			onEvent( result.event );
-			setData( result.updatedData );
+			immediatelyUpdateData( result.updatedData );
+		};
+
+		const onCutCopy = ( mode: "cut" | "copy" ) => {
+			if ( !selectedTextStart || !selectedTextEnd ) return;
+			const deleteManyResult = processDeleteMany({ 
+				data: dataRef.current, 
+				dataAsRows: dataAsRowsRef.current, 
+				selectedTextStart, 
+				selectedTextEnd, 
+				sessionId, 
+				copyToClipboard: true, 
+			});
+
+			if ( deleteManyResult && mode === "cut" ) {
+				const { updatedData, event, updatedCursorPos } = deleteManyResult;
+				immediatelyUpdateData( updatedData );
+				immediatelyUpdateCursorPos( updatedCursorPos );
+				addToHistory( event );
+				onEvent( event );
+
+			}
+		};
+
+		const onPaste = async () => {
+			const pastedString = await navigator.clipboard.readText();
+			if ( !pastedString || typeof pastedString !== "string" ) return;
+
+			if ( selectedTextStart && selectedTextEnd ) {
+				const cutCopyResults = processDeleteMany({ data: dataRef.current, dataAsRows: dataAsRowsRef.current, selectedTextStart, selectedTextEnd, sessionId });
+				if ( cutCopyResults ) {
+					const { updatedData, event, updatedCursorPos } = cutCopyResults;
+					immediatelyUpdateData( updatedData );
+					immediatelyUpdateCursorPos( updatedCursorPos );
+					addToHistory( event );
+					onEvent( event );
+
+				}
+			}
+
+			const pasteResults = processPaste({ data: dataRef.current, pastedString, sessionId, cursorPos: cursorPosRef.current });
+			if ( pasteResults ) {
+				const { updatedData, event } = pasteResults;
+				immediatelyUpdateData( updatedData );
+				addToHistory( event );
+				onEvent( event );
+			}
 		};
 
 		const onKeyup = ( e: KeyboardEvent ) => {
 			const { key } = e;
 			if ( key === "Control" ) isControlDepressed = false;
 			if ( key === "Meta" ) isMetaDepressed = false;
+			if ( key === "Alt" ) isAltDepressed = false;
 		};
 
 		const onKeypress = ( e: KeyboardEvent ) => {			
 			const { key } = e;
 
-			if ([ "Shift", "Alt", "CapsLock", "Escape" ].includes( key )) return;
+			if ([ "Shift", "CapsLock", "Escape" ].includes( key ) || isAltDepressed ) {
+				// do nothing;
+			}
 			else if ( key === "Control" ) isControlDepressed = true;
+			else if ( key === "Alt" ) isAltDepressed = true;
 			else if ( key === "Meta" ) isMetaDepressed = true;
 			else if ( key === "ArrowRight" ) doNavigate( "right" );
 			else if ( key === "ArrowLeft" ) doNavigate( "left" );
@@ -205,15 +283,20 @@ const useEditableCanvas = ({ ref, cachedData, onDataChange, onEvent, sessionId }
 			else if ( key === "ArrowDown" ) doNavigate( "down" );
 			else if ( key === "z" && xor( isControlDepressed, isMetaDepressed )) onUndoRedo( "undo" );
 			else if ( key === "y" && xor( isControlDepressed, isMetaDepressed )) onUndoRedo( "redo" );
+			else if ( key === "x" && xor( isControlDepressed, isMetaDepressed )) onCutCopy( "cut" );
+			else if ( key === "c" && xor( isControlDepressed, isMetaDepressed )) onCutCopy( "copy" );
+			else if ( key === "v" && xor( isControlDepressed, isMetaDepressed )) onPaste();
 			else if ( key === "Enter" ) processInsertDelete( "Enter" );
 			else if ( key === "Backspace" ) processInsertDelete( "Backspace" );
 			else processInsertDelete( key );
 
-			e.preventDefault();
-			e.stopPropagation();
+			// e.preventDefault();
+			// e.stopPropagation();
 
-			selectedTextStart = { row: 0, col: 0 };
-			selectedTextEnd = { row: 0, col: 0 };
+			if ( key !== "Control" && key !== "Meta" ) {
+				selectedTextStart = undefined;
+				selectedTextEnd = undefined;
+			}
 		};
 
 		( async () => {
@@ -241,8 +324,8 @@ const useEditableCanvas = ({ ref, cachedData, onDataChange, onEvent, sessionId }
 
 			requestAnimationFrame( render );
 
-			canvas.addEventListener( "keydown", onKeypress, false );
-			canvas.addEventListener( "keyup", onKeyup, false );
+			canvas.addEventListener( "keydown", onKeypress, { passive: true });
+			canvas.addEventListener( "keyup", onKeyup, { passive: true });
 			canvas.addEventListener( "focusin", onFocusIn, { passive: true });
 			canvas.addEventListener( "focusout", onFocusOut, { passive: true });
 			canvas.addEventListener( "click", onClick, { passive: true });
@@ -270,9 +353,11 @@ const useEditableCanvas = ({ ref, cachedData, onDataChange, onEvent, sessionId }
 		};
 	}, []);
 
-	const markdown = data?.cells.map( cell => {
-		return cell.value;
-	}).join( "" ) || "";
+	const [ markdown, setMarkdown ] = useState( cachedData?.cells?.length ? convertCellsToString( cachedData.cells ) : "" );
+
+	useEffect(() => {
+		setMarkdown( data?.cells?.length ? convertCellsToString( data.cells ) : "" );
+	}, [ data ]);
 
 	const height = (( Math.max( 1, dataRows.length ) + 2 ) * cellHeight ) + ( dataRows.length - 1 ) * rowGap;
 

@@ -3,13 +3,14 @@ import { RowCol, Cell } from "types";
 import range from "lodash/range";
 
 import { cellWidth, rowGap, cellHeight } from "./index";
+import { sortSelectedTextPositions } from "./cursor";
 
 interface RendererProps {
 	timestamp: number,
 	canvas: HTMLCanvasElement,
 	ctx: CanvasRenderingContext2D
-	selectedTextStart: RowCol,
-	selectedTextEnd: RowCol,
+	selectedTextStart: RowCol | undefined,
+	selectedTextEnd: RowCol | undefined,
 	dataRows: Cell[][],
 	cursorRowCol: RowCol,
 }
@@ -28,25 +29,10 @@ export const renderer = ({
 	ctx.clearRect( 0, 0, canvas.width, canvas.height );
 	ctx.font = "16px 'IBM Plex Mono'";
 
-	const isSelecting = ( selectedTextStart.row || selectedTextStart.col ) && ( selectedTextEnd.row || selectedTextEnd.col );
+	const isSelecting = selectedTextStart && selectedTextEnd;
 
 	if ( isSelecting ) {
-		let highlightStart: RowCol, highlightEnd: RowCol;
-		if ( selectedTextEnd.row > selectedTextStart.row  ) {
-			highlightStart = selectedTextStart;
-			highlightEnd = selectedTextEnd;
-		} else if ( selectedTextEnd.row < selectedTextStart.row ) {
-			highlightStart = selectedTextEnd;
-			highlightEnd = selectedTextStart;
-		} else {
-			if ( selectedTextEnd.col > selectedTextStart.col ) {
-				highlightStart = selectedTextStart;
-				highlightEnd = selectedTextEnd;
-			} else {
-				highlightStart = selectedTextEnd;
-				highlightEnd = selectedTextStart;
-			}
-		}
+		const [ highlightStart, highlightEnd ] = sortSelectedTextPositions( selectedTextStart, selectedTextEnd );
 
 		const rowsToHighlight = range( highlightStart.row, highlightEnd.row + 1 );
 		ctx.fillStyle = "#0077bd";

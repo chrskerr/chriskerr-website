@@ -1,6 +1,6 @@
 
 import { nanoid } from "nanoid";
-import type { EditableCanvasData, Cell, CursorPos, RowCol, CellId, EditableCanvasChangeEvent } from "types";
+import type { EditableCanvasData, Cell, RowCol, CellId, EditableCanvasChangeEvent } from "types";
 
 export const cellWidth = 14;
 export const cellHeight = 16;
@@ -40,24 +40,6 @@ export const splitDataIntoRows = ( data: EditableCanvasData, ref: HTMLCanvasElem
 	return rows;
 };
 
-export const getRowColForCursorPos = ( cursorPos: CursorPos, data: Cell[][]): RowCol => {
-	for ( let i = 0; i < data.length; i ++ ) {
-		const row = data[ i ];
-		for ( let j = 0; j < row.length; j ++ ) {
-			const cell = row[ j ];
-			if ( cell.id === cursorPos ) return { row: i, col: j };
-		}
-	}
-	return { row: 0, col: 0 };
-};
-
-export const getCursorPosFromRowCol = ( rowCol: RowCol, dataAsRows: Cell[][]): CursorPos => {
-	const row = dataAsRows[ rowCol.row ];
-	const cell = row ? row[ rowCol.col ] : undefined;
-	return cell?.id || "terminator";
-};
-
-
 
 // sizing helpers 
 export const getParentInnerWidth = ( el: HTMLElement | null ) => {
@@ -80,19 +62,9 @@ export const getCurrentIndex = ( targetId: CellId, data: EditableCanvasData ) =>
 };
 
 
-
-// mouse helpers
-export const getRowColAtMousePos = ( e: MouseEvent ): RowCol => {
-	return {
-		row: Math.max( 0, Math.floor((( e.offsetY + rowGap )/ ( cellHeight + rowGap )) - 1 )),
-		col: Math.max( 0, Math.floor(( e.offsetX / cellWidth ) - 1 )),
-	};
-};
-
-
 // processing 
 
-const createNewCell = ( char: string ): Cell => ({ id: nanoid(), value: char === "Enter" ? "\n" : char });
+export const createNewCell = ( char: string ): Cell => ({ id: nanoid(), value: char === "Enter" ? "\n" : char });
 
 interface ProcessInsertProps {
 	data: EditableCanvasData,
