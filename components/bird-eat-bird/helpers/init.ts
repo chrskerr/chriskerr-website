@@ -69,8 +69,8 @@ export async function init ({ ref }: InitProps ) {
 		ctx.drawImage( backgroundImg, canvas.width - backgroundSize.width, -1 * viewPortHeightOffset, backgroundSize.width, gameHeight );
 
 		updateClouds( timestampGap ).forEach( drawElement );
-		const { birds, extraPoints } = updateBirds( timestampGap, user );
-		points = extraPoints + points;
+		const { birds, updatedPoints } = updateBirds( timestampGap, user, points );
+		points = updatedPoints;
 
 		birds.forEach( drawElement );
 
