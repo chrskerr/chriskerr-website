@@ -2,7 +2,7 @@
 import { ReactElement, useEffect, useState } from "react";
 import { Day, Week } from "./types";
 
-import { createSession, createWeek } from "./helpers";
+import { createSession, createWeek, encode } from "./helpers";
 
 export default function QuickAndDead ({ urlDay, urlWeek }: { urlDay?: Day, urlWeek?: Week }): ReactElement {
 	const [ day, setDay ] = useState<Day | undefined>( urlDay ); 
@@ -24,8 +24,8 @@ export default function QuickAndDead ({ urlDay, urlWeek }: { urlDay?: Day, urlWe
 		setWeek( urlWeek );
 	}, [ urlWeek ]);
 
-	const dayUrl = day && `https://www.chriskerr.com.au/quick-and-dead/${ encodeURIComponent( btoa( JSON.stringify( day )))}`;
-	const weekUrl = week && `https://www.chriskerr.com.au/quick-and-dead/${ encodeURIComponent( btoa( JSON.stringify( week )))}`;
+	const dayUrl = day && `http://localhost:3000/quick-and-dead/${ encode( day )}`;
+	const weekUrl = week && `https://www.chriskerr.com.au/quick-and-dead/${ encode( week )}`;
 
 	return (
 		<div className="display-width">
