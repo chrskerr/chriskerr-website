@@ -134,7 +134,7 @@ export const processDeleteMany = ({
 	let adjustedEndIndex = endIndex;
 	if ( data.cells[ endIndex ]?.id === "terminator" ) adjustedEndIndex --;
 
-	const updatedCursorPos = data.cells[ adjustedEndIndex ].id;
+	const updatedCursorPos = data.cells[ adjustedEndIndex ]?.id || "terminator";
 
 	if ( startIndex === undefined || endIndex === undefined || !updatedCursorPos ) return null;
 

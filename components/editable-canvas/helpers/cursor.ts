@@ -4,6 +4,12 @@ import { RowCol, CursorPos, Cell } from "types";
 import { rowGap, cellHeight, cellWidth } from ".";
 
 export const getRowColForCursorPos = ( cursorPos: CursorPos, data: Cell[][]): RowCol => {
+	if ( cursorPos === "terminator" ) {
+		return {
+			row: data.length - 1,
+			col: data[ data.length - 1 ].length - 1,
+		};
+	}
 	for ( let i = 0; i < data.length; i ++ ) {
 		const row = data[ i ];
 		for ( let j = 0; j < row.length; j ++ ) {
@@ -20,11 +26,13 @@ export const getCursorPosFromRowCol = ( rowCol: RowCol, dataAsRows: Cell[][]): C
 	return cell?.id || "terminator";
 };
 
-export const getRowColAtMousePos = ( e: MouseEvent, dataAsRows: Cell[][]): RowCol => {
+export const getCursorPosAtMousePos = ( e: MouseEvent, dataAsRows: Cell[][]): CursorPos => {
 	const row =  clamp( Math.floor((( e.offsetY + rowGap )/ ( cellHeight + rowGap )) - 1 ), 0, dataAsRows.length - 1 );
 	const col = clamp( Math.floor(( e.offsetX / cellWidth ) - 1 ), 0, dataAsRows[ row ].length - 1 );
 
-	return { row,col };
+	const rowCells = dataAsRows[ row ];
+	const cell = rowCells && rowCells[ col ];
+	return cell?.id || "terminator";
 };
 
 export function sortSelectedTextPositions ( selectedTextStart: RowCol, selectedTextEnd: RowCol ) {

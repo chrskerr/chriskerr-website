@@ -18,8 +18,7 @@ import {
 
 import {
 	getRowColForCursorPos,
-	getCursorPosFromRowCol,
-	getRowColAtMousePos,
+	getCursorPosAtMousePos,
 
 } from "./helpers/cursor";
 
@@ -69,7 +68,7 @@ const useEditableCanvas = ({ ref, cachedData, onDataChange, onEvent, sessionId }
 	};
 
 	const immediatelyUpdateCursorPos = ( pos?: CursorPos ) => {
-		if ( !pos || !dataRef.current.cells.some(({ id }) => id === pos )) return; 
+		if ( !pos || !dataRef.current.cells.some(({ id }) => id === pos || pos === "terminator" )) return; 
 		setCursorPos( pos );
 		cursorPosRef.current = pos;
 		cursorRowCol.current = getRowColForCursorPos( pos, dataAsRowsRef.current );
@@ -153,8 +152,7 @@ const useEditableCanvas = ({ ref, cachedData, onDataChange, onEvent, sessionId }
 		};
 
 		const onClick = ( e: MouseEvent ) => {
-			const clickedRowCol = getRowColAtMousePos( e, dataAsRowsRef.current );
-			const updatedCursorPos = getCursorPosFromRowCol( clickedRowCol, dataAsRowsRef.current );
+			const updatedCursorPos = getCursorPosAtMousePos( e, dataAsRowsRef.current );
 			immediatelyUpdateCursorPos( updatedCursorPos );
 		};
 
@@ -166,8 +164,8 @@ const useEditableCanvas = ({ ref, cachedData, onDataChange, onEvent, sessionId }
 
 		const onMouseMove = throttle(( e: MouseEvent ) => {
 			if ( !isMouseDown ) return;
-			if ( !selectedTextStart ) selectedTextStart = getRowColAtMousePos( e, dataAsRowsRef.current );
-			selectedTextEnd = getRowColAtMousePos( e, dataAsRowsRef.current );
+			if ( !selectedTextStart ) selectedTextStart = getRowColForCursorPos( getCursorPosAtMousePos( e, dataAsRowsRef.current ), dataAsRowsRef.current );
+			selectedTextEnd = getRowColForCursorPos( getCursorPosAtMousePos( e, dataAsRowsRef.current ), dataAsRowsRef.current );
 		}, 20 );
 
 		const onMouseUp = () => {

@@ -1,5 +1,5 @@
 
-import { firebase } from "lib/firebase-admin";
+import { firestore } from "lib/firebase-admin";
 import { GetServerSideProps } from "next";
 import { generateSlug, RandomWordOptions } from "random-word-slugs";
 import { FirebaseCollections, FirebaseNote } from "types";
@@ -25,8 +25,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
 	
 	const createNote = async ( id: string ): Promise<string> => {
 		try {
-			await firebase
-				.firestore()
+			await firestore
 				.collection( FirebaseCollections.NOTES )
 				.doc( id )
 				.create({ cells: []} as FirebaseNote );

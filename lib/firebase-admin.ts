@@ -20,4 +20,4 @@ if ( !admin.apps.length ) {
 	}
 }
 
-export const firebase = admin;
+export const firestore = admin.firestore();

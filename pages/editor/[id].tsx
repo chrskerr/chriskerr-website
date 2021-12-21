@@ -8,7 +8,7 @@ import type { GetServerSideProps } from "next";
 import useEditableCanvas from "components/editable-canvas/use-editable-canvas";
 import { useEffect, useState, useRef } from "react";
 import dynamic from "next/dynamic";
-import { firebase } from "lib/firebase-admin";
+import { firestore } from "lib/firebase-admin";
 import { processChangeEvent } from "components/editable-canvas/helpers";
 import { nanoid } from "nanoid";
 const MarkdownRenderer = dynamic( import( /* webpackPrefetch: true */ "components/editable-canvas/markdown-renderer" ));
@@ -127,10 +127,10 @@ export const getServerSideProps: GetServerSideProps = async ( context ) => {
 		};
 	}
 
-	const docRef = firebase.firestore().collection( FirebaseCollections.NOTES ).doc( id );
+	const docRef = firestore.collection( FirebaseCollections.NOTES ).doc( id );
 	const changesRef = docRef.collection( FirebaseCollections.CHANGES );
 
-	const initialData = await firebase.firestore().runTransaction( async ( txn ) => {
+	const initialData = await firestore.runTransaction( async ( txn ) => {
 		let data: EditableCanvasData | false = false;
 
 		try {

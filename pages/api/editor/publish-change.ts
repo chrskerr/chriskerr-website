@@ -1,5 +1,5 @@
 
-import { firebase } from "lib/firebase-admin";
+import { firestore } from "lib/firebase-admin";
 import { NextApiHandler } from "next";
 import NextCors from "nextjs-cors";
 import { EditableCanvasChangeEvent, FirebaseChange, FirebaseCollections } from "types";
@@ -32,7 +32,7 @@ const handler: NextApiHandler = async ( req, res ) => {
 	};
 
 	await Promise.all([
-		firebase.firestore()
+		firestore
 			.collection( FirebaseCollections.NOTES ).doc( body.noteId )
 			.collection( FirebaseCollections.CHANGES ).add( insert ),
 		fetch( socketServerUrl + "/editor", {

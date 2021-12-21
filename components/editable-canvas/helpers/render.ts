@@ -62,17 +62,11 @@ export const renderer = ({
 
 	const displayCursor = Boolean( Math.floor( timestamp / 750 ) % 2 );
 	const { row: cursorRow, col: cursorCol } = cursorRowCol;
+
 	if ( !isSelecting && displayCursor ) {
 		ctx.fillStyle = "#0077bd";
-		const currRow = dataRows[ cursorRow ];
-		const currRowLength = currRow?.filter(({ id }) => id !== "terminator" ).length || 0;
-
-		const adjustedCursorCol = ( !currRow || currRowLength === 0 ) ?
-			0 :
-			Math.min( cursorCol, currRowLength );
-
 		ctx.fillRect( 
-			(( adjustedCursorCol + 1 ) * cellWidth ) - 3, 
+			(( cursorCol + 1 ) * cellWidth ) - 3, 
 			(( cursorRow + 1 ) * cellHeight ) - rowGap + ( cursorRow * rowGap ), 
 			2, 
 			cellHeight + 6, 
