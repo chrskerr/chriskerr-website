@@ -1,5 +1,5 @@
 
-import { GetStaticProps } from "next";
+import { GetServerSideProps } from "next";
 
 export default function EditorRoute () {
 	return (
@@ -7,7 +7,7 @@ export default function EditorRoute () {
 	);
 }
 
-export const getStaticProps: GetStaticProps = () => {
+export const getServerSideProps: GetServerSideProps = async () => {
 	return {
 		redirect: {
 			permanent: true,

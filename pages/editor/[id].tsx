@@ -14,7 +14,7 @@ const MarkdownRenderer = dynamic( import( /* webpackPrefetch: true */ "component
 
 import { io } from "socket.io-client";
 import { useRouter } from "next/router";
-import serialize from "components/editable-canvas/helpers/serialiser";
+import serialize from "async-function-serializer";
 import { PublishChangeResponse, UpdateNoteAPIBody } from "pages/api/editor/publish-change";
 
 export const getDateValueString = () => String( new Date().valueOf());
@@ -60,9 +60,8 @@ export default function Editor ({ id, initialData }: EditorProps ) {
 			uploadChangeEvent, 
 			{ 
 				sortBy: { key: "created_at" },
-				passForwardDataCallback: async ( data: UpdateNoteAPIBody, previousResult: Promise<string | undefined> ) => {
-					const result = await previousResult;
-					if ( result ) data.noteId = result;
+				inputTransformer: async ( data, previousResult ) => {
+					if ( previousResult ) data.noteId = previousResult;
 					if ( data.noteId !== $_idRef.current ) await router.push( `/editor/${ data.noteId }`, undefined, { shallow: true });
 					return data;
 				},

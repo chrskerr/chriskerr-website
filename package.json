@@ -13,7 +13,7 @@
 		"lint": "next lint"
 	},
 	"dependencies": {
-		"async-function-serializer": "^1.0.2",
+		"async-function-serializer": "^1.1.1",
 		"date-fns": "^2.27.0",
 		"firebase-admin": "^10.0.1",
 		"highlight.js": "^11.3.1",
