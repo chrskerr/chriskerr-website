@@ -6,8 +6,8 @@ import { rowGap, cellHeight, cellWidth } from ".";
 export const getRowColForCursorPos = ( cursorPos: CursorPos, data: Cell[][]): RowCol => {
 	if ( cursorPos === "terminator" ) {
 		return {
-			row: data.length - 1,
-			col: data[ data.length - 1 ].length - 1,
+			row: data.length - 1 || 0,
+			col: data[ data.length - 1 ]?.length - 1 || 0,
 		};
 	}
 	for ( let i = 0; i < data.length; i ++ ) {
