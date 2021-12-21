@@ -2,11 +2,10 @@
 import { DataChangeHandler, EditableCanvasData, ChangeEventHandler, FirebaseChange, FirebaseCollections, FirebaseNote } from "types";
 import { socketServerUrl } from "socket-server/constants";
 
-import type { UpdateNoteAPIBody } from "pages/api/editor/publish-change";
 import type { GetServerSideProps } from "next";
 
 import useEditableCanvas from "components/editable-canvas/use-editable-canvas";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { firestore } from "lib/firebase-admin";
 import { processChangeEvent } from "components/editable-canvas/helpers";
@@ -14,17 +13,23 @@ import { nanoid } from "nanoid";
 const MarkdownRenderer = dynamic( import( /* webpackPrefetch: true */ "components/editable-canvas/markdown-renderer" ));
 
 import { io } from "socket.io-client";
-import serialize from "async-function-serializer";
+import { useRouter } from "next/router";
+import serialize from "components/editable-canvas/helpers/serialiser";
+import { PublishChangeResponse, UpdateNoteAPIBody } from "pages/api/editor/publish-change";
 
-const getDateValueString = () => String( new Date().valueOf());
+export const getDateValueString = () => String( new Date().valueOf());
 
-const uploadChangeEvent = async ( body: UpdateNoteAPIBody ) => fetch( "/api/editor/publish-change", {
-	method: "post",
-	headers: { "content-type": "application/json" },
-	body: JSON.stringify({ ...body, uploaded_at: getDateValueString() }),
-});
-
-const postChangeEvent = serialize( uploadChangeEvent, { sortBy:{ key: "created_at" }});
+export const uploadChangeEvent = async ( body: UpdateNoteAPIBody ) => {
+	const res = await fetch( "/api/editor/publish-change", {
+		method: "post",
+		headers: { "content-type": "application/json" },
+		body: JSON.stringify({ ...body, uploaded_at: getDateValueString() }),
+	});
+	if ( res.ok ) {
+		const data = await res.json() as PublishChangeResponse;
+		return data?.note_id;
+	}
+};
 
 interface EditorProps {
 	id: string,
@@ -32,7 +37,14 @@ interface EditorProps {
 }
 
 export default function Editor ({ id, initialData }: EditorProps ) {
+	const router = useRouter();
+
 	const $_ref = useRef<HTMLCanvasElement>( null );
+
+	const $_idRef = useRef( id );
+	useEffect(() => {
+		$_idRef.current = id;
+	}, [ id ]);
 
 	const [ cachedData, setCachedData ] = useState( initialData );
 	const [ sessionId ] = useState( nanoid());
@@ -42,10 +54,27 @@ export default function Editor ({ id, initialData }: EditorProps ) {
 			setCachedData( data );
 		}, 0 );
 	};
+
+	const postChangeEvent = useCallback( 
+		serialize( 
+			uploadChangeEvent, 
+			{ 
+				sortBy: { key: "created_at" },
+				passForwardDataCallback: async ( data: UpdateNoteAPIBody, previousResult: Promise<string | undefined> ) => {
+					const result = await previousResult;
+					if ( result ) data.noteId = result;
+					if ( data.noteId !== $_idRef.current ) await router.push( `/editor/${ data.noteId }`, undefined, { shallow: true });
+					return data;
+				},
+			},
+		), 
+		[],
+	);
 	
-	const onEvent: ChangeEventHandler = ( e ) => {
-		postChangeEvent({
-			noteId: id || e.id,
+	
+	const onEvent: ChangeEventHandler = async ( e ) => {
+		await postChangeEvent({
+			noteId: id,
 			change: e,
 			created_at: getDateValueString(),
 			uploaded_at: "",
@@ -124,6 +153,17 @@ export const getServerSideProps: GetServerSideProps = async ( context ) => {
 	if ( !id ) {
 		return {
 			notFound: true,
+		};
+	}
+
+	if ( id === "new" ) {
+		const props: EditorProps = {
+			initialData: { id: "new", cells: []},
+			id,
+		};
+
+		return {
+			props, 
 		};
 	}
 

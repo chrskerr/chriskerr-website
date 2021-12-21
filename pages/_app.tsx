@@ -3,8 +3,6 @@ import type { ReactElement } from "react";
 import type { AppProps } from "next/app";
 import Link from "next/link";
 import Image from "next/image";
-import Router from "next/router";
-import nProgress from "nprogress";
 
 import { DefaultSeo } from "next-seo";
 
@@ -15,11 +13,6 @@ import { ElementIds } from "components/bird-eat-bird/types";
 export const defaultTitle = "Chris Kerr";
 export const shortCacheSeconds = 60 * 60; // 1 hour
 export const longCacheSeconds = 12 * 60 * 60; // 12 hours
-
-Router.events.on( "routeChangeStart", () => nProgress.start());
-Router.events.on( "routeChangeComplete", () => nProgress.done());
-Router.events.on( "routeChangeError", () => nProgress.done());
-nProgress.configure({ showSpinner: false, easing: "ease", speed: 500 });
 
 export default function App ({ Component, pageProps }: AppProps ): ReactElement {
 	return (

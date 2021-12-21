@@ -42,7 +42,7 @@ export default function Landing (): ReactElement {
 			</section>
 			<section className="w-full">
 				<div className="grid grid-cols-1 gap-16 md:grid-cols-2 grid-rows-auto display-width divider-before">
-					<Tile url="/editor" title="Collaborative Markdown Editor" image="/images/stacked-waves.png" />
+					<Tile url="/editor/new" title="Collaborative Markdown Editor" image="/images/stacked-waves.png" />
 					<Tile url="/bird-eat-bird" title="Bird Eat Bird" image="/images/bird-eat-bird.png" />
 					<Tile url={ `/${ BlogPostSlugs.ASYNC_FUNCTIONS }` } title={ BlogPostTitles.ASYNC_FUNCTIONS} image="/images/asynchronous_function_tile.png" />
 					<Tile url='/quick-and-dead' title="Quick &amp; Dead Generator" image="/images/q&amp;d_tile.png" />
