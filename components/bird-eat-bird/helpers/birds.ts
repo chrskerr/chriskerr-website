@@ -85,7 +85,7 @@ export async function initBirds ( canvas: HTMLCanvasElement ) {
 			} else {
 				updatedPoints ++;
 
-				updatedHealth = Math.min( 3, health + 1 );
+				updatedHealth = Math.min( 30, updatedHealth + 1 );
 
 			}
 
