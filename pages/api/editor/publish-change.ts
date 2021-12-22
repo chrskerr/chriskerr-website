@@ -2,7 +2,7 @@
 import { firestore } from "lib/firebase-admin";
 import { NextApiHandler } from "next";
 import NextCors from "nextjs-cors";
-import { EditableCanvasChangeEvent, FirebaseChange, FirebaseCollections, FirebaseNote } from "types";
+import { Cell, EditableCanvasChangeEvent, FirebaseChange, FirebaseCollections, FirebaseNote } from "types";
 import { socketServerUrl, apiToken } from "socket-server/constants";
 
 import { generateSlug, RandomWordOptions } from "random-word-slugs";
@@ -27,17 +27,17 @@ const idOptions: RandomWordOptions<typeof idLength> = {
 
 const getId = () => generateSlug( idLength, idOptions );
 
-const createNote = async (): Promise<string> => {
+const createNewId = async ( cells: Cell[]): Promise<string> => {
 	const id = getId();
 	try {
 		await firestore
 			.collection( FirebaseCollections.NOTES )
 			.doc( id )
-			.create({ cells: []} as FirebaseNote );
+			.create({ cells } as FirebaseNote );
 		return id;
 
 	} catch ( e ) {
-		return createNote();
+		return createNewId( cells );
 
 	}
 };
@@ -54,28 +54,36 @@ const handler: NextApiHandler = async ( req, res ) => {
 
 	if ( req.headers.origin !== origin || req.method?.toUpperCase() !== "POST" ) return res.status( 500 ).end();
 
-
 	const body = req.body as UpdateNoteAPIBody;
-	const note_id = body.noteId && body.noteId !== "new" ? body.noteId : await createNote();
+	let { noteId: note_id } = body;
 
-	const insert: FirebaseChange = {
-		applied_to_note: false,
-		data: body.change,
-		note_id,
-		created_at: body.created_at,
-		uploaded_at: body.uploaded_at,
-	};
+	if ( !note_id || note_id === "new" ) {
+		note_id = await createNewId( body.change.change.up.cells );
 
-	await Promise.all([
-		firestore
+	} else {
+		await firestore
 			.collection( FirebaseCollections.NOTES ).doc( body.noteId )
-			.collection( FirebaseCollections.CHANGES ).add( insert ),
-		fetch( socketServerUrl + "/editor", {
-			method: "post",
-			headers: { "content-type": "application/json", token: apiToken },
-			body: JSON.stringify( insert ),
-		}),
-	]);	
+			.collection( FirebaseCollections.CHANGES ).add({
+				applied_to_note: false,
+				data: body.change,
+				note_id,
+				created_at: body.created_at,
+				uploaded_at: body.uploaded_at,
+			} as FirebaseChange );
+
+	}
+
+	await fetch( socketServerUrl + "/editor", {
+		method: "post",
+		headers: { "content-type": "application/json", token: apiToken },
+		body: JSON.stringify({
+			applied_to_note: false,
+			data: body.change,
+			note_id,
+			created_at: body.created_at,
+			uploaded_at: body.uploaded_at,
+		} as FirebaseChange ),
+	});
 
 	return res.status( 200 ).json({ note_id } as PublishChangeResponse );
 };
