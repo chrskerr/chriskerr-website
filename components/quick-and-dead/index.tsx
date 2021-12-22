@@ -15,10 +15,12 @@ export default function QuickAndDead ({ urlDay, urlWeek }: { urlDay?: Day, urlWe
 
 	const doGenerate = () => {
 		setDay( createSession());
+		setWeek( undefined );
 	};
 
 	const doGenerateWeek = () => {
 		setWeek( createWeek());
+		setDay( undefined );
 	};
 
 	useEffect(() => {
@@ -37,16 +39,21 @@ export default function QuickAndDead ({ urlDay, urlWeek }: { urlDay?: Day, urlWe
 		setWeekUrl( week ? `${baseUrl}/${ encode( week )}` : undefined );
 	}, [ week ]);
 
+	const buttonClasses = "px-3 py-2 text-white transition rounded shadow-lg bg-brand hover:bg-brand-dark mr-4 mb-4";
+
 	return (
 		<div className="display-width">
 			<h2 className="pb-4 text-3xl">Quick and the Dead Workout Generator</h2>
 			<h2 className="pb-16 text-xl">(very much in-progress)</h2>
-			<div className="mb-8">
-				<button className="px-3 py-2 text-white transition rounded shadow-lg bg-brand hover:bg-brand-dark" onClick={ doGenerate }>Generate New Day</button>
-				{ day && 
-					<div className="mt-12">
-						<p className="mb-6 text-lg">Generated session:</p>
+			<div>
+				<button className={ buttonClasses } onClick={ doGenerate }>Generate New Day</button>
+				<button className={ buttonClasses } onClick={ doGenerateWeek }>Generate New Week</button>
+			</div>
+
+			{ day && 
+					<div className="mt-4">
 						<p className="mb-6 text-lg">Permanent url: <a href={ dayUrl } className="break-all text-brand hover:underline">{ dayUrl }</a></p>
+						<p className="mb-2 font-bold">Today</p>
 						<div className="grid grid-cols-2 gap-x-12 w-[fit-content]">
 							<p className="mb-2">Rounds:</p>
 							<p className="mb-2 font-bold">{ day.rounds }</p>
@@ -56,18 +63,14 @@ export default function QuickAndDead ({ urlDay, urlWeek }: { urlDay?: Day, urlWe
 							<p className="mb-2 font-bold">{ day.repSplit }&apos;s</p>
 						</div>
 					</div>
-				}
-			</div>
-			<div>
-				<button className="px-3 py-2 text-white transition rounded shadow-lg bg-brand hover:bg-brand-dark" onClick={ doGenerateWeek }>Generate New Week</button>
-				{ week && 
-					<div className="mt-12">
-						<p className="mb-6 text-lg">Generated Week:</p>
+			}
+			{ week && 
+					<div className="mt-4">
 						<p className="mb-6 text-lg">Permanent url: <a href={ weekUrl } className="break-all text-brand hover:underline">{ weekUrl }</a></p>
-						<div className="grid grid-cols-2 gap-8">
+						<div className="grid grid-cols-2 gap-4">
 							{ week.map(( day, i ) => (
 								<div key={ i } className="mb-6">
-									<p className="mb-4">Day { i + 1 }</p>
+									<p className="mb-2 font-bold">Day { i + 1 }</p>
 									{ day ? 
 										<div className="grid grid-cols-2 w-[fit-content]">
 											<p className="mb-2 mr-12">Rounds:</p>
@@ -83,8 +86,7 @@ export default function QuickAndDead ({ urlDay, urlWeek }: { urlDay?: Day, urlWe
 							))}
 						</div>
 					</div>
-				}
-			</div>
+			}
 		</div>
 	);
 }

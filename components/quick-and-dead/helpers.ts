@@ -41,7 +41,9 @@ export const createWeek = (): Week => {
 		}
 	}
 
-	return weekInProgress;
+	const numSessions = weekInProgress.filter( Boolean ).length;
+
+	return numSessions < 2 || numSessions > 6 ? createWeek() : weekInProgress;
 };
 
 const minifyDayObject = ( day: Day ): MinifiedDay => {
