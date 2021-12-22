@@ -46,9 +46,15 @@ export const getStaticProps: GetStaticProps = () => {
 };
 
 const markdown = `
-To be written...
+So it turns out that I am way less versed in Javascript packages than I thought that I was, and didn't realise that [Aync](https://www.npmjs.com/package/async) existed...
 
-A slightly extended version of the below can be found at [Async Function Serializer](https://www.npmjs.com/package/async-function-serializer).
+So instead of using their queue function I created my own.
+
+I needed to create a helper which would ensure that a function would only execute one-at-a-time to assist with time ordering of changes emitted by the my [editor](/editor/new). Changes are sorted server-side when saved to the database but this can only help live-subscribers if delivery is queued so that there is actually something to sort.
+
+After all that, I published a wrapper which serialised my function (plus a bunch of other stuff, like data transforms), and wanted to share it with anyone who might benefit 🙂
+
+An extended version of the below can be found at [Async Function Serializer](https://www.npmjs.com/package/async-function-serializer), but this was the core code!
 
 \`\`\`ts
 type Queue<T, R> = {
@@ -59,15 +65,17 @@ type Queue<T, R> = {
 export function serialise<T, R>( 
 	functionToSerialise: ( input: T ) => R, 
 ): (( input: T ) => Promise<R> ) {
-	let queue: Queue<T, R> = [];
+
+	const queue: Queue<T, R> = [];
 	let isRunning = false;
 
 	async function run () {
 		isRunning = true;
 
-		const result = await functionToSerialise( queue[ 0 ].input );
-		queue[ 0 ].resolve( result );
-		
+		const current = queue[ 0 ];
+		const result = await functionToSerialise( current.input );
+		current.resolve( result );
+
 		queue.shift();
 		
 		if ( queue.length ) await run();
@@ -77,10 +85,7 @@ export function serialise<T, R>(
 
 	return async function ( input: T ): Promise<R> {
 		return await new Promise<R>( resolve => {
-			
-			const item = { resolve, input };
-			queue.push( item );
-
+			queue.push({ resolve, input });
 			if ( !isRunning ) run();
 		});
 	}; 
