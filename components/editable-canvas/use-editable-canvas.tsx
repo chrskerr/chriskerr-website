@@ -12,8 +12,8 @@ import {
 
 	getParentInnerWidth,
 
-	processChangeEvent,
 	xor,
+	processAllChanges,
 } from "./helpers";
 
 import {
@@ -27,9 +27,9 @@ import type {
 	CursorPos,
 	RowCol,
 	EditableCanvasChangeEvent,
-	FirebaseChange,
 	Directions,
 	EditableCanvasData,
+	FirebaseChanges,
 } from "types";
 
 import serialize from "async-function-serializer";
@@ -38,7 +38,7 @@ import { renderer } from "./helpers/render";
 import { processDeleteEvent, processDeleteMany, processInsertEvent, processRedo, processUndo, processPaste } from "./helpers/data";
 import { convertCellsToString } from "./helpers/transforms";
 
-const useEditableCanvas = ({ ref, cachedData, onDataChange, onEvent, sessionId }: UseEditableCanvasProps ) => {
+const useEditableCanvas = ({ ref, cachedData, onDataChange, onEvent }: UseEditableCanvasProps ) => {
 	const history = useRef<EditableCanvasChangeEvent[]>([]);
 	const undoStack = useRef<EditableCanvasChangeEvent[]>([]);
 
@@ -74,10 +74,13 @@ const useEditableCanvas = ({ ref, cachedData, onDataChange, onEvent, sessionId }
 		cursorRowCol.current = getRowColForCursorPos( pos, dataAsRowsRef.current );
 	};
 
-	const processChange = useMemo(() => serialize(( event: FirebaseChange ) => {
-		const updatedData = processChangeEvent( dataRef.current, event.data );
+	const processChange = useMemo(() => serialize(( event: FirebaseChanges ) => {
+		const updatedData = processAllChanges( 
+			[ event ], 
+			dataRef.current,
+		);
 		setData( updatedData );
-	}, { sortBy: { key: "created_at" }}),[]);
+	}),[]);
 
 	const addToHistory = ( item: EditableCanvasChangeEvent ) => {
 		history.current = [ ...history.current, item ];
@@ -176,7 +179,7 @@ const useEditableCanvas = ({ ref, cachedData, onDataChange, onEvent, sessionId }
 			if ( char.length > 1 && char !== "Enter" && char !== "Backspace" ) return;
 
 			if ( selectedTextStart && selectedTextEnd ) {
-				const cutCopyResults = processDeleteMany({ data: dataRef.current, dataAsRows: dataAsRowsRef.current, selectedTextStart, selectedTextEnd, sessionId });
+				const cutCopyResults = processDeleteMany({ data: dataRef.current, dataAsRows: dataAsRowsRef.current, selectedTextStart, selectedTextEnd });
 				if ( cutCopyResults ) {
 					const { updatedData, event, updatedCursorPos } = cutCopyResults;
 					immediatelyUpdateData( updatedData );
@@ -190,8 +193,8 @@ const useEditableCanvas = ({ ref, cachedData, onDataChange, onEvent, sessionId }
 			if ( selectedTextStart && selectedTextEnd && char === "Backspace" ) return;
 			
 			const { result, event } = char === "Backspace" ? 
-				processDeleteEvent( cursorRowCol.current, dataRef.current, dataAsRowsRef.current, sessionId ) :
-				processInsertEvent( char, cursorRowCol.current, dataRef.current, dataAsRowsRef.current, sessionId );
+				processDeleteEvent( cursorRowCol.current, dataRef.current, dataAsRowsRef.current ) :
+				processInsertEvent( char, cursorRowCol.current, dataRef.current, dataAsRowsRef.current );
 			
 			immediatelyUpdateData( result );
 			addToHistory( event );
@@ -220,7 +223,6 @@ const useEditableCanvas = ({ ref, cachedData, onDataChange, onEvent, sessionId }
 				dataAsRows: dataAsRowsRef.current, 
 				selectedTextStart, 
 				selectedTextEnd, 
-				sessionId, 
 				copyToClipboard: true, 
 			});
 
@@ -239,7 +241,7 @@ const useEditableCanvas = ({ ref, cachedData, onDataChange, onEvent, sessionId }
 			if ( !pastedString || typeof pastedString !== "string" ) return;
 
 			if ( selectedTextStart && selectedTextEnd ) {
-				const cutCopyResults = processDeleteMany({ data: dataRef.current, dataAsRows: dataAsRowsRef.current, selectedTextStart, selectedTextEnd, sessionId });
+				const cutCopyResults = processDeleteMany({ data: dataRef.current, dataAsRows: dataAsRowsRef.current, selectedTextStart, selectedTextEnd });
 				if ( cutCopyResults ) {
 					const { updatedData, event, updatedCursorPos } = cutCopyResults;
 					immediatelyUpdateData( updatedData );
@@ -250,7 +252,7 @@ const useEditableCanvas = ({ ref, cachedData, onDataChange, onEvent, sessionId }
 				}
 			}
 
-			const pasteResults = processPaste({ data: dataRef.current, pastedString, sessionId, cursorPos: cursorPosRef.current });
+			const pasteResults = processPaste({ data: dataRef.current, pastedString, cursorPos: cursorPosRef.current });
 			if ( pasteResults ) {
 				const { updatedData, event } = pasteResults;
 				immediatelyUpdateData( updatedData );

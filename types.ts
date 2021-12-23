@@ -32,13 +32,12 @@ type EditableCanvasDelete = {
 	cells: Cell[]
 }
 
-type EditableCanvasChange = 
+export type EditableCanvasChange = 
 	{ up: EditableCanvasInsert, down: EditableCanvasDelete } |
 	{ up: EditableCanvasDelete, down: EditableCanvasInsert };
 	
 export type EditableCanvasChangeEvent = {
 	id: ChangeId,
-	sessionId: string, 
 	change: EditableCanvasChange,
 }
 
@@ -50,7 +49,6 @@ export interface UseEditableCanvasProps {
 	cachedData: EditableCanvasData,
 	onDataChange: DataChangeHandler,
 	onEvent: ChangeEventHandler,
-	sessionId: string,
 }
 
 export enum FirebaseCollections {
@@ -64,10 +62,16 @@ export interface FirebaseNote {
 
 export interface FirebaseChange {
 	data: EditableCanvasChangeEvent,
-	applied_to_note: boolean,
 	created_at: string,
+}
+
+export type FirebaseChanges = {
+	changes: FirebaseChange[],
+	applied_to_note: boolean,
+	change_id?: string,
 	uploaded_at: string,
 	note_id: string,
+	sessionId: string,
 }
 
 export interface ReceivedChangeEvent extends FirebaseChange {

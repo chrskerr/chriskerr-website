@@ -1,6 +1,6 @@
 
 import { nanoid } from "nanoid";
-import type { EditableCanvasData, Cell, RowCol, CellId, EditableCanvasChangeEvent } from "types";
+import type { EditableCanvasData, Cell, RowCol, CellId, EditableCanvasChangeEvent, FirebaseChanges } from "types";
 
 export const cellWidth = 14;
 export const cellHeight = 16;
@@ -178,4 +178,16 @@ export const invertChange = ( input: EditableCanvasChangeEvent ): EditableCanvas
 			down: input.change.up,
 		},
 	} as EditableCanvasChangeEvent;
+};
+
+export const processAllChanges = ( sortedChanges: FirebaseChanges[], initial: EditableCanvasData ) => {
+	return sortedChanges
+		.filter(({ applied_to_note }) => applied_to_note )
+		.reduce<EditableCanvasData>(( acc, changeData ) => {
+		return changeData.changes.reduce(( acc_2, change ) => {
+			return processChangeEvent( acc_2, change.data );
+		}, acc );
+	},
+	initial,
+	);
 };

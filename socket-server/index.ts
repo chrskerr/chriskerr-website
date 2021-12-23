@@ -1,5 +1,5 @@
 
-import { FirebaseChange } from "../types";
+import { FirebaseChanges } from "../types";
 import { apiToken } from "./constants";
 
 import express from "express" ;
@@ -25,7 +25,7 @@ app.use( cors( corsSettings ));
 app.post( "/editor", ( req, res ) => {
 	if ( req.headers.token !== apiToken ) return res.status( 500 ).end();
 
-	const body = req.body as FirebaseChange;
+	const body = req.body as FirebaseChanges;
 	io.to( body.note_id ).emit( "change", body );
 	
 	return res.status( 200 ).end();

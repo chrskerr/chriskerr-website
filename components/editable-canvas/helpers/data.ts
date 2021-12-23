@@ -9,7 +9,6 @@ export const processInsertEvent = (
 	cursorRowCol: RowCol, 
 	data: EditableCanvasData, 
 	dataRows: Cell[][],
-	sessionId: string,
 
 ): { result: EditableCanvasData, event: EditableCanvasChangeEvent } => {
 	const targetCell = getTargetCell( cursorRowCol, dataRows );
@@ -23,7 +22,7 @@ export const processInsertEvent = (
 
 	return {
 		result,
-		event: createInsertEvent( targetId, newCells, sessionId ),
+		event: createInsertEvent( targetId, newCells ),
 	};
 };
 
@@ -31,7 +30,6 @@ export const processDeleteEvent = (
 	cursorRowCol: RowCol, 
 	data: EditableCanvasData, 
 	dataRows: Cell[][],
-	sessionId: string,
 
 ): { result: EditableCanvasData, event: EditableCanvasChangeEvent } => {
 	const targetCell = getTargetCell( cursorRowCol, dataRows );
@@ -45,7 +43,7 @@ export const processDeleteEvent = (
 
 	return {
 		result,
-		event: createDeleteEvent( targetId, deletedCells, sessionId ),
+		event: createDeleteEvent( targetId, deletedCells ),
 	};
 };
 
@@ -102,7 +100,6 @@ interface ProcessDeleteMany {
 	dataAsRows: Cell[][],
 	selectedTextStart: RowCol,
 	selectedTextEnd: RowCol,
-	sessionId: string,
 	copyToClipboard?: boolean,
 }
 
@@ -117,7 +114,6 @@ export const processDeleteMany = ({
 	dataAsRows, 
 	selectedTextStart,
 	selectedTextEnd, 
-	sessionId,
 	copyToClipboard,
 
 }: ProcessDeleteMany ): ProcessDeleteManyReturn | null => {
@@ -140,7 +136,7 @@ export const processDeleteMany = ({
 
 	const deletedCells = updatedData.cells.splice( startIndex, adjustedEndIndex - startIndex );
 
-	const event = createDeleteEvent( updatedCursorPos, deletedCells, sessionId );
+	const event = createDeleteEvent( updatedCursorPos, deletedCells );
 
 	if ( copyToClipboard ) {
 		navigator.clipboard.writeText( convertCellsToString( deletedCells ));
@@ -157,7 +153,6 @@ interface ProcessPaste {
 	data: EditableCanvasData,
 	pastedString: string,
 	cursorPos: CursorPos,
-	sessionId: string,
 }
 
 interface ProcessPasteReturn {
@@ -169,7 +164,7 @@ export const processPaste = ({
 	data,
 	pastedString,
 	cursorPos,
-	sessionId,
+
 }: ProcessPaste ): ProcessPasteReturn | null => {
 	const individualCharacters = pastedString
 		.split( "" )
@@ -182,7 +177,7 @@ export const processPaste = ({
 
 	const { result, newCells } = processInsert({ data, targetId: cursorPos, char: individualCharacters });
 
-	const event = createInsertEvent( cursorPos, newCells, sessionId );
+	const event = createInsertEvent( cursorPos, newCells );
 
 	return {
 		updatedData: result,

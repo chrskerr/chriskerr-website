@@ -1,5 +1,5 @@
 
-import { DataChangeHandler, EditableCanvasData, ChangeEventHandler, FirebaseChange, FirebaseCollections, FirebaseNote } from "types";
+import { DataChangeHandler, EditableCanvasData, ChangeEventHandler, FirebaseCollections, FirebaseNote, FirebaseChanges } from "types";
 import { socketServerUrl } from "socket-server/constants";
 
 import type { GetServerSideProps } from "next";
@@ -8,7 +8,7 @@ import useEditableCanvas from "components/editable-canvas/use-editable-canvas";
 import { useEffect, useState, useRef, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { firestore } from "lib/firebase-admin";
-import { processChangeEvent } from "components/editable-canvas/helpers";
+import { processAllChanges } from "components/editable-canvas/helpers";
 import { nanoid } from "nanoid";
 const MarkdownRenderer = dynamic( import( /* webpackPrefetch: true */ "components/editable-canvas/markdown-renderer" ));
 
@@ -77,10 +77,11 @@ export default function Editor ({ id, initialData }: EditorProps ) {
 			change: e,
 			created_at: getDateValueString(),
 			uploaded_at: "",
+			sessionId,
 		});
 	};
 
-	const { markdown, height, hasFocus, processChange } = useEditableCanvas({ ref: $_ref, cachedData, onDataChange, onEvent, sessionId });
+	const { markdown, height, hasFocus, processChange } = useEditableCanvas({ ref: $_ref, cachedData, onDataChange, onEvent });
 
 	const [ tab, setTab ] = useState<"editor" | "viewer">( "editor" );
 
@@ -89,14 +90,19 @@ export default function Editor ({ id, initialData }: EditorProps ) {
 		
 		socket.emit( "join", id );
 
-		socket.on( "change", ( message: FirebaseChange ) => {
-			if ( message.data.sessionId !== sessionId ) {
+		socket.on( "change", ( message: FirebaseChanges ) => {
+			if ( message.sessionId !== sessionId ) {
 				processChange( message );
 			}
 		});
 
+		const _isOnline = () => router.replace( router.asPath );
+		window.addEventListener( "online", _isOnline );
+
 		return () => {
 			socket.close();
+			window.removeEventListener( "online", _isOnline );
+
 		};
 	}, []);
 
@@ -182,27 +188,21 @@ export const getServerSideProps: GetServerSideProps = async ( context ) => {
 				return false;
 			}
 		
-			const sortedChanges = changes.docs
+			const allChanges = changes.docs
 				.map( doc => ({
-					id: doc.id,
-					data: doc.data() as FirebaseChange,
-				}))
-				.sort(( a, b ) => Number( a.data.created_at ) - Number( b.data.created_at ));
+					...doc.data(),
+					change_id: doc.id,
+				}) as FirebaseChanges )
+				.sort(( a, b ) => Number( a.uploaded_at ) - Number( b.uploaded_at ));
 	
-			data = sortedChanges.reduce<EditableCanvasData>(
-				( acc, changeData ) => {
-					if ( changeData.data.applied_to_note ) return acc;
-					return processChangeEvent( acc, changeData.data.data );
-				}, 
-				{
-					...doc.data() as FirebaseNote,
-					id: doc.id,
-				}, 
-			);
+			data = processAllChanges( allChanges, {
+				...doc.data() as FirebaseNote,
+				id: doc.id,
+			});
 
 			txn.update( docRef, { cells: data.cells } as Partial<FirebaseNote> );
-			sortedChanges.forEach(({ id }) => {
-				txn.update( changesRef.doc( id ), { applied_to_note: true } as Partial<FirebaseChange> );
+			allChanges.forEach(({ change_id }) => {
+				txn.update( changesRef.doc( change_id || "" ), { applied_to_note: true } as Partial<FirebaseChanges> );
 			});
 			
 		} catch ( e ) {
