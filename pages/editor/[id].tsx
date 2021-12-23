@@ -66,6 +66,7 @@ export default function Editor ({ id, initialData }: EditorProps ) {
 				},
 				batch: {
 					debounceInterval: 500,
+					maxDebounceInterval: 2500,
 					batchTransformer: ( batch, newChange ) => {
 						if ( !batch ) return newChange;
 						newChange.changes = [ ...batch.changes, ...newChange.changes ];
