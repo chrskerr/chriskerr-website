@@ -52,6 +52,15 @@ export default function App ({ Component, pageProps }: AppProps ): ReactElement 
 							/>
 						</a>
 					</Link>
+					<div className="mb-8 sm:mb-0">
+						<Image 
+							src="/images/me.jpeg"
+							width={50}
+							height={50}
+							alt="Photo of me"
+							className="rounded-full"
+						/>
+					</div>
 					<p>Designed by <a className="text-brand hover:underline" href='https://www.katehobbs.com.au/' target="_blank" rel="noreferrer">Kate Hobbs</a></p>
 				</footer>
 			</div>
