@@ -1,6 +1,6 @@
 
 import { init } from "components/bird-eat-bird/helpers/init";
-import { ElementIds } from "components/bird-eat-bird/types";
+import { ElementIds } from "types/bird-eat-bird";
 import { ReactElement, useRef, useEffect } from "react";
 
 export default function BirdEatBird (): ReactElement {

@@ -1,5 +1,5 @@
 
-import { Cell, CursorPos, EditableCanvasChangeEvent, EditableCanvasData, RowCol } from "types";
+import { Cell, CursorPos, EditableCanvasChangeEvent, EditableCanvasData, RowCol } from "types/editor";
 import { getTargetCell, invertChange, processChangeEvent, processDelete, processInsert } from ".";
 import { getCursorPosFromRowCol } from "./cursor";
 import { convertCellsToString, createDeleteEvent, createInsertEvent } from "./transforms";

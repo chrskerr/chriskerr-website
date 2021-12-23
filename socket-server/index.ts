@@ -1,5 +1,5 @@
 
-import { FirebaseChanges } from "../types";
+import { FirebaseChanges } from "../types/editor";
 import { apiToken } from "./constants";
 
 import express from "express" ;

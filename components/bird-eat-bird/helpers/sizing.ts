@@ -1,5 +1,5 @@
 import { maxGameWidth } from "../constants";
-import { ElementIds } from "../types";
+import { ElementIds } from "types/bird-eat-bird";
 
 export function refitCanvasToScreen () {
 	const canvas = document.getElementById( ElementIds.CANVAS ) as HTMLCanvasElement;

@@ -1,5 +1,5 @@
 
-import { DataChangeHandler, EditableCanvasData, ChangeEventHandler, FirebaseCollections, FirebaseNote, FirebaseChanges } from "types";
+import { DataChangeHandler, EditableCanvasData, ChangeEventHandler, FirebaseCollections, FirebaseNote, FirebaseChanges } from "types/editor";
 import { socketServerUrl } from "socket-server/constants";
 
 import type { GetServerSideProps } from "next";

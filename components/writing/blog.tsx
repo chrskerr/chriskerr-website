@@ -7,7 +7,7 @@ import { NextSeo, BlogJsonLd } from "next-seo";
 
 import "highlight.js/styles/github.css";
 
-import type { Blog } from "types";
+import type { Blog } from "types/editor";
 
 import { defaultTitle } from "pages/_app";
 

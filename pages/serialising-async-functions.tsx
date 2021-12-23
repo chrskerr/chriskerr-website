@@ -1,6 +1,6 @@
 import BlogPost from "components/writing/blog";
 import { GetStaticProps } from "next";
-import { Blog, BlogPostSlugs, BlogPostTitles } from "types";
+import { Blog, BlogPostSlugs, BlogPostTitles } from "types/editor";
 
 import { formatISO, format } from "date-fns";
 import { marked } from "marked";

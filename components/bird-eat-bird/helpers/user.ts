@@ -1,6 +1,6 @@
 
 import { gameHeight, getDefaultMousePos } from "../constants";
-import { Element } from "../types";
+import { Element } from "types/bird-eat-bird";
 import { moveElement } from "./elements";
 import { getImage } from "./images";
 import { getHeightFromTargetWidth } from "./sizing";

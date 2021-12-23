@@ -30,7 +30,7 @@ import type {
 	Directions,
 	EditableCanvasData,
 	FirebaseChanges,
-} from "types";
+} from "types/editor";
 
 import serialize from "async-function-serializer";
 import { navigate } from "./helpers/navigate";

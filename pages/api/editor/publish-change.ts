@@ -2,7 +2,7 @@
 import { firestore } from "lib/firebase-admin";
 import { NextApiHandler } from "next";
 import NextCors from "nextjs-cors";
-import { Cell, EditableCanvasChangeEvent, FirebaseChanges, FirebaseCollections, FirebaseNote } from "types";
+import { Cell, EditableCanvasChangeEvent, FirebaseChanges, FirebaseCollections, FirebaseNote } from "types/editor";
 import { socketServerUrl, apiToken } from "socket-server/constants";
 
 import { generateSlug, RandomWordOptions } from "random-word-slugs";

@@ -1,6 +1,6 @@
 
 import clamp from "lodash/clamp";
-import { RowCol, CursorPos, Cell } from "types";
+import { RowCol, CursorPos, Cell } from "types/editor";
 import { rowGap, cellHeight, cellWidth } from ".";
 
 export const getRowColForCursorPos = ( cursorPos: CursorPos, data: Cell[][]): RowCol => {

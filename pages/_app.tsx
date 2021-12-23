@@ -8,11 +8,9 @@ import { DefaultSeo } from "next-seo";
 
 import "tailwindcss/tailwind.css";
 import "../styles/index.css";
-import { ElementIds } from "components/bird-eat-bird/types";
+import { ElementIds } from "types/bird-eat-bird";
 
 export const defaultTitle = "Chris Kerr";
-export const shortCacheSeconds = 60 * 60; // 1 hour
-export const longCacheSeconds = 12 * 60 * 60; // 12 hours
 
 export default function App ({ Component, pageProps }: AppProps ): ReactElement {
 	return (

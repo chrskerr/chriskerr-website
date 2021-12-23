@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import { EditableCanvasChangeEvent, Cell } from "types";
+import { EditableCanvasChangeEvent, Cell } from "types/editor";
 
 
 export const createInsertEvent = ( insert_before: string, cells: Cell[]): EditableCanvasChangeEvent => {

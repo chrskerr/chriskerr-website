@@ -1,7 +1,7 @@
 
 import { getImage } from "./images";
 import { getHeightFromTargetWidth, getRandomValue, getValueFromRange } from "./sizing";
-import { Element } from "../types";
+import { Element } from "types/bird-eat-bird";
 import { moveElement } from "./elements";
 import { getProbability } from "./timing";
 import { gameHeight } from "../constants";

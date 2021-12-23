@@ -1,5 +1,5 @@
 
-import { RowCol, Cell } from "types";
+import { RowCol, Cell } from "types/editor";
 import range from "lodash/range";
 
 import { cellWidth, rowGap, cellHeight } from "./index";

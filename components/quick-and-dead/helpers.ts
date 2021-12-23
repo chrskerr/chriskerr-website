@@ -1,6 +1,6 @@
 
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string";
-import { Rounds, Type, RepSplit, Day, Week, MinifiedType, MinifiedDay, MinifiedWeek } from "./types";
+import { Rounds, Type, RepSplit, Day, Week, MinifiedType, MinifiedDay, MinifiedWeek } from "types/quick-and-dead";
 
 const roundOptions: Rounds[] = [ 
 	Rounds.TWO, 

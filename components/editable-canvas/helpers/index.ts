@@ -1,6 +1,6 @@
 
 import { nanoid } from "nanoid";
-import type { EditableCanvasData, Cell, RowCol, CellId, EditableCanvasChangeEvent, FirebaseChanges } from "types";
+import type { EditableCanvasData, Cell, RowCol, CellId, EditableCanvasChangeEvent, FirebaseChanges } from "types/editor";
 
 export const cellWidth = 14;
 export const cellHeight = 16;

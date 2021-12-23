@@ -3,7 +3,7 @@ import { RefObject } from "react";
 import { windowResize } from "./events";
 import { getBackgroundSize, refitCanvasToScreen } from "./sizing";
 import { gameHeight } from "../constants";
-import { Element } from "../types";
+import { Element } from "types/bird-eat-bird";
 
 import memoize from "lodash/memoize";
 import throttle from "lodash/throttle";

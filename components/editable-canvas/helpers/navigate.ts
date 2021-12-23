@@ -1,5 +1,5 @@
 
-import type { CursorPos, Directions, EditableCanvasData, RowCol } from "types";
+import type { CursorPos, Directions, EditableCanvasData, RowCol } from "types/editor";
 import { splitDataIntoRows } from ".";
 import { getCursorPosFromRowCol, getRowColForCursorPos  } from "./cursor";
 

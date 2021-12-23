@@ -1,6 +1,6 @@
 
 import { ReactElement, useEffect, useState } from "react";
-import { Day, Week } from "./types";
+import { Day, Week } from "types/quick-and-dead";
 
 import { createSession, createWeek, encode } from "./helpers";
 
