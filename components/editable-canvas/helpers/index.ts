@@ -182,7 +182,7 @@ export const invertChange = ( input: EditableCanvasChangeEvent ): EditableCanvas
 
 export const processAllChanges = ( sortedChanges: FirebaseChanges[], initial: EditableCanvasData ) => {
 	return sortedChanges
-		.filter(({ applied_to_note }) => applied_to_note )
+		.filter(({ applied_to_note }) => !applied_to_note )
 		.reduce<EditableCanvasData>(( acc, changeData ) => {
 		return changeData.changes.reduce(( acc_2, change ) => {
 			return processChangeEvent( acc_2, change.data );

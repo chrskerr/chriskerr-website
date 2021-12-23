@@ -59,11 +59,18 @@ export default function Editor ({ id, initialData }: EditorProps ) {
 		serialize( 
 			uploadChangeEvent, 
 			{ 
-				sortBy: { key: "created_at" },
 				inputTransformer: async ( data, previousResult ) => {
 					if ( previousResult ) data.noteId = previousResult;
 					if ( data.noteId !== $_idRef.current ) await router.push( `/editor/${ data.noteId }`, undefined, { shallow: true });
 					return data;
+				},
+				batch: {
+					debounceInterval: 500,
+					batchTransformer: ( batch, newChange ) => {
+						if ( !batch ) return newChange;
+						newChange.changes = [ ...batch.changes, ...newChange.changes ];
+						return newChange;
+					},
 				},
 			},
 		), 
@@ -72,13 +79,14 @@ export default function Editor ({ id, initialData }: EditorProps ) {
 	
 	
 	const onEvent: ChangeEventHandler = async ( e ) => {
-		await postChangeEvent({
+		const result = await postChangeEvent({
 			noteId: id,
-			change: e,
-			created_at: getDateValueString(),
+			changes: [{ data: e, created_at: getDateValueString() }],
 			uploaded_at: "",
 			sessionId,
 		});
+		const newNoteId = await result.data;
+		if ( newNoteId && newNoteId !== id ) router.replace( `/editor/${ newNoteId }`, undefined, { shallow: true });
 	};
 
 	const { markdown, height, hasFocus, processChange } = useEditableCanvas({ ref: $_ref, cachedData, onDataChange, onEvent });

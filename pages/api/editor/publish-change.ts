@@ -6,11 +6,14 @@ import { Cell, EditableCanvasChangeEvent, FirebaseChanges, FirebaseCollections, 
 import { socketServerUrl, apiToken } from "socket-server/constants";
 
 import { generateSlug, RandomWordOptions } from "random-word-slugs";
+import { processAllChanges } from "components/editable-canvas/helpers";
 
 export interface UpdateNoteAPIBody {
 	noteId: string,
-	change: EditableCanvasChangeEvent,
-	created_at: string,
+	changes: {
+		data: EditableCanvasChangeEvent,
+		created_at: string,
+	}[],
 	uploaded_at: string,
 	sessionId: string,
 }
@@ -30,12 +33,13 @@ const getId = () => generateSlug( idLength, idOptions );
 
 const createNewId = async ( cells: Cell[]): Promise<string> => {
 	const id = getId();
+
 	try {
-		const createData: FirebaseNote = { cells };
+		const createInput: FirebaseNote = { cells };
 		await firestore
 			.collection( FirebaseCollections.NOTES )
 			.doc( id )
-			.create( createData );
+			.create( createInput );
 		return id;
 
 	} catch ( e ) {
@@ -60,17 +64,22 @@ const handler: NextApiHandler = async ( req, res ) => {
 	let { noteId: note_id } = body;
 
 	if ( !note_id || note_id === "new" ) {
-		note_id = await createNewId( body.change.change.up.cells );
+		const processedData = processAllChanges([{
+			uploaded_at: "",
+			applied_to_note: false,
+			note_id: "",
+			changes: body.changes,
+			sessionId: body.sessionId,
+		}], { id: "", cells: []});
+
+		note_id = await createNewId( processedData.cells );
 
 	} else {
 		const insertData: FirebaseChanges = {
 			uploaded_at: body.uploaded_at,
 			applied_to_note: false,
 			note_id,
-			changes: [{
-				data: body.change,
-				created_at: body.created_at,
-			}],
+			changes: body.changes,
 			sessionId: body.sessionId,
 		};
 
@@ -84,10 +93,7 @@ const handler: NextApiHandler = async ( req, res ) => {
 		uploaded_at: body.uploaded_at,
 		applied_to_note: false,
 		note_id,
-		changes: [{
-			data: body.change,
-			created_at: body.created_at,
-		}],
+		changes: body.changes,
 		sessionId: body.sessionId,
 	};
 
