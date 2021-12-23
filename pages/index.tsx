@@ -5,7 +5,7 @@ import { NextSeo, SocialProfileJsonLd } from "next-seo";
 import { defaultTitle } from "pages/_app";
 import Link from "next/link";
 import Image from "next/image";
-import { BlogPostSlugs, BlogPostTitles } from "types/editor";
+import { BlogPostSlugs, BlogPostTitles } from "types/writing";
 
 export const description = "Stuff I've built, things that I like.";
 const url = `${ process.env.NEXT_PUBLIC_URL_BASE }`;

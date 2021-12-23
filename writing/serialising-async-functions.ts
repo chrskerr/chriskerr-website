@@ -1,49 +1,9 @@
-import BlogPost from "components/writing/blog";
-import { GetStaticProps } from "next";
-import { Blog, BlogPostSlugs, BlogPostTitles } from "types/editor";
 
+import { BlogPostTitles, BlogPostSlugs, BlogData } from "types/writing";
 import { formatISO, format } from "date-fns";
-import { marked } from "marked";
-import hljs from "highlight.js";
 
-
-export default function AsyncFunctionSerialiser ( props: Blog ) {
-	return (
-		<BlogPost blog={ props } />
-	);
-}
-
-export const getStaticProps: GetStaticProps = () => {
-	const createdAt = new Date( 2021, 11, 19 );
-	const modifiedAt = new Date( 2021, 11, 19 );
-
-	const htmlContent = marked.parse( markdown, {
-		highlight: ( code, lang ) => {
-			const language = hljs.getLanguage( lang ) ? lang : "plaintext";
-			return hljs.highlight( code, { language }).value;
-		},
-		langPrefix: "hljs language-",
-	});
-
-	const props: Blog = {
-		title: BlogPostTitles.ASYNC_FUNCTIONS,
-		description: "How to create a serialised async function in Javascript / Typescript.",
-
-		url: `${ process.env.NEXT_PUBLIC_URL_BASE }/${ BlogPostSlugs.ASYNC_FUNCTIONS }`,
-
-		tags: [ "javascript", "typescript", "async", "serial", "queue" ],
-
-		htmlContent,
-
-		publishedAtISO: formatISO( createdAt ),
-		modifiedAtISO: formatISO( modifiedAt ),
-	
-		publishedAtString: format( createdAt , "dd MMMM yyyy" ),
-		modifiedAtString: format( modifiedAt, "dd MMMM yyyy" ),
-	};
-
-	return { props };
-};
+const createdAt = new Date( 2021, 11, 19 );
+const modifiedAt = new Date( 2021, 11, 24 );
 
 const markdown = `
 So it turns out that I am way less versed in Javascript packages than I thought that I was, and didn't realise that [Aync](https://www.npmjs.com/package/async) existed...
@@ -92,3 +52,19 @@ export function serialise<T, R>(
 }
 \`\`\`
 `;
+
+export const serialisingAsyncFunctions: BlogData = {
+	title: BlogPostTitles.ASYNC_FUNCTIONS,
+	description: "How to create a serialised async function in Javascript / Typescript.",
+	slug: BlogPostSlugs.ASYNC_FUNCTIONS,
+
+	tags: [ "javascript", "typescript", "async", "serial", "queue" ],
+
+	markdown,
+
+	publishedAtISO: formatISO( createdAt ),
+	modifiedAtISO: formatISO( modifiedAt ),
+
+	publishedAtString: format( createdAt , "dd MMMM yyyy" ),
+	modifiedAtString: format( modifiedAt, "dd MMMM yyyy" ),
+};

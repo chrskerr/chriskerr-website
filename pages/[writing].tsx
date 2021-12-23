@@ -1,29 +1,19 @@
 
-import { ReactElement, useMemo } from "react";
-import Link from "next/link";
-import Head from "next/head";
+import { GetStaticPaths, GetStaticProps } from "next";
+import type { Blog } from "types/writing";
 
+import { ReactElement, useMemo } from "react";
+import Head from "next/head";
 import { NextSeo, BlogJsonLd } from "next-seo";
+import { marked } from "marked";
+import hljs from "highlight.js";
+
+import { defaultTitle } from "pages/_app";
+import allWriting from "writing";
 
 import "highlight.js/styles/github.css";
 
-import type { Blog } from "types/editor";
-
-import { defaultTitle } from "pages/_app";
-
-export interface BlogProps {
-	blog: Blog,
-	next?: {
-		title: string;
-		uid: string;
-	},
-	prev?: {
-		title: string;
-		uid: string;
-	},
-}
-
-export default function BlogPost ({ blog, prev, next }: BlogProps ): ReactElement {
+export default function AsyncFunctionSerialiser ( blog: Blog ): ReactElement {
 	const { title, description, url, tags, publishedAtISO, modifiedAtISO, htmlContent, publishedAtString } = blog;
 	const trimmedTitle = title.slice( 0, 70 - defaultTitle.length - 3 ) || title;
 	const prefetchData = useMemo(() => [ ...htmlContent.matchAll( /data-prefetch-href=\S+/g ) ], [ htmlContent ]);
@@ -74,23 +64,46 @@ export default function BlogPost ({ blog, prev, next }: BlogProps ): ReactElemen
 			<div className="flex flex-col flex-wrap items-end w-full mt-8 display-width">
 				<p className="text-gray-600 sm:text-sm font-heading">Written: { publishedAtString }</p>
 			</div>
-			{ ( prev || next ) && <>
-				<div className="flex justify-center display-width divider-before">
-					<h3 className="mb-4 text-2xl text-brand-dark">More Posts</h3>
-				</div>
-				<div className={`display-width ${ ( next && prev ) ? "grid grid-cols-2" : "" }` }>
-					{ prev && 
-						<div className="flex justify-center p-4">
-							<Link href={ `/${ prev.uid }` } passHref><a className="text-lg text-center underline hover:text-brand-dark">{ prev.title }</a></Link>
-						</div> 
-					}
-					{ next && 
-						<div className="flex justify-center p-4">
-							<Link href={ `/${ next.uid }` } passHref><a className="text-lg text-center underline hover:text-brand-dark">{ next.title }</a></Link>
-						</div> 
-					}
-				</div>
-			</> }
 		</div>
 	</> );
 }
+
+export const getStaticProps: GetStaticProps = ( context ) => {
+	const post = allWriting.find(({ slug }) => slug === context.params?.writing );
+
+	if ( !post ) {
+		return {
+			redirect: {
+				permanent: false,
+				destination: "/",
+			},
+		};
+	}
+
+	const { markdown, ...rest } = post;
+	
+	const htmlContent = marked.parse( markdown, {
+		highlight: ( code, lang ) => {
+			const language = hljs.getLanguage( lang ) ? lang : "plaintext";
+			return hljs.highlight( code, { language }).value;
+		},
+		langPrefix: "hljs language-",
+	});
+
+	const props: Blog = {
+		...rest,
+		url: `${ process.env.NEXT_PUBLIC_URL_BASE }/${ rest.slug }`,
+		htmlContent,
+	};
+
+	return { props };
+};
+
+export const getStaticPaths: GetStaticPaths = () => {
+	const paths = allWriting.map(({ slug }) => `/${ slug }` );
+	
+	return {
+		paths,
+		fallback: false,
+	};
+};
