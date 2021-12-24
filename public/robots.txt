@@ -9,5 +9,3 @@ User-agent: AdsBot-Google-Mobile
 User-agent: Googlebot
 User-agent: AdsBot-Google
 Disallow: /api/
-
-Sitemap: https://www.chriskerr.com.au/sitemap.xml
