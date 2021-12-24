@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 const Chart = dynamic(() => import( "components/javascript-randomness/chart" ));
 
 export type Data = {
-	label: number,
+	label: string,
 	mathRaw: number,
 	math: number,
 	cryptoRaw: number,
@@ -25,12 +25,12 @@ const getMathRandomNumbers = ( count: number ): number[] => {
 		.map(() => Math.floor( Math.random() * numDataGroups ));
 };
 
-const newDataSummary = ( mode: "math" | "crypto", count: number ): Record<number, number> => {
+const newDataSummary = ( mode: "math" | "crypto", count: number ): Record<string, number> => {
 	const numbers = mode === "math" ?
 		getMathRandomNumbers( count ) :
 		getCryptoRandomNumbers( count );
 	
-	return numbers.reduce<Record<number, number>>(( acc, curr ) => {
+	return numbers.reduce<Record<string, number>>(( acc, curr ) => {
 		return {
 			...acc,
 			[ curr ]: ( acc[ curr ] || 0 ) + 1,
@@ -41,7 +41,7 @@ const newDataSummary = ( mode: "math" | "crypto", count: number ): Record<number
 const chunkSize = 1_000;
 
 const processLoop = async ( data: Data[]): Promise<Data[]> => {
-	return await new Promise( nestedResolve => {
+	return await new Promise( resolve => {
 		setTimeout(() => {
 			const newMathSummary = newDataSummary( "math", chunkSize );
 			const newCryptoSummary = newDataSummary( "crypto", chunkSize );
@@ -63,7 +63,7 @@ const processLoop = async ( data: Data[]): Promise<Data[]> => {
 				crypto: datum.cryptoRaw / totalCryptoRaw * 100,
 			}));
 
-			nestedResolve( normalisedData );
+			resolve( normalisedData );
 		}, 0 );
 	});
 };
@@ -71,7 +71,7 @@ const processLoop = async ( data: Data[]): Promise<Data[]> => {
 const updateData = async ( count: number ): Promise<Data[]> => {
 	const emptyData = new Array( numDataGroups )
 		.fill( 0 )
-		.map<Data>(( v, i ) => ({ label: i, math: 0, mathRaw: 0, crypto: 0, cryptoRaw: 0 }));
+		.map<Data>(( v, i ) => ({ label: String( i ), math: 0, mathRaw: 0, crypto: 0, cryptoRaw: 0 }));
 
 	const numChunks = Math.ceil( count / chunkSize );
 	let updatedData = emptyData;
@@ -92,14 +92,14 @@ const sampleSizes = [
 	{ label: "Ten Thousand", value: 10_000 },
 	{ label: "One Hundred Thousand (this'll take a sec)", value: 100_000 },
 	{ label: "One Million (this'll take a while)", value: 1_000_000 },
-	{ label: "Ten Million (this'll take ages)", value: 10_000_000 },
-	{ label: "One Hundred Million (this might not finish...)", value: 100_000_000 },
+	{ label: "Ten Million (this might not finish...)", value: 10_000_000 },
+	{ label: "One Hundred Million (don't choose this one)", value: 100_000_000 },
 ];
 
 
 export default function JavascriptRandomness (): ReactElement {
 	const [ data, setData ] = useState<Data[]>();
-	const [ samples, setSamples ] = useState( 10_000 );
+	const [ samples, setSamples ] = useState( 1_000 );
 
 	const [ loading, setLoading ] = useState( false );
 

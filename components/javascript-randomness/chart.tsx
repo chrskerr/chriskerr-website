@@ -19,7 +19,7 @@ const Chart = memo( function Chart ({ data }: { data: Data[]}): ReactElement {
 						dataKey="math" 
 						name="Math.Random()" 
 						stroke="#0077bd" 
-						dot={ false } 
+						dot={ true } 
 						activeDot={ false } 
 					/>
 					<Line 
@@ -27,11 +27,11 @@ const Chart = memo( function Chart ({ data }: { data: Data[]}): ReactElement {
 						dataKey="crypto" 
 						name="crypto.getRandomValues()" 
 						stroke="#e94d10" 
-						dot={ false } 
+						dot={ true } 
 						activeDot={ false } 
 					/>
 					<YAxis label={{ value: "% of total", angle: -90, position: "center", offset: 0 }} />
-					<XAxis tick={ false } />
+					<XAxis hide={ true } />
 					<CartesianGrid />
 					<Legend />
 				</LineChart>
