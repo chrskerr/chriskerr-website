@@ -1,233 +1,308 @@
+import { NextSeo } from 'next-seo';
+import {
+	DataChangeHandler,
+	EditableCanvasData,
+	ChangeEventHandler,
+	FirebaseCollections,
+	FirebaseNote,
+	FirebaseChanges,
+} from 'types/editor';
+import { socketServerUrl } from 'socket-server/constants';
 
-import { NextSeo } from "next-seo";
-import { DataChangeHandler, EditableCanvasData, ChangeEventHandler, FirebaseCollections, FirebaseNote, FirebaseChanges } from "types/editor";
-import { socketServerUrl } from "socket-server/constants";
+import type { GetServerSideProps } from 'next';
 
-import type { GetServerSideProps } from "next";
+import useEditableCanvas from 'components/editable-canvas/use-editable-canvas';
+import { useEffect, useState, useRef, useCallback } from 'react';
+import dynamic from 'next/dynamic';
+import { firestore } from 'lib/firebase-admin';
+import { processAllChanges } from 'components/editable-canvas/helpers';
+import { nanoid } from 'nanoid';
+const MarkdownRenderer = dynamic(
+	import(
+		/* webpackPrefetch: true */ 'components/editable-canvas/markdown-renderer'
+	),
+);
 
-import useEditableCanvas from "components/editable-canvas/use-editable-canvas";
-import { useEffect, useState, useRef, useCallback } from "react";
-import dynamic from "next/dynamic";
-import { firestore } from "lib/firebase-admin";
-import { processAllChanges } from "components/editable-canvas/helpers";
-import { nanoid } from "nanoid";
-const MarkdownRenderer = dynamic( import( /* webpackPrefetch: true */ "components/editable-canvas/markdown-renderer" ));
+import { io } from 'socket.io-client';
+import { useRouter } from 'next/router';
+import serialize from 'async-function-serializer';
+import {
+	PublishChangeResponse,
+	UpdateNoteAPIBody,
+} from 'pages/api/editor/publish-change';
 
-import { io } from "socket.io-client";
-import { useRouter } from "next/router";
-import serialize from "async-function-serializer";
-import { PublishChangeResponse, UpdateNoteAPIBody } from "pages/api/editor/publish-change";
+export const getDateValueString = () => String(new Date().valueOf());
 
-export const getDateValueString = () => String( new Date().valueOf());
-
-export const uploadChangeEvent = async ( body: UpdateNoteAPIBody ) => {
-	const res = await fetch( "/api/editor/publish-change", {
-		method: "post",
-		headers: { "content-type": "application/json" },
+export const uploadChangeEvent = async (body: UpdateNoteAPIBody) => {
+	const res = await fetch('/api/editor/publish-change', {
+		method: 'post',
+		headers: { 'content-type': 'application/json' },
 		body: JSON.stringify({ ...body, uploaded_at: getDateValueString() }),
 	});
-	if ( res.ok ) {
-		const data = await res.json() as PublishChangeResponse;
+	if (res.ok) {
+		const data = (await res.json()) as PublishChangeResponse;
 		return data?.note_id;
 	}
 };
 
 interface EditorProps {
-	id: string,
-	initialData: EditableCanvasData,
+	id: string;
+	initialData: EditableCanvasData;
 }
 
-const title = "Collaborative Markdown Editor";
+const title = 'Collaborative Markdown Editor';
 
-export default function Editor ({ id, initialData }: EditorProps ) {
+export default function Editor({ id, initialData }: EditorProps) {
 	const router = useRouter();
 
-	const $_ref = useRef<HTMLCanvasElement>( null );
+	const $_ref = useRef<HTMLCanvasElement>(null);
 
-	const $_idRef = useRef( id );
+	const $_idRef = useRef(id);
 	useEffect(() => {
 		$_idRef.current = id;
-	}, [ id ]);
+	}, [id]);
 
-	const [ cachedData, setCachedData ] = useState( initialData );
-	const [ sessionId ] = useState( nanoid());
+	const [cachedData, setCachedData] = useState(initialData);
+	const [sessionId] = useState(nanoid());
 
-	const onDataChange: DataChangeHandler = ( data ) => {
+	const onDataChange: DataChangeHandler = data => {
 		setTimeout(() => {
-			setCachedData( data );
-		}, 0 );
+			setCachedData(data);
+		}, 0);
 	};
 
-	const postChangeEvent = useCallback( 
-		serialize( 
-			uploadChangeEvent, 
-			{ 
-				inputTransformer: async ( data, previousResult ) => {
-					if ( previousResult ) data.noteId = previousResult;
-					if ( data.noteId !== $_idRef.current ) await router.push( `/editor/${ data.noteId }`, undefined, { shallow: true });
-					return data;
-				},
-				batch: {
-					debounceInterval: 500,
-					maxDebounceInterval: 2500,
-					batchTransformer: ( batch, newChange ) => {
-						if ( !batch ) return newChange;
-						newChange.changes = [ ...batch.changes, ...newChange.changes ];
-						return newChange;
-					},
+	const postChangeEvent = useCallback(
+		serialize(uploadChangeEvent, {
+			inputTransformer: async (data, previousResult) => {
+				if (previousResult) data.noteId = previousResult;
+				if (data.noteId !== $_idRef.current)
+					await router.push(`/editor/${data.noteId}`, undefined, {
+						shallow: true,
+					});
+				return data;
+			},
+			batch: {
+				debounceInterval: 500,
+				maxDebounceInterval: 2500,
+				batchTransformer: (batch, newChange) => {
+					if (!batch) return newChange;
+					newChange.changes = [
+						...batch.changes,
+						...newChange.changes,
+					];
+					return newChange;
 				},
 			},
-		), 
+		}),
 		[],
 	);
-	
-	
-	const onEvent: ChangeEventHandler = async ( e ) => {
+
+	const onEvent: ChangeEventHandler = async e => {
 		const result = await postChangeEvent({
 			noteId: id,
 			changes: [{ data: e, created_at: getDateValueString() }],
-			uploaded_at: "",
+			uploaded_at: '',
 			sessionId,
 		});
 		const newNoteId = await result.data;
-		if ( newNoteId && newNoteId !== id ) router.replace( `/editor/${ newNoteId }`, undefined, { shallow: true });
+		if (newNoteId && newNoteId !== id)
+			router.replace(`/editor/${newNoteId}`, undefined, {
+				shallow: true,
+			});
 	};
 
-	const { markdown, height, hasFocus, processChange } = useEditableCanvas({ ref: $_ref, cachedData, onDataChange, onEvent });
+	const { markdown, height, hasFocus, processChange } = useEditableCanvas({
+		ref: $_ref,
+		cachedData,
+		onDataChange,
+		onEvent,
+	});
 
-	const [ tab, setTab ] = useState<"editor" | "viewer">( "editor" );
+	const [tab, setTab] = useState<'editor' | 'viewer'>('editor');
 
 	useEffect(() => {
-		const socket = io( socketServerUrl );
-		
-		socket.emit( "join", id );
+		const socket = io(socketServerUrl);
 
-		socket.on( "change", ( message: FirebaseChanges ) => {
-			if ( message.sessionId !== sessionId ) {
-				processChange( message );
+		socket.emit('join', id);
+
+		socket.on('change', (message: FirebaseChanges) => {
+			if (message.sessionId !== sessionId) {
+				processChange(message);
 			}
 		});
 
-		const _isOnline = () => router.replace( router.asPath );
-		window.addEventListener( "online", _isOnline );
+		const _isOnline = () => router.replace(router.asPath);
+		window.addEventListener('online', _isOnline);
 
 		return () => {
 			socket.close();
-			window.removeEventListener( "online", _isOnline );
-
+			window.removeEventListener('online', _isOnline);
 		};
 	}, []);
 
-	const href = `https://www.chriskerr.com.au/editor/${ id }`;
+	const href = `https://www.chriskerr.com.au/editor/${id}`;
 
 	const classes = `
 		p-8 border-2 mt-2 w-full
-		${ hasFocus ? "border-brand" : "" }
+		${hasFocus ? 'border-brand' : ''}
 	`;
 
 	return (
 		<>
-			<NextSeo 
-				title={ title }
+			<NextSeo
+				title={title}
 				description="Collaborative, realtime, Markdown editing"
 				canonical="https://www.chriskerr.com.au/editor/new"
 			/>
 			<div className="display-width">
-				<h2 className="mb-12 text-3xl">{ title }</h2>
-				<p className="mb-4">As part of exploring my weaknesses as a programmer, I decided to take on the challenge of writing a text editor from scratch and exploring a Notion-style live editing data schema.</p>			
-				<p className="mb-4">I know TypeScript and web development, so I wrote it from scratch using HTML Canvas.</p>
-				<p>The core functionality works, at least on desktop (mobiles are a bit shakey), and more features to come.</p>
+				<h2 className="mb-12 text-3xl">{title}</h2>
+				<p className="mb-4">
+					As part of exploring my weaknesses as a programmer, I
+					decided to take on the challenge of writing a text editor
+					from scratch and exploring a Notion-style live editing data
+					schema.
+				</p>
+				<p className="mb-4">
+					I know TypeScript and web development, so I wrote it from
+					scratch using HTML Canvas.
+				</p>
+				<p>
+					The core functionality works, at least on desktop (mobiles
+					are a bit shakey), and more features to come.
+				</p>
 			</div>
 			<div className="w-full text-center display-width divider-before">
 				<div className="mb-16">
-					<h3 className="mb-4 text-xl">ID: { id }</h3>
-					<p>Permament link: <a href={ href } target="_blank" rel="noreferrer" className="hover:underline text-brand">{ href }</a></p>
+					<h3 className="mb-4 text-xl">ID: {id}</h3>
+					<p>
+						Permament link:{' '}
+						<a
+							href={href}
+							target="_blank"
+							rel="noreferrer"
+							className="hover:underline text-brand"
+						>
+							{href}
+						</a>
+					</p>
 				</div>
 			</div>
 			<div className="flex flex-col items-center justify-center display-width divider-before">
 				<div className="flex items-center justify-center w-full mb-8">
-					<h3 onClick={ () => setTab( "editor" ) } className={ `${ tab === "editor" ? "underline underline-offset-8 decoration-brand decoration-wavy" : "" } text-2xl mr-4 cursor-pointer` }>Editor</h3>
-					<h3 onClick={ () => setTab( "viewer" ) } className={ `${ tab === "viewer" ? "underline underline-offset-8 decoration-brand decoration-wavy" : "" } text-2xl ml-4 cursor-pointer` }>Viewer</h3>
+					<h3
+						onClick={() => setTab('editor')}
+						className={`${
+							tab === 'editor'
+								? 'underline underline-offset-8 decoration-brand decoration-wavy'
+								: ''
+						} text-2xl mr-4 cursor-pointer`}
+					>
+						Editor
+					</h3>
+					<h3
+						onClick={() => setTab('viewer')}
+						className={`${
+							tab === 'viewer'
+								? 'underline underline-offset-8 decoration-brand decoration-wavy'
+								: ''
+						} text-2xl ml-4 cursor-pointer`}
+					>
+						Viewer
+					</h3>
 				</div>
-				<div className={ `w-full pb-16 mr-0 2xl:mr-4 2xl:pb-0 ${ tab === "editor" ? "" : "hidden" }` }>
-					<div className={ classes }>
-						<canvas ref={ $_ref } height={ height } width="auto" className="outline-none" />
+				<div
+					className={`w-full pb-16 mr-0 2xl:mr-4 2xl:pb-0 ${
+						tab === 'editor' ? '' : 'hidden'
+					}`}
+				>
+					<div className={classes}>
+						<canvas
+							ref={$_ref}
+							height={height}
+							width="auto"
+							className="outline-none"
+						/>
 					</div>
 				</div>
-				{ tab === "viewer" && 
+				{tab === 'viewer' && (
 					<div className="w-full ml-0 2xl:ml-4">
-						<MarkdownRenderer markdown={ markdown } />
+						<MarkdownRenderer markdown={markdown} />
 					</div>
-				}
+				)}
 			</div>
 		</>
 	);
 }
 
-export const getServerSideProps: GetServerSideProps = async ( context ) => {
-	const id = Array.isArray( context.query.id ) ? context.query.id[ 0 ] : context.query.id;
+export const getServerSideProps: GetServerSideProps = async context => {
+	const id = Array.isArray(context.query.id)
+		? context.query.id[0]
+		: context.query.id;
 
-	fetch( socketServerUrl );
+	fetch(socketServerUrl);
 
-	if ( !id ) {
+	if (!id) {
 		return {
 			notFound: true,
 		};
 	}
 
-	if ( id === "new" ) {
+	if (id === 'new') {
 		const props: EditorProps = {
-			initialData: { id: "new", cells: []},
+			initialData: { id: 'new', cells: [] },
 			id,
 		};
 
 		return {
-			props, 
+			props,
 		};
 	}
 
-	const docRef = firestore.collection( FirebaseCollections.NOTES ).doc( id );
-	const changesRef = docRef.collection( FirebaseCollections.CHANGES );
+	const docRef = firestore.collection(FirebaseCollections.NOTES).doc(id);
+	const changesRef = docRef.collection(FirebaseCollections.CHANGES);
 
-	const initialData = await firestore.runTransaction( async ( txn ) => {
+	const initialData = await firestore.runTransaction(async txn => {
 		let data: EditableCanvasData | false = false;
 
 		try {
-			const [ doc, changes ] = await Promise.all([
-				txn.get( docRef ),
-				txn.get( changesRef.where( "applied_to_note", "==", false )),
+			const [doc, changes] = await Promise.all([
+				txn.get(docRef),
+				txn.get(changesRef.where('applied_to_note', '==', false)),
 			]);
-	
-			if ( !doc.exists ) {
+
+			if (!doc.exists) {
 				return false;
 			}
-		
+
 			const allChanges = changes.docs
-				.map( doc => ({
-					...doc.data(),
-					change_id: doc.id,
-				}) as FirebaseChanges )
-				.sort(( a, b ) => Number( a.uploaded_at ) - Number( b.uploaded_at ));
-	
-			data = processAllChanges( allChanges, {
-				...doc.data() as FirebaseNote,
+				.map(
+					doc =>
+						({
+							...doc.data(),
+							change_id: doc.id,
+						} as FirebaseChanges),
+				)
+				.sort((a, b) => Number(a.uploaded_at) - Number(b.uploaded_at));
+
+			data = processAllChanges(allChanges, {
+				...(doc.data() as FirebaseNote),
 				id: doc.id,
 			});
 
-			txn.update( docRef, { cells: data.cells } as Partial<FirebaseNote> );
+			txn.update(docRef, { cells: data.cells } as Partial<FirebaseNote>);
 			allChanges.forEach(({ change_id }) => {
-				txn.update( changesRef.doc( change_id || "" ), { applied_to_note: true } as Partial<FirebaseChanges> );
+				txn.update(changesRef.doc(change_id || ''), {
+					applied_to_note: true,
+				} as Partial<FirebaseChanges>);
 			});
-			
-		} catch ( e ) {
-			console.log( e );
-			
+		} catch (e) {
+			console.log(e);
 		}
 
 		return data;
-	}); 
+	});
 
-	if ( !initialData ) {
+	if (!initialData) {
 		return {
 			notFound: true,
 		};

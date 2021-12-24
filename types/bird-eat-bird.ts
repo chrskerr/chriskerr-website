@@ -1,18 +1,17 @@
-
 export enum ElementIds {
-	CANVAS = "canvas",
-	FOOTER = "footer",
+	CANVAS = 'canvas',
+	FOOTER = 'footer',
 }
 
-export type ElementTypes = "user" | "cloud" | "bird";
+export type ElementTypes = 'user' | 'cloud' | 'bird';
 
 export type Element = {
-	type: ElementTypes,
-	img: HTMLImageElement,
-	width: number,
-	height: number,
-	x: number,
-	y: number,
-	yVelocity: number,
-	xVelocity: number,
-}
+	type: ElementTypes;
+	img: HTMLImageElement;
+	width: number;
+	height: number;
+	x: number;
+	y: number;
+	yVelocity: number;
+	xVelocity: number;
+};

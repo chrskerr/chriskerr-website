@@ -1,48 +1,44 @@
+import { gameHeight } from '../constants';
+import { Element } from 'types/bird-eat-bird';
 
-import { gameHeight } from "../constants";
-import { Element } from "types/bird-eat-bird";
-
-export function moveElement ( 
-	element: Element, 
-	timestampGap: number, 
-	canvasWidth: number, 
-	inputYVel?: number, 
-	inputXVel?: number, 
-
+export function moveElement(
+	element: Element,
+	timestampGap: number,
+	canvasWidth: number,
+	inputYVel?: number,
+	inputXVel?: number,
 ): Element {
 	let yVelocity = inputYVel || element.yVelocity;
-	let y = yVelocity ? element.y + ( yVelocity * timestampGap ) : element.y;
+	let y = yVelocity ? element.y + yVelocity * timestampGap : element.y;
 
-	if ( yVelocity ) {
-		if ( y + element.height > gameHeight ) {
+	if (yVelocity) {
+		if (y + element.height > gameHeight) {
 			y = gameHeight - element.height;
 			yVelocity = 0;
-		}
-		else if ( y < 0 ) {
+		} else if (y < 0) {
 			y = 0;
 			yVelocity = 0;
 		}
 	}
 
 	let xVelocity = inputXVel || element.xVelocity;
-	let x = xVelocity ? element.x + ( xVelocity * timestampGap ) : element.x;
+	let x = xVelocity ? element.x + xVelocity * timestampGap : element.x;
 
-	if ( element.type === "user" && xVelocity ) {
-		if ( x + element.width > canvasWidth ) {
+	if (element.type === 'user' && xVelocity) {
+		if (x + element.width > canvasWidth) {
 			x = canvasWidth - element.width;
 			xVelocity = 0;
-		}
-		else if ( x < 0 ) {
+		} else if (x < 0) {
 			x = 0;
 			xVelocity = 0;
 		}
 	}
-	
+
 	return {
 		...element,
 		y,
 		yVelocity,
-		x, 
+		x,
 		xVelocity,
 	};
 }

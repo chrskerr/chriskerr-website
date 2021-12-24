@@ -1,4 +1,3 @@
-
 export enum Rounds {
 	TWO = 2,
 	THREE = 3,
@@ -7,8 +6,8 @@ export enum Rounds {
 }
 
 export enum Type {
-	ONE_HANDED = "One Handed",
-	TWO_HANDED = "Two Handed"
+	ONE_HANDED = 'One Handed',
+	TWO_HANDED = 'Two Handed',
 }
 
 export enum MinifiedType {
@@ -17,22 +16,22 @@ export enum MinifiedType {
 }
 
 export enum RepSplit {
-	FIVES = "5",
-	TENS = "10",
+	FIVES = '5',
+	TENS = '10',
 }
 
 export type Day = {
-	rounds: Rounds,
-	swingType: Type,
-	repSplit: RepSplit,
-}
+	rounds: Rounds;
+	swingType: Type;
+	repSplit: RepSplit;
+};
 
 export type MinifiedDay = {
-	r: Rounds,
-	t: MinifiedType,
-	s: RepSplit,
-}
+	r: Rounds;
+	t: MinifiedType;
+	s: RepSplit;
+};
 
-export type MinifiedWeek = ( MinifiedDay | null )[]
+export type MinifiedWeek = (MinifiedDay | null)[];
 
-export type Week = ( Day | null )[]
+export type Week = (Day | null)[];

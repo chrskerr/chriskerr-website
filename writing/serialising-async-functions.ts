@@ -1,9 +1,8 @@
+import { BlogPostTitles, BlogPostSlugs, BlogData } from 'types/writing';
+import { formatISO, format } from 'date-fns';
 
-import { BlogPostTitles, BlogPostSlugs, BlogData } from "types/writing";
-import { formatISO, format } from "date-fns";
-
-const createdAt = new Date( 2021, 11, 19 );
-const modifiedAt = new Date( 2021, 11, 24 );
+const createdAt = new Date(2021, 11, 19);
+const modifiedAt = new Date(2021, 11, 24);
 
 const markdown = `
 So it turns out that I am way less versed in Javascript packages than I thought that I was, and didn't realise that [Aync](https://www.npmjs.com/package/async) existed...
@@ -32,15 +31,14 @@ export function serialise<InputType, ResultType>(
 	async function run () {
 		isRunning = true;
 
-		const current = queue[ 0 ];
-		const result = await functionToSerialise( current.input );
-		current.resolve( result );
-
-		queue.shift();
+		const current = queue.shift();
+		if ( current ) {
+			const result = await functionToSerialise( current.input );
+			current.resolve( result );
+		}
 		
 		if ( queue.length ) await run();
-
-		isRunning = false;
+		else isRunning = false;
 	}
 
 	return async function ( input: InputType ): Promise<ResultType> {
@@ -55,16 +53,17 @@ export function serialise<InputType, ResultType>(
 
 export const serialisingAsyncFunctions: BlogData = {
 	title: BlogPostTitles.ASYNC_FUNCTIONS,
-	description: "How to create a serialised async function in Javascript / Typescript.",
+	description:
+		'How to create a serialised async function in Javascript / Typescript.',
 	slug: BlogPostSlugs.ASYNC_FUNCTIONS,
 
-	tags: [ "javascript", "typescript", "async", "serial", "queue" ],
+	tags: ['javascript', 'typescript', 'async', 'serial', 'queue'],
 
 	markdown,
 
-	publishedAtISO: formatISO( createdAt ),
-	modifiedAtISO: formatISO( modifiedAt ),
+	publishedAtISO: formatISO(createdAt),
+	modifiedAtISO: formatISO(modifiedAt),
 
-	publishedAtString: format( createdAt , "dd MMMM yyyy" ),
-	modifiedAtString: format( modifiedAt, "dd MMMM yyyy" ),
+	publishedAtString: format(createdAt, 'dd MMMM yyyy'),
+	modifiedAtString: format(modifiedAt, 'dd MMMM yyyy'),
 };

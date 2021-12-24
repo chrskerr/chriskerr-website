@@ -1,32 +1,31 @@
-
 interface CoreBlog {
-	slug: string,
+	slug: string;
 
-	title: string,
-	description: string,
+	title: string;
+	description: string;
 
-	tags: string[],
+	tags: string[];
 
-	publishedAtISO: string,
-	modifiedAtISO: string,
+	publishedAtISO: string;
+	modifiedAtISO: string;
 
-	publishedAtString: string,
-	modifiedAtString: string,
+	publishedAtString: string;
+	modifiedAtString: string;
 }
 
 export interface BlogData extends CoreBlog {
-	markdown: string,
+	markdown: string;
 }
 
 export interface Blog extends CoreBlog {
-	htmlContent: string,
-	url: string,
+	htmlContent: string;
+	url: string;
 }
 
-export enum  BlogPostSlugs {
-	ASYNC_FUNCTIONS = "serialising-async-functions"
+export enum BlogPostSlugs {
+	ASYNC_FUNCTIONS = 'serialising-async-functions',
 }
 
 export enum BlogPostTitles {
-	ASYNC_FUNCTIONS = "Serialising Async Functions"
+	ASYNC_FUNCTIONS = 'Serialising Async Functions',
 }
