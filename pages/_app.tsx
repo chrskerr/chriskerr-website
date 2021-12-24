@@ -40,7 +40,7 @@ export default function App({ Component, pageProps }: AppProps): ReactElement {
 						</div>
 					</nav>
 				</div>
-				<div className="flex-1">
+				<div className="flex flex-col flex-1">
 					<Component {...pageProps} />
 				</div>
 				<footer

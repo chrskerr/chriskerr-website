@@ -1,4 +1,4 @@
-import type { ProbablyValidUrl } from './';
+import type { ProbablyValidUrl } from './types';
 
 export const findHrefs = (html: string): ProbablyValidUrl[] => {
 	const aTags = html.match(/<a[^>]+>/g);

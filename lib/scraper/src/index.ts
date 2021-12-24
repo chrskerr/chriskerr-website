@@ -1,10 +1,4 @@
-export type ScrapingResults = {
-	statusCode: number;
-	hrefs: ProbablyValidUrl[];
-};
-
-export type ProbablyValidUrl = `https://${string}`;
-
+import type { ProbablyValidUrl, ScrapingResults } from './types';
 import { ignoredDomains } from './constants';
 import { findHrefs } from './helpers';
 
@@ -30,3 +24,5 @@ export default async function scraper(
 		hrefs,
 	};
 }
+
+export type { ProbablyValidUrl, ScrapingResults };

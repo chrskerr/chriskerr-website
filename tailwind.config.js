@@ -12,6 +12,9 @@ module.exports = {
 				"brand-dark": "var(--brand-blue-dark)",
 				"brand-secondary": "var(--brand-secondary)",
 			},
+			transitionTimingFunction: {
+				'back-out': 'cubic-bezier(0.34, 1.56, 0.64, 1)'
+			}
 		},
 	},
 	plugins: [
