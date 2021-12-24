@@ -29,6 +29,7 @@
 		"random-word-slugs": "^0.1.6",
 		"react": "^18.0.0-rc.0",
 		"react-dom": "^18.0.0-rc.0",
+		"recharts": "^2.1.8",
 		"sanitize-html": "^2.5.1",
 		"socket.io-client": "^4.4.0"
 	},
@@ -42,6 +43,7 @@
 		"@types/marked": "^4.0.1",
 		"@types/nprogress": "^0.2.0",
 		"@types/react": "^17.0.37",
+		"@types/recharts": "^1.8.23",
 		"@types/sanitize-html": "^2.3.2",
 		"@typescript-eslint/eslint-plugin": "^5.6.0",
 		"@typescript-eslint/parser": "^5.6.0",

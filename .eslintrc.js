@@ -46,6 +46,6 @@ module.exports = {
 		"react-hooks/exhaustive-deps": "off",
 		"@typescript-eslint/adjacent-overload-signatures": "error",
 		"@typescript-eslint/ban-ts-comment": "off",
-		"@typescript-eslint/no-extra-non-null-assertion": [ "error" ],
+		"@typescript-eslint/no-extra-non-null-assertion": [ "off" ],
 	},
 };

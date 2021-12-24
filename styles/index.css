@@ -151,6 +151,14 @@ h6 {
   @apply mx-auto;
 }
 
+button.button {
+	@apply px-3 py-2 text-white transition rounded shadow-lg bg-brand hover:bg-brand-dark;
+}
+
+input[type='radio']:checked {
+	@apply bg-brand;
+}
+
 @font-face {
   font-family: 'icomoon';
   src:

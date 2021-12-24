@@ -17,16 +17,16 @@ After all that, I published a wrapper which serialised my function (plus a bunch
 An extended version of the below can be found at [Async Function Serializer](https://www.npmjs.com/package/async-function-serializer), but this was the core code!
 
 \`\`\`ts
-type Queue<T, R> = {
-	resolve: ( data: R ) => void,
-	input: T,
+type Queue<InputType, ResultType> = {
+	resolve: ( data: ResultType ) => void,
+	input: InputType,
 }[]
 
-export function serialise<T, R>( 
-	functionToSerialise: ( input: T ) => R, 
-): (( input: T ) => Promise<R> ) {
+export function serialise<InputType, ResultType>( 
+	functionToSerialise: ( input: InputType ) => ResultType, 
+): ( input: InputType ) => Promise<ResultType> {
 
-	const queue: Queue<T, R> = [];
+	const queue: Queue<InputType, ResultType> = [];
 	let isRunning = false;
 
 	async function run () {
@@ -43,8 +43,8 @@ export function serialise<T, R>(
 		isRunning = false;
 	}
 
-	return async function ( input: T ): Promise<R> {
-		return await new Promise<R>( resolve => {
+	return async function ( input: InputType ): Promise<ResultType> {
+		return await new Promise<ResultType>( resolve => {
 			queue.push({ resolve, input });
 			if ( !isRunning ) run();
 		});

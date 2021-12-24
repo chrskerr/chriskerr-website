@@ -11,7 +11,6 @@ const roundOptions: Rounds[] = [
 	Rounds.FIVE, 
 ];
 
-
 const getRounds = (): Rounds => {
 	return roundOptions[ Math.floor( Math.random() * roundOptions.length ) ];
 };

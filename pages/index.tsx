@@ -42,17 +42,18 @@ export default function Landing (): ReactElement {
 			</section>
 			<section className="w-full">
 				<div className="grid grid-cols-1 gap-16 md:grid-cols-2 grid-rows-auto display-width divider-before">
-					<Tile url="/editor/new" title="Collaborative Markdown Editor" image="/images/stacked-waves.png" />
-					<Tile url="/bird-eat-bird" title="Bird Eat Bird" image="/images/bird-eat-bird.png" />
-					<Tile url={ `/${ BlogPostSlugs.ASYNC_FUNCTIONS }` } title={ BlogPostTitles.ASYNC_FUNCTIONS} image="/images/asynchronous_function_tile.png" />
-					<Tile url='/quick-and-dead' title="Quick &amp; Dead Generator" image="/images/q&amp;d_tile.png" />
+					<Tile url="/editor/new" title="Collaborative Markdown Editor" image="/images/tiles/stacked-waves.png" />
+					<Tile url="/bird-eat-bird" title="Bird Eat Bird" image="/images/tiles/bird-eat-bird.png" />
+					<Tile url={ `/${ BlogPostSlugs.ASYNC_FUNCTIONS }` } title={ BlogPostTitles.ASYNC_FUNCTIONS} image="/images/tiles/asynchronous_function_tile.png" />
+					<Tile url='/quick-and-dead' title="Quick &amp; Dead Generator" image="/images/tiles/q&amp;d_tile.png" />
+					<Tile url='/javascript-randomness' title="Javascript Random Number Generation" image="/images/tiles/blob-scatter.png" />
 				</div>
 			</section>
 		</>
 	);
 }
 
-function Tile ({ url, title, image }: { url: string, title: string, image: string }) {
+function Tile ({ url, title, image }: { url: string, title: string, image: `/images/tiles/${ string }` }) {
 	return (
 		<Link href={ url } passHref>
 			<a>
