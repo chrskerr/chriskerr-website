@@ -23,8 +23,6 @@ export interface UpdateNoteAPIBody {
 	sessionId: string;
 }
 
-const origin = process.env.NEXT_PUBLIC_URL_BASE;
-
 const idLength = 3;
 const idOptions: RandomWordOptions<typeof idLength> = {
 	format: 'kebab',
@@ -57,7 +55,7 @@ export interface PublishChangeResponse {
 
 const handler: NextApiHandler = async (req, res) => {
 	await NextCors(req, res, {
-		origin,
+		origin: process.env.NEXT_PUBLIC_URL_BASE,
 		methods: ['POST'],
 	});
 

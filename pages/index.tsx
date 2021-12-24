@@ -68,6 +68,11 @@ export default function Landing(): ReactElement {
 						title="Javascript Random Number Generation"
 						image="/images/tiles/blob-scatter.png"
 					/>
+					<Tile
+						url="/website-graph"
+						title="Website Connection Graph Visualiser"
+						image="/images/tiles/blob-scatter.png"
+					/>
 				</div>
 			</section>
 		</>
