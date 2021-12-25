@@ -1,6 +1,8 @@
 import type { ProbablyValidUrl } from 'lib/scraper/src';
 import type { ScraperAPIBody, ScraperAPIResponse } from 'pages/api/scraper';
-import { LayoutNode, Node } from '.';
+import { LayoutConnector, LayoutNode, Node } from '.';
+
+export const size = 15;
 
 export const fetchHrefs = async (
 	url: ProbablyValidUrl,
@@ -50,20 +52,21 @@ const createNodeTree = (
 };
 
 type CreateNoteTreeProps = {
-	size: number;
 	tree: NodeTree;
 	maxDepth: number;
 	parent?: LayoutNode;
 	degrees?: number;
 };
 
+const getRadians = (degrees: number) => (degrees * Math.PI) / 180;
+const getDegrees = (radians: number) => (radians * 180) / Math.PI;
+
 const createNodeLayoutFromTree = ({
-	size,
 	tree,
 	maxDepth,
 	parent,
 	degrees,
-}: CreateNoteTreeProps): LayoutNode[] => {
+}: CreateNoteTreeProps): (LayoutNode | LayoutConnector | undefined)[] => {
 	const { children, depth } = tree;
 
 	const radius = 1 - (depth / maxDepth) * 0.5;
@@ -72,48 +75,64 @@ const createNodeLayoutFromTree = ({
 		parent && degrees !== undefined
 			? {
 					...tree.node,
-					x: parent.x + radius * Math.cos((degrees * Math.PI) / 180),
-					y: parent.y + radius * Math.sin((degrees * Math.PI) / 180),
-					size,
+					type: 'node',
+					x: parent.x + radius * Math.cos(getRadians(degrees)),
+					y: parent.y + radius * Math.sin(getRadians(degrees)),
+					size: size,
 					colour: 'var(--brand-blue)',
 			  }
 			: {
 					...tree.node,
+					type: 'node',
 					x: 0.5,
 					y: 0.5,
 					size,
 					colour: 'var(--brand-secondary)',
 			  };
 
-	const childDegreesRange = degrees ? 180 : 360;
-	const childDegreesMin = degrees ? degrees - 90 : 0;
+	const connector: LayoutConnector | undefined = parent
+		? {
+				id: node.id + '_connector',
+				type: 'connector',
+				startX: parent.x,
+				endX: node.x,
+				startY: parent.y,
+				endY: node.y,
+		  }
+		: undefined;
 
-	const getDegrees = (index: number) =>
-		Math.floor(
-			(((360 * index) / children.length - childDegreesMin) /
-				childDegreesRange) *
-				360,
-		);
+	const childDegreesWindowSize = 180 * (1 - (depth * 0.5) / maxDepth);
+
+	const startingDegrees = parent
+		? getDegrees(Math.atan2(node.y - 0.5, node.x - 0.5)) -
+		  childDegreesWindowSize / 2
+		: 0;
+
+	const availableDegree = parent ? childDegreesWindowSize : 360;
+
+	const getChildDegrees = (index: number) => {
+		const percentageThroughRange = index / children.length;
+		const childRads =
+			percentageThroughRange * availableDegree + startingDegrees;
+		return childRads;
+	};
 
 	const childNotes = children.flatMap((child, i) =>
 		createNodeLayoutFromTree({
-			size,
 			tree: child,
 			maxDepth,
 			parent: node,
-			degrees: getDegrees(i),
+			degrees: getChildDegrees(i),
 		}),
 	);
 
-	return [node, ...childNotes];
+	return [node, connector, ...childNotes];
 };
 
 export const calculateLayoutNodes = (
 	data: Node[],
 	div: HTMLDivElement | null,
-): LayoutNode[] => {
-	const size = 15;
-
+): (LayoutNode | LayoutConnector)[] => {
 	if (!div) return [];
 
 	const root = data.find(({ parentId }) => !parentId);
@@ -123,7 +142,6 @@ export const calculateLayoutNodes = (
 	const { maxDepth } = tree;
 
 	const unadjustedNodes = createNodeLayoutFromTree({
-		size,
 		tree,
 		maxDepth,
 	});
@@ -135,10 +153,10 @@ export const calculateLayoutNodes = (
 		minY: number;
 	}>(
 		(acc, curr) => ({
-			maxX: Math.max(acc.maxX, curr.x),
-			minX: Math.min(acc.minX, curr.x),
-			maxY: Math.max(acc.maxY, curr.y),
-			minY: Math.min(acc.minY, curr.y),
+			maxX: curr?.type !== 'node' ? acc.maxX : Math.max(acc.maxX, curr.x),
+			minX: curr?.type !== 'node' ? acc.minX : Math.min(acc.minX, curr.x),
+			maxY: curr?.type !== 'node' ? acc.maxY : Math.max(acc.maxY, curr.y),
+			minY: curr?.type !== 'node' ? acc.minY : Math.min(acc.minY, curr.y),
 		}),
 		{ maxX: 0, minX: 1, maxY: 0, minY: 1 },
 	);
@@ -151,25 +169,63 @@ export const calculateLayoutNodes = (
 
 	const adjustX = (x: number) => {
 		return (
-			div.clientWidth * 0.2 +
+			div.clientWidth * 0.1 +
 			(rangeX ? (x - (1 - widestX)) / rangeX : 0.5) *
 				div.clientWidth *
-				0.6
+				0.8 -
+			size / 2
 		);
 	};
 
 	const adjustY = (y: number) => {
 		return (
-			div.clientHeight * 0.2 +
+			div.clientHeight * 0.1 +
 			(rangeY ? (y - (1 - widestY)) / rangeY : 0.5) *
 				div.clientHeight *
-				0.6
+				0.8 -
+			size / 2
 		);
 	};
 
-	return unadjustedNodes.map(node => ({
-		...node,
-		x: adjustX(node.x),
-		y: adjustY(node.y),
-	}));
+	return unadjustedNodes
+		.map(node => {
+			if (isTypeNode(node)) {
+				return {
+					...node,
+					x: adjustX(node.x),
+					y: adjustY(node.y),
+				};
+			}
+			if (isTypeConnector(node)) {
+				return {
+					...node,
+					startX: adjustX(node.startX),
+					endX: adjustX(node.endX),
+
+					startY: adjustY(node.startY),
+					endY: adjustY(node.endY),
+				};
+			}
+
+			return undefined;
+		})
+		.filter(isNotUndefined);
+};
+
+export const isTypeNode = (
+	node: LayoutNode | LayoutConnector | undefined,
+): node is LayoutNode => {
+	return node?.type === 'node';
+};
+
+export const isTypeConnector = (
+	node: LayoutNode | LayoutConnector | undefined,
+): node is LayoutConnector => {
+	return node?.type === 'connector';
+};
+
+const isNotUndefined = (
+	node: LayoutNode | LayoutConnector | undefined,
+): node is LayoutConnector | LayoutNode => {
+	return !!node;
 };

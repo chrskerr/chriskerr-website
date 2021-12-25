@@ -5,6 +5,12 @@ import { findHrefs } from './helpers';
 export default async function scraper(
 	url: ProbablyValidUrl,
 ): Promise<ScrapingResults> {
+	if (ignoredDomains.some(domain => url.includes(domain))) {
+		return {
+			statusCode: 200,
+			hrefs: [],
+		};
+	}
 	const fetchRes = await fetch(url);
 	let hrefs: ProbablyValidUrl[] = [];
 
@@ -13,9 +19,7 @@ export default async function scraper(
 
 		if (contentType?.includes('text/html')) {
 			const html = await fetchRes.text();
-			hrefs = ignoredDomains.some(domain => url.includes(domain))
-				? []
-				: findHrefs(html);
+			hrefs = findHrefs(html);
 		}
 	}
 

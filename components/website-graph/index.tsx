@@ -1,11 +1,13 @@
 import type { ProbablyValidUrl } from 'lib/scraper/src';
 
-import { ChangeEvent, ReactElement, useEffect, useRef, useState } from 'react';
+import { ReactElement, useEffect, useRef, useState } from 'react';
 import { isValidUrl } from 'lib/scraper/src/helpers';
 import { nanoid } from 'nanoid';
 
-import { calculateLayoutNodes, fetchHrefs } from './helpers';
+import { calculateLayoutNodes, fetchHrefs, isTypeNode } from './helpers';
 import GraphNode from './node';
+import GraphConnector from './connector';
+import { throttle } from 'lodash';
 
 export type Node = {
 	id: string;
@@ -14,6 +16,7 @@ export type Node = {
 };
 
 export type LayoutNode = Node & {
+	type: 'node';
 	x: number;
 	y: number;
 	size: number;
@@ -21,23 +24,26 @@ export type LayoutNode = Node & {
 };
 
 export type LayoutConnector = {
+	type: 'connector';
+	id: string;
 	startX: number;
 	startY: number;
 	endX: number;
 	endY: number;
 };
 
-const maxDepth = 3;
+const maxDepth = 6;
 
 export default function WebsiteGrapher(): ReactElement {
 	const $div = useRef<HTMLDivElement>(null);
 
 	const [url, setUrl] = useState('https://www.chriskerr.com.au');
-	const [urlError, setUrlError] = useState(false);
 	const [loading, setLoading] = useState(false);
 
 	const [data, setData] = useState<Node[]>([]);
-	const [layoutData, setLayoutData] = useState<LayoutNode[]>([]);
+	const [layoutData, setLayoutData] = useState<
+		(LayoutNode | LayoutConnector)[]
+	>([]);
 	const seenUrls = useRef<ProbablyValidUrl[]>([]);
 
 	const requestUrl = async (url: string, depth = 0, parentId = nanoid()) => {
@@ -52,7 +58,8 @@ export default function WebsiteGrapher(): ReactElement {
 		const newHrefs = await fetchHrefs(url);
 		const newNodes = newHrefs
 			.filter(href => !seenUrls.current.includes(href))
-			.map<Node>(href => ({ id: nanoid(), parentId, href }));
+			.map<Node>(href => ({ id: nanoid(), parentId, href }))
+			.slice(0, 5);
 
 		seenUrls.current = [...seenUrls.current, ...newHrefs];
 
@@ -76,33 +83,39 @@ export default function WebsiteGrapher(): ReactElement {
 		}
 	};
 
-	const onChange = (e: ChangeEvent<HTMLInputElement>) => {
-		const value = e.target.value;
-		setUrl(value);
-		if (!value.startsWith('https://')) setUrlError(true);
-		else setUrlError(false);
-	};
-
 	useEffect(() => {
 		setLayoutData(calculateLayoutNodes(data, $div.current));
 	}, [data]);
+
+	useEffect(() => {
+		const _resize = throttle(() => {
+			setLayoutData(calculateLayoutNodes(data, $div.current));
+		}, 100);
+
+		window.addEventListener('resize', _resize, { passive: true });
+
+		return () => {
+			window.removeEventListener('resize', _resize);
+		};
+	});
 
 	return (
 		<div className="flex flex-col flex-1">
 			<div className="display-width divider-before">
 				<div
-					className={`flex flex-col items-start ${
+					className={`flex flex-col sm:flex-row items-start ${
 						loading ? 'opacity-60' : ''
 					}`}
 				>
 					<input
 						type="text"
+						className="w-full mb-4 mr-8 sm:flex-1 sm:mb-0"
 						value={url}
-						onChange={onChange}
+						onChange={e => setUrl(e.target.value)}
 						placeholder="https://..."
 					/>
 					<button
-						className="mt-8 button"
+						className="button"
 						onClick={() => requestUrl(url)}
 						disabled={loading}
 					>
@@ -115,16 +128,26 @@ export default function WebsiteGrapher(): ReactElement {
 				className="relative flex-1 display-width divider-before min-h-[400px]"
 			>
 				{layoutData?.length > 0 &&
-					layoutData.map(node => (
-						<GraphNode
-							key={node.id}
-							x={node.x}
-							y={node.y}
-							size={node.size}
-							href={node.href}
-							colour={node.colour}
-						/>
-					))}
+					layoutData.map(node =>
+						isTypeNode(node) ? (
+							<GraphNode
+								key={node.id}
+								x={node.x}
+								y={node.y}
+								size={node.size}
+								href={node.href}
+								colour={node.colour}
+							/>
+						) : (
+							<GraphConnector
+								key={node.id}
+								startX={node.startX}
+								startY={node.startY}
+								endX={node.endX}
+								endY={node.endY}
+							/>
+						),
+					)}
 			</div>
 		</div>
 	);

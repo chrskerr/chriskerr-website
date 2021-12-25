@@ -15,8 +15,14 @@ export default function WebsiteGraph(): ReactElement {
 			<div className="display-width">
 				<h2 className="mb-4 text-3xl">{title}</h2>
 				<p className="mb-4">
-					I wanted an excuse to start building a webscaper... so here
-					is the start!
+					I wanted an excuse to start building a webscaper and then
+					got carried away working out node placement algorithms...
+					this is v1!
+				</p>
+				<p className="mb-4">
+					Enter a URL and it will grab connections out to a distance
+					of 6. To limited runtime, only the first 5 urls found on
+					each page are crawled.
 				</p>
 			</div>
 			<WebsiteGrapher />

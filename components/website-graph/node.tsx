@@ -22,16 +22,19 @@ export default function GraphNode({
 		left: x,
 		width: size,
 		height: size,
-		backgroundColor: colour,
+		borderColor: colour,
 	};
 
 	return (
 		<div
 			style={styles}
-			className="absolute transition-all duration-1000 rounded-full ease-back-out group"
+			className="absolute z-10 transition-all duration-1000 bg-white border-2 rounded-full ease-back-out group"
 		>
 			<div className="relative hidden w-full h-full group-hover:block">
-				<div className="absolute z-10 px-4 py-3 bg-white border rounded shadow-lg bottom-1/2 left-1/2 group-hover:block">
+				<div
+					style={{ transform: 'translateZ(1px)' }}
+					className="absolute z-30 px-4 py-3 bg-white border rounded shadow-lg bottom-1/2 left-1/2 group-hover:block"
+				>
 					<a
 						href={href}
 						target="_blank"
