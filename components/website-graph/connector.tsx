@@ -32,7 +32,7 @@ export default function GraphConnector({
 	return (
 		<div
 			style={styles}
-			className="absolute transition-all duration-1000 origin-left h-[1px] z-0 ease-back-out bg-stone-600"
+			className="absolute transition-[top,left,width] duration-1000 origin-left h-[1px] z-0 ease-back-out bg-stone-600"
 		></div>
 	);
 }

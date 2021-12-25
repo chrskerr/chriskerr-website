@@ -8,7 +8,7 @@ import { nanoid } from 'nanoid';
 import { calculateLayoutNodes, fetchHrefs, isTypeNode } from './helpers';
 import GraphNode from './node';
 import GraphConnector from './connector';
-import { throttle } from 'lodash';
+import throttle from 'lodash/throttle';
 
 const maxDepth = 4;
 
@@ -62,12 +62,17 @@ export default function WebsiteGrapher(): ReactElement {
 	};
 
 	useEffect(() => {
-		setLayoutData(calculateLayoutNodes(data, $div.current));
+		setLayoutData(
+			previous => calculateLayoutNodes(data, $div.current) || previous,
+		);
 	}, [data]);
 
 	useEffect(() => {
 		const _resize = throttle(() => {
-			setLayoutData(calculateLayoutNodes(data, $div.current));
+			setLayoutData(
+				previous =>
+					calculateLayoutNodes(data, $div.current) || previous,
+			);
 		}, 100);
 
 		window.addEventListener('resize', _resize, { passive: true });
@@ -103,7 +108,7 @@ export default function WebsiteGrapher(): ReactElement {
 			</div>
 			<div
 				ref={$div}
-				className="relative flex-1 display-width divider-before min-h-[400px]"
+				className="relative flex-1 display-width divider-before min-h-[50vh]"
 			>
 				{layoutData?.length > 0 &&
 					layoutData.map(node =>
