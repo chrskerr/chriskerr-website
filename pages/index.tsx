@@ -64,14 +64,14 @@ export default function Landing(): ReactElement {
 						image="/images/tiles/q&amp;d_tile.png"
 					/>
 					<Tile
-						url="/javascript-randomness"
-						title="Javascript Random Number Generation"
-						image="/images/tiles/gold-waves.png"
-					/>
-					<Tile
 						url="/website-graph"
 						title="Website Connection Graph Visualiser"
 						image="/images/tiles/blob-scatter.png"
+					/>
+					<Tile
+						url="/javascript-randomness"
+						title="Javascript Random Number Generation"
+						image="/images/tiles/gold-waves.png"
 					/>
 				</div>
 			</section>
