@@ -32,7 +32,7 @@ export type LayoutConnector = {
 	endY: number;
 };
 
-const maxDepth = 6;
+const maxDepth = 4;
 
 export default function WebsiteGrapher(): ReactElement {
 	const $div = useRef<HTMLDivElement>(null);

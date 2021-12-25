@@ -4,3 +4,7 @@ export type ScrapingResults = {
 };
 
 export type ProbablyValidUrl = `https://${string}`;
+
+export type ScraperOptions = {
+	filter?: boolean;
+};

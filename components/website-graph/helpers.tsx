@@ -25,6 +25,7 @@ type NodeTree = {
 	maxDepth: number;
 	node: Node;
 	children: NodeTree[];
+	totalNodes: number;
 };
 
 const createNodeTree = (
@@ -43,11 +44,16 @@ const createNodeTree = (
 		depth,
 	);
 
+	const totalNodes =
+		children.reduce<number>((acc, { totalNodes }) => acc + totalNodes, 1) ||
+		1;
+
 	return {
 		depth,
 		maxDepth,
 		node: target,
 		children,
+		totalNodes,
 	};
 };
 
@@ -55,21 +61,25 @@ type CreateNoteTreeProps = {
 	tree: NodeTree;
 	maxDepth: number;
 	parent?: LayoutNode;
-	degrees?: number;
+	availableDegreesStart: number;
+	availableDegreesEnd: number;
 };
 
 const getRadians = (degrees: number) => (degrees * Math.PI) / 180;
-const getDegrees = (radians: number) => (radians * 180) / Math.PI;
 
 const createNodeLayoutFromTree = ({
 	tree,
 	maxDepth,
 	parent,
-	degrees,
+	availableDegreesStart,
+	availableDegreesEnd,
 }: CreateNoteTreeProps): (LayoutNode | LayoutConnector | undefined)[] => {
 	const { children, depth } = tree;
 
 	const radius = 1 - (depth / maxDepth) * 0.5;
+
+	const availableDegreesWidth = availableDegreesEnd - availableDegreesStart;
+	const degrees = availableDegreesStart + availableDegreesWidth / 2;
 
 	const node: LayoutNode =
 		parent && degrees !== undefined
@@ -101,28 +111,33 @@ const createNodeLayoutFromTree = ({
 		  }
 		: undefined;
 
-	const childDegreesWindowSize = 180 * (1 - (depth * 0.5) / maxDepth);
+	const totalNodesBelow = children.reduce<number>(
+		(acc, { totalNodes }) => acc + totalNodes,
+		0,
+	);
+	const degreesPerNode = availableDegreesWidth / totalNodesBelow;
 
-	const startingDegrees = parent
-		? getDegrees(Math.atan2(node.y - 0.5, node.x - 0.5)) -
-		  childDegreesWindowSize / 2
-		: 0;
+	let childNodesAllocated = 0;
 
-	const availableDegree = parent ? childDegreesWindowSize : 360;
+	const getChildDegrees = (totalNodes: number) => {
+		const childsAvailableDegreesStart =
+			availableDegreesStart + childNodesAllocated * degreesPerNode;
+		const childsAvailableDegreesEnd =
+			childsAvailableDegreesStart + totalNodes * degreesPerNode;
 
-	const getChildDegrees = (index: number) => {
-		const percentageThroughRange = index / children.length;
-		const childRads =
-			percentageThroughRange * availableDegree + startingDegrees;
-		return childRads;
+		childNodesAllocated += totalNodes;
+		return {
+			availableDegreesStart: childsAvailableDegreesStart,
+			availableDegreesEnd: childsAvailableDegreesEnd,
+		};
 	};
 
-	const childNotes = children.flatMap((child, i) =>
+	const childNotes = children.flatMap(child =>
 		createNodeLayoutFromTree({
 			tree: child,
 			maxDepth,
 			parent: node,
-			degrees: getChildDegrees(i),
+			...getChildDegrees(child.totalNodes),
 		}),
 	);
 
@@ -144,6 +159,8 @@ export const calculateLayoutNodes = (
 	const unadjustedNodes = createNodeLayoutFromTree({
 		tree,
 		maxDepth,
+		availableDegreesStart: 0,
+		availableDegreesEnd: 359,
 	});
 
 	const { maxX, minX, maxY, minY } = unadjustedNodes.reduce<{

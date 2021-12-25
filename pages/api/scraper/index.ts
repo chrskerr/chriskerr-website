@@ -19,7 +19,7 @@ const handler: NextApiHandler = async (req, res) => {
 		return res.status(500).send('Invalid url');
 	}
 
-	const result: ScraperAPIResponse = await scraper(url);
+	const result: ScraperAPIResponse = await scraper(url, { filter: false });
 	res.status(200).json(result);
 };
 

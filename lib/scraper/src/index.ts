@@ -1,11 +1,19 @@
-import type { ProbablyValidUrl, ScrapingResults } from './types';
+import type {
+	ProbablyValidUrl,
+	ScraperOptions,
+	ScrapingResults,
+} from './types';
 import { ignoredDomains } from './constants';
 import { findHrefs } from './helpers';
 
 export default async function scraper(
 	url: ProbablyValidUrl,
+	options?: ScraperOptions,
 ): Promise<ScrapingResults> {
-	if (ignoredDomains.some(domain => url.includes(domain))) {
+	if (
+		options?.filter !== false &&
+		ignoredDomains.some(domain => url.includes(domain))
+	) {
 		return {
 			statusCode: 200,
 			hrefs: [],

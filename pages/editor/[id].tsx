@@ -296,7 +296,7 @@ export const getServerSideProps: GetServerSideProps = async context => {
 				} as Partial<FirebaseChanges>);
 			});
 		} catch (e) {
-			console.log(e);
+			console.error(e);
 		}
 
 		return data;
