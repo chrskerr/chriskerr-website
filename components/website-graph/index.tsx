@@ -5,9 +5,7 @@ import { isValidUrl } from 'lib/scraper/src/helpers';
 import { nanoid } from 'nanoid';
 
 import { calculateLayoutNodes, fetchHrefs } from './helpers';
-
-import dynamic from 'next/dynamic';
-const GraphNode = dynamic(() => import('./node'));
+import GraphNode from './node';
 
 export type Node = {
 	id: string;
@@ -19,6 +17,14 @@ export type LayoutNode = Node & {
 	x: number;
 	y: number;
 	size: number;
+	colour: string;
+};
+
+export type LayoutConnector = {
+	startX: number;
+	startY: number;
+	endX: number;
+	endY: number;
 };
 
 const maxDepth = 3;
@@ -106,7 +112,7 @@ export default function WebsiteGrapher(): ReactElement {
 			</div>
 			<div
 				ref={$div}
-				className="relative flex-1 transition-all duration-1000 ease-linear display-width divider-before"
+				className="relative flex-1 display-width divider-before min-h-[400px]"
 			>
 				{layoutData?.length > 0 &&
 					layoutData.map(node => (
@@ -116,6 +122,7 @@ export default function WebsiteGrapher(): ReactElement {
 							y={node.y}
 							size={node.size}
 							href={node.href}
+							colour={node.colour}
 						/>
 					))}
 			</div>

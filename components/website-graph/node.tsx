@@ -1,4 +1,4 @@
-import { memo, ReactElement } from 'react';
+import { ReactElement } from 'react';
 
 import type { ProbablyValidUrl } from 'lib/scraper/src';
 
@@ -7,25 +7,28 @@ type GraphNodeProps = {
 	y: number;
 	size: number;
 	href: ProbablyValidUrl;
+	colour: string;
 };
 
-const GraphNode = memo(function GraphNode({
+export default function GraphNode({
 	x,
 	y,
 	size,
 	href,
+	colour,
 }: GraphNodeProps): ReactElement {
 	const styles = {
 		top: y,
 		left: x,
 		width: size,
 		height: size,
+		backgroundColor: colour,
 	};
 
 	return (
 		<div
 			style={styles}
-			className="absolute transition-all duration-1000 rounded-full ease-back-out bg-brand-dark group"
+			className="absolute transition-all duration-1000 rounded-full ease-back-out group"
 		>
 			<div className="relative hidden w-full h-full group-hover:block">
 				<div className="absolute z-10 px-4 py-3 bg-white border rounded shadow-lg bottom-1/2 left-1/2 group-hover:block">
@@ -41,6 +44,4 @@ const GraphNode = memo(function GraphNode({
 			</div>
 		</div>
 	);
-});
-
-export default GraphNode;
+}
