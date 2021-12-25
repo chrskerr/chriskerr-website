@@ -1,8 +1,8 @@
 import type { ProbablyValidUrl } from 'lib/scraper/src';
 import type { ScraperAPIBody, ScraperAPIResponse } from 'pages/api/scraper';
-import { LayoutConnector, LayoutNode, Node } from '.';
+import type { LayoutConnector, LayoutNode, Node } from 'types/website-graph';
 
-export const size = 15;
+export const defaultSize = 15;
 
 export const fetchHrefs = async (
 	url: ProbablyValidUrl,
@@ -74,9 +74,9 @@ const createNodeLayoutFromTree = ({
 	availableDegreesStart,
 	availableDegreesEnd,
 }: CreateNoteTreeProps): (LayoutNode | LayoutConnector | undefined)[] => {
-	const { children, depth } = tree;
+	const { children } = tree;
 
-	const radius = 1 - (depth / maxDepth) * 0.5;
+	// const radius = 1 - (tree.depth / maxDepth) * 0.5;
 
 	const availableDegreesWidth = availableDegreesEnd - availableDegreesStart;
 	const degrees = availableDegreesStart + availableDegreesWidth / 2;
@@ -86,9 +86,9 @@ const createNodeLayoutFromTree = ({
 			? {
 					...tree.node,
 					type: 'node',
-					x: parent.x + radius * Math.cos(getRadians(degrees)),
-					y: parent.y + radius * Math.sin(getRadians(degrees)),
-					size: size,
+					x: parent.x + Math.cos(getRadians(degrees)),
+					y: parent.y + Math.sin(getRadians(degrees)),
+					size: defaultSize,
 					colour: 'var(--brand-blue)',
 			  }
 			: {
@@ -96,7 +96,7 @@ const createNodeLayoutFromTree = ({
 					type: 'node',
 					x: 0.5,
 					y: 0.5,
-					size,
+					size: defaultSize * 1.5,
 					colour: 'var(--brand-secondary)',
 			  };
 
@@ -104,10 +104,8 @@ const createNodeLayoutFromTree = ({
 		? {
 				id: node.id + '_connector',
 				type: 'connector',
-				startX: parent.x,
-				endX: node.x,
-				startY: parent.y,
-				endY: node.y,
+				start: { ...parent },
+				end: { ...node },
 		  }
 		: undefined;
 
@@ -184,23 +182,23 @@ export const calculateLayoutNodes = (
 	const rangeX = widestX - (1 - widestX);
 	const rangeY = widestY - (1 - widestY);
 
-	const adjustX = (x: number) => {
+	const adjustX = (x: number, size: number) => {
 		return (
 			div.clientWidth * 0.1 +
 			(rangeX ? (x - (1 - widestX)) / rangeX : 0.5) *
 				div.clientWidth *
 				0.8 -
-			size / 2
+			size
 		);
 	};
 
-	const adjustY = (y: number) => {
+	const adjustY = (y: number, nodeSize: number) => {
 		return (
 			div.clientHeight * 0.1 +
 			(rangeY ? (y - (1 - widestY)) / rangeY : 0.5) *
 				div.clientHeight *
 				0.8 -
-			size / 2
+			nodeSize / 2
 		);
 	};
 
@@ -209,18 +207,23 @@ export const calculateLayoutNodes = (
 			if (isTypeNode(node)) {
 				return {
 					...node,
-					x: adjustX(node.x),
-					y: adjustY(node.y),
+					x: adjustX(node.x, node.size),
+					y: adjustY(node.y, node.size),
 				};
 			}
 			if (isTypeConnector(node)) {
 				return {
 					...node,
-					startX: adjustX(node.startX),
-					endX: adjustX(node.endX),
-
-					startY: adjustY(node.startY),
-					endY: adjustY(node.endY),
+					start: {
+						...node.start,
+						x: adjustX(node.start.x, node.start.size),
+						y: adjustY(node.start.y, node.start.size),
+					},
+					end: {
+						...node.end,
+						x: adjustX(node.end.x, node.end.size),
+						y: adjustY(node.end.y, node.end.size),
+					},
 				};
 			}
 

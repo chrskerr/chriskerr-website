@@ -1,24 +1,26 @@
 import { ReactElement } from 'react';
-import { size } from './helpers';
+import type { LayoutNode } from 'types/website-graph';
 
 type GraphConnectorProps = {
-	startX: number;
-	startY: number;
-	endX: number;
-	endY: number;
+	start: LayoutNode;
+	end: LayoutNode;
 };
 
 export default function GraphConnector({
-	startX,
-	startY,
-	endX,
-	endY,
+	start,
+	end,
 }: GraphConnectorProps): ReactElement {
-	const width = Math.sqrt((endX - startX) ** 2 + (endY - startY) ** 2);
-	const degrees = Math.atan2(endY - startY, endX - startX) * (180 / Math.PI);
+	const x1 = start.x + start.size / 2;
+	const y1 = start.y + start.size / 2;
 
-	const left = startX + size / 2;
-	const top = startY + size / 2;
+	const x2 = end.x + end.size / 2;
+	const y2 = end.y + end.size / 2;
+
+	const width = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+	const degrees = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
+
+	const left = x1;
+	const top = y1;
 
 	const styles = {
 		top,

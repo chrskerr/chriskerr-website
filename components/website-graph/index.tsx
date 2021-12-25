@@ -1,4 +1,5 @@
 import type { ProbablyValidUrl } from 'lib/scraper/src';
+import type { LayoutNode, Node, LayoutConnector } from 'types/website-graph';
 
 import { ReactElement, useEffect, useRef, useState } from 'react';
 import { isValidUrl } from 'lib/scraper/src/helpers';
@@ -8,29 +9,6 @@ import { calculateLayoutNodes, fetchHrefs, isTypeNode } from './helpers';
 import GraphNode from './node';
 import GraphConnector from './connector';
 import { throttle } from 'lodash';
-
-export type Node = {
-	id: string;
-	parentId: string | undefined;
-	href: ProbablyValidUrl;
-};
-
-export type LayoutNode = Node & {
-	type: 'node';
-	x: number;
-	y: number;
-	size: number;
-	colour: string;
-};
-
-export type LayoutConnector = {
-	type: 'connector';
-	id: string;
-	startX: number;
-	startY: number;
-	endX: number;
-	endY: number;
-};
 
 const maxDepth = 4;
 
@@ -141,10 +119,8 @@ export default function WebsiteGrapher(): ReactElement {
 						) : (
 							<GraphConnector
 								key={node.id}
-								startX={node.startX}
-								startY={node.startY}
-								endX={node.endX}
-								endY={node.endY}
+								start={node.start}
+								end={node.end}
 							/>
 						),
 					)}

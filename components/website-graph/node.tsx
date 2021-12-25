@@ -25,15 +25,21 @@ export default function GraphNode({
 		borderColor: colour,
 	};
 
+	const isRoot = colour.includes('secondary');
+
 	return (
 		<div
 			style={styles}
-			className="absolute z-10 transition-all duration-1000 bg-white border-2 rounded-full ease-back-out group"
+			className={`absolute transition-all duration-1000 bg-white border-2 rounded-full ease-back-out group ${
+				isRoot ? 'z-20' : 'z-10'
+			}`}
 		>
 			<div className="relative hidden w-full h-full group-hover:block">
 				<div
 					style={{ transform: 'translateZ(1px)' }}
-					className="absolute z-30 px-4 py-3 bg-white border rounded shadow-lg bottom-1/2 left-1/2 group-hover:block"
+					className={`absolute px-4 py-3 bg-white border rounded shadow-lg bottom-1/2 left-1/2 group-hover:block ${
+						isRoot ? 'z-30' : 'z-20'
+					}`}
 				>
 					<a
 						href={href}
