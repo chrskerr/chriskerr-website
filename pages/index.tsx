@@ -71,7 +71,7 @@ export default function Landing(): ReactElement {
 					<Tile
 						url="/website-graph"
 						title="Website Connection Graph Visualiser"
-						image="/images/tiles/blob-scatter.png"
+						image="/images/tiles/gold-waves.png"
 					/>
 				</div>
 			</section>
