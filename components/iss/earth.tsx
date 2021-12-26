@@ -4,7 +4,7 @@ import { useGLTF } from '@react-three/drei';
 
 const path = '/models/earth.glb';
 
-export default function Model() {
+export default function EarthModel() {
 	const model = useGLTF(path);
 	const { nodes, materials } = model as GLTF;
 

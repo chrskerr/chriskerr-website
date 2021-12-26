@@ -45,7 +45,6 @@ export function getCurrentCoords(data: ISSData | undefined) {
 		(data.longitude * -1 + 180) % 360,
 		getOrbitRadiusInPoints(data.altitude),
 	);
-	47;
 
 	return [x, y, z];
 }
@@ -54,12 +53,7 @@ export async function fetchIssData(): Promise<ISSData | undefined> {
 	const res = await fetch('https://api.wheretheiss.at/v1/satellites/25544');
 	if (res.ok) {
 		const data = (await res.json()) as ISSData;
-		if (data) {
-			return {
-				...data,
-				timestamp: new Date().valueOf(),
-			};
-		}
+		return data;
 	}
 }
 

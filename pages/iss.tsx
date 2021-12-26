@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import { ReactElement, useState } from 'react';
 
 import { NextSeo } from 'next-seo';
 import dynamic from 'next/dynamic';
@@ -11,6 +11,8 @@ const ISSRender = dynamic(() => import('components/iss'), {
 const title = "Where's the ISS?";
 
 export default function ISS(): ReactElement {
+	const [isGrabbing, setIsGrabbing] = useState(false);
+
 	return (
 		<>
 			<NextSeo
@@ -34,7 +36,14 @@ export default function ISS(): ReactElement {
 					Still, it live updates with the latest location 😃
 				</p>
 			</div>
-			<div className="flex flex-col flex-1 min-h-[1000px] display-width divider-before">
+			<div
+				className={`flex flex-col flex-1 min-h-[1000px] display-width divider-before ${
+					isGrabbing ? 'cursor-grabbing' : 'cursor-grab'
+				}`}
+				onMouseDown={() => setIsGrabbing(true)}
+				onMouseUp={() => setIsGrabbing(false)}
+				onMouseOut={() => setIsGrabbing(false)}
+			>
 				<ISSRender />
 			</div>
 		</>

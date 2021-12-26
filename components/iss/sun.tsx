@@ -10,7 +10,7 @@ export default function Sun() {
 	useEffect(() => {
 		const interval = setInterval(() => {
 			setCoords(update());
-		}, 5_000);
+		}, 60_000);
 
 		return () => {
 			clearInterval(interval);

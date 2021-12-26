@@ -20,9 +20,4 @@ export type ISSData = {
 	 * Velocity in KM / hour
 	 */
 	velocity: number;
-
-	/**
-	 * Timestamp of receipt of last date update
-	 */
-	timestamp: number;
 };
