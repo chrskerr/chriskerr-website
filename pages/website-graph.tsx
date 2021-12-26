@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { NextSeo } from 'next-seo';
 import WebsiteGrapher from 'components/website-graph';
 

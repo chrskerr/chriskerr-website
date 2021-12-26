@@ -73,6 +73,11 @@ export default function Landing(): ReactElement {
 						title="Javascript Random Number Generation"
 						image="/images/tiles/gold-waves.png"
 					/>
+					<Tile
+						url="/iss"
+						title="Where's the ISS?"
+						image="/images/tiles/stacked-waves.png"
+					/>
 				</div>
 			</section>
 		</>
