@@ -37,7 +37,7 @@ export default function ISS(): ReactElement {
 				</p>
 			</div>
 			<div
-				className={`flex flex-col flex-1 min-h-[1000px] display-width divider-before ${
+				className={`flex flex-col flex-1 min-h-[400px] sm:min-h-[1000px] display-width divider-before ${
 					isGrabbing ? 'cursor-grabbing' : 'cursor-grab'
 				}`}
 				onMouseDown={() => setIsGrabbing(true)}

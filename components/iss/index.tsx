@@ -19,8 +19,8 @@ export default function ISSRender(): ReactElement {
 				dampingFactor={0.1}
 				enableDamping
 				minDistance={5.5}
-				maxDistance={30}
-				zoomSpeed={0.25}
+				maxDistance={50}
+				zoomSpeed={0.5}
 				rotateSpeed={0.25}
 				makeDefault
 			/>
