@@ -1,10 +1,16 @@
 import { ReactElement, Suspense } from 'react';
-import useAllSatellites from './use-all-satellites';
+import useNasaData from './use-nasa-data';
 
 import Satellite from './satellite';
+import useSpaceXData from './use-spacex-data';
+import { Coords } from '../types';
 
 export default function Satellites(): ReactElement {
-	const data = useAllSatellites();
+	// const data = useNasaData();
+
+	const data2 = useSpaceXData();
+
+	const data: Coords[] = [];
 
 	return (
 		<Suspense fallback={null}>

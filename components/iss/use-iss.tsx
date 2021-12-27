@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { getCurrentCoords, fetchIssData } from './helpers';
+import { getCurrentCoords } from './helpers';
 
 import type { ISSData } from './types';
 
-export default function useWhereIsISS() {
+export default function useIss() {
 	const [data, setData] = useState<ISSData>();
 
 	useEffect(() => {
@@ -23,4 +23,12 @@ export default function useWhereIsISS() {
 	}, []);
 
 	return getCurrentCoords(data);
+}
+
+async function fetchIssData(): Promise<ISSData | undefined> {
+	const res = await fetch('https://api.wheretheiss.at/v1/satellites/25544');
+	if (res.ok) {
+		const data = (await res.json()) as ISSData;
+		return data;
+	}
 }

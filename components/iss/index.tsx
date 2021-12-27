@@ -40,6 +40,11 @@ export default function ISSRender(): ReactElement {
 					<meshStandardMaterial color="black" side={DoubleSide} />
 				</mesh>
 			</Suspense>
+
+			<mesh position={[4, 4, 4]}>
+				<boxGeometry args={[0.1, 0.1, 0.1]} />
+				<meshStandardMaterial color="black" side={DoubleSide} />
+			</mesh>
 		</Canvas>
 	);
 }

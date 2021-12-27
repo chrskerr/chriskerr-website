@@ -66,12 +66,12 @@ export default function Landing(): ReactElement {
 					<Tile
 						url="/website-graph"
 						title="Website Connection Graph Visualiser"
-						image="/images/tiles/blob-scatter.png"
+						image="/images/tiles/website.png"
 					/>
 					<Tile
 						url="/javascript-randomness"
 						title="Javascript Random Number Generation"
-						image="/images/tiles/gold-waves.png"
+						image="/images/tiles/blob-scatter.png"
 					/>
 					<Tile
 						url="/iss"

@@ -19,12 +19,12 @@ import { useEffect, useState } from 'react';
 import { animated, useSpring } from '@react-spring/three';
 
 import { getIssScaledLength } from './helpers';
-import useWhereIsISS from './use-where-is-iss';
+import useIss from './use-iss';
 
 const path = '/models/iss/scene.gltf';
 
 export default function IssWrapper() {
-	const coords = useWhereIsISS();
+	const coords = useIss();
 	const model = useGLTF(path);
 
 	if (coords[0] || coords[1] || coords[2]) {
