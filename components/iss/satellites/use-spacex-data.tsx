@@ -1,19 +1,26 @@
-import { useEffect, useState } from 'react';
+import sampleSize from 'lodash/sampleSize';
+import { useEffect, useRef, useState } from 'react';
 
 import { getCoordsFromLatLng, getOrbitRadiusInPoints } from '../helpers';
 import { Coords } from '../types';
 
 export default function useSpaceXData() {
 	const [coords, setCoords] = useState<Coords[]>([]);
+	const chosenIds = useRef<string[]>();
 
 	useEffect(() => {
 		fetchData().then(data => {
-			setCoords(processData(data));
+			const processedData = sampleSize(
+				processData(data, chosenIds.current),
+				150,
+			);
+			setCoords(processedData);
+			chosenIds.current = processedData.map(({ id }) => id);
 		});
 
 		const interval = setInterval(() => {
 			fetchData().then(data => {
-				setCoords(processData(data));
+				setCoords(processData(data, chosenIds.current));
 			});
 		}, 15_000);
 
@@ -53,17 +60,22 @@ async function fetchData() {
 	}
 }
 
-function processData(data: FilteredApiData[] | undefined): Coords[] {
+function processData(
+	data: FilteredApiData[] | undefined,
+	chosenIds: string[] | undefined,
+): Coords[] {
 	if (!data) return [];
 
-	return data.map(row => {
-		return {
-			id: row.id,
-			...getCoordsFromLatLng(
-				row.latitude,
-				row.longitude * -1,
-				getOrbitRadiusInPoints(row.height_km),
-			),
-		};
-	});
+	return data
+		.filter(({ id }) => (chosenIds ? chosenIds.includes(id) : true))
+		.map(row => {
+			return {
+				id: row.id,
+				...getCoordsFromLatLng(
+					row.latitude,
+					row.longitude * -1,
+					getOrbitRadiusInPoints(row.height_km),
+				),
+			};
+		});
 }

@@ -36,12 +36,10 @@ export default function ISS(): ReactElement {
 					Still, it live updates with the latest location 😃
 				</p>
 				<p className="mb-4">
-					SpaceX&apos; Starlink satellites load in as well, a few
-					seconds later. These may not be particularly well mapped to
-					this model of Earth, but they add some nice extra detail!
-				</p>
-				<p className="mb-4">
-					Some are a LOONG way out, if you can find them.
+					A random 150 (of ~2000) of SpaceX&apos;s Starlink satellites
+					load in as well, many more and things tend to grind to a
+					halt! These may not be particularly well mapped to this
+					model of Earth, but they add some nice extra detail!
 				</p>
 			</div>
 			<div
