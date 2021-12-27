@@ -21,3 +21,32 @@ export type ISSData = {
 	 */
 	velocity: number;
 };
+
+export type AllObservationsJSON = {
+	Id: string;
+	Name: string;
+	Resolution: number;
+	StartTime: [string, string];
+	EndTime: [string, string];
+};
+
+export type ObservationJSON = {
+	Id: string;
+	Coordinates: [
+		string,
+		[
+			{
+				Latitude: [string, [number, number]];
+				Longitude: [string, [number, number]];
+			},
+		],
+	];
+	RadialLength: [string, [number, number]];
+};
+
+export type Coords = {
+	id: string;
+	x: number;
+	y: number;
+	z: number;
+};

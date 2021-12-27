@@ -8,6 +8,8 @@ title: 3December 2021 - International Space Station
 
 // "International Space Station" (https://skfb.ly/orFzK) by Jack Kelly is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
 
+// npx @react-three/gltfjsx iss.glb iss.js
+
 import type { GLTF } from './types';
 
 import { useGLTF } from '@react-three/drei';

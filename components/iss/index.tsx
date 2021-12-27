@@ -8,6 +8,7 @@ import ISS from './iss';
 import Sun from './sun';
 import { getOrbitRadiusInPoints } from './helpers';
 import { DoubleSide } from 'three';
+import Satellites from './satellites/index';
 
 const radius = getOrbitRadiusInPoints(0);
 
@@ -28,6 +29,8 @@ export default function ISSRender(): ReactElement {
 
 			<ambientLight intensity={0.05} />
 			<Sun />
+
+			<Satellites />
 
 			<Suspense fallback={null}>
 				<Earth />
