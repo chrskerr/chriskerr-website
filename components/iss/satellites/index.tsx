@@ -1,6 +1,6 @@
 import { ReactElement, Suspense } from 'react';
 
-import Satellite from './satellite';
+import Satellite from './simple-satellite';
 import useSpaceXData from './use-spacex-data';
 
 export default function Satellites(): ReactElement {
