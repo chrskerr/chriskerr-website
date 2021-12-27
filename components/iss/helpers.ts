@@ -57,7 +57,7 @@ export async function fetchIssData(): Promise<ISSData | undefined> {
 	}
 }
 
-export async function fetchAllLocations( excludedIds: string[]) {
+export async function fetchAllLocations(excludedIds: string[]) {
 	const res = await fetch(
 		'https://sscweb.gsfc.nasa.gov/WS/sscr/2/observatories',
 		{ headers: { accept: 'application/json' } },
@@ -66,27 +66,29 @@ export async function fetchAllLocations( excludedIds: string[]) {
 		const data = (await res.json()) as {
 			Observatory: [string, AllObservationsJSON[]];
 		};
-		
+
 		const now = new Date();
 
-		return data?.Observatory[1]?.filter(observation => {
-			try {
-				if (excludedIds.includes(observation.Id)) return false;
+		return (
+			data?.Observatory[1]?.filter(observation => {
+				try {
+					if (excludedIds.includes(observation.Id)) return false;
 
-				const endTime = new Date(observation.EndTime[1]);
-				if (endTime < now) return false;
+					const endTime = new Date(observation.EndTime[1]);
+					if (endTime < now) return false;
 
-				const startTime = new Date(observation.StartTime[1]);
-				if (startTime > now) return false;
+					const startTime = new Date(observation.StartTime[1]);
+					if (startTime > now) return false;
 
-				if (observation.Resolution > 60) return false;
+					if (observation.Resolution > 60) return false;
 
-				return true;
-			} catch (e) {
-				console.log('error', observation, e);
-				return false;
-			}
-		}) || [];
+					return true;
+				} catch (e) {
+					console.log('error', observation, e);
+					return false;
+				}
+			}) || []
+		);
 	}
 }
 
@@ -127,7 +129,7 @@ export function processObservationJSON(input: ObservationJSON): {
 	return {
 		id: input.Id,
 		lat: coordinates?.Latitude[1][1] || 0,
-		lng: coordinates?.Longitude[1][1] || 0,
+		lng: (coordinates?.Longitude[1][1] || 0) * -1,
 		altitude: (input.RadialLength[1][1] || radiusOfEarth) - radiusOfEarth,
 	};
 }

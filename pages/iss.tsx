@@ -35,6 +35,14 @@ export default function ISS(): ReactElement {
 				<p className="mb-4">
 					Still, it live updates with the latest location 😃
 				</p>
+				<p className="mb-4">
+					A handful of extra near-Earth satellites load in as well, a
+					few seconds later. These may not be particularly well mapped
+					to this model of Earth, but they add some nice extra detail!
+				</p>
+				<p className="mb-4">
+					Some are a LOONG way out, if you can find them.
+				</p>
 			</div>
 			<div
 				className={`flex flex-col flex-1 min-h-[400px] sm:min-h-[1000px] display-width divider-before ${

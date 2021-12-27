@@ -27,7 +27,7 @@ export default function useAllSatellites() {
 		let interval: ReturnType<typeof setInterval>;
 
 		if (satelliteList) {
-			interval = setInterval(async () => {
+			const processSatellites = async () => {
 				const vectors = await updateSatelliteData(
 					satelliteList,
 					excludedIds,
@@ -41,7 +41,11 @@ export default function useAllSatellites() {
 				setCoords(
 					vectors.filter(({ x, y, z }) => x < 15 && y < 15 && z < 15),
 				);
-			}, 60_000);
+			};
+
+			processSatellites();
+
+			interval = setInterval(processSatellites, 60_000);
 		}
 
 		return () => {

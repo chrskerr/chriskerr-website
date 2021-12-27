@@ -13,7 +13,7 @@ title: 3December 2021 - International Space Station
 import type { GLTF } from './types';
 
 import { useGLTF } from '@react-three/drei';
-import { Box3, Vector3 } from 'three';
+import { Box3, Object3D, Vector3 } from 'three';
 import { useEffect, useState } from 'react';
 
 import { animated, useSpring } from '@react-spring/three';
@@ -23,8 +23,22 @@ import useWhereIsISS from './use-where-is-iss';
 
 const path = '/models/iss/scene.gltf';
 
-export default function IssModel() {
+export default function IssWrapper() {
+	const coords = useWhereIsISS();
 	const model = useGLTF(path);
+
+	if (coords[0] || coords[1] || coords[2]) {
+		return <IssModel coords={coords} model={model} />;
+	} else return <></>;
+}
+
+function IssModel({
+	coords,
+	model,
+}: {
+	coords: number[];
+	model: { scene: Object3D };
+}) {
 	const { nodes } = model as GLTF;
 
 	const [scale, setScale] = useState(0);
@@ -39,11 +53,9 @@ export default function IssModel() {
 		setScale(scaledLength * 5_000);
 	}, [model]);
 
-	const coords = useWhereIsISS();
-
 	const { position } = useSpring({
 		position: coords,
-		config: { duration: 10_000 },
+		config: { duration: 5_000 },
 	});
 
 	return (
