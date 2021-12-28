@@ -103,7 +103,6 @@ export async function initBirds(canvas: HTMLCanvasElement) {
 			if (bird.x + bird.width < userLeft) return updatedBird;
 
 			if (bird.width > user.width) {
-				updatedPoints = 0;
 				updatedHealth -= 10;
 			} else {
 				updatedPoints++;

@@ -54,14 +54,18 @@ export async function init({ ref }: InitProps) {
 	let isRunning = true;
 
 	const drawElement = (el: Element | false) => {
-		if (el)
-			ctx.drawImage(
-				el.img,
-				el.x,
-				el.y - viewPortHeightOffset,
-				el.width,
-				el.height,
-			);
+		if (!el) return;
+
+		const adjustedY = el.y - viewPortHeightOffset;
+		if (adjustedY + el.height < 0 || adjustedY > gameHeight) return;
+
+		ctx.drawImage(
+			el.img,
+			el.x,
+			el.y - viewPortHeightOffset,
+			el.width,
+			el.height,
+		);
 	};
 
 	const render = (timestamp: number) => {
