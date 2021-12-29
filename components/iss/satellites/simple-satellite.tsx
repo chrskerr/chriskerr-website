@@ -29,7 +29,7 @@ export default function SimpleSatellite({ coords }: { coords: Coords }) {
 
 	const { position } = useSpring({
 		position: vector,
-		config: { duration: 15_000 },
+		config: { duration: 120_000 },
 	});
 
 	return (

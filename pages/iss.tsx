@@ -36,14 +36,14 @@ export default function ISS(): ReactElement {
 					Still, it live updates with the latest location 😃
 				</p>
 				<p className="mb-4">
-					A random 150 (of ~2000) of SpaceX&apos;s Starlink satellites
-					load in as well, many more and things tend to grind to a
-					halt! These may not be particularly well mapped to this
-					model of Earth, but they add some nice extra detail!
+					A random sample of SpaceX&apos;s Starlink satellites load in
+					as well, many more and things tend to grind to a halt! These
+					may not be particularly well mapped to this model of Earth,
+					but they add some nice extra detail!
 				</p>
 			</div>
 			<div
-				className={`flex flex-col flex-1 min-h-[400px] sm:min-h-[1000px] display-width divider-before ${
+				className={`relative flex flex-col flex-1 min-h-[400px] sm:min-h-[1000px] display-width divider-before ${
 					isGrabbing ? 'cursor-grabbing' : 'cursor-grab'
 				}`}
 				onMouseDown={() => setIsGrabbing(true)}

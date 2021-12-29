@@ -3,8 +3,13 @@ import { ReactElement, Suspense } from 'react';
 import Satellite from './simple-satellite';
 import useSpaceXData from './use-spacex-data';
 
-export default function Satellites(): ReactElement {
-	const data = useSpaceXData();
+type Props = {
+	setTotalSatellites: (value: number) => void;
+	displayedSatellites: number;
+};
+
+export default function Satellites(props: Props): ReactElement {
+	const data = useSpaceXData(props);
 
 	return (
 		<Suspense fallback={null}>

@@ -1,26 +1,36 @@
+import throttle from 'lodash/throttle';
 import sampleSize from 'lodash/sampleSize';
-import { useEffect, useRef, useState } from 'react';
+import take from 'lodash/take';
+import { useCallback, useEffect, useState } from 'react';
 
 import { getCoordsFromLatLng, getOrbitRadiusInPoints } from '../helpers';
 import { Coords } from '../types';
 
-export default function useSpaceXData() {
+type Props = {
+	setTotalSatellites: (value: number) => void;
+	displayedSatellites: number;
+};
+
+export default function useSpaceXData({
+	setTotalSatellites,
+	displayedSatellites,
+}: Props) {
 	const [coords, setCoords] = useState<Coords[]>([]);
-	const chosenIds = useRef<string[]>();
+	const [chosenIds, setChosenIds] = useState<string[]>();
 
 	useEffect(() => {
 		fetchData().then(data => {
 			const processedData = sampleSize(
-				processData(data, chosenIds.current),
-				150,
+				processData(data),
+				displayedSatellites,
 			);
 			setCoords(processedData);
-			chosenIds.current = processedData.map(({ id }) => id);
+			setChosenIds(processedData.map(({ id }) => id));
 		});
 
 		const interval = setInterval(() => {
 			fetchData().then(data => {
-				setCoords(processData(data, chosenIds.current));
+				setCoords(processData(data));
 			});
 		}, 15_000);
 
@@ -29,7 +39,47 @@ export default function useSpaceXData() {
 		};
 	}, []);
 
-	return coords;
+	const updateChosenIds = useCallback(
+		throttle(
+			(
+				displayedSatellites: number,
+				coords: Coords[],
+				chosenIds: string[],
+			) => {
+				const numIds = chosenIds?.length || 0;
+
+				if (numIds === displayedSatellites) return;
+				if (numIds > displayedSatellites) {
+					setChosenIds(current => take(current, displayedSatellites));
+				} else {
+					const unchosenCoords = coords.filter(
+						({ id }) => !chosenIds?.includes(id),
+					);
+					const neededCoords = displayedSatellites - numIds;
+
+					setChosenIds(current => [
+						...(current || []),
+						...sampleSize(unchosenCoords, neededCoords).map(
+							({ id }) => id,
+						),
+					]);
+				}
+			},
+			1500,
+			{ trailing: true, leading: false },
+		),
+		[],
+	);
+
+	useEffect(() => {
+		updateChosenIds(displayedSatellites, coords, chosenIds || []);
+	}, [displayedSatellites]);
+
+	useEffect(() => {
+		if (coords.length > 0) setTotalSatellites(coords.length);
+	}, [coords]);
+
+	return coords.filter(({ id }) => chosenIds?.includes(id));
 }
 
 type ApiData = {
@@ -60,22 +110,18 @@ async function fetchData() {
 	}
 }
 
-function processData(
-	data: FilteredApiData[] | undefined,
-	chosenIds: string[] | undefined,
-): Coords[] {
+function processData(data: FilteredApiData[] | undefined): Coords[] {
 	if (!data) return [];
 
-	return data
-		.filter(({ id }) => (chosenIds ? chosenIds.includes(id) : true))
-		.map(row => {
-			return {
-				id: row.id,
-				...getCoordsFromLatLng(
-					row.latitude,
-					row.longitude * -1,
-					getOrbitRadiusInPoints(row.height_km),
-				),
-			};
-		});
+	return data.map(row => {
+		const coords = getCoordsFromLatLng(
+			row.latitude,
+			row.longitude * -1,
+			getOrbitRadiusInPoints(row.height_km),
+		);
+		return {
+			id: row.id,
+			...coords,
+		};
+	});
 }
