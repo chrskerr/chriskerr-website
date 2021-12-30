@@ -45,11 +45,14 @@ const newDataSummary = (
 
 const chunkSize = 1_000;
 
-const processLoop = async (data: Data[]): Promise<Data[]> => {
+const processLoop = async (
+	data: Data[],
+	numSamples: number,
+): Promise<Data[]> => {
 	return await new Promise(resolve => {
 		setTimeout(() => {
-			const newMathSummary = newDataSummary('math', chunkSize);
-			const newCryptoSummary = newDataSummary('crypto', chunkSize);
+			const newMathSummary = newDataSummary('math', numSamples);
+			const newCryptoSummary = newDataSummary('crypto', numSamples);
 
 			let totalMathRaw = 0;
 			let totalCryptoRaw = 0;
@@ -90,7 +93,10 @@ const updateData = async (count: number): Promise<Data[]> => {
 	let updatedData = emptyData;
 
 	for (let i = 0; i < numChunks; i++) {
-		updatedData = await processLoop(updatedData);
+		updatedData = await processLoop(
+			updatedData,
+			Math.min(count, chunkSize),
+		);
 	}
 
 	return updatedData;

@@ -1,29 +1,18 @@
-import { useGLTF } from '@react-three/drei';
-import { Coords, GLTF } from '../types';
-import { Box3, Vector3 } from 'three';
-import { useEffect, useState } from 'react';
+import { Coords } from '../types';
+import { Vector3, DoubleSide, Group } from 'three';
+import { memo, useEffect, useRef } from 'react';
 
 import { animated, useSpring } from '@react-spring/three';
 
-import { getIssScaledLength } from '../helpers';
+const edgeLength = 0.01;
+const dishRadius = edgeLength * 1.5;
 
-const path = '/models/satellite.glb';
+const panelRotation: [number, number, number] = [0, -0.5 * Math.PI, 0];
+const panelWidth = 1.5 * edgeLength;
+const panelHeight = 2 * edgeLength;
 
-export default function Satellite({ coords }: { coords: Coords }) {
-	const model = useGLTF(path);
-	const { nodes, materials } = model as GLTF;
-
-	const [scale, setScale] = useState(0);
-
-	useEffect(() => {
-		const bb = new Box3();
-		bb.setFromObject(model.scene);
-
-		const length = bb.max.x - bb.min.x;
-		const scaledLength = getIssScaledLength(length);
-
-		setScale(scaledLength * 2_000);
-	}, [model]);
+const Satellite = memo(function Satellite({ coords }: { coords: Coords }) {
+	const group = useRef<Group>();
 
 	const vector = [coords.x, coords.y, coords.z];
 
@@ -32,126 +21,67 @@ export default function Satellite({ coords }: { coords: Coords }) {
 		config: { duration: 120_000 },
 	});
 
+	useEffect(() => {
+		group.current?.lookAt(0, 0, 0);
+		group.current?.rotateY(-0.5 * Math.PI);
+	}, [coords]);
+
 	return (
 		<animated.group
+			ref={group}
 			dispose={null}
 			position={position as unknown as Vector3}
-			scale={scale}
 		>
-			<group position={[0, 3.34, -2.09]}>
-				<mesh
-					geometry={nodes.HoneyComb.geometry}
-					material={nodes.HoneyComb.material}
-				/>
-				<mesh
-					geometry={nodes.HoneyComb_1.geometry}
-					material={nodes.HoneyComb_1.material}
-				/>
-				<mesh
-					geometry={nodes.HoneyComb_2.geometry}
-					material={materials['Material.002']}
-				/>
-			</group>
-			<group position={[1.68, 4.52, 0.37]} rotation={[0, 0, 0.38]}>
-				<mesh
-					geometry={nodes.Cube009.geometry}
-					material={nodes.Cube009.material}
-				/>
-				<mesh
-					geometry={nodes.Cube009_1.geometry}
-					material={nodes.Cube009_1.material}
-				/>
-				<group position={[5.07, 0, 0]} rotation={[0, 0, -0.75]}>
-					<mesh
-						geometry={nodes.Cube010.geometry}
-						material={nodes.Cube010.material}
-					/>
-					<mesh
-						geometry={nodes.Cube010_1.geometry}
-						material={nodes.Cube010_1.material}
-					/>
-				</group>
-			</group>
-			<group
-				position={[-1.67, 4.52, 0.37]}
-				rotation={[0, 0, -0.38]}
-				scale={[-1, 1, 1]}
+			<mesh>
+				<boxGeometry args={[edgeLength, edgeLength, edgeLength]} />
+				<meshPhongMaterial color="#d4d4d8" shininess={100} />
+			</mesh>
+			<mesh
+				position={[dishRadius * 1.5, 0, 0]}
+				rotation={[0, 0, 0.5 * Math.PI]}
 			>
-				<mesh
-					geometry={nodes.Cube011.geometry}
-					material={nodes.Cube011.material}
+				<sphereGeometry
+					args={[dishRadius, 8, 4, 0, 2 * Math.PI, 0, 1]}
 				/>
-				<mesh
-					geometry={nodes.Cube011_1.geometry}
-					material={nodes.Cube011_1.material}
+				<meshPhongMaterial
+					color="#d4d4d8"
+					shininess={0}
+					side={DoubleSide}
 				/>
-				<group position={[5.07, 0, 0]} rotation={[0, 0, -0.75]}>
-					<mesh
-						geometry={nodes.Cube012.geometry}
-						material={nodes.Cube012.material}
-					/>
-					<mesh
-						geometry={nodes.Cube012_1.geometry}
-						material={nodes.Cube012_1.material}
-					/>
-				</group>
-			</group>
-			<group
-				position={[0, 4.57, -4.09]}
-				rotation={[-Math.PI, 0, -Math.PI]}
+			</mesh>
+
+			<mesh position={[0, 2 * edgeLength, 0]} rotation={panelRotation}>
+				<planeGeometry args={[panelWidth, panelHeight]} />
+				<meshPhongMaterial color="#d4d4d8" shininess={100} />
+			</mesh>
+			<mesh
+				position={[(-1 * edgeLength) / 100, 2 * edgeLength, 0]}
+				rotation={panelRotation}
 			>
-				<mesh
-					geometry={nodes.Cylinder006.geometry}
-					material={nodes.Cylinder006.material}
+				<planeGeometry args={[0.85 * panelWidth, 0.85 * panelHeight]} />
+				<meshPhongMaterial color="#02588a" shininess={100} />
+			</mesh>
+
+			<mesh position={[0, -2 * edgeLength, 0]} rotation={panelRotation}>
+				<planeGeometry args={[panelWidth, panelHeight]} />
+				<meshPhongMaterial color="#d4d4d8" shininess={100} />
+			</mesh>
+			<mesh
+				position={[(-1 * edgeLength) / 100, -2 * edgeLength, 0]}
+				rotation={panelRotation}
+			>
+				<planeGeometry args={[0.85 * panelWidth, 0.85 * panelHeight]} />
+				<meshPhongMaterial color="#02588a" shininess={100} />
+			</mesh>
+
+			<mesh position={[0, 0, 0]}>
+				<cylinderGeometry
+					args={[edgeLength / 20, edgeLength / 20, 2 * edgeLength]}
 				/>
-				<mesh
-					geometry={nodes.Cylinder006_1.geometry}
-					material={materials['Material.006']}
-				/>
-			</group>
-			<mesh
-				geometry={nodes.Cylinder001.geometry}
-				material={nodes.Cylinder001.material}
-				position={[0, 3.82, 3.43]}
-				rotation={[Math.PI / 2, 0, 0]}
-				scale={[0.75, 0.61, 0.75]}
-			/>
-			<mesh
-				geometry={nodes.Cylinder002.geometry}
-				material={nodes.Cylinder002.material}
-				position={[0, 3.96, 3.43]}
-				rotation={[Math.PI / 2, 0, 0]}
-				scale={[0.75, 0.46, 0.75]}
-			/>
-			<mesh
-				geometry={nodes.Cube005.geometry}
-				material={nodes.Cube005.material}
-				position={[0, 3.55, 3.47]}
-				rotation={[0, Math.PI / 2, 0]}
-			/>
-			<mesh
-				geometry={nodes.Cube006.geometry}
-				material={nodes.Cube006.material}
-				position={[0, 4.15, 3.47]}
-				rotation={[0, Math.PI / 2, 0]}
-				scale={0.67}
-			/>
-			<mesh
-				geometry={nodes.Cube007.geometry}
-				material={nodes.Cube007.material}
-				position={[0.28, 3.83, 3.51]}
-				rotation={[0, -Math.PI / 2, 0]}
-				scale={[0.52, 1, 1]}
-			/>
-			<mesh
-				geometry={nodes.Cube008.geometry}
-				material={nodes.Cube008.material}
-				position={[-0.25, 3.83, 3.51]}
-				rotation={[0, -Math.PI / 2, 0]}
-				scale={[0.52, 1, 1]}
-			/>
+				<meshPhongMaterial color="#d4d4d8" shininess={100} />
+			</mesh>
 		</animated.group>
 	);
-}
+});
 
-useGLTF.preload(path);
+export default Satellite;

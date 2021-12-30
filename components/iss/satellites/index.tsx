@@ -1,6 +1,6 @@
 import { ReactElement, Suspense } from 'react';
 
-import Satellite from './primative-satellite';
+import Satellite from './satellite';
 import useSpaceXData from './use-spacex-data';
 
 type Props = {

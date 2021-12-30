@@ -1,11 +1,11 @@
 import { useGLTF } from '@react-three/drei';
-import { Coords, GLTF } from '../types';
+import { Coords, GLTF } from '../../types';
 import { Box3, Vector3 } from 'three';
 import { useEffect, useState } from 'react';
 
 import { animated, useSpring } from '@react-spring/three';
 
-import { getIssScaledLength } from '../helpers';
+import { getIssScaledLength } from '../../helpers';
 
 const path = '/models/simple-satellite.glb';
 
