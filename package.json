@@ -6,7 +6,7 @@
 	"author": "Chris Kerr",
 	"license": "GPL-3.0",
 	"scripts": {
-		"predev": "npm i && cd socket-server && npm i && npm run tsc",
+		"predev": "npm i && cd socket-server && npm i && npx esbuild ./index.ts --bundle --outfile=index.js --platform=node",
 		"dev": "next dev",
 		"build": "next build",
 		"start": "next start",
