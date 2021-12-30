@@ -8,7 +8,7 @@ import {
 	FirebaseCollections,
 	FirebaseNote,
 } from 'types/editor';
-import { socketServerUrl, apiToken } from 'socket-server/constants';
+import { socketServerUrl, apiToken } from 'lib/constants';
 
 import { generateSlug, RandomWordOptions } from 'random-word-slugs';
 import { processAllChanges } from 'components/editable-canvas/helpers';

@@ -7,7 +7,7 @@ import {
 	FirebaseNote,
 	FirebaseChanges,
 } from 'types/editor';
-import { socketServerUrl } from 'socket-server/constants';
+import { socketServerUrl } from 'lib/constants';
 
 import type { GetServerSideProps } from 'next';
 
