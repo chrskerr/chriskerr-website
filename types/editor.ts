@@ -79,3 +79,17 @@ export interface ReceivedStoredChange extends StoredChangeData {
 }
 
 export type Directions = 'up' | 'right' | 'down' | 'left';
+
+export interface UpdateNoteAPIBody {
+	noteId: string;
+	changes: {
+		data: EditableCanvasChangeEvent;
+		created_at: string;
+	}[];
+	uploaded_at: string;
+	sessionId: string;
+}
+
+export interface UpdateNoteAPIResponse {
+	noteId: string;
+}

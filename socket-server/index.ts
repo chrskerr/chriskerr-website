@@ -1,4 +1,8 @@
-import { EditableCanvasChangeEvent, StoredNote } from '../types/editor';
+import {
+	UpdateNoteAPIBody,
+	UpdateNoteAPIResponse,
+	StoredNote,
+} from '../types/editor';
 
 import express from 'express';
 import http from 'http';
@@ -76,20 +80,6 @@ const createNewId = async (): Promise<string> => {
 		return createNewId();
 	}
 };
-
-export interface UpdateNoteAPIBody {
-	noteId: string;
-	changes: {
-		data: EditableCanvasChangeEvent;
-		created_at: string;
-	}[];
-	uploaded_at: string;
-	sessionId: string;
-}
-
-export interface UpdateNoteAPIResponse {
-	noteId: string;
-}
 
 app.post('/editor/:id', async (req, res) => {
 	let noteId = req.params.id;

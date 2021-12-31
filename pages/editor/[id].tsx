@@ -5,6 +5,8 @@ import {
 	ChangeEventHandler,
 	StoredNote,
 	StoredChanges,
+	UpdateNoteAPIResponse,
+	UpdateNoteAPIBody,
 } from 'types/editor';
 import { socketServerUrl } from 'lib/constants';
 
@@ -24,7 +26,6 @@ const MarkdownRenderer = dynamic(
 import { io } from 'socket.io-client';
 import { useRouter } from 'next/router';
 import serialize from 'async-function-serializer';
-import { UpdateNoteAPIResponse, UpdateNoteAPIBody } from 'socket-server/index';
 
 export const getDateValueString = () => String(new Date().valueOf());
 
