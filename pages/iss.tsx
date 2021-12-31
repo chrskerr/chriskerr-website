@@ -1,12 +1,8 @@
-import { ReactElement, useState } from 'react';
+import { ReactElement, useState, lazy, Suspense } from 'react';
 
 import { NextSeo } from 'next-seo';
-import dynamic from 'next/dynamic';
 
-const ISSRender = dynamic(() => import('components/iss'), {
-	ssr: false,
-	loading: () => <p className="font-mono text-2xl text-center">Loading</p>,
-});
+const ISSRender = lazy(() => import('components/iss'));
 
 const title = "Where's the ISS?";
 
@@ -50,7 +46,15 @@ export default function ISS(): ReactElement {
 				onMouseUp={() => setIsGrabbing(false)}
 				onMouseOut={() => setIsGrabbing(false)}
 			>
-				<ISSRender />
+				<Suspense
+					fallback={
+						<p className="font-mono text-2xl text-center">
+							Loading
+						</p>
+					}
+				>
+					<ISSRender />
+				</Suspense>
 			</div>
 		</>
 	);

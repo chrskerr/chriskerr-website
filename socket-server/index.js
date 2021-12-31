@@ -36,11 +36,6 @@ var __reExport = (target, module2, copyDefault, desc) => {
 var __toESM = (module2, isNodeMode) => {
   return __reExport(__markAsModule(__defProp(module2 != null ? __create(__getProtoOf(module2)) : {}, "default", !isNodeMode && module2 && module2.__esModule ? { get: () => module2.default, enumerable: true } : { value: module2, enumerable: true })), module2);
 };
-var __toCommonJS = /* @__PURE__ */ ((cache) => {
-  return (module2, temp) => {
-    return cache && cache.get(module2) || (temp = __reExport(__markAsModule({}), module2, 1), cache && cache.set(module2, temp), temp);
-  };
-})(typeof WeakMap !== "undefined" ? /* @__PURE__ */ new WeakMap() : 0);
 var __async = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -50327,7 +50322,6 @@ var require_dist6 = __commonJS({
 });
 
 // index.ts
-var socket_server_exports = {};
 var import_express = __toESM(require_express2());
 var import_http = __toESM(require("http"));
 
@@ -50478,12 +50472,11 @@ var idOptions = {
   }
 };
 var getId = () => (0, import_random_word_slugs.generateSlug)(idLength, idOptions);
-var createNewId = () => __async(void 0, null, function* () {
+var createNewId = () => __async(exports, null, function* () {
   try {
     const id = getId();
     const insertData = { id, data: { cells: [] } };
     const newNote = yield knex("notes" /* NOTES */).insert(insertData).returning("id");
-    console.log(newNote);
     if (newNote && newNote[0] === id)
       return id;
     throw new Error();
@@ -50492,7 +50485,7 @@ var createNewId = () => __async(void 0, null, function* () {
     return createNewId();
   }
 });
-app.post("/editor/:id", (req, res) => __async(void 0, null, function* () {
+app.post("/editor/:id", (req, res) => __async(exports, null, function* () {
   let noteId = req.params.id;
   if (!noteId)
     return res.status(500).end();
@@ -50503,11 +50496,11 @@ app.post("/editor/:id", (req, res) => __async(void 0, null, function* () {
   io2.to(noteId).emit("change", body);
   const responseData = { noteId };
   res.status(200).json(responseData);
-  knex.transaction((trx) => __async(void 0, null, function* () {
+  knex.transaction((trx) => __async(exports, null, function* () {
     const [currentData] = yield knex("notes" /* NOTES */).transacting(trx).where({ id: noteId }).select("*").limit(1).forUpdate();
     if (!currentData)
       return;
-    const updatedData = processAllChanges([body], {
+    const updatedData = processAllChanges([__spreadProps(__spreadValues({}, body), { applied_to_note: false, note_id: noteId })], {
       id: noteId,
       cells: currentData.data.cells
     });
@@ -50517,7 +50510,7 @@ app.post("/editor/:id", (req, res) => __async(void 0, null, function* () {
     yield knex("notes" /* NOTES */).transacting(trx).where({ id: noteId }).update(updateData);
   }));
 }));
-app.get("/editor/:id", (req, res) => __async(void 0, null, function* () {
+app.get("/editor/:id", (req, res) => __async(exports, null, function* () {
   const noteId = req.params.id;
   if (!noteId)
     return res.status(500).end();
@@ -50533,7 +50526,7 @@ var port = process.env.PORT || 8080;
 server.listen(port, () => {
   console.log(`listening on *:${port}`);
 });
-(() => __async(void 0, null, function* () {
+(() => __async(exports, null, function* () {
   const hasNotesTable = yield knex.schema.hasTable("notes" /* NOTES */);
   if (!hasNotesTable) {
     yield knex.schema.createTable("notes" /* NOTES */, (table) => {
@@ -50542,7 +50535,6 @@ server.listen(port, () => {
     });
   }
 }))();
-module.exports = __toCommonJS(socket_server_exports);
 /*
 object-assign
 (c) Sindre Sorhus

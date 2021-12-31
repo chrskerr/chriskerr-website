@@ -72,7 +72,6 @@ const createNewId = async (): Promise<string> => {
 			.insert(insertData)
 			.returning('id');
 
-		console.log(newNote);
 		if (newNote && newNote[0] === id) return id;
 		throw new Error();
 	} catch (e) {
@@ -106,10 +105,13 @@ app.post('/editor/:id', async (req, res) => {
 
 		if (!currentData) return;
 
-		const updatedData = processAllChanges([body], {
-			id: noteId,
-			cells: currentData.data.cells,
-		});
+		const updatedData = processAllChanges(
+			[{ ...body, applied_to_note: false, note_id: noteId }],
+			{
+				id: noteId,
+				cells: currentData.data.cells,
+			},
+		);
 
 		const updateData: Partial<INote> = {
 			data: updatedData,
