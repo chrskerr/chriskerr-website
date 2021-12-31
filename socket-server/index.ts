@@ -38,8 +38,13 @@ interface INote {
 
 const knex = Knex({
 	client: KnexPostgres,
-	connection:
-		process.env.DATABASE_URL || 'postgres://127.0.0.1:5432/postgres',
+	connection: {
+		connectionString:
+			process.env.DATABASE_URL || 'postgres://127.0.0.1:5432/postgres',
+		ssl: {
+			rejectUnauthorized: false,
+		},
+	},
 });
 
 const idLength = 3;

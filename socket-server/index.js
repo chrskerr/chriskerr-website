@@ -50462,7 +50462,12 @@ app.use(import_body_parser.default.json());
 app.use((0, import_cors.default)(corsSettings));
 var knex = (0, import_knex.default)({
   client: import_postgres.default,
-  connection: process.env.DATABASE_URL || "postgres://127.0.0.1:5432/postgres"
+  connection: {
+    connectionString: process.env.DATABASE_URL || "postgres://127.0.0.1:5432/postgres",
+    ssl: {
+      rejectUnauthorized: false
+    }
+  }
 });
 var idLength = 3;
 var idOptions = {
