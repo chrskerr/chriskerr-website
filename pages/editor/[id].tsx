@@ -48,8 +48,10 @@ interface EditorProps {
 
 const title = 'Collaborative Markdown Editor';
 
-export default function Editor({ id, initialData }: EditorProps) {
+export default function Editor({ id: propsId, initialData }: EditorProps) {
 	const router = useRouter();
+
+	const id = (router.query.id as string) || propsId;
 
 	const $_ref = useRef<HTMLCanvasElement>(null);
 
@@ -102,7 +104,7 @@ export default function Editor({ id, initialData }: EditorProps) {
 		});
 		const newNoteId = await result.data;
 		if (newNoteId && newNoteId !== id)
-			router.replace(`/editor/${newNoteId}`, undefined, {
+			router.push(`/editor/${newNoteId}`, undefined, {
 				shallow: true,
 			});
 	};
