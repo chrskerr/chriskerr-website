@@ -5,7 +5,7 @@ import type {
 	RowCol,
 	CellId,
 	EditableCanvasChangeEvent,
-	FirebaseChanges,
+	StoredChanges,
 } from 'types/editor';
 
 export const cellWidth = 14;
@@ -226,7 +226,7 @@ export const invertChange = (
 };
 
 export const processAllChanges = (
-	sortedChanges: FirebaseChanges[],
+	sortedChanges: StoredChanges[],
 	initial: EditableCanvasData,
 ) => {
 	return sortedChanges

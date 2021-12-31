@@ -3,9 +3,8 @@ import {
 	DataChangeHandler,
 	EditableCanvasData,
 	ChangeEventHandler,
-	FirebaseCollections,
-	FirebaseNote,
-	FirebaseChanges,
+	StoredNote,
+	StoredChanges,
 } from 'types/editor';
 import { socketServerUrl } from 'lib/constants';
 
@@ -13,10 +12,9 @@ import type { GetServerSideProps } from 'next';
 
 import useEditableCanvas from 'components/editable-canvas/use-editable-canvas';
 import { useEffect, useState, useRef, useCallback } from 'react';
-import dynamic from 'next/dynamic';
-import { firestore } from 'lib/firebase-admin';
-import { processAllChanges } from 'components/editable-canvas/helpers';
 import { nanoid } from 'nanoid';
+
+import dynamic from 'next/dynamic';
 const MarkdownRenderer = dynamic(
 	import(
 		/* webpackPrefetch: true */ 'components/editable-canvas/markdown-renderer'
@@ -26,22 +24,19 @@ const MarkdownRenderer = dynamic(
 import { io } from 'socket.io-client';
 import { useRouter } from 'next/router';
 import serialize from 'async-function-serializer';
-import {
-	PublishChangeResponse,
-	UpdateNoteAPIBody,
-} from 'pages/api/editor/publish-change';
+import { UpdateNoteAPIResponse, UpdateNoteAPIBody } from 'socket-server/index';
 
 export const getDateValueString = () => String(new Date().valueOf());
 
 export const uploadChangeEvent = async (body: UpdateNoteAPIBody) => {
-	const res = await fetch('/api/editor/publish-change', {
+	const res = await fetch(`${socketServerUrl}/editor/${body.noteId}`, {
 		method: 'post',
 		headers: { 'content-type': 'application/json' },
 		body: JSON.stringify({ ...body, uploaded_at: getDateValueString() }),
 	});
 	if (res.ok) {
-		const data = (await res.json()) as PublishChangeResponse;
-		return data?.note_id;
+		const data = (await res.json()) as UpdateNoteAPIResponse;
+		return data?.noteId;
 	}
 };
 
@@ -125,7 +120,7 @@ export default function Editor({ id, initialData }: EditorProps) {
 
 		socket.emit('join', id);
 
-		socket.on('change', (message: FirebaseChanges) => {
+		socket.on('change', (message: StoredChanges) => {
 			if (message.sessionId !== sessionId) {
 				processChange(message);
 			}
@@ -152,7 +147,7 @@ export default function Editor({ id, initialData }: EditorProps) {
 			<NextSeo
 				title={title}
 				description="Collaborative, realtime, Markdown editing"
-				canonical="https://www.chriskerr.com.au/editor/new"
+				canonical="https://www.chriskerr.com.au/editor/n"
 			/>
 			<div className="display-width">
 				<h2 className="mb-12 text-3xl">{title}</h2>
@@ -173,18 +168,22 @@ export default function Editor({ id, initialData }: EditorProps) {
 			</div>
 			<div className="w-full text-center display-width divider-before">
 				<div className="mb-16">
-					<h3 className="mb-4 text-xl">ID: {id}</h3>
-					<p>
-						Permament link:{' '}
-						<a
-							href={href}
-							target="_blank"
-							rel="noreferrer"
-							className="hover:underline text-brand"
-						>
-							{href}
-						</a>
-					</p>
+					<h3 className="mb-4 text-xl">
+						ID: {id === 'n' ? 'unsaved' : id}
+					</h3>
+					{id !== 'n' && (
+						<p>
+							Permament link:{' '}
+							<a
+								href={href}
+								target="_blank"
+								rel="noreferrer"
+								className="hover:underline text-brand"
+							>
+								{href}
+							</a>
+						</p>
+					)}
 				</div>
 			</div>
 			<div className="flex flex-col items-center justify-center display-width divider-before">
@@ -239,77 +238,27 @@ export const getServerSideProps: GetServerSideProps = async context => {
 		? context.query.id[0]
 		: context.query.id;
 
-	fetch(socketServerUrl);
-
-	if (!id) {
+	if (id === 'n')
 		return {
-			notFound: true,
-		};
-	}
-
-	if (id === 'new') {
-		const props: EditorProps = {
-			initialData: { id: 'new', cells: [] },
-			id,
+			props: {
+				id,
+				initialData: { id, cells: [] },
+			},
 		};
 
+	const res = await fetch(`${socketServerUrl}/editor/${id}`);
+	if (!res.ok || !id)
 		return {
-			props,
+			redirect: {
+				permanent: false,
+				destination: '/editor/n',
+			},
 		};
-	}
 
-	const docRef = firestore.collection(FirebaseCollections.NOTES).doc(id);
-	const changesRef = docRef.collection(FirebaseCollections.CHANGES);
-
-	const initialData = await firestore.runTransaction(async txn => {
-		let data: EditableCanvasData | false = false;
-
-		try {
-			const [doc, changes] = await Promise.all([
-				txn.get(docRef),
-				txn.get(changesRef.where('applied_to_note', '==', false)),
-			]);
-
-			if (!doc.exists) {
-				return false;
-			}
-
-			const allChanges = changes.docs
-				.map(
-					doc =>
-						({
-							...doc.data(),
-							change_id: doc.id,
-						} as FirebaseChanges),
-				)
-				.sort((a, b) => Number(a.uploaded_at) - Number(b.uploaded_at));
-
-			data = processAllChanges(allChanges, {
-				...(doc.data() as FirebaseNote),
-				id: doc.id,
-			});
-
-			txn.update(docRef, { cells: data.cells } as Partial<FirebaseNote>);
-			allChanges.forEach(({ change_id }) => {
-				txn.update(changesRef.doc(change_id || ''), {
-					applied_to_note: true,
-				} as Partial<FirebaseChanges>);
-			});
-		} catch (e) {
-			console.error(e);
-		}
-
-		return data;
-	});
-
-	if (!initialData) {
-		return {
-			notFound: true,
-		};
-	}
+	const data = (await res.json()) as StoredNote;
 
 	const props: EditorProps = {
-		initialData,
+		initialData: { id, cells: data.cells },
 		id,
 	};
 

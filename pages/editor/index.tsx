@@ -8,7 +8,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
 	return {
 		redirect: {
 			permanent: true,
-			destination: '/editor/new',
+			destination: '/editor/n',
 		},
 	};
 };

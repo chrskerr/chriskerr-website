@@ -24,7 +24,7 @@ import type {
 	EditableCanvasChangeEvent,
 	Directions,
 	EditableCanvasData,
-	FirebaseChanges,
+	StoredChanges,
 } from 'types/editor';
 
 import serialize from 'async-function-serializer';
@@ -96,7 +96,7 @@ const useEditableCanvas = ({
 
 	const processChange = useMemo(
 		() =>
-			serialize((event: FirebaseChanges) => {
+			serialize((event: StoredChanges) => {
 				const updatedData = processAllChanges([event], dataRef.current);
 				setData(updatedData);
 			}),
@@ -235,13 +235,13 @@ const useEditableCanvas = ({
 							cursorRowCol.current,
 							dataRef.current,
 							dataAsRowsRef.current,
-					)
+					  )
 					: processInsertEvent(
 							char,
 							cursorRowCol.current,
 							dataRef.current,
 							dataAsRowsRef.current,
-					);
+					  );
 
 			immediatelyUpdateData(result);
 			addToHistory(event);
@@ -257,12 +257,12 @@ const useEditableCanvas = ({
 							history: history.current,
 							undoStack: undoStack.current,
 							data: dataRef.current,
-					})
+					  })
 					: processRedo({
 							history: history.current,
 							undoStack: undoStack.current,
 							data: dataRef.current,
-					});
+					  });
 			if (!result) return;
 
 			history.current = result.updatedHistory;

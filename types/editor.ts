@@ -56,17 +56,17 @@ export enum FirebaseCollections {
 	CHANGES = 'changes',
 }
 
-export interface FirebaseNote {
+export interface StoredNote {
 	cells: Cell[];
 }
 
-export interface FirebaseChange {
+export interface StoredChangeData {
 	data: EditableCanvasChangeEvent;
 	created_at: string;
 }
 
-export type FirebaseChanges = {
-	changes: FirebaseChange[];
+export type StoredChanges = {
+	changes: StoredChangeData[];
 	applied_to_note: boolean;
 	change_id?: string;
 	uploaded_at: string;
@@ -74,7 +74,7 @@ export type FirebaseChanges = {
 	sessionId: string;
 };
 
-export interface ReceivedChangeEvent extends FirebaseChange {
+export interface ReceivedStoredChange extends StoredChangeData {
 	processed: boolean;
 }
 

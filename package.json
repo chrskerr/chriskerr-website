@@ -10,7 +10,8 @@
 		"dev": "next dev",
 		"build": "next build",
 		"start": "next start",
-		"lint": "next lint"
+		"lint": "next lint",
+		"server": "npm run predev && node socket-server/index.js"
 	},
 	"dependencies": {
 		"@react-spring/three": "^9.3.2",

@@ -1,9 +1,26 @@
 var __create = Object.create;
 var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
 var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 var __markAsModule = (target) => __defProp(target, "__esModule", { value: true });
 var __commonJS = (cb, mod) => function __require() {
   return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
@@ -18,6 +35,31 @@ var __reExport = (target, module2, copyDefault, desc) => {
 };
 var __toESM = (module2, isNodeMode) => {
   return __reExport(__markAsModule(__defProp(module2 != null ? __create(__getProtoOf(module2)) : {}, "default", !isNodeMode && module2 && module2.__esModule ? { get: () => module2.default, enumerable: true } : { value: module2, enumerable: true })), module2);
+};
+var __toCommonJS = /* @__PURE__ */ ((cache) => {
+  return (module2, temp) => {
+    return cache && cache.get(module2) || (temp = __reExport(__markAsModule({}), module2, 1), cache && cache.set(module2, temp), temp);
+  };
+})(typeof WeakMap !== "undefined" ? /* @__PURE__ */ new WeakMap() : 0);
+var __async = (__this, __arguments, generator) => {
+  return new Promise((resolve, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
 };
 
 // node_modules/depd/lib/compat/callsite-tostring.js
@@ -1119,12 +1161,12 @@ var require_debug = __commonJS({
       function debug() {
         if (!debug.enabled)
           return;
-        var self = debug;
+        var self2 = debug;
         var curr = +new Date();
         var ms = curr - (prevTime || curr);
-        self.diff = ms;
-        self.prev = prevTime;
-        self.curr = curr;
+        self2.diff = ms;
+        self2.prev = prevTime;
+        self2.curr = curr;
         prevTime = curr;
         var args2 = new Array(arguments.length);
         for (var i = 0; i < args2.length; i++) {
@@ -1142,15 +1184,15 @@ var require_debug = __commonJS({
           var formatter = exports2.formatters[format];
           if (typeof formatter === "function") {
             var val = args2[index];
-            match = formatter.call(self, val);
+            match = formatter.call(self2, val);
             args2.splice(index, 1);
             index--;
           }
           return match;
         });
-        exports2.formatArgs.call(self, args2);
+        exports2.formatArgs.call(self2, args2);
         var logFn = debug.log || exports2.log || console.log.bind(console);
-        logFn.apply(self, args2);
+        logFn.apply(self2, args2);
       }
       debug.namespace = namespace;
       debug.enabled = exports2.enabled(namespace);
@@ -15868,7 +15910,7 @@ var require_router = __commonJS({
       return this;
     };
     proto.handle = function handle(req, res, out) {
-      var self = this;
+      var self2 = this;
       debug("dispatching %s %s", req.method, req.url);
       var idx = 0;
       var protohost = getProtohost(req.url) || "";
@@ -15876,7 +15918,7 @@ var require_router = __commonJS({
       var slashAdded = false;
       var paramcalled = {};
       var options = [];
-      var stack2 = self.stack;
+      var stack2 = self2.stack;
       var parentParams = req.params;
       var parentUrl = req.baseUrl || "";
       var done = restore(out, req, "baseUrl", "next", "params");
@@ -15950,9 +15992,9 @@ var require_router = __commonJS({
         if (route) {
           req.route = route;
         }
-        req.params = self.mergeParams ? mergeParams(layer.params, parentParams) : layer.params;
+        req.params = self2.mergeParams ? mergeParams(layer.params, parentParams) : layer.params;
         var layerPath = layer.path;
-        self.process_params(layer, paramcalled, req, res, function(err2) {
+        self2.process_params(layer, paramcalled, req, res, function(err2) {
           if (err2) {
             return next(layerError || err2);
           }
@@ -16579,14 +16621,14 @@ var require_etag = __commonJS({
   "node_modules/etag/index.js"(exports2, module2) {
     "use strict";
     module2.exports = etag;
-    var crypto = require("crypto");
+    var crypto2 = require("crypto");
     var Stats = require("fs").Stats;
     var toString = Object.prototype.toString;
     function entitytag(entity) {
       if (entity.length === 0) {
         return '"0-2jmj7l5rSw0yVb/vlWAYkK/YBwk"';
       }
-      var hash = crypto.createHash("sha1").update(entity, "utf8").digest("base64").substring(0, 27);
+      var hash = crypto2.createHash("sha1").update(entity, "utf8").digest("base64").substring(0, 27);
       var len = typeof entity === "string" ? Buffer.byteLength(entity, "utf8") : entity.length;
       return '"' + len.toString(16) + "-" + hash + '"';
     }
@@ -17285,60 +17327,60 @@ var require_send = __commonJS({
     };
     SendStream.prototype.sendFile = function sendFile(path2) {
       var i = 0;
-      var self = this;
+      var self2 = this;
       debug('stat "%s"', path2);
       fs.stat(path2, function onstat(err, stat) {
         if (err && err.code === "ENOENT" && !extname(path2) && path2[path2.length - 1] !== sep) {
           return next(err);
         }
         if (err)
-          return self.onStatError(err);
+          return self2.onStatError(err);
         if (stat.isDirectory())
-          return self.redirect(path2);
-        self.emit("file", path2, stat);
-        self.send(path2, stat);
+          return self2.redirect(path2);
+        self2.emit("file", path2, stat);
+        self2.send(path2, stat);
       });
       function next(err) {
-        if (self._extensions.length <= i) {
-          return err ? self.onStatError(err) : self.error(404);
+        if (self2._extensions.length <= i) {
+          return err ? self2.onStatError(err) : self2.error(404);
         }
-        var p = path2 + "." + self._extensions[i++];
+        var p = path2 + "." + self2._extensions[i++];
         debug('stat "%s"', p);
         fs.stat(p, function(err2, stat) {
           if (err2)
             return next(err2);
           if (stat.isDirectory())
             return next();
-          self.emit("file", p, stat);
-          self.send(p, stat);
+          self2.emit("file", p, stat);
+          self2.send(p, stat);
         });
       }
     };
     SendStream.prototype.sendIndex = function sendIndex(path2) {
       var i = -1;
-      var self = this;
+      var self2 = this;
       function next(err) {
-        if (++i >= self._index.length) {
+        if (++i >= self2._index.length) {
           if (err)
-            return self.onStatError(err);
-          return self.error(404);
+            return self2.onStatError(err);
+          return self2.error(404);
         }
-        var p = join(path2, self._index[i]);
+        var p = join(path2, self2._index[i]);
         debug('stat "%s"', p);
         fs.stat(p, function(err2, stat) {
           if (err2)
             return next(err2);
           if (stat.isDirectory())
             return next();
-          self.emit("file", p, stat);
-          self.send(p, stat);
+          self2.emit("file", p, stat);
+          self2.send(p, stat);
         });
       }
       next();
     };
     SendStream.prototype.stream = function stream(path2, options) {
       var finished = false;
-      var self = this;
+      var self2 = this;
       var res = this.res;
       var stream2 = fs.createReadStream(path2, options);
       this.emit("stream", stream2);
@@ -17352,10 +17394,10 @@ var require_send = __commonJS({
           return;
         finished = true;
         destroy(stream2);
-        self.onStatError(err);
+        self2.onStatError(err);
       });
       stream2.on("end", function onend() {
-        self.emit("end");
+        self2.emit("end");
       });
     };
     SendStream.prototype.type = function type(path2) {
@@ -19499,13 +19541,13 @@ var require_request = __commonJS({
 // node_modules/cookie-signature/index.js
 var require_cookie_signature = __commonJS({
   "node_modules/cookie-signature/index.js"(exports2) {
-    var crypto = require("crypto");
+    var crypto2 = require("crypto");
     exports2.sign = function(val, secret) {
       if (typeof val != "string")
         throw new TypeError("Cookie value must be provided as a string.");
       if (typeof secret != "string")
         throw new TypeError("Secret string must be provided.");
-      return val + "." + crypto.createHmac("sha256", secret).update(val).digest("base64").replace(/\=+$/, "");
+      return val + "." + crypto2.createHmac("sha256", secret).update(val).digest("base64").replace(/\=+$/, "");
     };
     exports2.unsign = function(val, secret) {
       if (typeof val != "string")
@@ -19516,7 +19558,7 @@ var require_cookie_signature = __commonJS({
       return sha1(mac) == sha1(val) ? str : false;
     };
     function sha1(str) {
-      return crypto.createHash("sha1").update(str).digest("hex");
+      return crypto2.createHash("sha1").update(str).digest("hex");
     }
   }
 });
@@ -20121,16 +20163,16 @@ var require_response = __commonJS({
       var done = callback;
       var opts = options || {};
       var req = this.req;
-      var self = this;
+      var self2 = this;
       if (typeof options === "function") {
         done = options;
         opts = {};
       }
-      opts._locals = self.locals;
+      opts._locals = self2.locals;
       done = done || function(err, str) {
         if (err)
           return req.next(err);
-        self.send(str);
+        self2.send(str);
       };
       app2.render(view, opts, done);
     };
@@ -20413,20 +20455,20 @@ var require_express2 = __commonJS({
 // node_modules/base64id/lib/base64id.js
 var require_base64id = __commonJS({
   "node_modules/base64id/lib/base64id.js"(exports2, module2) {
-    var crypto = require("crypto");
+    var crypto2 = require("crypto");
     var Base64Id = function() {
     };
     Base64Id.prototype.getRandomBytes = function(bytes) {
       var BUFFER_SIZE = 4096;
-      var self = this;
+      var self2 = this;
       bytes = bytes || 12;
       if (bytes > BUFFER_SIZE) {
-        return crypto.randomBytes(bytes);
+        return crypto2.randomBytes(bytes);
       }
       var bytesInBuffer = parseInt(BUFFER_SIZE / bytes);
       var threshold = parseInt(bytesInBuffer * 0.85);
       if (!threshold) {
-        return crypto.randomBytes(bytes);
+        return crypto2.randomBytes(bytes);
       }
       if (this.bytesBufferIndex == null) {
         this.bytesBufferIndex = -1;
@@ -20438,14 +20480,14 @@ var require_base64id = __commonJS({
       if (this.bytesBufferIndex == -1 || this.bytesBufferIndex > threshold) {
         if (!this.isGeneratingBytes) {
           this.isGeneratingBytes = true;
-          crypto.randomBytes(BUFFER_SIZE, function(err, bytes2) {
-            self.bytesBuffer = bytes2;
-            self.bytesBufferIndex = 0;
-            self.isGeneratingBytes = false;
+          crypto2.randomBytes(BUFFER_SIZE, function(err, bytes2) {
+            self2.bytesBuffer = bytes2;
+            self2.bytesBufferIndex = 0;
+            self2.isGeneratingBytes = false;
           });
         }
         if (this.bytesBufferIndex == -1) {
-          return crypto.randomBytes(bytes);
+          return crypto2.randomBytes(bytes);
         }
       }
       var result = this.bytesBuffer.slice(bytes * this.bytesBufferIndex, bytes * (this.bytesBufferIndex + 1));
@@ -20459,7 +20501,7 @@ var require_base64id = __commonJS({
       }
       this.sequenceNumber = this.sequenceNumber + 1 | 0;
       rand.writeInt32BE(this.sequenceNumber, 11);
-      if (crypto.randomBytes) {
+      if (crypto2.randomBytes) {
         this.getRandomBytes(12).copy(rand);
       } else {
         [0, 4, 8].forEach(function(i) {
@@ -21229,12 +21271,12 @@ var require_common = __commonJS({
           if (!debug.enabled) {
             return;
           }
-          const self = debug;
+          const self2 = debug;
           const curr = Number(new Date());
           const ms = curr - (prevTime || curr);
-          self.diff = ms;
-          self.prev = prevTime;
-          self.curr = curr;
+          self2.diff = ms;
+          self2.prev = prevTime;
+          self2.curr = curr;
           prevTime = curr;
           args2[0] = createDebug.coerce(args2[0]);
           if (typeof args2[0] !== "string") {
@@ -21249,15 +21291,15 @@ var require_common = __commonJS({
             const formatter = createDebug.formatters[format];
             if (typeof formatter === "function") {
               const val = args2[index];
-              match = formatter.call(self, val);
+              match = formatter.call(self2, val);
               args2.splice(index, 1);
               index--;
             }
             return match;
           });
-          createDebug.formatArgs.call(self, args2);
-          const logFn = self.log || createDebug.log;
-          logFn.apply(self, args2);
+          createDebug.formatArgs.call(self2, args2);
+          const logFn = self2.log || createDebug.log;
+          logFn.apply(self2, args2);
         }
         debug.namespace = namespace;
         debug.useColors = createDebug.useColors();
@@ -24166,7 +24208,7 @@ var require_websocket2 = __commonJS({
     var tls = require("tls");
     var { randomBytes, createHash } = require("crypto");
     var { Readable } = require("stream");
-    var { URL } = require("url");
+    var { URL: URL2 } = require("url");
     var PerMessageDeflate = require_permessage_deflate();
     var Receiver = require_receiver();
     var Sender = require_sender();
@@ -24503,12 +24545,12 @@ var require_websocket2 = __commonJS({
         throw new RangeError(`Unsupported protocol version: ${opts.protocolVersion} (supported versions: ${protocolVersions.join(", ")})`);
       }
       let parsedUrl;
-      if (address instanceof URL) {
+      if (address instanceof URL2) {
         parsedUrl = address;
         websocket._url = address.href;
       } else {
         try {
-          parsedUrl = new URL(address);
+          parsedUrl = new URL2(address);
         } catch (e) {
           throw new SyntaxError(`Invalid URL: ${address}`);
         }
@@ -24596,7 +24638,7 @@ var require_websocket2 = __commonJS({
             return;
           }
           req.abort();
-          const addr = new URL(location, address);
+          const addr = new URL2(location, address);
           initAsClient(websocket, addr, protocols, options);
         } else if (!websocket.emit("unexpected-response", req, res)) {
           abortHandshake(websocket, req, `Unexpected server response: ${res.statusCode}`);
@@ -27126,12 +27168,12 @@ var require_common2 = __commonJS({
           if (!debug.enabled) {
             return;
           }
-          const self = debug;
+          const self2 = debug;
           const curr = Number(new Date());
           const ms = curr - (prevTime || curr);
-          self.diff = ms;
-          self.prev = prevTime;
-          self.curr = curr;
+          self2.diff = ms;
+          self2.prev = prevTime;
+          self2.curr = curr;
           prevTime = curr;
           args2[0] = createDebug.coerce(args2[0]);
           if (typeof args2[0] !== "string") {
@@ -27146,15 +27188,15 @@ var require_common2 = __commonJS({
             const formatter = createDebug.formatters[format];
             if (typeof formatter === "function") {
               const val = args2[index];
-              match = formatter.call(self, val);
+              match = formatter.call(self2, val);
               args2.splice(index, 1);
               index--;
             }
             return match;
           });
-          createDebug.formatArgs.call(self, args2);
-          const logFn = self.log || createDebug.log;
-          logFn.apply(self, args2);
+          createDebug.formatArgs.call(self2, args2);
+          const logFn = self2.log || createDebug.log;
+          logFn.apply(self2, args2);
         }
         debug.namespace = namespace;
         debug.useColors = createDebug.useColors();
@@ -27945,12 +27987,12 @@ var require_common3 = __commonJS({
           if (!debug.enabled) {
             return;
           }
-          const self = debug;
+          const self2 = debug;
           const curr = Number(new Date());
           const ms = curr - (prevTime || curr);
-          self.diff = ms;
-          self.prev = prevTime;
-          self.curr = curr;
+          self2.diff = ms;
+          self2.prev = prevTime;
+          self2.curr = curr;
           prevTime = curr;
           args2[0] = createDebug.coerce(args2[0]);
           if (typeof args2[0] !== "string") {
@@ -27965,15 +28007,15 @@ var require_common3 = __commonJS({
             const formatter = createDebug.formatters[format];
             if (typeof formatter === "function") {
               const val = args2[index];
-              match = formatter.call(self, val);
+              match = formatter.call(self2, val);
               args2.splice(index, 1);
               index--;
             }
             return match;
           });
-          createDebug.formatArgs.call(self, args2);
-          const logFn = self.log || createDebug.log;
-          logFn.apply(self, args2);
+          createDebug.formatArgs.call(self2, args2);
+          const logFn = self2.log || createDebug.log;
+          logFn.apply(self2, args2);
         }
         debug.namespace = namespace;
         debug.useColors = createDebug.useColors();
@@ -28925,14 +28967,14 @@ var require_socket2 = __commonJS({
         this.dispatch(args2);
       }
       ack(id) {
-        const self = this;
+        const self2 = this;
         let sent = false;
         return function() {
           if (sent)
             return;
           const args2 = Array.prototype.slice.call(arguments);
           debug("sending ack %j", args2);
-          self.packet({
+          self2.packet({
             id,
             type: socket_io_parser_1.PacketType.ACK,
             data: args2
@@ -30045,10 +30087,20247 @@ var require_dist3 = __commonJS({
   }
 });
 
-// ../lib/constants.ts
-var apiToken = "3ad02bbd-f01b-47b2-afb1-b7e4fe4d31db";
+// node_modules/tarn/dist/TimeoutError.js
+var require_TimeoutError = __commonJS({
+  "node_modules/tarn/dist/TimeoutError.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var TimeoutError = class extends Error {
+    };
+    exports2.TimeoutError = TimeoutError;
+  }
+});
+
+// node_modules/tarn/dist/PromiseInspection.js
+var require_PromiseInspection = __commonJS({
+  "node_modules/tarn/dist/PromiseInspection.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var PromiseInspection = class {
+      constructor(args2) {
+        this._value = args2.value;
+        this._error = args2.error;
+      }
+      value() {
+        return this._value;
+      }
+      reason() {
+        return this._error;
+      }
+      isRejected() {
+        return !!this._error;
+      }
+      isFulfilled() {
+        return !!this._value;
+      }
+    };
+    exports2.PromiseInspection = PromiseInspection;
+  }
+});
+
+// node_modules/tarn/dist/utils.js
+var require_utils3 = __commonJS({
+  "node_modules/tarn/dist/utils.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var PromiseInspection_1 = require_PromiseInspection();
+    function defer() {
+      let resolve = null;
+      let reject = null;
+      const promise = new Promise((resolver, rejecter) => {
+        resolve = resolver;
+        reject = rejecter;
+      });
+      return {
+        promise,
+        resolve,
+        reject
+      };
+    }
+    exports2.defer = defer;
+    function now() {
+      return Date.now();
+    }
+    exports2.now = now;
+    function duration(t1, t2) {
+      return Math.abs(t2 - t1);
+    }
+    exports2.duration = duration;
+    function checkOptionalTime(time) {
+      if (typeof time === "undefined") {
+        return true;
+      }
+      return checkRequiredTime(time);
+    }
+    exports2.checkOptionalTime = checkOptionalTime;
+    function checkRequiredTime(time) {
+      return typeof time === "number" && time === Math.round(time) && time > 0;
+    }
+    exports2.checkRequiredTime = checkRequiredTime;
+    function delay(millis) {
+      return new Promise((resolve) => setTimeout(resolve, millis));
+    }
+    exports2.delay = delay;
+    function reflect(promise) {
+      return promise.then((value) => {
+        return new PromiseInspection_1.PromiseInspection({ value });
+      }).catch((error) => {
+        return new PromiseInspection_1.PromiseInspection({ error });
+      });
+    }
+    exports2.reflect = reflect;
+    function tryPromise(cb) {
+      try {
+        const result = cb();
+        return Promise.resolve(result);
+      } catch (err) {
+        return Promise.reject(err);
+      }
+    }
+    exports2.tryPromise = tryPromise;
+  }
+});
+
+// node_modules/tarn/dist/PendingOperation.js
+var require_PendingOperation = __commonJS({
+  "node_modules/tarn/dist/PendingOperation.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var TimeoutError_1 = require_TimeoutError();
+    var utils_1 = require_utils3();
+    var PendingOperation = class {
+      constructor(timeoutMillis) {
+        this.timeoutMillis = timeoutMillis;
+        this.deferred = utils_1.defer();
+        this.possibleTimeoutCause = null;
+        this.isRejected = false;
+        this.promise = timeout(this.deferred.promise, timeoutMillis).catch((err) => {
+          if (err instanceof TimeoutError_1.TimeoutError) {
+            if (this.possibleTimeoutCause) {
+              err = new TimeoutError_1.TimeoutError(this.possibleTimeoutCause.message);
+            } else {
+              err = new TimeoutError_1.TimeoutError("operation timed out for an unknown reason");
+            }
+          }
+          this.isRejected = true;
+          return Promise.reject(err);
+        });
+      }
+      abort() {
+        this.reject(new Error("aborted"));
+      }
+      reject(err) {
+        this.deferred.reject(err);
+      }
+      resolve(value) {
+        this.deferred.resolve(value);
+      }
+    };
+    exports2.PendingOperation = PendingOperation;
+    function timeout(promise, time) {
+      return new Promise((resolve, reject) => {
+        const timeoutHandle = setTimeout(() => reject(new TimeoutError_1.TimeoutError()), time);
+        promise.then((result) => {
+          clearTimeout(timeoutHandle);
+          resolve(result);
+        }).catch((err) => {
+          clearTimeout(timeoutHandle);
+          reject(err);
+        });
+      });
+    }
+  }
+});
+
+// node_modules/tarn/dist/Resource.js
+var require_Resource = __commonJS({
+  "node_modules/tarn/dist/Resource.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var utils_1 = require_utils3();
+    var Resource = class {
+      constructor(resource) {
+        this.resource = resource;
+        this.resource = resource;
+        this.timestamp = utils_1.now();
+        this.deferred = utils_1.defer();
+      }
+      get promise() {
+        return this.deferred.promise;
+      }
+      resolve() {
+        this.deferred.resolve(void 0);
+        return new Resource(this.resource);
+      }
+    };
+    exports2.Resource = Resource;
+  }
+});
+
+// node_modules/tarn/dist/Pool.js
+var require_Pool = __commonJS({
+  "node_modules/tarn/dist/Pool.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var PendingOperation_1 = require_PendingOperation();
+    var Resource_1 = require_Resource();
+    var utils_1 = require_utils3();
+    var events_1 = require("events");
+    var timers_1 = require("timers");
+    var Pool = class {
+      constructor(opt) {
+        this.destroyed = false;
+        this.emitter = new events_1.EventEmitter();
+        opt = opt || {};
+        if (!opt.create) {
+          throw new Error("Tarn: opt.create function most be provided");
+        }
+        if (!opt.destroy) {
+          throw new Error("Tarn: opt.destroy function most be provided");
+        }
+        if (typeof opt.min !== "number" || opt.min < 0 || opt.min !== Math.round(opt.min)) {
+          throw new Error("Tarn: opt.min must be an integer >= 0");
+        }
+        if (typeof opt.max !== "number" || opt.max <= 0 || opt.max !== Math.round(opt.max)) {
+          throw new Error("Tarn: opt.max must be an integer > 0");
+        }
+        if (opt.min > opt.max) {
+          throw new Error("Tarn: opt.max is smaller than opt.min");
+        }
+        if (!utils_1.checkOptionalTime(opt.acquireTimeoutMillis)) {
+          throw new Error("Tarn: invalid opt.acquireTimeoutMillis " + JSON.stringify(opt.acquireTimeoutMillis));
+        }
+        if (!utils_1.checkOptionalTime(opt.createTimeoutMillis)) {
+          throw new Error("Tarn: invalid opt.createTimeoutMillis " + JSON.stringify(opt.createTimeoutMillis));
+        }
+        if (!utils_1.checkOptionalTime(opt.destroyTimeoutMillis)) {
+          throw new Error("Tarn: invalid opt.destroyTimeoutMillis " + JSON.stringify(opt.destroyTimeoutMillis));
+        }
+        if (!utils_1.checkOptionalTime(opt.idleTimeoutMillis)) {
+          throw new Error("Tarn: invalid opt.idleTimeoutMillis " + JSON.stringify(opt.idleTimeoutMillis));
+        }
+        if (!utils_1.checkOptionalTime(opt.reapIntervalMillis)) {
+          throw new Error("Tarn: invalid opt.reapIntervalMillis " + JSON.stringify(opt.reapIntervalMillis));
+        }
+        if (!utils_1.checkOptionalTime(opt.createRetryIntervalMillis)) {
+          throw new Error("Tarn: invalid opt.createRetryIntervalMillis " + JSON.stringify(opt.createRetryIntervalMillis));
+        }
+        const allowedKeys = {
+          create: true,
+          validate: true,
+          destroy: true,
+          log: true,
+          min: true,
+          max: true,
+          acquireTimeoutMillis: true,
+          createTimeoutMillis: true,
+          destroyTimeoutMillis: true,
+          idleTimeoutMillis: true,
+          reapIntervalMillis: true,
+          createRetryIntervalMillis: true,
+          propagateCreateError: true
+        };
+        for (const key of Object.keys(opt)) {
+          if (!allowedKeys[key]) {
+            throw new Error(`Tarn: unsupported option opt.${key}`);
+          }
+        }
+        this.creator = opt.create;
+        this.destroyer = opt.destroy;
+        this.validate = typeof opt.validate === "function" ? opt.validate : () => true;
+        this.log = opt.log || (() => {
+        });
+        this.acquireTimeoutMillis = opt.acquireTimeoutMillis || 3e4;
+        this.createTimeoutMillis = opt.createTimeoutMillis || 3e4;
+        this.destroyTimeoutMillis = opt.destroyTimeoutMillis || 5e3;
+        this.idleTimeoutMillis = opt.idleTimeoutMillis || 3e4;
+        this.reapIntervalMillis = opt.reapIntervalMillis || 1e3;
+        this.createRetryIntervalMillis = opt.createRetryIntervalMillis || 200;
+        this.propagateCreateError = !!opt.propagateCreateError;
+        this.min = opt.min;
+        this.max = opt.max;
+        this.used = [];
+        this.free = [];
+        this.pendingCreates = [];
+        this.pendingAcquires = [];
+        this.pendingDestroys = [];
+        this.pendingValidations = [];
+        this.destroyed = false;
+        this.interval = null;
+        this.eventId = 1;
+      }
+      numUsed() {
+        return this.used.length;
+      }
+      numFree() {
+        return this.free.length;
+      }
+      numPendingAcquires() {
+        return this.pendingAcquires.length;
+      }
+      numPendingValidations() {
+        return this.pendingValidations.length;
+      }
+      numPendingCreates() {
+        return this.pendingCreates.length;
+      }
+      acquire() {
+        const eventId = this.eventId++;
+        this._executeEventHandlers("acquireRequest", eventId);
+        const pendingAcquire = new PendingOperation_1.PendingOperation(this.acquireTimeoutMillis);
+        this.pendingAcquires.push(pendingAcquire);
+        pendingAcquire.promise = pendingAcquire.promise.then((resource) => {
+          this._executeEventHandlers("acquireSuccess", eventId, resource);
+          return resource;
+        }).catch((err) => {
+          this._executeEventHandlers("acquireFail", eventId, err);
+          remove(this.pendingAcquires, pendingAcquire);
+          return Promise.reject(err);
+        });
+        this._tryAcquireOrCreate();
+        return pendingAcquire;
+      }
+      release(resource) {
+        this._executeEventHandlers("release", resource);
+        for (let i = 0, l = this.used.length; i < l; ++i) {
+          const used = this.used[i];
+          if (used.resource === resource) {
+            this.used.splice(i, 1);
+            this.free.push(used.resolve());
+            this._tryAcquireOrCreate();
+            return true;
+          }
+        }
+        return false;
+      }
+      isEmpty() {
+        return [
+          this.numFree(),
+          this.numUsed(),
+          this.numPendingAcquires(),
+          this.numPendingValidations(),
+          this.numPendingCreates()
+        ].reduce((total, value) => total + value) === 0;
+      }
+      check() {
+        const timestamp = utils_1.now();
+        const newFree = [];
+        const minKeep = this.min - this.used.length;
+        const maxDestroy = this.free.length - minKeep;
+        let numDestroyed = 0;
+        this.free.forEach((free) => {
+          if (utils_1.duration(timestamp, free.timestamp) >= this.idleTimeoutMillis && numDestroyed < maxDestroy) {
+            numDestroyed++;
+            this._destroy(free.resource);
+          } else {
+            newFree.push(free);
+          }
+        });
+        this.free = newFree;
+        if (this.isEmpty()) {
+          this._stopReaping();
+        }
+      }
+      destroy() {
+        const eventId = this.eventId++;
+        this._executeEventHandlers("poolDestroyRequest", eventId);
+        this._stopReaping();
+        this.destroyed = true;
+        return utils_1.reflect(Promise.all(this.pendingCreates.map((create) => utils_1.reflect(create.promise))).then(() => {
+          return new Promise((resolve, reject) => {
+            if (this.numPendingValidations() === 0) {
+              resolve();
+              return;
+            }
+            const interval = setInterval(() => {
+              if (this.numPendingValidations() === 0) {
+                timers_1.clearInterval(interval);
+                resolve();
+              }
+            }, 100);
+          });
+        }).then(() => {
+          return Promise.all(this.used.map((used) => utils_1.reflect(used.promise)));
+        }).then(() => {
+          return Promise.all(this.pendingAcquires.map((acquire) => {
+            acquire.abort();
+            return utils_1.reflect(acquire.promise);
+          }));
+        }).then(() => {
+          return Promise.all(this.free.map((free) => utils_1.reflect(this._destroy(free.resource))));
+        }).then(() => {
+          return Promise.all(this.pendingDestroys.map((pd) => pd.promise));
+        }).then(() => {
+          this.free = [];
+          this.pendingAcquires = [];
+        })).then((res) => {
+          this._executeEventHandlers("poolDestroySuccess", eventId);
+          this.emitter.removeAllListeners();
+          return res;
+        });
+      }
+      on(event, listener) {
+        this.emitter.on(event, listener);
+      }
+      removeListener(event, listener) {
+        this.emitter.removeListener(event, listener);
+      }
+      removeAllListeners(event) {
+        this.emitter.removeAllListeners(event);
+      }
+      _tryAcquireOrCreate() {
+        if (this.destroyed) {
+          return;
+        }
+        if (this._hasFreeResources()) {
+          this._doAcquire();
+        } else if (this._shouldCreateMoreResources()) {
+          this._doCreate();
+        }
+      }
+      _hasFreeResources() {
+        return this.free.length > 0;
+      }
+      _doAcquire() {
+        while (this._canAcquire()) {
+          const pendingAcquire = this.pendingAcquires.shift();
+          const free = this.free.pop();
+          if (free === void 0 || pendingAcquire === void 0) {
+            const errMessage = "this.free was empty while trying to acquire resource";
+            this.log(`Tarn: ${errMessage}`, "warn");
+            throw new Error(`Internal error, should never happen. ${errMessage}`);
+          }
+          this.pendingValidations.push(pendingAcquire);
+          this.used.push(free);
+          const abortAbleValidation = new PendingOperation_1.PendingOperation(this.acquireTimeoutMillis);
+          pendingAcquire.promise.catch((err) => {
+            abortAbleValidation.abort();
+          });
+          abortAbleValidation.promise.catch((err) => {
+            this.log("Tarn: resource validator threw an exception " + err.stack, "warn");
+            return false;
+          }).then((validationSuccess) => {
+            try {
+              if (validationSuccess && !pendingAcquire.isRejected) {
+                this._startReaping();
+                pendingAcquire.resolve(free.resource);
+              } else {
+                remove(this.used, free);
+                if (!validationSuccess) {
+                  this._destroy(free.resource);
+                  setTimeout(() => {
+                    this._tryAcquireOrCreate();
+                  }, 0);
+                } else {
+                  this.free.push(free);
+                }
+                if (!pendingAcquire.isRejected) {
+                  this.pendingAcquires.unshift(pendingAcquire);
+                }
+              }
+            } finally {
+              remove(this.pendingValidations, pendingAcquire);
+            }
+          });
+          this._validateResource(free.resource).then((validationSuccess) => {
+            abortAbleValidation.resolve(validationSuccess);
+          }).catch((err) => {
+            abortAbleValidation.reject(err);
+          });
+        }
+      }
+      _canAcquire() {
+        return this.free.length > 0 && this.pendingAcquires.length > 0;
+      }
+      _validateResource(resource) {
+        try {
+          return Promise.resolve(this.validate(resource));
+        } catch (err) {
+          return Promise.reject(err);
+        }
+      }
+      _shouldCreateMoreResources() {
+        return this.used.length + this.pendingCreates.length < this.max && this.pendingCreates.length < this.pendingAcquires.length;
+      }
+      _doCreate() {
+        const pendingAcquiresBeforeCreate = this.pendingAcquires.slice();
+        const pendingCreate = this._create();
+        pendingCreate.promise.then(() => {
+          this._tryAcquireOrCreate();
+          return null;
+        }).catch((err) => {
+          if (this.propagateCreateError && this.pendingAcquires.length !== 0) {
+            this.pendingAcquires[0].reject(err);
+          }
+          pendingAcquiresBeforeCreate.forEach((pendingAcquire) => {
+            pendingAcquire.possibleTimeoutCause = err;
+          });
+          utils_1.delay(this.createRetryIntervalMillis).then(() => this._tryAcquireOrCreate());
+        });
+      }
+      _create() {
+        const eventId = this.eventId++;
+        this._executeEventHandlers("createRequest", eventId);
+        const pendingCreate = new PendingOperation_1.PendingOperation(this.createTimeoutMillis);
+        pendingCreate.promise = pendingCreate.promise.catch((err) => {
+          if (remove(this.pendingCreates, pendingCreate)) {
+            this._executeEventHandlers("createFail", eventId, err);
+          }
+          throw err;
+        });
+        this.pendingCreates.push(pendingCreate);
+        callbackOrPromise(this.creator).then((resource) => {
+          if (pendingCreate.isRejected) {
+            this.destroyer(resource);
+            return null;
+          }
+          remove(this.pendingCreates, pendingCreate);
+          this.free.push(new Resource_1.Resource(resource));
+          pendingCreate.resolve(resource);
+          this._executeEventHandlers("createSuccess", eventId, resource);
+          return null;
+        }).catch((err) => {
+          if (pendingCreate.isRejected) {
+            return null;
+          }
+          if (remove(this.pendingCreates, pendingCreate)) {
+            this._executeEventHandlers("createFail", eventId, err);
+          }
+          pendingCreate.reject(err);
+          return null;
+        });
+        return pendingCreate;
+      }
+      _destroy(resource) {
+        const eventId = this.eventId++;
+        this._executeEventHandlers("destroyRequest", eventId, resource);
+        const pendingDestroy = new PendingOperation_1.PendingOperation(this.destroyTimeoutMillis);
+        const retVal = Promise.resolve().then(() => this.destroyer(resource));
+        retVal.then(() => {
+          pendingDestroy.resolve(resource);
+        }).catch((err) => {
+          pendingDestroy.reject(err);
+        });
+        this.pendingDestroys.push(pendingDestroy);
+        return pendingDestroy.promise.then((res) => {
+          this._executeEventHandlers("destroySuccess", eventId, resource);
+          return res;
+        }).catch((err) => this._logDestroyerError(eventId, resource, err)).then((res) => {
+          const index = this.pendingDestroys.findIndex((pd) => pd === pendingDestroy);
+          this.pendingDestroys.splice(index, 1);
+          return res;
+        });
+      }
+      _logDestroyerError(eventId, resource, err) {
+        this._executeEventHandlers("destroyFail", eventId, resource, err);
+        this.log("Tarn: resource destroyer threw an exception " + err.stack, "warn");
+      }
+      _startReaping() {
+        if (!this.interval) {
+          this._executeEventHandlers("startReaping");
+          this.interval = setInterval(() => this.check(), this.reapIntervalMillis);
+        }
+      }
+      _stopReaping() {
+        if (this.interval !== null) {
+          this._executeEventHandlers("stopReaping");
+          timers_1.clearInterval(this.interval);
+        }
+        this.interval = null;
+      }
+      _executeEventHandlers(eventName, ...args2) {
+        const listeners = this.emitter.listeners(eventName);
+        listeners.forEach((listener) => {
+          try {
+            listener(...args2);
+          } catch (err) {
+            this.log(`Tarn: event handler "${eventName}" threw an exception ${err.stack}`, "warn");
+          }
+        });
+      }
+    };
+    exports2.Pool = Pool;
+    function remove(arr, item) {
+      const idx = arr.indexOf(item);
+      if (idx === -1) {
+        return false;
+      } else {
+        arr.splice(idx, 1);
+        return true;
+      }
+    }
+    function callbackOrPromise(func) {
+      return new Promise((resolve, reject) => {
+        const callback = (err, resource) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(resource);
+          }
+        };
+        utils_1.tryPromise(() => func(callback)).then((res) => {
+          if (res) {
+            resolve(res);
+          }
+        }).catch((err) => {
+          reject(err);
+        });
+      });
+    }
+  }
+});
+
+// node_modules/tarn/dist/tarn.js
+var require_tarn = __commonJS({
+  "node_modules/tarn/dist/tarn.js"(exports2, module2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var Pool_1 = require_Pool();
+    exports2.Pool = Pool_1.Pool;
+    var TimeoutError_1 = require_TimeoutError();
+    exports2.TimeoutError = TimeoutError_1.TimeoutError;
+    module2.exports = {
+      Pool: Pool_1.Pool,
+      TimeoutError: TimeoutError_1.TimeoutError
+    };
+  }
+});
+
+// node_modules/knex/lib/util/string.js
+var require_string = __commonJS({
+  "node_modules/knex/lib/util/string.js"(exports2, module2) {
+    var charsRegex = /[\0\b\t\n\r\x1a"'\\]/g;
+    var charsMap = {
+      "\0": "\\0",
+      "\b": "\\b",
+      "	": "\\t",
+      "\n": "\\n",
+      "\r": "\\r",
+      "": "\\Z",
+      '"': '\\"',
+      "'": "\\'",
+      "\\": "\\\\"
+    };
+    function wrapEscape(escapeFn) {
+      return function finalEscape(val, ctx = {}) {
+        return escapeFn(val, finalEscape, ctx);
+      };
+    }
+    function makeEscape(config = {}) {
+      const finalEscapeDate = config.escapeDate || dateToString;
+      const finalEscapeArray = config.escapeArray || arrayToList;
+      const finalEscapeBuffer = config.escapeBuffer || bufferToString;
+      const finalEscapeString = config.escapeString || escapeString;
+      const finalEscapeObject = config.escapeObject || escapeObject;
+      const finalWrap = config.wrap || wrapEscape;
+      function escapeFn(val, finalEscape, ctx) {
+        if (val === void 0 || val === null) {
+          return "NULL";
+        }
+        switch (typeof val) {
+          case "boolean":
+            return val ? "true" : "false";
+          case "number":
+            return val + "";
+          case "object":
+            if (val instanceof Date) {
+              val = finalEscapeDate(val, finalEscape, ctx);
+            } else if (Array.isArray(val)) {
+              return finalEscapeArray(val, finalEscape, ctx);
+            } else if (Buffer.isBuffer(val)) {
+              return finalEscapeBuffer(val, finalEscape, ctx);
+            } else {
+              return finalEscapeObject(val, finalEscape, ctx);
+            }
+        }
+        return finalEscapeString(val, finalEscape, ctx);
+      }
+      return finalWrap ? finalWrap(escapeFn) : escapeFn;
+    }
+    function escapeObject(val, finalEscape, ctx) {
+      if (val && typeof val.toSQL === "function") {
+        return val.toSQL(ctx);
+      } else {
+        return JSON.stringify(val);
+      }
+    }
+    function arrayToList(array, finalEscape, ctx) {
+      let sql = "";
+      for (let i = 0; i < array.length; i++) {
+        const val = array[i];
+        if (Array.isArray(val)) {
+          sql += (i === 0 ? "" : ", ") + "(" + arrayToList(val, finalEscape, ctx) + ")";
+        } else {
+          sql += (i === 0 ? "" : ", ") + finalEscape(val, ctx);
+        }
+      }
+      return sql;
+    }
+    function bufferToString(buffer) {
+      return "X" + escapeString(buffer.toString("hex"));
+    }
+    function escapeString(val, finalEscape, ctx) {
+      let chunkIndex = charsRegex.lastIndex = 0;
+      let escapedVal = "";
+      let match;
+      while (match = charsRegex.exec(val)) {
+        escapedVal += val.slice(chunkIndex, match.index) + charsMap[match[0]];
+        chunkIndex = charsRegex.lastIndex;
+      }
+      if (chunkIndex === 0) {
+        return "'" + val + "'";
+      }
+      if (chunkIndex < val.length) {
+        return "'" + escapedVal + val.slice(chunkIndex) + "'";
+      }
+      return "'" + escapedVal + "'";
+    }
+    function dateToString(date, finalEscape, ctx = {}) {
+      const timeZone = ctx.timeZone || "local";
+      const dt = new Date(date);
+      let year;
+      let month;
+      let day;
+      let hour;
+      let minute;
+      let second;
+      let millisecond;
+      if (timeZone === "local") {
+        year = dt.getFullYear();
+        month = dt.getMonth() + 1;
+        day = dt.getDate();
+        hour = dt.getHours();
+        minute = dt.getMinutes();
+        second = dt.getSeconds();
+        millisecond = dt.getMilliseconds();
+      } else {
+        const tz = convertTimezone(timeZone);
+        if (tz !== false && tz !== 0) {
+          dt.setTime(dt.getTime() + tz * 6e4);
+        }
+        year = dt.getUTCFullYear();
+        month = dt.getUTCMonth() + 1;
+        day = dt.getUTCDate();
+        hour = dt.getUTCHours();
+        minute = dt.getUTCMinutes();
+        second = dt.getUTCSeconds();
+        millisecond = dt.getUTCMilliseconds();
+      }
+      return zeroPad(year, 4) + "-" + zeroPad(month, 2) + "-" + zeroPad(day, 2) + " " + zeroPad(hour, 2) + ":" + zeroPad(minute, 2) + ":" + zeroPad(second, 2) + "." + zeroPad(millisecond, 3);
+    }
+    function zeroPad(number, length) {
+      number = number.toString();
+      while (number.length < length) {
+        number = "0" + number;
+      }
+      return number;
+    }
+    function convertTimezone(tz) {
+      if (tz === "Z") {
+        return 0;
+      }
+      const m = tz.match(/([+\-\s])(\d\d):?(\d\d)?/);
+      if (m) {
+        return (m[1] == "-" ? -1 : 1) * (parseInt(m[2], 10) + (m[3] ? parseInt(m[3], 10) : 0) / 60) * 60;
+      }
+      return false;
+    }
+    module2.exports = {
+      arrayToList,
+      bufferToString,
+      dateToString,
+      escapeString,
+      charsRegex,
+      charsMap,
+      escapeObject,
+      makeEscape
+    };
+  }
+});
+
+// node_modules/lodash/_listCacheClear.js
+var require_listCacheClear = __commonJS({
+  "node_modules/lodash/_listCacheClear.js"(exports2, module2) {
+    function listCacheClear() {
+      this.__data__ = [];
+      this.size = 0;
+    }
+    module2.exports = listCacheClear;
+  }
+});
+
+// node_modules/lodash/eq.js
+var require_eq = __commonJS({
+  "node_modules/lodash/eq.js"(exports2, module2) {
+    function eq(value, other) {
+      return value === other || value !== value && other !== other;
+    }
+    module2.exports = eq;
+  }
+});
+
+// node_modules/lodash/_assocIndexOf.js
+var require_assocIndexOf = __commonJS({
+  "node_modules/lodash/_assocIndexOf.js"(exports2, module2) {
+    var eq = require_eq();
+    function assocIndexOf(array, key) {
+      var length = array.length;
+      while (length--) {
+        if (eq(array[length][0], key)) {
+          return length;
+        }
+      }
+      return -1;
+    }
+    module2.exports = assocIndexOf;
+  }
+});
+
+// node_modules/lodash/_listCacheDelete.js
+var require_listCacheDelete = __commonJS({
+  "node_modules/lodash/_listCacheDelete.js"(exports2, module2) {
+    var assocIndexOf = require_assocIndexOf();
+    var arrayProto = Array.prototype;
+    var splice = arrayProto.splice;
+    function listCacheDelete(key) {
+      var data = this.__data__, index = assocIndexOf(data, key);
+      if (index < 0) {
+        return false;
+      }
+      var lastIndex = data.length - 1;
+      if (index == lastIndex) {
+        data.pop();
+      } else {
+        splice.call(data, index, 1);
+      }
+      --this.size;
+      return true;
+    }
+    module2.exports = listCacheDelete;
+  }
+});
+
+// node_modules/lodash/_listCacheGet.js
+var require_listCacheGet = __commonJS({
+  "node_modules/lodash/_listCacheGet.js"(exports2, module2) {
+    var assocIndexOf = require_assocIndexOf();
+    function listCacheGet(key) {
+      var data = this.__data__, index = assocIndexOf(data, key);
+      return index < 0 ? void 0 : data[index][1];
+    }
+    module2.exports = listCacheGet;
+  }
+});
+
+// node_modules/lodash/_listCacheHas.js
+var require_listCacheHas = __commonJS({
+  "node_modules/lodash/_listCacheHas.js"(exports2, module2) {
+    var assocIndexOf = require_assocIndexOf();
+    function listCacheHas(key) {
+      return assocIndexOf(this.__data__, key) > -1;
+    }
+    module2.exports = listCacheHas;
+  }
+});
+
+// node_modules/lodash/_listCacheSet.js
+var require_listCacheSet = __commonJS({
+  "node_modules/lodash/_listCacheSet.js"(exports2, module2) {
+    var assocIndexOf = require_assocIndexOf();
+    function listCacheSet(key, value) {
+      var data = this.__data__, index = assocIndexOf(data, key);
+      if (index < 0) {
+        ++this.size;
+        data.push([key, value]);
+      } else {
+        data[index][1] = value;
+      }
+      return this;
+    }
+    module2.exports = listCacheSet;
+  }
+});
+
+// node_modules/lodash/_ListCache.js
+var require_ListCache = __commonJS({
+  "node_modules/lodash/_ListCache.js"(exports2, module2) {
+    var listCacheClear = require_listCacheClear();
+    var listCacheDelete = require_listCacheDelete();
+    var listCacheGet = require_listCacheGet();
+    var listCacheHas = require_listCacheHas();
+    var listCacheSet = require_listCacheSet();
+    function ListCache(entries) {
+      var index = -1, length = entries == null ? 0 : entries.length;
+      this.clear();
+      while (++index < length) {
+        var entry = entries[index];
+        this.set(entry[0], entry[1]);
+      }
+    }
+    ListCache.prototype.clear = listCacheClear;
+    ListCache.prototype["delete"] = listCacheDelete;
+    ListCache.prototype.get = listCacheGet;
+    ListCache.prototype.has = listCacheHas;
+    ListCache.prototype.set = listCacheSet;
+    module2.exports = ListCache;
+  }
+});
+
+// node_modules/lodash/_stackClear.js
+var require_stackClear = __commonJS({
+  "node_modules/lodash/_stackClear.js"(exports2, module2) {
+    var ListCache = require_ListCache();
+    function stackClear() {
+      this.__data__ = new ListCache();
+      this.size = 0;
+    }
+    module2.exports = stackClear;
+  }
+});
+
+// node_modules/lodash/_stackDelete.js
+var require_stackDelete = __commonJS({
+  "node_modules/lodash/_stackDelete.js"(exports2, module2) {
+    function stackDelete(key) {
+      var data = this.__data__, result = data["delete"](key);
+      this.size = data.size;
+      return result;
+    }
+    module2.exports = stackDelete;
+  }
+});
+
+// node_modules/lodash/_stackGet.js
+var require_stackGet = __commonJS({
+  "node_modules/lodash/_stackGet.js"(exports2, module2) {
+    function stackGet(key) {
+      return this.__data__.get(key);
+    }
+    module2.exports = stackGet;
+  }
+});
+
+// node_modules/lodash/_stackHas.js
+var require_stackHas = __commonJS({
+  "node_modules/lodash/_stackHas.js"(exports2, module2) {
+    function stackHas(key) {
+      return this.__data__.has(key);
+    }
+    module2.exports = stackHas;
+  }
+});
+
+// node_modules/lodash/_freeGlobal.js
+var require_freeGlobal = __commonJS({
+  "node_modules/lodash/_freeGlobal.js"(exports2, module2) {
+    var freeGlobal = typeof global == "object" && global && global.Object === Object && global;
+    module2.exports = freeGlobal;
+  }
+});
+
+// node_modules/lodash/_root.js
+var require_root = __commonJS({
+  "node_modules/lodash/_root.js"(exports2, module2) {
+    var freeGlobal = require_freeGlobal();
+    var freeSelf = typeof self == "object" && self && self.Object === Object && self;
+    var root = freeGlobal || freeSelf || Function("return this")();
+    module2.exports = root;
+  }
+});
+
+// node_modules/lodash/_Symbol.js
+var require_Symbol = __commonJS({
+  "node_modules/lodash/_Symbol.js"(exports2, module2) {
+    var root = require_root();
+    var Symbol2 = root.Symbol;
+    module2.exports = Symbol2;
+  }
+});
+
+// node_modules/lodash/_getRawTag.js
+var require_getRawTag = __commonJS({
+  "node_modules/lodash/_getRawTag.js"(exports2, module2) {
+    var Symbol2 = require_Symbol();
+    var objectProto = Object.prototype;
+    var hasOwnProperty = objectProto.hasOwnProperty;
+    var nativeObjectToString = objectProto.toString;
+    var symToStringTag = Symbol2 ? Symbol2.toStringTag : void 0;
+    function getRawTag(value) {
+      var isOwn = hasOwnProperty.call(value, symToStringTag), tag = value[symToStringTag];
+      try {
+        value[symToStringTag] = void 0;
+        var unmasked = true;
+      } catch (e) {
+      }
+      var result = nativeObjectToString.call(value);
+      if (unmasked) {
+        if (isOwn) {
+          value[symToStringTag] = tag;
+        } else {
+          delete value[symToStringTag];
+        }
+      }
+      return result;
+    }
+    module2.exports = getRawTag;
+  }
+});
+
+// node_modules/lodash/_objectToString.js
+var require_objectToString = __commonJS({
+  "node_modules/lodash/_objectToString.js"(exports2, module2) {
+    var objectProto = Object.prototype;
+    var nativeObjectToString = objectProto.toString;
+    function objectToString(value) {
+      return nativeObjectToString.call(value);
+    }
+    module2.exports = objectToString;
+  }
+});
+
+// node_modules/lodash/_baseGetTag.js
+var require_baseGetTag = __commonJS({
+  "node_modules/lodash/_baseGetTag.js"(exports2, module2) {
+    var Symbol2 = require_Symbol();
+    var getRawTag = require_getRawTag();
+    var objectToString = require_objectToString();
+    var nullTag = "[object Null]";
+    var undefinedTag = "[object Undefined]";
+    var symToStringTag = Symbol2 ? Symbol2.toStringTag : void 0;
+    function baseGetTag(value) {
+      if (value == null) {
+        return value === void 0 ? undefinedTag : nullTag;
+      }
+      return symToStringTag && symToStringTag in Object(value) ? getRawTag(value) : objectToString(value);
+    }
+    module2.exports = baseGetTag;
+  }
+});
+
+// node_modules/lodash/isObject.js
+var require_isObject = __commonJS({
+  "node_modules/lodash/isObject.js"(exports2, module2) {
+    function isObject(value) {
+      var type = typeof value;
+      return value != null && (type == "object" || type == "function");
+    }
+    module2.exports = isObject;
+  }
+});
+
+// node_modules/lodash/isFunction.js
+var require_isFunction = __commonJS({
+  "node_modules/lodash/isFunction.js"(exports2, module2) {
+    var baseGetTag = require_baseGetTag();
+    var isObject = require_isObject();
+    var asyncTag = "[object AsyncFunction]";
+    var funcTag = "[object Function]";
+    var genTag = "[object GeneratorFunction]";
+    var proxyTag = "[object Proxy]";
+    function isFunction(value) {
+      if (!isObject(value)) {
+        return false;
+      }
+      var tag = baseGetTag(value);
+      return tag == funcTag || tag == genTag || tag == asyncTag || tag == proxyTag;
+    }
+    module2.exports = isFunction;
+  }
+});
+
+// node_modules/lodash/_coreJsData.js
+var require_coreJsData = __commonJS({
+  "node_modules/lodash/_coreJsData.js"(exports2, module2) {
+    var root = require_root();
+    var coreJsData = root["__core-js_shared__"];
+    module2.exports = coreJsData;
+  }
+});
+
+// node_modules/lodash/_isMasked.js
+var require_isMasked = __commonJS({
+  "node_modules/lodash/_isMasked.js"(exports2, module2) {
+    var coreJsData = require_coreJsData();
+    var maskSrcKey = function() {
+      var uid = /[^.]+$/.exec(coreJsData && coreJsData.keys && coreJsData.keys.IE_PROTO || "");
+      return uid ? "Symbol(src)_1." + uid : "";
+    }();
+    function isMasked(func) {
+      return !!maskSrcKey && maskSrcKey in func;
+    }
+    module2.exports = isMasked;
+  }
+});
+
+// node_modules/lodash/_toSource.js
+var require_toSource = __commonJS({
+  "node_modules/lodash/_toSource.js"(exports2, module2) {
+    var funcProto = Function.prototype;
+    var funcToString = funcProto.toString;
+    function toSource(func) {
+      if (func != null) {
+        try {
+          return funcToString.call(func);
+        } catch (e) {
+        }
+        try {
+          return func + "";
+        } catch (e) {
+        }
+      }
+      return "";
+    }
+    module2.exports = toSource;
+  }
+});
+
+// node_modules/lodash/_baseIsNative.js
+var require_baseIsNative = __commonJS({
+  "node_modules/lodash/_baseIsNative.js"(exports2, module2) {
+    var isFunction = require_isFunction();
+    var isMasked = require_isMasked();
+    var isObject = require_isObject();
+    var toSource = require_toSource();
+    var reRegExpChar = /[\\^$.*+?()[\]{}|]/g;
+    var reIsHostCtor = /^\[object .+?Constructor\]$/;
+    var funcProto = Function.prototype;
+    var objectProto = Object.prototype;
+    var funcToString = funcProto.toString;
+    var hasOwnProperty = objectProto.hasOwnProperty;
+    var reIsNative = RegExp("^" + funcToString.call(hasOwnProperty).replace(reRegExpChar, "\\$&").replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, "$1.*?") + "$");
+    function baseIsNative(value) {
+      if (!isObject(value) || isMasked(value)) {
+        return false;
+      }
+      var pattern = isFunction(value) ? reIsNative : reIsHostCtor;
+      return pattern.test(toSource(value));
+    }
+    module2.exports = baseIsNative;
+  }
+});
+
+// node_modules/lodash/_getValue.js
+var require_getValue = __commonJS({
+  "node_modules/lodash/_getValue.js"(exports2, module2) {
+    function getValue(object, key) {
+      return object == null ? void 0 : object[key];
+    }
+    module2.exports = getValue;
+  }
+});
+
+// node_modules/lodash/_getNative.js
+var require_getNative = __commonJS({
+  "node_modules/lodash/_getNative.js"(exports2, module2) {
+    var baseIsNative = require_baseIsNative();
+    var getValue = require_getValue();
+    function getNative(object, key) {
+      var value = getValue(object, key);
+      return baseIsNative(value) ? value : void 0;
+    }
+    module2.exports = getNative;
+  }
+});
+
+// node_modules/lodash/_Map.js
+var require_Map = __commonJS({
+  "node_modules/lodash/_Map.js"(exports2, module2) {
+    var getNative = require_getNative();
+    var root = require_root();
+    var Map2 = getNative(root, "Map");
+    module2.exports = Map2;
+  }
+});
+
+// node_modules/lodash/_nativeCreate.js
+var require_nativeCreate = __commonJS({
+  "node_modules/lodash/_nativeCreate.js"(exports2, module2) {
+    var getNative = require_getNative();
+    var nativeCreate = getNative(Object, "create");
+    module2.exports = nativeCreate;
+  }
+});
+
+// node_modules/lodash/_hashClear.js
+var require_hashClear = __commonJS({
+  "node_modules/lodash/_hashClear.js"(exports2, module2) {
+    var nativeCreate = require_nativeCreate();
+    function hashClear() {
+      this.__data__ = nativeCreate ? nativeCreate(null) : {};
+      this.size = 0;
+    }
+    module2.exports = hashClear;
+  }
+});
+
+// node_modules/lodash/_hashDelete.js
+var require_hashDelete = __commonJS({
+  "node_modules/lodash/_hashDelete.js"(exports2, module2) {
+    function hashDelete(key) {
+      var result = this.has(key) && delete this.__data__[key];
+      this.size -= result ? 1 : 0;
+      return result;
+    }
+    module2.exports = hashDelete;
+  }
+});
+
+// node_modules/lodash/_hashGet.js
+var require_hashGet = __commonJS({
+  "node_modules/lodash/_hashGet.js"(exports2, module2) {
+    var nativeCreate = require_nativeCreate();
+    var HASH_UNDEFINED = "__lodash_hash_undefined__";
+    var objectProto = Object.prototype;
+    var hasOwnProperty = objectProto.hasOwnProperty;
+    function hashGet(key) {
+      var data = this.__data__;
+      if (nativeCreate) {
+        var result = data[key];
+        return result === HASH_UNDEFINED ? void 0 : result;
+      }
+      return hasOwnProperty.call(data, key) ? data[key] : void 0;
+    }
+    module2.exports = hashGet;
+  }
+});
+
+// node_modules/lodash/_hashHas.js
+var require_hashHas = __commonJS({
+  "node_modules/lodash/_hashHas.js"(exports2, module2) {
+    var nativeCreate = require_nativeCreate();
+    var objectProto = Object.prototype;
+    var hasOwnProperty = objectProto.hasOwnProperty;
+    function hashHas(key) {
+      var data = this.__data__;
+      return nativeCreate ? data[key] !== void 0 : hasOwnProperty.call(data, key);
+    }
+    module2.exports = hashHas;
+  }
+});
+
+// node_modules/lodash/_hashSet.js
+var require_hashSet = __commonJS({
+  "node_modules/lodash/_hashSet.js"(exports2, module2) {
+    var nativeCreate = require_nativeCreate();
+    var HASH_UNDEFINED = "__lodash_hash_undefined__";
+    function hashSet(key, value) {
+      var data = this.__data__;
+      this.size += this.has(key) ? 0 : 1;
+      data[key] = nativeCreate && value === void 0 ? HASH_UNDEFINED : value;
+      return this;
+    }
+    module2.exports = hashSet;
+  }
+});
+
+// node_modules/lodash/_Hash.js
+var require_Hash = __commonJS({
+  "node_modules/lodash/_Hash.js"(exports2, module2) {
+    var hashClear = require_hashClear();
+    var hashDelete = require_hashDelete();
+    var hashGet = require_hashGet();
+    var hashHas = require_hashHas();
+    var hashSet = require_hashSet();
+    function Hash(entries) {
+      var index = -1, length = entries == null ? 0 : entries.length;
+      this.clear();
+      while (++index < length) {
+        var entry = entries[index];
+        this.set(entry[0], entry[1]);
+      }
+    }
+    Hash.prototype.clear = hashClear;
+    Hash.prototype["delete"] = hashDelete;
+    Hash.prototype.get = hashGet;
+    Hash.prototype.has = hashHas;
+    Hash.prototype.set = hashSet;
+    module2.exports = Hash;
+  }
+});
+
+// node_modules/lodash/_mapCacheClear.js
+var require_mapCacheClear = __commonJS({
+  "node_modules/lodash/_mapCacheClear.js"(exports2, module2) {
+    var Hash = require_Hash();
+    var ListCache = require_ListCache();
+    var Map2 = require_Map();
+    function mapCacheClear() {
+      this.size = 0;
+      this.__data__ = {
+        "hash": new Hash(),
+        "map": new (Map2 || ListCache)(),
+        "string": new Hash()
+      };
+    }
+    module2.exports = mapCacheClear;
+  }
+});
+
+// node_modules/lodash/_isKeyable.js
+var require_isKeyable = __commonJS({
+  "node_modules/lodash/_isKeyable.js"(exports2, module2) {
+    function isKeyable(value) {
+      var type = typeof value;
+      return type == "string" || type == "number" || type == "symbol" || type == "boolean" ? value !== "__proto__" : value === null;
+    }
+    module2.exports = isKeyable;
+  }
+});
+
+// node_modules/lodash/_getMapData.js
+var require_getMapData = __commonJS({
+  "node_modules/lodash/_getMapData.js"(exports2, module2) {
+    var isKeyable = require_isKeyable();
+    function getMapData(map, key) {
+      var data = map.__data__;
+      return isKeyable(key) ? data[typeof key == "string" ? "string" : "hash"] : data.map;
+    }
+    module2.exports = getMapData;
+  }
+});
+
+// node_modules/lodash/_mapCacheDelete.js
+var require_mapCacheDelete = __commonJS({
+  "node_modules/lodash/_mapCacheDelete.js"(exports2, module2) {
+    var getMapData = require_getMapData();
+    function mapCacheDelete(key) {
+      var result = getMapData(this, key)["delete"](key);
+      this.size -= result ? 1 : 0;
+      return result;
+    }
+    module2.exports = mapCacheDelete;
+  }
+});
+
+// node_modules/lodash/_mapCacheGet.js
+var require_mapCacheGet = __commonJS({
+  "node_modules/lodash/_mapCacheGet.js"(exports2, module2) {
+    var getMapData = require_getMapData();
+    function mapCacheGet(key) {
+      return getMapData(this, key).get(key);
+    }
+    module2.exports = mapCacheGet;
+  }
+});
+
+// node_modules/lodash/_mapCacheHas.js
+var require_mapCacheHas = __commonJS({
+  "node_modules/lodash/_mapCacheHas.js"(exports2, module2) {
+    var getMapData = require_getMapData();
+    function mapCacheHas(key) {
+      return getMapData(this, key).has(key);
+    }
+    module2.exports = mapCacheHas;
+  }
+});
+
+// node_modules/lodash/_mapCacheSet.js
+var require_mapCacheSet = __commonJS({
+  "node_modules/lodash/_mapCacheSet.js"(exports2, module2) {
+    var getMapData = require_getMapData();
+    function mapCacheSet(key, value) {
+      var data = getMapData(this, key), size = data.size;
+      data.set(key, value);
+      this.size += data.size == size ? 0 : 1;
+      return this;
+    }
+    module2.exports = mapCacheSet;
+  }
+});
+
+// node_modules/lodash/_MapCache.js
+var require_MapCache = __commonJS({
+  "node_modules/lodash/_MapCache.js"(exports2, module2) {
+    var mapCacheClear = require_mapCacheClear();
+    var mapCacheDelete = require_mapCacheDelete();
+    var mapCacheGet = require_mapCacheGet();
+    var mapCacheHas = require_mapCacheHas();
+    var mapCacheSet = require_mapCacheSet();
+    function MapCache(entries) {
+      var index = -1, length = entries == null ? 0 : entries.length;
+      this.clear();
+      while (++index < length) {
+        var entry = entries[index];
+        this.set(entry[0], entry[1]);
+      }
+    }
+    MapCache.prototype.clear = mapCacheClear;
+    MapCache.prototype["delete"] = mapCacheDelete;
+    MapCache.prototype.get = mapCacheGet;
+    MapCache.prototype.has = mapCacheHas;
+    MapCache.prototype.set = mapCacheSet;
+    module2.exports = MapCache;
+  }
+});
+
+// node_modules/lodash/_stackSet.js
+var require_stackSet = __commonJS({
+  "node_modules/lodash/_stackSet.js"(exports2, module2) {
+    var ListCache = require_ListCache();
+    var Map2 = require_Map();
+    var MapCache = require_MapCache();
+    var LARGE_ARRAY_SIZE = 200;
+    function stackSet(key, value) {
+      var data = this.__data__;
+      if (data instanceof ListCache) {
+        var pairs = data.__data__;
+        if (!Map2 || pairs.length < LARGE_ARRAY_SIZE - 1) {
+          pairs.push([key, value]);
+          this.size = ++data.size;
+          return this;
+        }
+        data = this.__data__ = new MapCache(pairs);
+      }
+      data.set(key, value);
+      this.size = data.size;
+      return this;
+    }
+    module2.exports = stackSet;
+  }
+});
+
+// node_modules/lodash/_Stack.js
+var require_Stack = __commonJS({
+  "node_modules/lodash/_Stack.js"(exports2, module2) {
+    var ListCache = require_ListCache();
+    var stackClear = require_stackClear();
+    var stackDelete = require_stackDelete();
+    var stackGet = require_stackGet();
+    var stackHas = require_stackHas();
+    var stackSet = require_stackSet();
+    function Stack(entries) {
+      var data = this.__data__ = new ListCache(entries);
+      this.size = data.size;
+    }
+    Stack.prototype.clear = stackClear;
+    Stack.prototype["delete"] = stackDelete;
+    Stack.prototype.get = stackGet;
+    Stack.prototype.has = stackHas;
+    Stack.prototype.set = stackSet;
+    module2.exports = Stack;
+  }
+});
+
+// node_modules/lodash/_arrayEach.js
+var require_arrayEach = __commonJS({
+  "node_modules/lodash/_arrayEach.js"(exports2, module2) {
+    function arrayEach(array, iteratee) {
+      var index = -1, length = array == null ? 0 : array.length;
+      while (++index < length) {
+        if (iteratee(array[index], index, array) === false) {
+          break;
+        }
+      }
+      return array;
+    }
+    module2.exports = arrayEach;
+  }
+});
+
+// node_modules/lodash/_defineProperty.js
+var require_defineProperty = __commonJS({
+  "node_modules/lodash/_defineProperty.js"(exports2, module2) {
+    var getNative = require_getNative();
+    var defineProperty = function() {
+      try {
+        var func = getNative(Object, "defineProperty");
+        func({}, "", {});
+        return func;
+      } catch (e) {
+      }
+    }();
+    module2.exports = defineProperty;
+  }
+});
+
+// node_modules/lodash/_baseAssignValue.js
+var require_baseAssignValue = __commonJS({
+  "node_modules/lodash/_baseAssignValue.js"(exports2, module2) {
+    var defineProperty = require_defineProperty();
+    function baseAssignValue(object, key, value) {
+      if (key == "__proto__" && defineProperty) {
+        defineProperty(object, key, {
+          "configurable": true,
+          "enumerable": true,
+          "value": value,
+          "writable": true
+        });
+      } else {
+        object[key] = value;
+      }
+    }
+    module2.exports = baseAssignValue;
+  }
+});
+
+// node_modules/lodash/_assignValue.js
+var require_assignValue = __commonJS({
+  "node_modules/lodash/_assignValue.js"(exports2, module2) {
+    var baseAssignValue = require_baseAssignValue();
+    var eq = require_eq();
+    var objectProto = Object.prototype;
+    var hasOwnProperty = objectProto.hasOwnProperty;
+    function assignValue(object, key, value) {
+      var objValue = object[key];
+      if (!(hasOwnProperty.call(object, key) && eq(objValue, value)) || value === void 0 && !(key in object)) {
+        baseAssignValue(object, key, value);
+      }
+    }
+    module2.exports = assignValue;
+  }
+});
+
+// node_modules/lodash/_copyObject.js
+var require_copyObject = __commonJS({
+  "node_modules/lodash/_copyObject.js"(exports2, module2) {
+    var assignValue = require_assignValue();
+    var baseAssignValue = require_baseAssignValue();
+    function copyObject(source, props, object, customizer) {
+      var isNew = !object;
+      object || (object = {});
+      var index = -1, length = props.length;
+      while (++index < length) {
+        var key = props[index];
+        var newValue = customizer ? customizer(object[key], source[key], key, object, source) : void 0;
+        if (newValue === void 0) {
+          newValue = source[key];
+        }
+        if (isNew) {
+          baseAssignValue(object, key, newValue);
+        } else {
+          assignValue(object, key, newValue);
+        }
+      }
+      return object;
+    }
+    module2.exports = copyObject;
+  }
+});
+
+// node_modules/lodash/_baseTimes.js
+var require_baseTimes = __commonJS({
+  "node_modules/lodash/_baseTimes.js"(exports2, module2) {
+    function baseTimes(n, iteratee) {
+      var index = -1, result = Array(n);
+      while (++index < n) {
+        result[index] = iteratee(index);
+      }
+      return result;
+    }
+    module2.exports = baseTimes;
+  }
+});
+
+// node_modules/lodash/isObjectLike.js
+var require_isObjectLike = __commonJS({
+  "node_modules/lodash/isObjectLike.js"(exports2, module2) {
+    function isObjectLike(value) {
+      return value != null && typeof value == "object";
+    }
+    module2.exports = isObjectLike;
+  }
+});
+
+// node_modules/lodash/_baseIsArguments.js
+var require_baseIsArguments = __commonJS({
+  "node_modules/lodash/_baseIsArguments.js"(exports2, module2) {
+    var baseGetTag = require_baseGetTag();
+    var isObjectLike = require_isObjectLike();
+    var argsTag = "[object Arguments]";
+    function baseIsArguments(value) {
+      return isObjectLike(value) && baseGetTag(value) == argsTag;
+    }
+    module2.exports = baseIsArguments;
+  }
+});
+
+// node_modules/lodash/isArguments.js
+var require_isArguments = __commonJS({
+  "node_modules/lodash/isArguments.js"(exports2, module2) {
+    var baseIsArguments = require_baseIsArguments();
+    var isObjectLike = require_isObjectLike();
+    var objectProto = Object.prototype;
+    var hasOwnProperty = objectProto.hasOwnProperty;
+    var propertyIsEnumerable = objectProto.propertyIsEnumerable;
+    var isArguments = baseIsArguments(function() {
+      return arguments;
+    }()) ? baseIsArguments : function(value) {
+      return isObjectLike(value) && hasOwnProperty.call(value, "callee") && !propertyIsEnumerable.call(value, "callee");
+    };
+    module2.exports = isArguments;
+  }
+});
+
+// node_modules/lodash/isArray.js
+var require_isArray = __commonJS({
+  "node_modules/lodash/isArray.js"(exports2, module2) {
+    var isArray = Array.isArray;
+    module2.exports = isArray;
+  }
+});
+
+// node_modules/lodash/stubFalse.js
+var require_stubFalse = __commonJS({
+  "node_modules/lodash/stubFalse.js"(exports2, module2) {
+    function stubFalse() {
+      return false;
+    }
+    module2.exports = stubFalse;
+  }
+});
+
+// node_modules/lodash/isBuffer.js
+var require_isBuffer = __commonJS({
+  "node_modules/lodash/isBuffer.js"(exports2, module2) {
+    var root = require_root();
+    var stubFalse = require_stubFalse();
+    var freeExports = typeof exports2 == "object" && exports2 && !exports2.nodeType && exports2;
+    var freeModule = freeExports && typeof module2 == "object" && module2 && !module2.nodeType && module2;
+    var moduleExports = freeModule && freeModule.exports === freeExports;
+    var Buffer2 = moduleExports ? root.Buffer : void 0;
+    var nativeIsBuffer = Buffer2 ? Buffer2.isBuffer : void 0;
+    var isBuffer = nativeIsBuffer || stubFalse;
+    module2.exports = isBuffer;
+  }
+});
+
+// node_modules/lodash/_isIndex.js
+var require_isIndex = __commonJS({
+  "node_modules/lodash/_isIndex.js"(exports2, module2) {
+    var MAX_SAFE_INTEGER = 9007199254740991;
+    var reIsUint = /^(?:0|[1-9]\d*)$/;
+    function isIndex(value, length) {
+      var type = typeof value;
+      length = length == null ? MAX_SAFE_INTEGER : length;
+      return !!length && (type == "number" || type != "symbol" && reIsUint.test(value)) && (value > -1 && value % 1 == 0 && value < length);
+    }
+    module2.exports = isIndex;
+  }
+});
+
+// node_modules/lodash/isLength.js
+var require_isLength = __commonJS({
+  "node_modules/lodash/isLength.js"(exports2, module2) {
+    var MAX_SAFE_INTEGER = 9007199254740991;
+    function isLength(value) {
+      return typeof value == "number" && value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
+    }
+    module2.exports = isLength;
+  }
+});
+
+// node_modules/lodash/_baseIsTypedArray.js
+var require_baseIsTypedArray = __commonJS({
+  "node_modules/lodash/_baseIsTypedArray.js"(exports2, module2) {
+    var baseGetTag = require_baseGetTag();
+    var isLength = require_isLength();
+    var isObjectLike = require_isObjectLike();
+    var argsTag = "[object Arguments]";
+    var arrayTag = "[object Array]";
+    var boolTag = "[object Boolean]";
+    var dateTag = "[object Date]";
+    var errorTag = "[object Error]";
+    var funcTag = "[object Function]";
+    var mapTag = "[object Map]";
+    var numberTag = "[object Number]";
+    var objectTag = "[object Object]";
+    var regexpTag = "[object RegExp]";
+    var setTag = "[object Set]";
+    var stringTag = "[object String]";
+    var weakMapTag = "[object WeakMap]";
+    var arrayBufferTag = "[object ArrayBuffer]";
+    var dataViewTag = "[object DataView]";
+    var float32Tag = "[object Float32Array]";
+    var float64Tag = "[object Float64Array]";
+    var int8Tag = "[object Int8Array]";
+    var int16Tag = "[object Int16Array]";
+    var int32Tag = "[object Int32Array]";
+    var uint8Tag = "[object Uint8Array]";
+    var uint8ClampedTag = "[object Uint8ClampedArray]";
+    var uint16Tag = "[object Uint16Array]";
+    var uint32Tag = "[object Uint32Array]";
+    var typedArrayTags = {};
+    typedArrayTags[float32Tag] = typedArrayTags[float64Tag] = typedArrayTags[int8Tag] = typedArrayTags[int16Tag] = typedArrayTags[int32Tag] = typedArrayTags[uint8Tag] = typedArrayTags[uint8ClampedTag] = typedArrayTags[uint16Tag] = typedArrayTags[uint32Tag] = true;
+    typedArrayTags[argsTag] = typedArrayTags[arrayTag] = typedArrayTags[arrayBufferTag] = typedArrayTags[boolTag] = typedArrayTags[dataViewTag] = typedArrayTags[dateTag] = typedArrayTags[errorTag] = typedArrayTags[funcTag] = typedArrayTags[mapTag] = typedArrayTags[numberTag] = typedArrayTags[objectTag] = typedArrayTags[regexpTag] = typedArrayTags[setTag] = typedArrayTags[stringTag] = typedArrayTags[weakMapTag] = false;
+    function baseIsTypedArray(value) {
+      return isObjectLike(value) && isLength(value.length) && !!typedArrayTags[baseGetTag(value)];
+    }
+    module2.exports = baseIsTypedArray;
+  }
+});
+
+// node_modules/lodash/_baseUnary.js
+var require_baseUnary = __commonJS({
+  "node_modules/lodash/_baseUnary.js"(exports2, module2) {
+    function baseUnary(func) {
+      return function(value) {
+        return func(value);
+      };
+    }
+    module2.exports = baseUnary;
+  }
+});
+
+// node_modules/lodash/_nodeUtil.js
+var require_nodeUtil = __commonJS({
+  "node_modules/lodash/_nodeUtil.js"(exports2, module2) {
+    var freeGlobal = require_freeGlobal();
+    var freeExports = typeof exports2 == "object" && exports2 && !exports2.nodeType && exports2;
+    var freeModule = freeExports && typeof module2 == "object" && module2 && !module2.nodeType && module2;
+    var moduleExports = freeModule && freeModule.exports === freeExports;
+    var freeProcess = moduleExports && freeGlobal.process;
+    var nodeUtil = function() {
+      try {
+        var types = freeModule && freeModule.require && freeModule.require("util").types;
+        if (types) {
+          return types;
+        }
+        return freeProcess && freeProcess.binding && freeProcess.binding("util");
+      } catch (e) {
+      }
+    }();
+    module2.exports = nodeUtil;
+  }
+});
+
+// node_modules/lodash/isTypedArray.js
+var require_isTypedArray = __commonJS({
+  "node_modules/lodash/isTypedArray.js"(exports2, module2) {
+    var baseIsTypedArray = require_baseIsTypedArray();
+    var baseUnary = require_baseUnary();
+    var nodeUtil = require_nodeUtil();
+    var nodeIsTypedArray = nodeUtil && nodeUtil.isTypedArray;
+    var isTypedArray = nodeIsTypedArray ? baseUnary(nodeIsTypedArray) : baseIsTypedArray;
+    module2.exports = isTypedArray;
+  }
+});
+
+// node_modules/lodash/_arrayLikeKeys.js
+var require_arrayLikeKeys = __commonJS({
+  "node_modules/lodash/_arrayLikeKeys.js"(exports2, module2) {
+    var baseTimes = require_baseTimes();
+    var isArguments = require_isArguments();
+    var isArray = require_isArray();
+    var isBuffer = require_isBuffer();
+    var isIndex = require_isIndex();
+    var isTypedArray = require_isTypedArray();
+    var objectProto = Object.prototype;
+    var hasOwnProperty = objectProto.hasOwnProperty;
+    function arrayLikeKeys(value, inherited) {
+      var isArr = isArray(value), isArg = !isArr && isArguments(value), isBuff = !isArr && !isArg && isBuffer(value), isType = !isArr && !isArg && !isBuff && isTypedArray(value), skipIndexes = isArr || isArg || isBuff || isType, result = skipIndexes ? baseTimes(value.length, String) : [], length = result.length;
+      for (var key in value) {
+        if ((inherited || hasOwnProperty.call(value, key)) && !(skipIndexes && (key == "length" || isBuff && (key == "offset" || key == "parent") || isType && (key == "buffer" || key == "byteLength" || key == "byteOffset") || isIndex(key, length)))) {
+          result.push(key);
+        }
+      }
+      return result;
+    }
+    module2.exports = arrayLikeKeys;
+  }
+});
+
+// node_modules/lodash/_isPrototype.js
+var require_isPrototype = __commonJS({
+  "node_modules/lodash/_isPrototype.js"(exports2, module2) {
+    var objectProto = Object.prototype;
+    function isPrototype(value) {
+      var Ctor = value && value.constructor, proto = typeof Ctor == "function" && Ctor.prototype || objectProto;
+      return value === proto;
+    }
+    module2.exports = isPrototype;
+  }
+});
+
+// node_modules/lodash/_overArg.js
+var require_overArg = __commonJS({
+  "node_modules/lodash/_overArg.js"(exports2, module2) {
+    function overArg(func, transform) {
+      return function(arg) {
+        return func(transform(arg));
+      };
+    }
+    module2.exports = overArg;
+  }
+});
+
+// node_modules/lodash/_nativeKeys.js
+var require_nativeKeys = __commonJS({
+  "node_modules/lodash/_nativeKeys.js"(exports2, module2) {
+    var overArg = require_overArg();
+    var nativeKeys = overArg(Object.keys, Object);
+    module2.exports = nativeKeys;
+  }
+});
+
+// node_modules/lodash/_baseKeys.js
+var require_baseKeys = __commonJS({
+  "node_modules/lodash/_baseKeys.js"(exports2, module2) {
+    var isPrototype = require_isPrototype();
+    var nativeKeys = require_nativeKeys();
+    var objectProto = Object.prototype;
+    var hasOwnProperty = objectProto.hasOwnProperty;
+    function baseKeys(object) {
+      if (!isPrototype(object)) {
+        return nativeKeys(object);
+      }
+      var result = [];
+      for (var key in Object(object)) {
+        if (hasOwnProperty.call(object, key) && key != "constructor") {
+          result.push(key);
+        }
+      }
+      return result;
+    }
+    module2.exports = baseKeys;
+  }
+});
+
+// node_modules/lodash/isArrayLike.js
+var require_isArrayLike = __commonJS({
+  "node_modules/lodash/isArrayLike.js"(exports2, module2) {
+    var isFunction = require_isFunction();
+    var isLength = require_isLength();
+    function isArrayLike(value) {
+      return value != null && isLength(value.length) && !isFunction(value);
+    }
+    module2.exports = isArrayLike;
+  }
+});
+
+// node_modules/lodash/keys.js
+var require_keys = __commonJS({
+  "node_modules/lodash/keys.js"(exports2, module2) {
+    var arrayLikeKeys = require_arrayLikeKeys();
+    var baseKeys = require_baseKeys();
+    var isArrayLike = require_isArrayLike();
+    function keys(object) {
+      return isArrayLike(object) ? arrayLikeKeys(object) : baseKeys(object);
+    }
+    module2.exports = keys;
+  }
+});
+
+// node_modules/lodash/_baseAssign.js
+var require_baseAssign = __commonJS({
+  "node_modules/lodash/_baseAssign.js"(exports2, module2) {
+    var copyObject = require_copyObject();
+    var keys = require_keys();
+    function baseAssign(object, source) {
+      return object && copyObject(source, keys(source), object);
+    }
+    module2.exports = baseAssign;
+  }
+});
+
+// node_modules/lodash/_nativeKeysIn.js
+var require_nativeKeysIn = __commonJS({
+  "node_modules/lodash/_nativeKeysIn.js"(exports2, module2) {
+    function nativeKeysIn(object) {
+      var result = [];
+      if (object != null) {
+        for (var key in Object(object)) {
+          result.push(key);
+        }
+      }
+      return result;
+    }
+    module2.exports = nativeKeysIn;
+  }
+});
+
+// node_modules/lodash/_baseKeysIn.js
+var require_baseKeysIn = __commonJS({
+  "node_modules/lodash/_baseKeysIn.js"(exports2, module2) {
+    var isObject = require_isObject();
+    var isPrototype = require_isPrototype();
+    var nativeKeysIn = require_nativeKeysIn();
+    var objectProto = Object.prototype;
+    var hasOwnProperty = objectProto.hasOwnProperty;
+    function baseKeysIn(object) {
+      if (!isObject(object)) {
+        return nativeKeysIn(object);
+      }
+      var isProto = isPrototype(object), result = [];
+      for (var key in object) {
+        if (!(key == "constructor" && (isProto || !hasOwnProperty.call(object, key)))) {
+          result.push(key);
+        }
+      }
+      return result;
+    }
+    module2.exports = baseKeysIn;
+  }
+});
+
+// node_modules/lodash/keysIn.js
+var require_keysIn = __commonJS({
+  "node_modules/lodash/keysIn.js"(exports2, module2) {
+    var arrayLikeKeys = require_arrayLikeKeys();
+    var baseKeysIn = require_baseKeysIn();
+    var isArrayLike = require_isArrayLike();
+    function keysIn(object) {
+      return isArrayLike(object) ? arrayLikeKeys(object, true) : baseKeysIn(object);
+    }
+    module2.exports = keysIn;
+  }
+});
+
+// node_modules/lodash/_baseAssignIn.js
+var require_baseAssignIn = __commonJS({
+  "node_modules/lodash/_baseAssignIn.js"(exports2, module2) {
+    var copyObject = require_copyObject();
+    var keysIn = require_keysIn();
+    function baseAssignIn(object, source) {
+      return object && copyObject(source, keysIn(source), object);
+    }
+    module2.exports = baseAssignIn;
+  }
+});
+
+// node_modules/lodash/_cloneBuffer.js
+var require_cloneBuffer = __commonJS({
+  "node_modules/lodash/_cloneBuffer.js"(exports2, module2) {
+    var root = require_root();
+    var freeExports = typeof exports2 == "object" && exports2 && !exports2.nodeType && exports2;
+    var freeModule = freeExports && typeof module2 == "object" && module2 && !module2.nodeType && module2;
+    var moduleExports = freeModule && freeModule.exports === freeExports;
+    var Buffer2 = moduleExports ? root.Buffer : void 0;
+    var allocUnsafe = Buffer2 ? Buffer2.allocUnsafe : void 0;
+    function cloneBuffer(buffer, isDeep) {
+      if (isDeep) {
+        return buffer.slice();
+      }
+      var length = buffer.length, result = allocUnsafe ? allocUnsafe(length) : new buffer.constructor(length);
+      buffer.copy(result);
+      return result;
+    }
+    module2.exports = cloneBuffer;
+  }
+});
+
+// node_modules/lodash/_copyArray.js
+var require_copyArray = __commonJS({
+  "node_modules/lodash/_copyArray.js"(exports2, module2) {
+    function copyArray(source, array) {
+      var index = -1, length = source.length;
+      array || (array = Array(length));
+      while (++index < length) {
+        array[index] = source[index];
+      }
+      return array;
+    }
+    module2.exports = copyArray;
+  }
+});
+
+// node_modules/lodash/_arrayFilter.js
+var require_arrayFilter = __commonJS({
+  "node_modules/lodash/_arrayFilter.js"(exports2, module2) {
+    function arrayFilter(array, predicate) {
+      var index = -1, length = array == null ? 0 : array.length, resIndex = 0, result = [];
+      while (++index < length) {
+        var value = array[index];
+        if (predicate(value, index, array)) {
+          result[resIndex++] = value;
+        }
+      }
+      return result;
+    }
+    module2.exports = arrayFilter;
+  }
+});
+
+// node_modules/lodash/stubArray.js
+var require_stubArray = __commonJS({
+  "node_modules/lodash/stubArray.js"(exports2, module2) {
+    function stubArray() {
+      return [];
+    }
+    module2.exports = stubArray;
+  }
+});
+
+// node_modules/lodash/_getSymbols.js
+var require_getSymbols = __commonJS({
+  "node_modules/lodash/_getSymbols.js"(exports2, module2) {
+    var arrayFilter = require_arrayFilter();
+    var stubArray = require_stubArray();
+    var objectProto = Object.prototype;
+    var propertyIsEnumerable = objectProto.propertyIsEnumerable;
+    var nativeGetSymbols = Object.getOwnPropertySymbols;
+    var getSymbols = !nativeGetSymbols ? stubArray : function(object) {
+      if (object == null) {
+        return [];
+      }
+      object = Object(object);
+      return arrayFilter(nativeGetSymbols(object), function(symbol) {
+        return propertyIsEnumerable.call(object, symbol);
+      });
+    };
+    module2.exports = getSymbols;
+  }
+});
+
+// node_modules/lodash/_copySymbols.js
+var require_copySymbols = __commonJS({
+  "node_modules/lodash/_copySymbols.js"(exports2, module2) {
+    var copyObject = require_copyObject();
+    var getSymbols = require_getSymbols();
+    function copySymbols(source, object) {
+      return copyObject(source, getSymbols(source), object);
+    }
+    module2.exports = copySymbols;
+  }
+});
+
+// node_modules/lodash/_arrayPush.js
+var require_arrayPush = __commonJS({
+  "node_modules/lodash/_arrayPush.js"(exports2, module2) {
+    function arrayPush(array, values) {
+      var index = -1, length = values.length, offset = array.length;
+      while (++index < length) {
+        array[offset + index] = values[index];
+      }
+      return array;
+    }
+    module2.exports = arrayPush;
+  }
+});
+
+// node_modules/lodash/_getPrototype.js
+var require_getPrototype = __commonJS({
+  "node_modules/lodash/_getPrototype.js"(exports2, module2) {
+    var overArg = require_overArg();
+    var getPrototype = overArg(Object.getPrototypeOf, Object);
+    module2.exports = getPrototype;
+  }
+});
+
+// node_modules/lodash/_getSymbolsIn.js
+var require_getSymbolsIn = __commonJS({
+  "node_modules/lodash/_getSymbolsIn.js"(exports2, module2) {
+    var arrayPush = require_arrayPush();
+    var getPrototype = require_getPrototype();
+    var getSymbols = require_getSymbols();
+    var stubArray = require_stubArray();
+    var nativeGetSymbols = Object.getOwnPropertySymbols;
+    var getSymbolsIn = !nativeGetSymbols ? stubArray : function(object) {
+      var result = [];
+      while (object) {
+        arrayPush(result, getSymbols(object));
+        object = getPrototype(object);
+      }
+      return result;
+    };
+    module2.exports = getSymbolsIn;
+  }
+});
+
+// node_modules/lodash/_copySymbolsIn.js
+var require_copySymbolsIn = __commonJS({
+  "node_modules/lodash/_copySymbolsIn.js"(exports2, module2) {
+    var copyObject = require_copyObject();
+    var getSymbolsIn = require_getSymbolsIn();
+    function copySymbolsIn(source, object) {
+      return copyObject(source, getSymbolsIn(source), object);
+    }
+    module2.exports = copySymbolsIn;
+  }
+});
+
+// node_modules/lodash/_baseGetAllKeys.js
+var require_baseGetAllKeys = __commonJS({
+  "node_modules/lodash/_baseGetAllKeys.js"(exports2, module2) {
+    var arrayPush = require_arrayPush();
+    var isArray = require_isArray();
+    function baseGetAllKeys(object, keysFunc, symbolsFunc) {
+      var result = keysFunc(object);
+      return isArray(object) ? result : arrayPush(result, symbolsFunc(object));
+    }
+    module2.exports = baseGetAllKeys;
+  }
+});
+
+// node_modules/lodash/_getAllKeys.js
+var require_getAllKeys = __commonJS({
+  "node_modules/lodash/_getAllKeys.js"(exports2, module2) {
+    var baseGetAllKeys = require_baseGetAllKeys();
+    var getSymbols = require_getSymbols();
+    var keys = require_keys();
+    function getAllKeys(object) {
+      return baseGetAllKeys(object, keys, getSymbols);
+    }
+    module2.exports = getAllKeys;
+  }
+});
+
+// node_modules/lodash/_getAllKeysIn.js
+var require_getAllKeysIn = __commonJS({
+  "node_modules/lodash/_getAllKeysIn.js"(exports2, module2) {
+    var baseGetAllKeys = require_baseGetAllKeys();
+    var getSymbolsIn = require_getSymbolsIn();
+    var keysIn = require_keysIn();
+    function getAllKeysIn(object) {
+      return baseGetAllKeys(object, keysIn, getSymbolsIn);
+    }
+    module2.exports = getAllKeysIn;
+  }
+});
+
+// node_modules/lodash/_DataView.js
+var require_DataView = __commonJS({
+  "node_modules/lodash/_DataView.js"(exports2, module2) {
+    var getNative = require_getNative();
+    var root = require_root();
+    var DataView = getNative(root, "DataView");
+    module2.exports = DataView;
+  }
+});
+
+// node_modules/lodash/_Promise.js
+var require_Promise = __commonJS({
+  "node_modules/lodash/_Promise.js"(exports2, module2) {
+    var getNative = require_getNative();
+    var root = require_root();
+    var Promise2 = getNative(root, "Promise");
+    module2.exports = Promise2;
+  }
+});
+
+// node_modules/lodash/_Set.js
+var require_Set = __commonJS({
+  "node_modules/lodash/_Set.js"(exports2, module2) {
+    var getNative = require_getNative();
+    var root = require_root();
+    var Set2 = getNative(root, "Set");
+    module2.exports = Set2;
+  }
+});
+
+// node_modules/lodash/_WeakMap.js
+var require_WeakMap = __commonJS({
+  "node_modules/lodash/_WeakMap.js"(exports2, module2) {
+    var getNative = require_getNative();
+    var root = require_root();
+    var WeakMap2 = getNative(root, "WeakMap");
+    module2.exports = WeakMap2;
+  }
+});
+
+// node_modules/lodash/_getTag.js
+var require_getTag = __commonJS({
+  "node_modules/lodash/_getTag.js"(exports2, module2) {
+    var DataView = require_DataView();
+    var Map2 = require_Map();
+    var Promise2 = require_Promise();
+    var Set2 = require_Set();
+    var WeakMap2 = require_WeakMap();
+    var baseGetTag = require_baseGetTag();
+    var toSource = require_toSource();
+    var mapTag = "[object Map]";
+    var objectTag = "[object Object]";
+    var promiseTag = "[object Promise]";
+    var setTag = "[object Set]";
+    var weakMapTag = "[object WeakMap]";
+    var dataViewTag = "[object DataView]";
+    var dataViewCtorString = toSource(DataView);
+    var mapCtorString = toSource(Map2);
+    var promiseCtorString = toSource(Promise2);
+    var setCtorString = toSource(Set2);
+    var weakMapCtorString = toSource(WeakMap2);
+    var getTag = baseGetTag;
+    if (DataView && getTag(new DataView(new ArrayBuffer(1))) != dataViewTag || Map2 && getTag(new Map2()) != mapTag || Promise2 && getTag(Promise2.resolve()) != promiseTag || Set2 && getTag(new Set2()) != setTag || WeakMap2 && getTag(new WeakMap2()) != weakMapTag) {
+      getTag = function(value) {
+        var result = baseGetTag(value), Ctor = result == objectTag ? value.constructor : void 0, ctorString = Ctor ? toSource(Ctor) : "";
+        if (ctorString) {
+          switch (ctorString) {
+            case dataViewCtorString:
+              return dataViewTag;
+            case mapCtorString:
+              return mapTag;
+            case promiseCtorString:
+              return promiseTag;
+            case setCtorString:
+              return setTag;
+            case weakMapCtorString:
+              return weakMapTag;
+          }
+        }
+        return result;
+      };
+    }
+    module2.exports = getTag;
+  }
+});
+
+// node_modules/lodash/_initCloneArray.js
+var require_initCloneArray = __commonJS({
+  "node_modules/lodash/_initCloneArray.js"(exports2, module2) {
+    var objectProto = Object.prototype;
+    var hasOwnProperty = objectProto.hasOwnProperty;
+    function initCloneArray(array) {
+      var length = array.length, result = new array.constructor(length);
+      if (length && typeof array[0] == "string" && hasOwnProperty.call(array, "index")) {
+        result.index = array.index;
+        result.input = array.input;
+      }
+      return result;
+    }
+    module2.exports = initCloneArray;
+  }
+});
+
+// node_modules/lodash/_Uint8Array.js
+var require_Uint8Array = __commonJS({
+  "node_modules/lodash/_Uint8Array.js"(exports2, module2) {
+    var root = require_root();
+    var Uint8Array2 = root.Uint8Array;
+    module2.exports = Uint8Array2;
+  }
+});
+
+// node_modules/lodash/_cloneArrayBuffer.js
+var require_cloneArrayBuffer = __commonJS({
+  "node_modules/lodash/_cloneArrayBuffer.js"(exports2, module2) {
+    var Uint8Array2 = require_Uint8Array();
+    function cloneArrayBuffer(arrayBuffer) {
+      var result = new arrayBuffer.constructor(arrayBuffer.byteLength);
+      new Uint8Array2(result).set(new Uint8Array2(arrayBuffer));
+      return result;
+    }
+    module2.exports = cloneArrayBuffer;
+  }
+});
+
+// node_modules/lodash/_cloneDataView.js
+var require_cloneDataView = __commonJS({
+  "node_modules/lodash/_cloneDataView.js"(exports2, module2) {
+    var cloneArrayBuffer = require_cloneArrayBuffer();
+    function cloneDataView(dataView, isDeep) {
+      var buffer = isDeep ? cloneArrayBuffer(dataView.buffer) : dataView.buffer;
+      return new dataView.constructor(buffer, dataView.byteOffset, dataView.byteLength);
+    }
+    module2.exports = cloneDataView;
+  }
+});
+
+// node_modules/lodash/_cloneRegExp.js
+var require_cloneRegExp = __commonJS({
+  "node_modules/lodash/_cloneRegExp.js"(exports2, module2) {
+    var reFlags = /\w*$/;
+    function cloneRegExp(regexp) {
+      var result = new regexp.constructor(regexp.source, reFlags.exec(regexp));
+      result.lastIndex = regexp.lastIndex;
+      return result;
+    }
+    module2.exports = cloneRegExp;
+  }
+});
+
+// node_modules/lodash/_cloneSymbol.js
+var require_cloneSymbol = __commonJS({
+  "node_modules/lodash/_cloneSymbol.js"(exports2, module2) {
+    var Symbol2 = require_Symbol();
+    var symbolProto = Symbol2 ? Symbol2.prototype : void 0;
+    var symbolValueOf = symbolProto ? symbolProto.valueOf : void 0;
+    function cloneSymbol(symbol) {
+      return symbolValueOf ? Object(symbolValueOf.call(symbol)) : {};
+    }
+    module2.exports = cloneSymbol;
+  }
+});
+
+// node_modules/lodash/_cloneTypedArray.js
+var require_cloneTypedArray = __commonJS({
+  "node_modules/lodash/_cloneTypedArray.js"(exports2, module2) {
+    var cloneArrayBuffer = require_cloneArrayBuffer();
+    function cloneTypedArray(typedArray, isDeep) {
+      var buffer = isDeep ? cloneArrayBuffer(typedArray.buffer) : typedArray.buffer;
+      return new typedArray.constructor(buffer, typedArray.byteOffset, typedArray.length);
+    }
+    module2.exports = cloneTypedArray;
+  }
+});
+
+// node_modules/lodash/_initCloneByTag.js
+var require_initCloneByTag = __commonJS({
+  "node_modules/lodash/_initCloneByTag.js"(exports2, module2) {
+    var cloneArrayBuffer = require_cloneArrayBuffer();
+    var cloneDataView = require_cloneDataView();
+    var cloneRegExp = require_cloneRegExp();
+    var cloneSymbol = require_cloneSymbol();
+    var cloneTypedArray = require_cloneTypedArray();
+    var boolTag = "[object Boolean]";
+    var dateTag = "[object Date]";
+    var mapTag = "[object Map]";
+    var numberTag = "[object Number]";
+    var regexpTag = "[object RegExp]";
+    var setTag = "[object Set]";
+    var stringTag = "[object String]";
+    var symbolTag = "[object Symbol]";
+    var arrayBufferTag = "[object ArrayBuffer]";
+    var dataViewTag = "[object DataView]";
+    var float32Tag = "[object Float32Array]";
+    var float64Tag = "[object Float64Array]";
+    var int8Tag = "[object Int8Array]";
+    var int16Tag = "[object Int16Array]";
+    var int32Tag = "[object Int32Array]";
+    var uint8Tag = "[object Uint8Array]";
+    var uint8ClampedTag = "[object Uint8ClampedArray]";
+    var uint16Tag = "[object Uint16Array]";
+    var uint32Tag = "[object Uint32Array]";
+    function initCloneByTag(object, tag, isDeep) {
+      var Ctor = object.constructor;
+      switch (tag) {
+        case arrayBufferTag:
+          return cloneArrayBuffer(object);
+        case boolTag:
+        case dateTag:
+          return new Ctor(+object);
+        case dataViewTag:
+          return cloneDataView(object, isDeep);
+        case float32Tag:
+        case float64Tag:
+        case int8Tag:
+        case int16Tag:
+        case int32Tag:
+        case uint8Tag:
+        case uint8ClampedTag:
+        case uint16Tag:
+        case uint32Tag:
+          return cloneTypedArray(object, isDeep);
+        case mapTag:
+          return new Ctor();
+        case numberTag:
+        case stringTag:
+          return new Ctor(object);
+        case regexpTag:
+          return cloneRegExp(object);
+        case setTag:
+          return new Ctor();
+        case symbolTag:
+          return cloneSymbol(object);
+      }
+    }
+    module2.exports = initCloneByTag;
+  }
+});
+
+// node_modules/lodash/_baseCreate.js
+var require_baseCreate = __commonJS({
+  "node_modules/lodash/_baseCreate.js"(exports2, module2) {
+    var isObject = require_isObject();
+    var objectCreate = Object.create;
+    var baseCreate = function() {
+      function object() {
+      }
+      return function(proto) {
+        if (!isObject(proto)) {
+          return {};
+        }
+        if (objectCreate) {
+          return objectCreate(proto);
+        }
+        object.prototype = proto;
+        var result = new object();
+        object.prototype = void 0;
+        return result;
+      };
+    }();
+    module2.exports = baseCreate;
+  }
+});
+
+// node_modules/lodash/_initCloneObject.js
+var require_initCloneObject = __commonJS({
+  "node_modules/lodash/_initCloneObject.js"(exports2, module2) {
+    var baseCreate = require_baseCreate();
+    var getPrototype = require_getPrototype();
+    var isPrototype = require_isPrototype();
+    function initCloneObject(object) {
+      return typeof object.constructor == "function" && !isPrototype(object) ? baseCreate(getPrototype(object)) : {};
+    }
+    module2.exports = initCloneObject;
+  }
+});
+
+// node_modules/lodash/_baseIsMap.js
+var require_baseIsMap = __commonJS({
+  "node_modules/lodash/_baseIsMap.js"(exports2, module2) {
+    var getTag = require_getTag();
+    var isObjectLike = require_isObjectLike();
+    var mapTag = "[object Map]";
+    function baseIsMap(value) {
+      return isObjectLike(value) && getTag(value) == mapTag;
+    }
+    module2.exports = baseIsMap;
+  }
+});
+
+// node_modules/lodash/isMap.js
+var require_isMap = __commonJS({
+  "node_modules/lodash/isMap.js"(exports2, module2) {
+    var baseIsMap = require_baseIsMap();
+    var baseUnary = require_baseUnary();
+    var nodeUtil = require_nodeUtil();
+    var nodeIsMap = nodeUtil && nodeUtil.isMap;
+    var isMap = nodeIsMap ? baseUnary(nodeIsMap) : baseIsMap;
+    module2.exports = isMap;
+  }
+});
+
+// node_modules/lodash/_baseIsSet.js
+var require_baseIsSet = __commonJS({
+  "node_modules/lodash/_baseIsSet.js"(exports2, module2) {
+    var getTag = require_getTag();
+    var isObjectLike = require_isObjectLike();
+    var setTag = "[object Set]";
+    function baseIsSet(value) {
+      return isObjectLike(value) && getTag(value) == setTag;
+    }
+    module2.exports = baseIsSet;
+  }
+});
+
+// node_modules/lodash/isSet.js
+var require_isSet = __commonJS({
+  "node_modules/lodash/isSet.js"(exports2, module2) {
+    var baseIsSet = require_baseIsSet();
+    var baseUnary = require_baseUnary();
+    var nodeUtil = require_nodeUtil();
+    var nodeIsSet = nodeUtil && nodeUtil.isSet;
+    var isSet = nodeIsSet ? baseUnary(nodeIsSet) : baseIsSet;
+    module2.exports = isSet;
+  }
+});
+
+// node_modules/lodash/_baseClone.js
+var require_baseClone = __commonJS({
+  "node_modules/lodash/_baseClone.js"(exports2, module2) {
+    var Stack = require_Stack();
+    var arrayEach = require_arrayEach();
+    var assignValue = require_assignValue();
+    var baseAssign = require_baseAssign();
+    var baseAssignIn = require_baseAssignIn();
+    var cloneBuffer = require_cloneBuffer();
+    var copyArray = require_copyArray();
+    var copySymbols = require_copySymbols();
+    var copySymbolsIn = require_copySymbolsIn();
+    var getAllKeys = require_getAllKeys();
+    var getAllKeysIn = require_getAllKeysIn();
+    var getTag = require_getTag();
+    var initCloneArray = require_initCloneArray();
+    var initCloneByTag = require_initCloneByTag();
+    var initCloneObject = require_initCloneObject();
+    var isArray = require_isArray();
+    var isBuffer = require_isBuffer();
+    var isMap = require_isMap();
+    var isObject = require_isObject();
+    var isSet = require_isSet();
+    var keys = require_keys();
+    var keysIn = require_keysIn();
+    var CLONE_DEEP_FLAG = 1;
+    var CLONE_FLAT_FLAG = 2;
+    var CLONE_SYMBOLS_FLAG = 4;
+    var argsTag = "[object Arguments]";
+    var arrayTag = "[object Array]";
+    var boolTag = "[object Boolean]";
+    var dateTag = "[object Date]";
+    var errorTag = "[object Error]";
+    var funcTag = "[object Function]";
+    var genTag = "[object GeneratorFunction]";
+    var mapTag = "[object Map]";
+    var numberTag = "[object Number]";
+    var objectTag = "[object Object]";
+    var regexpTag = "[object RegExp]";
+    var setTag = "[object Set]";
+    var stringTag = "[object String]";
+    var symbolTag = "[object Symbol]";
+    var weakMapTag = "[object WeakMap]";
+    var arrayBufferTag = "[object ArrayBuffer]";
+    var dataViewTag = "[object DataView]";
+    var float32Tag = "[object Float32Array]";
+    var float64Tag = "[object Float64Array]";
+    var int8Tag = "[object Int8Array]";
+    var int16Tag = "[object Int16Array]";
+    var int32Tag = "[object Int32Array]";
+    var uint8Tag = "[object Uint8Array]";
+    var uint8ClampedTag = "[object Uint8ClampedArray]";
+    var uint16Tag = "[object Uint16Array]";
+    var uint32Tag = "[object Uint32Array]";
+    var cloneableTags = {};
+    cloneableTags[argsTag] = cloneableTags[arrayTag] = cloneableTags[arrayBufferTag] = cloneableTags[dataViewTag] = cloneableTags[boolTag] = cloneableTags[dateTag] = cloneableTags[float32Tag] = cloneableTags[float64Tag] = cloneableTags[int8Tag] = cloneableTags[int16Tag] = cloneableTags[int32Tag] = cloneableTags[mapTag] = cloneableTags[numberTag] = cloneableTags[objectTag] = cloneableTags[regexpTag] = cloneableTags[setTag] = cloneableTags[stringTag] = cloneableTags[symbolTag] = cloneableTags[uint8Tag] = cloneableTags[uint8ClampedTag] = cloneableTags[uint16Tag] = cloneableTags[uint32Tag] = true;
+    cloneableTags[errorTag] = cloneableTags[funcTag] = cloneableTags[weakMapTag] = false;
+    function baseClone(value, bitmask, customizer, key, object, stack2) {
+      var result, isDeep = bitmask & CLONE_DEEP_FLAG, isFlat = bitmask & CLONE_FLAT_FLAG, isFull = bitmask & CLONE_SYMBOLS_FLAG;
+      if (customizer) {
+        result = object ? customizer(value, key, object, stack2) : customizer(value);
+      }
+      if (result !== void 0) {
+        return result;
+      }
+      if (!isObject(value)) {
+        return value;
+      }
+      var isArr = isArray(value);
+      if (isArr) {
+        result = initCloneArray(value);
+        if (!isDeep) {
+          return copyArray(value, result);
+        }
+      } else {
+        var tag = getTag(value), isFunc = tag == funcTag || tag == genTag;
+        if (isBuffer(value)) {
+          return cloneBuffer(value, isDeep);
+        }
+        if (tag == objectTag || tag == argsTag || isFunc && !object) {
+          result = isFlat || isFunc ? {} : initCloneObject(value);
+          if (!isDeep) {
+            return isFlat ? copySymbolsIn(value, baseAssignIn(result, value)) : copySymbols(value, baseAssign(result, value));
+          }
+        } else {
+          if (!cloneableTags[tag]) {
+            return object ? value : {};
+          }
+          result = initCloneByTag(value, tag, isDeep);
+        }
+      }
+      stack2 || (stack2 = new Stack());
+      var stacked = stack2.get(value);
+      if (stacked) {
+        return stacked;
+      }
+      stack2.set(value, result);
+      if (isSet(value)) {
+        value.forEach(function(subValue) {
+          result.add(baseClone(subValue, bitmask, customizer, subValue, value, stack2));
+        });
+      } else if (isMap(value)) {
+        value.forEach(function(subValue, key2) {
+          result.set(key2, baseClone(subValue, bitmask, customizer, key2, value, stack2));
+        });
+      }
+      var keysFunc = isFull ? isFlat ? getAllKeysIn : getAllKeys : isFlat ? keysIn : keys;
+      var props = isArr ? void 0 : keysFunc(value);
+      arrayEach(props || value, function(subValue, key2) {
+        if (props) {
+          key2 = subValue;
+          subValue = value[key2];
+        }
+        assignValue(result, key2, baseClone(subValue, bitmask, customizer, key2, value, stack2));
+      });
+      return result;
+    }
+    module2.exports = baseClone;
+  }
+});
+
+// node_modules/lodash/cloneDeep.js
+var require_cloneDeep = __commonJS({
+  "node_modules/lodash/cloneDeep.js"(exports2, module2) {
+    var baseClone = require_baseClone();
+    var CLONE_DEEP_FLAG = 1;
+    var CLONE_SYMBOLS_FLAG = 4;
+    function cloneDeep(value) {
+      return baseClone(value, CLONE_DEEP_FLAG | CLONE_SYMBOLS_FLAG);
+    }
+    module2.exports = cloneDeep;
+  }
+});
+
+// node_modules/lodash/identity.js
+var require_identity = __commonJS({
+  "node_modules/lodash/identity.js"(exports2, module2) {
+    function identity(value) {
+      return value;
+    }
+    module2.exports = identity;
+  }
+});
+
+// node_modules/lodash/_apply.js
+var require_apply = __commonJS({
+  "node_modules/lodash/_apply.js"(exports2, module2) {
+    function apply(func, thisArg, args2) {
+      switch (args2.length) {
+        case 0:
+          return func.call(thisArg);
+        case 1:
+          return func.call(thisArg, args2[0]);
+        case 2:
+          return func.call(thisArg, args2[0], args2[1]);
+        case 3:
+          return func.call(thisArg, args2[0], args2[1], args2[2]);
+      }
+      return func.apply(thisArg, args2);
+    }
+    module2.exports = apply;
+  }
+});
+
+// node_modules/lodash/_overRest.js
+var require_overRest = __commonJS({
+  "node_modules/lodash/_overRest.js"(exports2, module2) {
+    var apply = require_apply();
+    var nativeMax = Math.max;
+    function overRest(func, start, transform) {
+      start = nativeMax(start === void 0 ? func.length - 1 : start, 0);
+      return function() {
+        var args2 = arguments, index = -1, length = nativeMax(args2.length - start, 0), array = Array(length);
+        while (++index < length) {
+          array[index] = args2[start + index];
+        }
+        index = -1;
+        var otherArgs = Array(start + 1);
+        while (++index < start) {
+          otherArgs[index] = args2[index];
+        }
+        otherArgs[start] = transform(array);
+        return apply(func, this, otherArgs);
+      };
+    }
+    module2.exports = overRest;
+  }
+});
+
+// node_modules/lodash/constant.js
+var require_constant = __commonJS({
+  "node_modules/lodash/constant.js"(exports2, module2) {
+    function constant(value) {
+      return function() {
+        return value;
+      };
+    }
+    module2.exports = constant;
+  }
+});
+
+// node_modules/lodash/_baseSetToString.js
+var require_baseSetToString = __commonJS({
+  "node_modules/lodash/_baseSetToString.js"(exports2, module2) {
+    var constant = require_constant();
+    var defineProperty = require_defineProperty();
+    var identity = require_identity();
+    var baseSetToString = !defineProperty ? identity : function(func, string) {
+      return defineProperty(func, "toString", {
+        "configurable": true,
+        "enumerable": false,
+        "value": constant(string),
+        "writable": true
+      });
+    };
+    module2.exports = baseSetToString;
+  }
+});
+
+// node_modules/lodash/_shortOut.js
+var require_shortOut = __commonJS({
+  "node_modules/lodash/_shortOut.js"(exports2, module2) {
+    var HOT_COUNT = 800;
+    var HOT_SPAN = 16;
+    var nativeNow = Date.now;
+    function shortOut(func) {
+      var count = 0, lastCalled = 0;
+      return function() {
+        var stamp = nativeNow(), remaining = HOT_SPAN - (stamp - lastCalled);
+        lastCalled = stamp;
+        if (remaining > 0) {
+          if (++count >= HOT_COUNT) {
+            return arguments[0];
+          }
+        } else {
+          count = 0;
+        }
+        return func.apply(void 0, arguments);
+      };
+    }
+    module2.exports = shortOut;
+  }
+});
+
+// node_modules/lodash/_setToString.js
+var require_setToString = __commonJS({
+  "node_modules/lodash/_setToString.js"(exports2, module2) {
+    var baseSetToString = require_baseSetToString();
+    var shortOut = require_shortOut();
+    var setToString = shortOut(baseSetToString);
+    module2.exports = setToString;
+  }
+});
+
+// node_modules/lodash/_baseRest.js
+var require_baseRest = __commonJS({
+  "node_modules/lodash/_baseRest.js"(exports2, module2) {
+    var identity = require_identity();
+    var overRest = require_overRest();
+    var setToString = require_setToString();
+    function baseRest(func, start) {
+      return setToString(overRest(func, start, identity), func + "");
+    }
+    module2.exports = baseRest;
+  }
+});
+
+// node_modules/lodash/_isIterateeCall.js
+var require_isIterateeCall = __commonJS({
+  "node_modules/lodash/_isIterateeCall.js"(exports2, module2) {
+    var eq = require_eq();
+    var isArrayLike = require_isArrayLike();
+    var isIndex = require_isIndex();
+    var isObject = require_isObject();
+    function isIterateeCall(value, index, object) {
+      if (!isObject(object)) {
+        return false;
+      }
+      var type = typeof index;
+      if (type == "number" ? isArrayLike(object) && isIndex(index, object.length) : type == "string" && index in object) {
+        return eq(object[index], value);
+      }
+      return false;
+    }
+    module2.exports = isIterateeCall;
+  }
+});
+
+// node_modules/lodash/defaults.js
+var require_defaults = __commonJS({
+  "node_modules/lodash/defaults.js"(exports2, module2) {
+    var baseRest = require_baseRest();
+    var eq = require_eq();
+    var isIterateeCall = require_isIterateeCall();
+    var keysIn = require_keysIn();
+    var objectProto = Object.prototype;
+    var hasOwnProperty = objectProto.hasOwnProperty;
+    var defaults = baseRest(function(object, sources) {
+      object = Object(object);
+      var index = -1;
+      var length = sources.length;
+      var guard = length > 2 ? sources[2] : void 0;
+      if (guard && isIterateeCall(sources[0], sources[1], guard)) {
+        length = 1;
+      }
+      while (++index < length) {
+        var source = sources[index];
+        var props = keysIn(source);
+        var propsIndex = -1;
+        var propsLength = props.length;
+        while (++propsIndex < propsLength) {
+          var key = props[propsIndex];
+          var value = object[key];
+          if (value === void 0 || eq(value, objectProto[key]) && !hasOwnProperty.call(object, key)) {
+            object[key] = source[key];
+          }
+        }
+      }
+      return object;
+    });
+    module2.exports = defaults;
+  }
+});
+
+// node_modules/lodash/_arrayMap.js
+var require_arrayMap = __commonJS({
+  "node_modules/lodash/_arrayMap.js"(exports2, module2) {
+    function arrayMap(array, iteratee) {
+      var index = -1, length = array == null ? 0 : array.length, result = Array(length);
+      while (++index < length) {
+        result[index] = iteratee(array[index], index, array);
+      }
+      return result;
+    }
+    module2.exports = arrayMap;
+  }
+});
+
+// node_modules/lodash/isSymbol.js
+var require_isSymbol = __commonJS({
+  "node_modules/lodash/isSymbol.js"(exports2, module2) {
+    var baseGetTag = require_baseGetTag();
+    var isObjectLike = require_isObjectLike();
+    var symbolTag = "[object Symbol]";
+    function isSymbol(value) {
+      return typeof value == "symbol" || isObjectLike(value) && baseGetTag(value) == symbolTag;
+    }
+    module2.exports = isSymbol;
+  }
+});
+
+// node_modules/lodash/_baseToString.js
+var require_baseToString = __commonJS({
+  "node_modules/lodash/_baseToString.js"(exports2, module2) {
+    var Symbol2 = require_Symbol();
+    var arrayMap = require_arrayMap();
+    var isArray = require_isArray();
+    var isSymbol = require_isSymbol();
+    var INFINITY = 1 / 0;
+    var symbolProto = Symbol2 ? Symbol2.prototype : void 0;
+    var symbolToString = symbolProto ? symbolProto.toString : void 0;
+    function baseToString(value) {
+      if (typeof value == "string") {
+        return value;
+      }
+      if (isArray(value)) {
+        return arrayMap(value, baseToString) + "";
+      }
+      if (isSymbol(value)) {
+        return symbolToString ? symbolToString.call(value) : "";
+      }
+      var result = value + "";
+      return result == "0" && 1 / value == -INFINITY ? "-0" : result;
+    }
+    module2.exports = baseToString;
+  }
+});
+
+// node_modules/lodash/toString.js
+var require_toString = __commonJS({
+  "node_modules/lodash/toString.js"(exports2, module2) {
+    var baseToString = require_baseToString();
+    function toString(value) {
+      return value == null ? "" : baseToString(value);
+    }
+    module2.exports = toString;
+  }
+});
+
+// node_modules/lodash/uniqueId.js
+var require_uniqueId = __commonJS({
+  "node_modules/lodash/uniqueId.js"(exports2, module2) {
+    var toString = require_toString();
+    var idCounter = 0;
+    function uniqueId(prefix) {
+      var id = ++idCounter;
+      return toString(prefix) + id;
+    }
+    module2.exports = uniqueId;
+  }
+});
+
+// node_modules/knex/lib/util/timeout.js
+var require_timeout = __commonJS({
+  "node_modules/knex/lib/util/timeout.js"(exports2, module2) {
+    var KnexTimeoutError = class extends Error {
+      constructor(message2) {
+        super(message2);
+        this.name = "KnexTimeoutError";
+      }
+    };
+    function timeout(promise, ms) {
+      return new Promise(function(resolve, reject) {
+        const id = setTimeout(function() {
+          reject(new KnexTimeoutError("operation timed out"));
+        }, ms);
+        function wrappedResolve(value) {
+          clearTimeout(id);
+          resolve(value);
+        }
+        function wrappedReject(err) {
+          clearTimeout(id);
+          reject(err);
+        }
+        promise.then(wrappedResolve, wrappedReject);
+      });
+    }
+    module2.exports.KnexTimeoutError = KnexTimeoutError;
+    module2.exports.timeout = timeout;
+  }
+});
+
+// node_modules/knex/lib/execution/internal/ensure-connection-callback.js
+var require_ensure_connection_callback = __commonJS({
+  "node_modules/knex/lib/execution/internal/ensure-connection-callback.js"(exports2, module2) {
+    function ensureConnectionCallback(runner) {
+      runner.client.emit("start", runner.builder);
+      runner.builder.emit("start", runner.builder);
+      const sql = runner.builder.toSQL();
+      if (runner.builder._debug) {
+        runner.client.logger.debug(sql);
+      }
+      if (Array.isArray(sql)) {
+        return runner.queryArray(sql);
+      }
+      return runner.query(sql);
+    }
+    function ensureConnectionStreamCallback(runner, params) {
+      try {
+        const sql = runner.builder.toSQL();
+        if (Array.isArray(sql) && params.hasHandler) {
+          throw new Error("The stream may only be used with a single query statement.");
+        }
+        return runner.client.stream(runner.connection, sql, params.stream, params.options);
+      } catch (e) {
+        params.stream.emit("error", e);
+        throw e;
+      }
+    }
+    module2.exports = {
+      ensureConnectionCallback,
+      ensureConnectionStreamCallback
+    };
+  }
+});
+
+// node_modules/knex/lib/execution/runner.js
+var require_runner = __commonJS({
+  "node_modules/knex/lib/execution/runner.js"(exports2, module2) {
+    var { KnexTimeoutError } = require_timeout();
+    var { timeout } = require_timeout();
+    var {
+      ensureConnectionCallback,
+      ensureConnectionStreamCallback
+    } = require_ensure_connection_callback();
+    var Transform;
+    var Runner = class {
+      constructor(client, builder) {
+        this.client = client;
+        this.builder = builder;
+        this.queries = [];
+        this.connection = void 0;
+      }
+      async run() {
+        const runner = this;
+        try {
+          const res = await this.ensureConnection(ensureConnectionCallback);
+          runner.builder.emit("end");
+          return res;
+        } catch (err) {
+          if (runner.builder._events && runner.builder._events.error) {
+            runner.builder.emit("error", err);
+          }
+          throw err;
+        }
+      }
+      stream(optionsOrHandler, handlerOrNil) {
+        const firstOptionIsHandler = typeof optionsOrHandler === "function" && arguments.length === 1;
+        const options = firstOptionIsHandler ? {} : optionsOrHandler;
+        const handler = firstOptionIsHandler ? optionsOrHandler : handlerOrNil;
+        const hasHandler = typeof handler === "function";
+        Transform = Transform || require("stream").Transform;
+        const queryContext = this.builder.queryContext();
+        let queryStream;
+        const stream = new Transform({
+          objectMode: true,
+          transform: (chunk, _, callback) => {
+            callback(null, this.client.postProcessResponse(chunk, queryContext));
+          },
+          destroy() {
+            if (queryStream && queryStream.destroy) {
+              queryStream.destroy(new Error("stream destroyed"));
+            }
+          }
+        });
+        stream.on("pipe", (qs) => {
+          queryStream = qs;
+        });
+        const connectionAcquirePromise = this.ensureConnection(ensureConnectionStreamCallback, {
+          options,
+          hasHandler,
+          stream
+        }).catch((err) => {
+          if (!this.connection) {
+            stream.emit("error", err);
+          }
+        });
+        if (hasHandler) {
+          handler(stream);
+          return connectionAcquirePromise;
+        }
+        return stream;
+      }
+      pipe(writable, options) {
+        return this.stream(options).pipe(writable);
+      }
+      async query(obj) {
+        const { __knexUid, __knexTxId } = this.connection;
+        this.builder.emit("query", Object.assign({ __knexUid, __knexTxId }, obj));
+        const runner = this;
+        const queryContext = this.builder.queryContext();
+        if (obj !== null && typeof obj === "object") {
+          obj.queryContext = queryContext;
+        }
+        let queryPromise = this.client.query(this.connection, obj);
+        if (obj.timeout) {
+          queryPromise = timeout(queryPromise, obj.timeout);
+        }
+        return queryPromise.then((resp) => this.client.processResponse(resp, runner)).then((processedResponse) => {
+          const postProcessedResponse = this.client.postProcessResponse(processedResponse, queryContext);
+          this.builder.emit("query-response", postProcessedResponse, Object.assign({ __knexUid, __knexTxId }, obj), this.builder);
+          this.client.emit("query-response", postProcessedResponse, Object.assign({ __knexUid, __knexTxId }, obj), this.builder);
+          return postProcessedResponse;
+        }).catch((error) => {
+          if (!(error instanceof KnexTimeoutError)) {
+            return Promise.reject(error);
+          }
+          const { timeout: timeout2, sql, bindings } = obj;
+          let cancelQuery;
+          if (obj.cancelOnTimeout) {
+            cancelQuery = this.client.cancelQuery(this.connection);
+          } else {
+            this.connection.__knex__disposed = error;
+            cancelQuery = Promise.resolve();
+          }
+          return cancelQuery.catch((cancelError) => {
+            this.connection.__knex__disposed = error;
+            throw Object.assign(cancelError, {
+              message: `After query timeout of ${timeout2}ms exceeded, cancelling of query failed.`,
+              sql,
+              bindings,
+              timeout: timeout2
+            });
+          }).then(() => {
+            throw Object.assign(error, {
+              message: `Defined query timeout of ${timeout2}ms exceeded when running query.`,
+              sql,
+              bindings,
+              timeout: timeout2
+            });
+          });
+        }).catch((error) => {
+          this.builder.emit("query-error", error, Object.assign({ __knexUid, __knexTxId, queryContext }, obj));
+          throw error;
+        });
+      }
+      async queryArray(queries) {
+        if (queries.length === 1) {
+          const query = queries[0];
+          if (!query.statementsProducer) {
+            return this.query(query);
+          }
+          const statements = await query.statementsProducer(void 0, this.connection);
+          const queryObjects = statements.map((statement) => ({
+            sql: statement,
+            bindings: query.bindings
+          }));
+          return this.queryArray(queryObjects);
+        }
+        const results = [];
+        for (const query of queries) {
+          results.push(await this.queryArray([query]));
+        }
+        return results;
+      }
+      async ensureConnection(cb, cbParams) {
+        if (this.builder._connection) {
+          this.connection = this.builder._connection;
+        }
+        if (this.connection) {
+          return cb(this, cbParams);
+        }
+        let acquiredConnection;
+        try {
+          acquiredConnection = await this.client.acquireConnection();
+        } catch (error) {
+          if (!(error instanceof KnexTimeoutError)) {
+            return Promise.reject(error);
+          }
+          if (this.builder) {
+            error.sql = this.builder.sql;
+            error.bindings = this.builder.bindings;
+          }
+          throw error;
+        }
+        try {
+          this.connection = acquiredConnection;
+          return await cb(this, cbParams);
+        } finally {
+          await this.client.releaseConnection(acquiredConnection);
+        }
+      }
+    };
+    module2.exports = Runner;
+  }
+});
+
+// node_modules/knex/node_modules/ms/index.js
+var require_ms6 = __commonJS({
+  "node_modules/knex/node_modules/ms/index.js"(exports2, module2) {
+    var s = 1e3;
+    var m = s * 60;
+    var h = m * 60;
+    var d = h * 24;
+    var w = d * 7;
+    var y = d * 365.25;
+    module2.exports = function(val, options) {
+      options = options || {};
+      var type = typeof val;
+      if (type === "string" && val.length > 0) {
+        return parse(val);
+      } else if (type === "number" && isFinite(val)) {
+        return options.long ? fmtLong(val) : fmtShort(val);
+      }
+      throw new Error("val is not a non-empty string or a valid number. val=" + JSON.stringify(val));
+    };
+    function parse(str) {
+      str = String(str);
+      if (str.length > 100) {
+        return;
+      }
+      var match = /^(-?(?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(str);
+      if (!match) {
+        return;
+      }
+      var n = parseFloat(match[1]);
+      var type = (match[2] || "ms").toLowerCase();
+      switch (type) {
+        case "years":
+        case "year":
+        case "yrs":
+        case "yr":
+        case "y":
+          return n * y;
+        case "weeks":
+        case "week":
+        case "w":
+          return n * w;
+        case "days":
+        case "day":
+        case "d":
+          return n * d;
+        case "hours":
+        case "hour":
+        case "hrs":
+        case "hr":
+        case "h":
+          return n * h;
+        case "minutes":
+        case "minute":
+        case "mins":
+        case "min":
+        case "m":
+          return n * m;
+        case "seconds":
+        case "second":
+        case "secs":
+        case "sec":
+        case "s":
+          return n * s;
+        case "milliseconds":
+        case "millisecond":
+        case "msecs":
+        case "msec":
+        case "ms":
+          return n;
+        default:
+          return void 0;
+      }
+    }
+    function fmtShort(ms) {
+      var msAbs = Math.abs(ms);
+      if (msAbs >= d) {
+        return Math.round(ms / d) + "d";
+      }
+      if (msAbs >= h) {
+        return Math.round(ms / h) + "h";
+      }
+      if (msAbs >= m) {
+        return Math.round(ms / m) + "m";
+      }
+      if (msAbs >= s) {
+        return Math.round(ms / s) + "s";
+      }
+      return ms + "ms";
+    }
+    function fmtLong(ms) {
+      var msAbs = Math.abs(ms);
+      if (msAbs >= d) {
+        return plural(ms, msAbs, d, "day");
+      }
+      if (msAbs >= h) {
+        return plural(ms, msAbs, h, "hour");
+      }
+      if (msAbs >= m) {
+        return plural(ms, msAbs, m, "minute");
+      }
+      if (msAbs >= s) {
+        return plural(ms, msAbs, s, "second");
+      }
+      return ms + " ms";
+    }
+    function plural(ms, msAbs, n, name) {
+      var isPlural = msAbs >= n * 1.5;
+      return Math.round(ms / n) + " " + name + (isPlural ? "s" : "");
+    }
+  }
+});
+
+// node_modules/knex/node_modules/debug/src/common.js
+var require_common4 = __commonJS({
+  "node_modules/knex/node_modules/debug/src/common.js"(exports2, module2) {
+    function setup(env) {
+      createDebug.debug = createDebug;
+      createDebug.default = createDebug;
+      createDebug.coerce = coerce;
+      createDebug.disable = disable;
+      createDebug.enable = enable;
+      createDebug.enabled = enabled;
+      createDebug.humanize = require_ms6();
+      createDebug.destroy = destroy;
+      Object.keys(env).forEach((key) => {
+        createDebug[key] = env[key];
+      });
+      createDebug.names = [];
+      createDebug.skips = [];
+      createDebug.formatters = {};
+      function selectColor(namespace) {
+        let hash = 0;
+        for (let i = 0; i < namespace.length; i++) {
+          hash = (hash << 5) - hash + namespace.charCodeAt(i);
+          hash |= 0;
+        }
+        return createDebug.colors[Math.abs(hash) % createDebug.colors.length];
+      }
+      createDebug.selectColor = selectColor;
+      function createDebug(namespace) {
+        let prevTime;
+        let enableOverride = null;
+        let namespacesCache;
+        let enabledCache;
+        function debug(...args2) {
+          if (!debug.enabled) {
+            return;
+          }
+          const self2 = debug;
+          const curr = Number(new Date());
+          const ms = curr - (prevTime || curr);
+          self2.diff = ms;
+          self2.prev = prevTime;
+          self2.curr = curr;
+          prevTime = curr;
+          args2[0] = createDebug.coerce(args2[0]);
+          if (typeof args2[0] !== "string") {
+            args2.unshift("%O");
+          }
+          let index = 0;
+          args2[0] = args2[0].replace(/%([a-zA-Z%])/g, (match, format) => {
+            if (match === "%%") {
+              return "%";
+            }
+            index++;
+            const formatter = createDebug.formatters[format];
+            if (typeof formatter === "function") {
+              const val = args2[index];
+              match = formatter.call(self2, val);
+              args2.splice(index, 1);
+              index--;
+            }
+            return match;
+          });
+          createDebug.formatArgs.call(self2, args2);
+          const logFn = self2.log || createDebug.log;
+          logFn.apply(self2, args2);
+        }
+        debug.namespace = namespace;
+        debug.useColors = createDebug.useColors();
+        debug.color = createDebug.selectColor(namespace);
+        debug.extend = extend;
+        debug.destroy = createDebug.destroy;
+        Object.defineProperty(debug, "enabled", {
+          enumerable: true,
+          configurable: false,
+          get: () => {
+            if (enableOverride !== null) {
+              return enableOverride;
+            }
+            if (namespacesCache !== createDebug.namespaces) {
+              namespacesCache = createDebug.namespaces;
+              enabledCache = createDebug.enabled(namespace);
+            }
+            return enabledCache;
+          },
+          set: (v) => {
+            enableOverride = v;
+          }
+        });
+        if (typeof createDebug.init === "function") {
+          createDebug.init(debug);
+        }
+        return debug;
+      }
+      function extend(namespace, delimiter) {
+        const newDebug = createDebug(this.namespace + (typeof delimiter === "undefined" ? ":" : delimiter) + namespace);
+        newDebug.log = this.log;
+        return newDebug;
+      }
+      function enable(namespaces) {
+        createDebug.save(namespaces);
+        createDebug.namespaces = namespaces;
+        createDebug.names = [];
+        createDebug.skips = [];
+        let i;
+        const split = (typeof namespaces === "string" ? namespaces : "").split(/[\s,]+/);
+        const len = split.length;
+        for (i = 0; i < len; i++) {
+          if (!split[i]) {
+            continue;
+          }
+          namespaces = split[i].replace(/\*/g, ".*?");
+          if (namespaces[0] === "-") {
+            createDebug.skips.push(new RegExp("^" + namespaces.substr(1) + "$"));
+          } else {
+            createDebug.names.push(new RegExp("^" + namespaces + "$"));
+          }
+        }
+      }
+      function disable() {
+        const namespaces = [
+          ...createDebug.names.map(toNamespace),
+          ...createDebug.skips.map(toNamespace).map((namespace) => "-" + namespace)
+        ].join(",");
+        createDebug.enable("");
+        return namespaces;
+      }
+      function enabled(name) {
+        if (name[name.length - 1] === "*") {
+          return true;
+        }
+        let i;
+        let len;
+        for (i = 0, len = createDebug.skips.length; i < len; i++) {
+          if (createDebug.skips[i].test(name)) {
+            return false;
+          }
+        }
+        for (i = 0, len = createDebug.names.length; i < len; i++) {
+          if (createDebug.names[i].test(name)) {
+            return true;
+          }
+        }
+        return false;
+      }
+      function toNamespace(regexp) {
+        return regexp.toString().substring(2, regexp.toString().length - 2).replace(/\.\*\?$/, "*");
+      }
+      function coerce(val) {
+        if (val instanceof Error) {
+          return val.stack || val.message;
+        }
+        return val;
+      }
+      function destroy() {
+        console.warn("Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`.");
+      }
+      createDebug.enable(createDebug.load());
+      return createDebug;
+    }
+    module2.exports = setup;
+  }
+});
+
+// node_modules/knex/node_modules/debug/src/browser.js
+var require_browser5 = __commonJS({
+  "node_modules/knex/node_modules/debug/src/browser.js"(exports2, module2) {
+    exports2.formatArgs = formatArgs;
+    exports2.save = save;
+    exports2.load = load;
+    exports2.useColors = useColors;
+    exports2.storage = localstorage();
+    exports2.destroy = (() => {
+      let warned = false;
+      return () => {
+        if (!warned) {
+          warned = true;
+          console.warn("Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`.");
+        }
+      };
+    })();
+    exports2.colors = [
+      "#0000CC",
+      "#0000FF",
+      "#0033CC",
+      "#0033FF",
+      "#0066CC",
+      "#0066FF",
+      "#0099CC",
+      "#0099FF",
+      "#00CC00",
+      "#00CC33",
+      "#00CC66",
+      "#00CC99",
+      "#00CCCC",
+      "#00CCFF",
+      "#3300CC",
+      "#3300FF",
+      "#3333CC",
+      "#3333FF",
+      "#3366CC",
+      "#3366FF",
+      "#3399CC",
+      "#3399FF",
+      "#33CC00",
+      "#33CC33",
+      "#33CC66",
+      "#33CC99",
+      "#33CCCC",
+      "#33CCFF",
+      "#6600CC",
+      "#6600FF",
+      "#6633CC",
+      "#6633FF",
+      "#66CC00",
+      "#66CC33",
+      "#9900CC",
+      "#9900FF",
+      "#9933CC",
+      "#9933FF",
+      "#99CC00",
+      "#99CC33",
+      "#CC0000",
+      "#CC0033",
+      "#CC0066",
+      "#CC0099",
+      "#CC00CC",
+      "#CC00FF",
+      "#CC3300",
+      "#CC3333",
+      "#CC3366",
+      "#CC3399",
+      "#CC33CC",
+      "#CC33FF",
+      "#CC6600",
+      "#CC6633",
+      "#CC9900",
+      "#CC9933",
+      "#CCCC00",
+      "#CCCC33",
+      "#FF0000",
+      "#FF0033",
+      "#FF0066",
+      "#FF0099",
+      "#FF00CC",
+      "#FF00FF",
+      "#FF3300",
+      "#FF3333",
+      "#FF3366",
+      "#FF3399",
+      "#FF33CC",
+      "#FF33FF",
+      "#FF6600",
+      "#FF6633",
+      "#FF9900",
+      "#FF9933",
+      "#FFCC00",
+      "#FFCC33"
+    ];
+    function useColors() {
+      if (typeof window !== "undefined" && window.process && (window.process.type === "renderer" || window.process.__nwjs)) {
+        return true;
+      }
+      if (typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/(edge|trident)\/(\d+)/)) {
+        return false;
+      }
+      return typeof document !== "undefined" && document.documentElement && document.documentElement.style && document.documentElement.style.WebkitAppearance || typeof window !== "undefined" && window.console && (window.console.firebug || window.console.exception && window.console.table) || typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/) && parseInt(RegExp.$1, 10) >= 31 || typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/);
+    }
+    function formatArgs(args2) {
+      args2[0] = (this.useColors ? "%c" : "") + this.namespace + (this.useColors ? " %c" : " ") + args2[0] + (this.useColors ? "%c " : " ") + "+" + module2.exports.humanize(this.diff);
+      if (!this.useColors) {
+        return;
+      }
+      const c = "color: " + this.color;
+      args2.splice(1, 0, c, "color: inherit");
+      let index = 0;
+      let lastC = 0;
+      args2[0].replace(/%[a-zA-Z%]/g, (match) => {
+        if (match === "%%") {
+          return;
+        }
+        index++;
+        if (match === "%c") {
+          lastC = index;
+        }
+      });
+      args2.splice(lastC, 0, c);
+    }
+    exports2.log = console.debug || console.log || (() => {
+    });
+    function save(namespaces) {
+      try {
+        if (namespaces) {
+          exports2.storage.setItem("debug", namespaces);
+        } else {
+          exports2.storage.removeItem("debug");
+        }
+      } catch (error) {
+      }
+    }
+    function load() {
+      let r;
+      try {
+        r = exports2.storage.getItem("debug");
+      } catch (error) {
+      }
+      if (!r && typeof process !== "undefined" && "env" in process) {
+        r = process.env.DEBUG;
+      }
+      return r;
+    }
+    function localstorage() {
+      try {
+        return localStorage;
+      } catch (error) {
+      }
+    }
+    module2.exports = require_common4()(exports2);
+    var { formatters } = module2.exports;
+    formatters.j = function(v) {
+      try {
+        return JSON.stringify(v);
+      } catch (error) {
+        return "[UnexpectedJSONParseError]: " + error.message;
+      }
+    };
+  }
+});
+
+// node_modules/knex/node_modules/debug/src/node.js
+var require_node5 = __commonJS({
+  "node_modules/knex/node_modules/debug/src/node.js"(exports2, module2) {
+    var tty = require("tty");
+    var util = require("util");
+    exports2.init = init;
+    exports2.log = log2;
+    exports2.formatArgs = formatArgs;
+    exports2.save = save;
+    exports2.load = load;
+    exports2.useColors = useColors;
+    exports2.destroy = util.deprecate(() => {
+    }, "Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`.");
+    exports2.colors = [6, 2, 3, 4, 5, 1];
+    try {
+      const supportsColor = require_supports_color();
+      if (supportsColor && (supportsColor.stderr || supportsColor).level >= 2) {
+        exports2.colors = [
+          20,
+          21,
+          26,
+          27,
+          32,
+          33,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          56,
+          57,
+          62,
+          63,
+          68,
+          69,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81,
+          92,
+          93,
+          98,
+          99,
+          112,
+          113,
+          128,
+          129,
+          134,
+          135,
+          148,
+          149,
+          160,
+          161,
+          162,
+          163,
+          164,
+          165,
+          166,
+          167,
+          168,
+          169,
+          170,
+          171,
+          172,
+          173,
+          178,
+          179,
+          184,
+          185,
+          196,
+          197,
+          198,
+          199,
+          200,
+          201,
+          202,
+          203,
+          204,
+          205,
+          206,
+          207,
+          208,
+          209,
+          214,
+          215,
+          220,
+          221
+        ];
+      }
+    } catch (error) {
+    }
+    exports2.inspectOpts = Object.keys(process.env).filter((key) => {
+      return /^debug_/i.test(key);
+    }).reduce((obj, key) => {
+      const prop = key.substring(6).toLowerCase().replace(/_([a-z])/g, (_, k) => {
+        return k.toUpperCase();
+      });
+      let val = process.env[key];
+      if (/^(yes|on|true|enabled)$/i.test(val)) {
+        val = true;
+      } else if (/^(no|off|false|disabled)$/i.test(val)) {
+        val = false;
+      } else if (val === "null") {
+        val = null;
+      } else {
+        val = Number(val);
+      }
+      obj[prop] = val;
+      return obj;
+    }, {});
+    function useColors() {
+      return "colors" in exports2.inspectOpts ? Boolean(exports2.inspectOpts.colors) : tty.isatty(process.stderr.fd);
+    }
+    function formatArgs(args2) {
+      const { namespace: name, useColors: useColors2 } = this;
+      if (useColors2) {
+        const c = this.color;
+        const colorCode = "[3" + (c < 8 ? c : "8;5;" + c);
+        const prefix = `  ${colorCode};1m${name} [0m`;
+        args2[0] = prefix + args2[0].split("\n").join("\n" + prefix);
+        args2.push(colorCode + "m+" + module2.exports.humanize(this.diff) + "[0m");
+      } else {
+        args2[0] = getDate() + name + " " + args2[0];
+      }
+    }
+    function getDate() {
+      if (exports2.inspectOpts.hideDate) {
+        return "";
+      }
+      return new Date().toISOString() + " ";
+    }
+    function log2(...args2) {
+      return process.stderr.write(util.format(...args2) + "\n");
+    }
+    function save(namespaces) {
+      if (namespaces) {
+        process.env.DEBUG = namespaces;
+      } else {
+        delete process.env.DEBUG;
+      }
+    }
+    function load() {
+      return process.env.DEBUG;
+    }
+    function init(debug) {
+      debug.inspectOpts = {};
+      const keys = Object.keys(exports2.inspectOpts);
+      for (let i = 0; i < keys.length; i++) {
+        debug.inspectOpts[keys[i]] = exports2.inspectOpts[keys[i]];
+      }
+    }
+    module2.exports = require_common4()(exports2);
+    var { formatters } = module2.exports;
+    formatters.o = function(v) {
+      this.inspectOpts.colors = this.useColors;
+      return util.inspect(v, this.inspectOpts).split("\n").map((str) => str.trim()).join(" ");
+    };
+    formatters.O = function(v) {
+      this.inspectOpts.colors = this.useColors;
+      return util.inspect(v, this.inspectOpts);
+    };
+  }
+});
+
+// node_modules/knex/node_modules/debug/src/index.js
+var require_src5 = __commonJS({
+  "node_modules/knex/node_modules/debug/src/index.js"(exports2, module2) {
+    if (typeof process === "undefined" || process.type === "renderer" || process.browser === true || process.__nwjs) {
+      module2.exports = require_browser5();
+    } else {
+      module2.exports = require_node5();
+    }
+  }
+});
+
+// node_modules/lodash/_setCacheAdd.js
+var require_setCacheAdd = __commonJS({
+  "node_modules/lodash/_setCacheAdd.js"(exports2, module2) {
+    var HASH_UNDEFINED = "__lodash_hash_undefined__";
+    function setCacheAdd(value) {
+      this.__data__.set(value, HASH_UNDEFINED);
+      return this;
+    }
+    module2.exports = setCacheAdd;
+  }
+});
+
+// node_modules/lodash/_setCacheHas.js
+var require_setCacheHas = __commonJS({
+  "node_modules/lodash/_setCacheHas.js"(exports2, module2) {
+    function setCacheHas(value) {
+      return this.__data__.has(value);
+    }
+    module2.exports = setCacheHas;
+  }
+});
+
+// node_modules/lodash/_SetCache.js
+var require_SetCache = __commonJS({
+  "node_modules/lodash/_SetCache.js"(exports2, module2) {
+    var MapCache = require_MapCache();
+    var setCacheAdd = require_setCacheAdd();
+    var setCacheHas = require_setCacheHas();
+    function SetCache(values) {
+      var index = -1, length = values == null ? 0 : values.length;
+      this.__data__ = new MapCache();
+      while (++index < length) {
+        this.add(values[index]);
+      }
+    }
+    SetCache.prototype.add = SetCache.prototype.push = setCacheAdd;
+    SetCache.prototype.has = setCacheHas;
+    module2.exports = SetCache;
+  }
+});
+
+// node_modules/lodash/_baseFindIndex.js
+var require_baseFindIndex = __commonJS({
+  "node_modules/lodash/_baseFindIndex.js"(exports2, module2) {
+    function baseFindIndex(array, predicate, fromIndex, fromRight) {
+      var length = array.length, index = fromIndex + (fromRight ? 1 : -1);
+      while (fromRight ? index-- : ++index < length) {
+        if (predicate(array[index], index, array)) {
+          return index;
+        }
+      }
+      return -1;
+    }
+    module2.exports = baseFindIndex;
+  }
+});
+
+// node_modules/lodash/_baseIsNaN.js
+var require_baseIsNaN = __commonJS({
+  "node_modules/lodash/_baseIsNaN.js"(exports2, module2) {
+    function baseIsNaN(value) {
+      return value !== value;
+    }
+    module2.exports = baseIsNaN;
+  }
+});
+
+// node_modules/lodash/_strictIndexOf.js
+var require_strictIndexOf = __commonJS({
+  "node_modules/lodash/_strictIndexOf.js"(exports2, module2) {
+    function strictIndexOf(array, value, fromIndex) {
+      var index = fromIndex - 1, length = array.length;
+      while (++index < length) {
+        if (array[index] === value) {
+          return index;
+        }
+      }
+      return -1;
+    }
+    module2.exports = strictIndexOf;
+  }
+});
+
+// node_modules/lodash/_baseIndexOf.js
+var require_baseIndexOf = __commonJS({
+  "node_modules/lodash/_baseIndexOf.js"(exports2, module2) {
+    var baseFindIndex = require_baseFindIndex();
+    var baseIsNaN = require_baseIsNaN();
+    var strictIndexOf = require_strictIndexOf();
+    function baseIndexOf(array, value, fromIndex) {
+      return value === value ? strictIndexOf(array, value, fromIndex) : baseFindIndex(array, baseIsNaN, fromIndex);
+    }
+    module2.exports = baseIndexOf;
+  }
+});
+
+// node_modules/lodash/_arrayIncludes.js
+var require_arrayIncludes = __commonJS({
+  "node_modules/lodash/_arrayIncludes.js"(exports2, module2) {
+    var baseIndexOf = require_baseIndexOf();
+    function arrayIncludes(array, value) {
+      var length = array == null ? 0 : array.length;
+      return !!length && baseIndexOf(array, value, 0) > -1;
+    }
+    module2.exports = arrayIncludes;
+  }
+});
+
+// node_modules/lodash/_arrayIncludesWith.js
+var require_arrayIncludesWith = __commonJS({
+  "node_modules/lodash/_arrayIncludesWith.js"(exports2, module2) {
+    function arrayIncludesWith(array, value, comparator) {
+      var index = -1, length = array == null ? 0 : array.length;
+      while (++index < length) {
+        if (comparator(value, array[index])) {
+          return true;
+        }
+      }
+      return false;
+    }
+    module2.exports = arrayIncludesWith;
+  }
+});
+
+// node_modules/lodash/_cacheHas.js
+var require_cacheHas = __commonJS({
+  "node_modules/lodash/_cacheHas.js"(exports2, module2) {
+    function cacheHas(cache, key) {
+      return cache.has(key);
+    }
+    module2.exports = cacheHas;
+  }
+});
+
+// node_modules/lodash/_baseDifference.js
+var require_baseDifference = __commonJS({
+  "node_modules/lodash/_baseDifference.js"(exports2, module2) {
+    var SetCache = require_SetCache();
+    var arrayIncludes = require_arrayIncludes();
+    var arrayIncludesWith = require_arrayIncludesWith();
+    var arrayMap = require_arrayMap();
+    var baseUnary = require_baseUnary();
+    var cacheHas = require_cacheHas();
+    var LARGE_ARRAY_SIZE = 200;
+    function baseDifference(array, values, iteratee, comparator) {
+      var index = -1, includes = arrayIncludes, isCommon = true, length = array.length, result = [], valuesLength = values.length;
+      if (!length) {
+        return result;
+      }
+      if (iteratee) {
+        values = arrayMap(values, baseUnary(iteratee));
+      }
+      if (comparator) {
+        includes = arrayIncludesWith;
+        isCommon = false;
+      } else if (values.length >= LARGE_ARRAY_SIZE) {
+        includes = cacheHas;
+        isCommon = false;
+        values = new SetCache(values);
+      }
+      outer:
+        while (++index < length) {
+          var value = array[index], computed = iteratee == null ? value : iteratee(value);
+          value = comparator || value !== 0 ? value : 0;
+          if (isCommon && computed === computed) {
+            var valuesIndex = valuesLength;
+            while (valuesIndex--) {
+              if (values[valuesIndex] === computed) {
+                continue outer;
+              }
+            }
+            result.push(value);
+          } else if (!includes(values, computed, comparator)) {
+            result.push(value);
+          }
+        }
+      return result;
+    }
+    module2.exports = baseDifference;
+  }
+});
+
+// node_modules/lodash/_isFlattenable.js
+var require_isFlattenable = __commonJS({
+  "node_modules/lodash/_isFlattenable.js"(exports2, module2) {
+    var Symbol2 = require_Symbol();
+    var isArguments = require_isArguments();
+    var isArray = require_isArray();
+    var spreadableSymbol = Symbol2 ? Symbol2.isConcatSpreadable : void 0;
+    function isFlattenable(value) {
+      return isArray(value) || isArguments(value) || !!(spreadableSymbol && value && value[spreadableSymbol]);
+    }
+    module2.exports = isFlattenable;
+  }
+});
+
+// node_modules/lodash/_baseFlatten.js
+var require_baseFlatten = __commonJS({
+  "node_modules/lodash/_baseFlatten.js"(exports2, module2) {
+    var arrayPush = require_arrayPush();
+    var isFlattenable = require_isFlattenable();
+    function baseFlatten(array, depth, predicate, isStrict, result) {
+      var index = -1, length = array.length;
+      predicate || (predicate = isFlattenable);
+      result || (result = []);
+      while (++index < length) {
+        var value = array[index];
+        if (depth > 0 && predicate(value)) {
+          if (depth > 1) {
+            baseFlatten(value, depth - 1, predicate, isStrict, result);
+          } else {
+            arrayPush(result, value);
+          }
+        } else if (!isStrict) {
+          result[result.length] = value;
+        }
+      }
+      return result;
+    }
+    module2.exports = baseFlatten;
+  }
+});
+
+// node_modules/lodash/isArrayLikeObject.js
+var require_isArrayLikeObject = __commonJS({
+  "node_modules/lodash/isArrayLikeObject.js"(exports2, module2) {
+    var isArrayLike = require_isArrayLike();
+    var isObjectLike = require_isObjectLike();
+    function isArrayLikeObject(value) {
+      return isObjectLike(value) && isArrayLike(value);
+    }
+    module2.exports = isArrayLikeObject;
+  }
+});
+
+// node_modules/lodash/last.js
+var require_last = __commonJS({
+  "node_modules/lodash/last.js"(exports2, module2) {
+    function last(array) {
+      var length = array == null ? 0 : array.length;
+      return length ? array[length - 1] : void 0;
+    }
+    module2.exports = last;
+  }
+});
+
+// node_modules/lodash/differenceWith.js
+var require_differenceWith = __commonJS({
+  "node_modules/lodash/differenceWith.js"(exports2, module2) {
+    var baseDifference = require_baseDifference();
+    var baseFlatten = require_baseFlatten();
+    var baseRest = require_baseRest();
+    var isArrayLikeObject = require_isArrayLikeObject();
+    var last = require_last();
+    var differenceWith = baseRest(function(array, values) {
+      var comparator = last(values);
+      if (isArrayLikeObject(comparator)) {
+        comparator = void 0;
+      }
+      return isArrayLikeObject(array) ? baseDifference(array, baseFlatten(values, 1, isArrayLikeObject, true), void 0, comparator) : [];
+    });
+    module2.exports = differenceWith;
+  }
+});
+
+// node_modules/lodash/_isKey.js
+var require_isKey = __commonJS({
+  "node_modules/lodash/_isKey.js"(exports2, module2) {
+    var isArray = require_isArray();
+    var isSymbol = require_isSymbol();
+    var reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/;
+    var reIsPlainProp = /^\w*$/;
+    function isKey(value, object) {
+      if (isArray(value)) {
+        return false;
+      }
+      var type = typeof value;
+      if (type == "number" || type == "symbol" || type == "boolean" || value == null || isSymbol(value)) {
+        return true;
+      }
+      return reIsPlainProp.test(value) || !reIsDeepProp.test(value) || object != null && value in Object(object);
+    }
+    module2.exports = isKey;
+  }
+});
+
+// node_modules/lodash/memoize.js
+var require_memoize = __commonJS({
+  "node_modules/lodash/memoize.js"(exports2, module2) {
+    var MapCache = require_MapCache();
+    var FUNC_ERROR_TEXT = "Expected a function";
+    function memoize(func, resolver) {
+      if (typeof func != "function" || resolver != null && typeof resolver != "function") {
+        throw new TypeError(FUNC_ERROR_TEXT);
+      }
+      var memoized = function() {
+        var args2 = arguments, key = resolver ? resolver.apply(this, args2) : args2[0], cache = memoized.cache;
+        if (cache.has(key)) {
+          return cache.get(key);
+        }
+        var result = func.apply(this, args2);
+        memoized.cache = cache.set(key, result) || cache;
+        return result;
+      };
+      memoized.cache = new (memoize.Cache || MapCache)();
+      return memoized;
+    }
+    memoize.Cache = MapCache;
+    module2.exports = memoize;
+  }
+});
+
+// node_modules/lodash/_memoizeCapped.js
+var require_memoizeCapped = __commonJS({
+  "node_modules/lodash/_memoizeCapped.js"(exports2, module2) {
+    var memoize = require_memoize();
+    var MAX_MEMOIZE_SIZE = 500;
+    function memoizeCapped(func) {
+      var result = memoize(func, function(key) {
+        if (cache.size === MAX_MEMOIZE_SIZE) {
+          cache.clear();
+        }
+        return key;
+      });
+      var cache = result.cache;
+      return result;
+    }
+    module2.exports = memoizeCapped;
+  }
+});
+
+// node_modules/lodash/_stringToPath.js
+var require_stringToPath = __commonJS({
+  "node_modules/lodash/_stringToPath.js"(exports2, module2) {
+    var memoizeCapped = require_memoizeCapped();
+    var rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
+    var reEscapeChar = /\\(\\)?/g;
+    var stringToPath = memoizeCapped(function(string) {
+      var result = [];
+      if (string.charCodeAt(0) === 46) {
+        result.push("");
+      }
+      string.replace(rePropName, function(match, number, quote, subString) {
+        result.push(quote ? subString.replace(reEscapeChar, "$1") : number || match);
+      });
+      return result;
+    });
+    module2.exports = stringToPath;
+  }
+});
+
+// node_modules/lodash/_castPath.js
+var require_castPath = __commonJS({
+  "node_modules/lodash/_castPath.js"(exports2, module2) {
+    var isArray = require_isArray();
+    var isKey = require_isKey();
+    var stringToPath = require_stringToPath();
+    var toString = require_toString();
+    function castPath(value, object) {
+      if (isArray(value)) {
+        return value;
+      }
+      return isKey(value, object) ? [value] : stringToPath(toString(value));
+    }
+    module2.exports = castPath;
+  }
+});
+
+// node_modules/lodash/_toKey.js
+var require_toKey = __commonJS({
+  "node_modules/lodash/_toKey.js"(exports2, module2) {
+    var isSymbol = require_isSymbol();
+    var INFINITY = 1 / 0;
+    function toKey(value) {
+      if (typeof value == "string" || isSymbol(value)) {
+        return value;
+      }
+      var result = value + "";
+      return result == "0" && 1 / value == -INFINITY ? "-0" : result;
+    }
+    module2.exports = toKey;
+  }
+});
+
+// node_modules/lodash/_baseGet.js
+var require_baseGet = __commonJS({
+  "node_modules/lodash/_baseGet.js"(exports2, module2) {
+    var castPath = require_castPath();
+    var toKey = require_toKey();
+    function baseGet(object, path) {
+      path = castPath(path, object);
+      var index = 0, length = path.length;
+      while (object != null && index < length) {
+        object = object[toKey(path[index++])];
+      }
+      return index && index == length ? object : void 0;
+    }
+    module2.exports = baseGet;
+  }
+});
+
+// node_modules/lodash/get.js
+var require_get = __commonJS({
+  "node_modules/lodash/get.js"(exports2, module2) {
+    var baseGet = require_baseGet();
+    function get(object, path, defaultValue) {
+      var result = object == null ? void 0 : baseGet(object, path);
+      return result === void 0 ? defaultValue : result;
+    }
+    module2.exports = get;
+  }
+});
+
+// node_modules/lodash/isEmpty.js
+var require_isEmpty = __commonJS({
+  "node_modules/lodash/isEmpty.js"(exports2, module2) {
+    var baseKeys = require_baseKeys();
+    var getTag = require_getTag();
+    var isArguments = require_isArguments();
+    var isArray = require_isArray();
+    var isArrayLike = require_isArrayLike();
+    var isBuffer = require_isBuffer();
+    var isPrototype = require_isPrototype();
+    var isTypedArray = require_isTypedArray();
+    var mapTag = "[object Map]";
+    var setTag = "[object Set]";
+    var objectProto = Object.prototype;
+    var hasOwnProperty = objectProto.hasOwnProperty;
+    function isEmpty(value) {
+      if (value == null) {
+        return true;
+      }
+      if (isArrayLike(value) && (isArray(value) || typeof value == "string" || typeof value.splice == "function" || isBuffer(value) || isTypedArray(value) || isArguments(value))) {
+        return !value.length;
+      }
+      var tag = getTag(value);
+      if (tag == mapTag || tag == setTag) {
+        return !value.size;
+      }
+      if (isPrototype(value)) {
+        return !baseKeys(value).length;
+      }
+      for (var key in value) {
+        if (hasOwnProperty.call(value, key)) {
+          return false;
+        }
+      }
+      return true;
+    }
+    module2.exports = isEmpty;
+  }
+});
+
+// node_modules/lodash/_baseExtremum.js
+var require_baseExtremum = __commonJS({
+  "node_modules/lodash/_baseExtremum.js"(exports2, module2) {
+    var isSymbol = require_isSymbol();
+    function baseExtremum(array, iteratee, comparator) {
+      var index = -1, length = array.length;
+      while (++index < length) {
+        var value = array[index], current = iteratee(value);
+        if (current != null && (computed === void 0 ? current === current && !isSymbol(current) : comparator(current, computed))) {
+          var computed = current, result = value;
+        }
+      }
+      return result;
+    }
+    module2.exports = baseExtremum;
+  }
+});
+
+// node_modules/lodash/_baseGt.js
+var require_baseGt = __commonJS({
+  "node_modules/lodash/_baseGt.js"(exports2, module2) {
+    function baseGt(value, other) {
+      return value > other;
+    }
+    module2.exports = baseGt;
+  }
+});
+
+// node_modules/lodash/max.js
+var require_max = __commonJS({
+  "node_modules/lodash/max.js"(exports2, module2) {
+    var baseExtremum = require_baseExtremum();
+    var baseGt = require_baseGt();
+    var identity = require_identity();
+    function max(array) {
+      return array && array.length ? baseExtremum(array, identity, baseGt) : void 0;
+    }
+    module2.exports = max;
+  }
+});
+
+// node_modules/knex/lib/migrations/migrate/table-resolver.js
+var require_table_resolver = __commonJS({
+  "node_modules/knex/lib/migrations/migrate/table-resolver.js"(exports2, module2) {
+    function getTableName(tableName, schemaName) {
+      return schemaName ? `${schemaName}.${tableName}` : tableName;
+    }
+    function getTable(trxOrKnex, tableName, schemaName) {
+      return schemaName ? trxOrKnex(tableName).withSchema(schemaName) : trxOrKnex(tableName);
+    }
+    function getLockTableName(tableName) {
+      return tableName + "_lock";
+    }
+    function getLockTableNameWithSchema(tableName, schemaName) {
+      return schemaName ? schemaName + "." + getLockTableName(tableName) : getLockTableName(tableName);
+    }
+    module2.exports = {
+      getLockTableName,
+      getLockTableNameWithSchema,
+      getTable,
+      getTableName
+    };
+  }
+});
+
+// node_modules/knex/lib/migrations/migrate/table-creator.js
+var require_table_creator = __commonJS({
+  "node_modules/knex/lib/migrations/migrate/table-creator.js"(exports2, module2) {
+    var {
+      getTable,
+      getLockTableName,
+      getLockTableNameWithSchema,
+      getTableName
+    } = require_table_resolver();
+    function ensureTable(tableName, schemaName, trxOrKnex) {
+      const lockTable = getLockTableName(tableName);
+      return getSchemaBuilder(trxOrKnex, schemaName).hasTable(tableName).then((exists) => {
+        return !exists && _createMigrationTable(tableName, schemaName, trxOrKnex);
+      }).then(() => {
+        return getSchemaBuilder(trxOrKnex, schemaName).hasTable(lockTable);
+      }).then((exists) => {
+        return !exists && _createMigrationLockTable(lockTable, schemaName, trxOrKnex);
+      }).then(() => {
+        return getTable(trxOrKnex, lockTable, schemaName).select("*");
+      }).then((data) => {
+        return !data.length && _insertLockRowIfNeeded(tableName, schemaName, trxOrKnex);
+      });
+    }
+    function _createMigrationTable(tableName, schemaName, trxOrKnex) {
+      return getSchemaBuilder(trxOrKnex, schemaName).createTable(getTableName(tableName), function(t) {
+        t.increments();
+        t.string("name");
+        t.integer("batch");
+        t.timestamp("migration_time");
+      });
+    }
+    function _createMigrationLockTable(tableName, schemaName, trxOrKnex) {
+      return getSchemaBuilder(trxOrKnex, schemaName).createTable(tableName, function(t) {
+        t.increments("index").primary();
+        t.integer("is_locked");
+      });
+    }
+    function _insertLockRowIfNeeded(tableName, schemaName, trxOrKnex) {
+      const lockTableWithSchema = getLockTableNameWithSchema(tableName, schemaName);
+      return trxOrKnex.select("*").from(lockTableWithSchema).then((data) => {
+        return !data.length ? trxOrKnex.from(lockTableWithSchema).insert({ is_locked: 0 }) : null;
+      });
+    }
+    function getSchemaBuilder(trxOrKnex, schemaName) {
+      return schemaName ? trxOrKnex.schema.withSchema(schemaName) : trxOrKnex.schema;
+    }
+    module2.exports = {
+      ensureTable,
+      getSchemaBuilder
+    };
+  }
+});
+
+// node_modules/knex/lib/migrations/migrate/migration-list-resolver.js
+var require_migration_list_resolver = __commonJS({
+  "node_modules/knex/lib/migrations/migrate/migration-list-resolver.js"(exports2, module2) {
+    var { getTableName } = require_table_resolver();
+    var { ensureTable } = require_table_creator();
+    function listAll(migrationSource, loadExtensions) {
+      return migrationSource.getMigrations(loadExtensions);
+    }
+    async function listCompleted(tableName, schemaName, trxOrKnex) {
+      await ensureTable(tableName, schemaName, trxOrKnex);
+      const completedMigrations = await trxOrKnex.from(getTableName(tableName, schemaName)).orderBy("id").select("name");
+      return completedMigrations.map((migration) => {
+        return migration.name;
+      });
+    }
+    function listAllAndCompleted(config, trxOrKnex) {
+      return Promise.all([
+        listAll(config.migrationSource, config.loadExtensions),
+        listCompleted(config.tableName, config.schemaName, trxOrKnex)
+      ]);
+    }
+    module2.exports = {
+      listAll,
+      listAllAndCompleted,
+      listCompleted
+    };
+  }
+});
+
+// node_modules/lodash/_createAssigner.js
+var require_createAssigner = __commonJS({
+  "node_modules/lodash/_createAssigner.js"(exports2, module2) {
+    var baseRest = require_baseRest();
+    var isIterateeCall = require_isIterateeCall();
+    function createAssigner(assigner) {
+      return baseRest(function(object, sources) {
+        var index = -1, length = sources.length, customizer = length > 1 ? sources[length - 1] : void 0, guard = length > 2 ? sources[2] : void 0;
+        customizer = assigner.length > 3 && typeof customizer == "function" ? (length--, customizer) : void 0;
+        if (guard && isIterateeCall(sources[0], sources[1], guard)) {
+          customizer = length < 3 ? void 0 : customizer;
+          length = 1;
+        }
+        object = Object(object);
+        while (++index < length) {
+          var source = sources[index];
+          if (source) {
+            assigner(object, source, index, customizer);
+          }
+        }
+        return object;
+      });
+    }
+    module2.exports = createAssigner;
+  }
+});
+
+// node_modules/lodash/assignInWith.js
+var require_assignInWith = __commonJS({
+  "node_modules/lodash/assignInWith.js"(exports2, module2) {
+    var copyObject = require_copyObject();
+    var createAssigner = require_createAssigner();
+    var keysIn = require_keysIn();
+    var assignInWith = createAssigner(function(object, source, srcIndex, customizer) {
+      copyObject(source, keysIn(source), object, customizer);
+    });
+    module2.exports = assignInWith;
+  }
+});
+
+// node_modules/lodash/isPlainObject.js
+var require_isPlainObject = __commonJS({
+  "node_modules/lodash/isPlainObject.js"(exports2, module2) {
+    var baseGetTag = require_baseGetTag();
+    var getPrototype = require_getPrototype();
+    var isObjectLike = require_isObjectLike();
+    var objectTag = "[object Object]";
+    var funcProto = Function.prototype;
+    var objectProto = Object.prototype;
+    var funcToString = funcProto.toString;
+    var hasOwnProperty = objectProto.hasOwnProperty;
+    var objectCtorString = funcToString.call(Object);
+    function isPlainObject(value) {
+      if (!isObjectLike(value) || baseGetTag(value) != objectTag) {
+        return false;
+      }
+      var proto = getPrototype(value);
+      if (proto === null) {
+        return true;
+      }
+      var Ctor = hasOwnProperty.call(proto, "constructor") && proto.constructor;
+      return typeof Ctor == "function" && Ctor instanceof Ctor && funcToString.call(Ctor) == objectCtorString;
+    }
+    module2.exports = isPlainObject;
+  }
+});
+
+// node_modules/lodash/isError.js
+var require_isError = __commonJS({
+  "node_modules/lodash/isError.js"(exports2, module2) {
+    var baseGetTag = require_baseGetTag();
+    var isObjectLike = require_isObjectLike();
+    var isPlainObject = require_isPlainObject();
+    var domExcTag = "[object DOMException]";
+    var errorTag = "[object Error]";
+    function isError(value) {
+      if (!isObjectLike(value)) {
+        return false;
+      }
+      var tag = baseGetTag(value);
+      return tag == errorTag || tag == domExcTag || typeof value.message == "string" && typeof value.name == "string" && !isPlainObject(value);
+    }
+    module2.exports = isError;
+  }
+});
+
+// node_modules/lodash/attempt.js
+var require_attempt = __commonJS({
+  "node_modules/lodash/attempt.js"(exports2, module2) {
+    var apply = require_apply();
+    var baseRest = require_baseRest();
+    var isError = require_isError();
+    var attempt = baseRest(function(func, args2) {
+      try {
+        return apply(func, void 0, args2);
+      } catch (e) {
+        return isError(e) ? e : new Error(e);
+      }
+    });
+    module2.exports = attempt;
+  }
+});
+
+// node_modules/lodash/_baseValues.js
+var require_baseValues = __commonJS({
+  "node_modules/lodash/_baseValues.js"(exports2, module2) {
+    var arrayMap = require_arrayMap();
+    function baseValues(object, props) {
+      return arrayMap(props, function(key) {
+        return object[key];
+      });
+    }
+    module2.exports = baseValues;
+  }
+});
+
+// node_modules/lodash/_customDefaultsAssignIn.js
+var require_customDefaultsAssignIn = __commonJS({
+  "node_modules/lodash/_customDefaultsAssignIn.js"(exports2, module2) {
+    var eq = require_eq();
+    var objectProto = Object.prototype;
+    var hasOwnProperty = objectProto.hasOwnProperty;
+    function customDefaultsAssignIn(objValue, srcValue, key, object) {
+      if (objValue === void 0 || eq(objValue, objectProto[key]) && !hasOwnProperty.call(object, key)) {
+        return srcValue;
+      }
+      return objValue;
+    }
+    module2.exports = customDefaultsAssignIn;
+  }
+});
+
+// node_modules/lodash/_escapeStringChar.js
+var require_escapeStringChar = __commonJS({
+  "node_modules/lodash/_escapeStringChar.js"(exports2, module2) {
+    var stringEscapes = {
+      "\\": "\\",
+      "'": "'",
+      "\n": "n",
+      "\r": "r",
+      "\u2028": "u2028",
+      "\u2029": "u2029"
+    };
+    function escapeStringChar(chr) {
+      return "\\" + stringEscapes[chr];
+    }
+    module2.exports = escapeStringChar;
+  }
+});
+
+// node_modules/lodash/_reInterpolate.js
+var require_reInterpolate = __commonJS({
+  "node_modules/lodash/_reInterpolate.js"(exports2, module2) {
+    var reInterpolate = /<%=([\s\S]+?)%>/g;
+    module2.exports = reInterpolate;
+  }
+});
+
+// node_modules/lodash/_basePropertyOf.js
+var require_basePropertyOf = __commonJS({
+  "node_modules/lodash/_basePropertyOf.js"(exports2, module2) {
+    function basePropertyOf(object) {
+      return function(key) {
+        return object == null ? void 0 : object[key];
+      };
+    }
+    module2.exports = basePropertyOf;
+  }
+});
+
+// node_modules/lodash/_escapeHtmlChar.js
+var require_escapeHtmlChar = __commonJS({
+  "node_modules/lodash/_escapeHtmlChar.js"(exports2, module2) {
+    var basePropertyOf = require_basePropertyOf();
+    var htmlEscapes = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    };
+    var escapeHtmlChar = basePropertyOf(htmlEscapes);
+    module2.exports = escapeHtmlChar;
+  }
+});
+
+// node_modules/lodash/escape.js
+var require_escape = __commonJS({
+  "node_modules/lodash/escape.js"(exports2, module2) {
+    var escapeHtmlChar = require_escapeHtmlChar();
+    var toString = require_toString();
+    var reUnescapedHtml = /[&<>"']/g;
+    var reHasUnescapedHtml = RegExp(reUnescapedHtml.source);
+    function escape2(string) {
+      string = toString(string);
+      return string && reHasUnescapedHtml.test(string) ? string.replace(reUnescapedHtml, escapeHtmlChar) : string;
+    }
+    module2.exports = escape2;
+  }
+});
+
+// node_modules/lodash/_reEscape.js
+var require_reEscape = __commonJS({
+  "node_modules/lodash/_reEscape.js"(exports2, module2) {
+    var reEscape = /<%-([\s\S]+?)%>/g;
+    module2.exports = reEscape;
+  }
+});
+
+// node_modules/lodash/_reEvaluate.js
+var require_reEvaluate = __commonJS({
+  "node_modules/lodash/_reEvaluate.js"(exports2, module2) {
+    var reEvaluate = /<%([\s\S]+?)%>/g;
+    module2.exports = reEvaluate;
+  }
+});
+
+// node_modules/lodash/templateSettings.js
+var require_templateSettings = __commonJS({
+  "node_modules/lodash/templateSettings.js"(exports2, module2) {
+    var escape2 = require_escape();
+    var reEscape = require_reEscape();
+    var reEvaluate = require_reEvaluate();
+    var reInterpolate = require_reInterpolate();
+    var templateSettings = {
+      "escape": reEscape,
+      "evaluate": reEvaluate,
+      "interpolate": reInterpolate,
+      "variable": "",
+      "imports": {
+        "_": { "escape": escape2 }
+      }
+    };
+    module2.exports = templateSettings;
+  }
+});
+
+// node_modules/lodash/template.js
+var require_template = __commonJS({
+  "node_modules/lodash/template.js"(exports2, module2) {
+    var assignInWith = require_assignInWith();
+    var attempt = require_attempt();
+    var baseValues = require_baseValues();
+    var customDefaultsAssignIn = require_customDefaultsAssignIn();
+    var escapeStringChar = require_escapeStringChar();
+    var isError = require_isError();
+    var isIterateeCall = require_isIterateeCall();
+    var keys = require_keys();
+    var reInterpolate = require_reInterpolate();
+    var templateSettings = require_templateSettings();
+    var toString = require_toString();
+    var INVALID_TEMPL_VAR_ERROR_TEXT = "Invalid `variable` option passed into `_.template`";
+    var reEmptyStringLeading = /\b__p \+= '';/g;
+    var reEmptyStringMiddle = /\b(__p \+=) '' \+/g;
+    var reEmptyStringTrailing = /(__e\(.*?\)|\b__t\)) \+\n'';/g;
+    var reForbiddenIdentifierChars = /[()=,{}\[\]\/\s]/;
+    var reEsTemplate = /\$\{([^\\}]*(?:\\.[^\\}]*)*)\}/g;
+    var reNoMatch = /($^)/;
+    var reUnescapedString = /['\n\r\u2028\u2029\\]/g;
+    var objectProto = Object.prototype;
+    var hasOwnProperty = objectProto.hasOwnProperty;
+    function template(string, options, guard) {
+      var settings = templateSettings.imports._.templateSettings || templateSettings;
+      if (guard && isIterateeCall(string, options, guard)) {
+        options = void 0;
+      }
+      string = toString(string);
+      options = assignInWith({}, options, settings, customDefaultsAssignIn);
+      var imports = assignInWith({}, options.imports, settings.imports, customDefaultsAssignIn), importsKeys = keys(imports), importsValues = baseValues(imports, importsKeys);
+      var isEscaping, isEvaluating, index = 0, interpolate = options.interpolate || reNoMatch, source = "__p += '";
+      var reDelimiters = RegExp((options.escape || reNoMatch).source + "|" + interpolate.source + "|" + (interpolate === reInterpolate ? reEsTemplate : reNoMatch).source + "|" + (options.evaluate || reNoMatch).source + "|$", "g");
+      var sourceURL = hasOwnProperty.call(options, "sourceURL") ? "//# sourceURL=" + (options.sourceURL + "").replace(/\s/g, " ") + "\n" : "";
+      string.replace(reDelimiters, function(match, escapeValue, interpolateValue, esTemplateValue, evaluateValue, offset) {
+        interpolateValue || (interpolateValue = esTemplateValue);
+        source += string.slice(index, offset).replace(reUnescapedString, escapeStringChar);
+        if (escapeValue) {
+          isEscaping = true;
+          source += "' +\n__e(" + escapeValue + ") +\n'";
+        }
+        if (evaluateValue) {
+          isEvaluating = true;
+          source += "';\n" + evaluateValue + ";\n__p += '";
+        }
+        if (interpolateValue) {
+          source += "' +\n((__t = (" + interpolateValue + ")) == null ? '' : __t) +\n'";
+        }
+        index = offset + match.length;
+        return match;
+      });
+      source += "';\n";
+      var variable = hasOwnProperty.call(options, "variable") && options.variable;
+      if (!variable) {
+        source = "with (obj) {\n" + source + "\n}\n";
+      } else if (reForbiddenIdentifierChars.test(variable)) {
+        throw new Error(INVALID_TEMPL_VAR_ERROR_TEXT);
+      }
+      source = (isEvaluating ? source.replace(reEmptyStringLeading, "") : source).replace(reEmptyStringMiddle, "$1").replace(reEmptyStringTrailing, "$1;");
+      source = "function(" + (variable || "obj") + ") {\n" + (variable ? "" : "obj || (obj = {});\n") + "var __t, __p = ''" + (isEscaping ? ", __e = _.escape" : "") + (isEvaluating ? ", __j = Array.prototype.join;\nfunction print() { __p += __j.call(arguments, '') }\n" : ";\n") + source + "return __p\n}";
+      var result = attempt(function() {
+        return Function(importsKeys, sourceURL + "return " + source).apply(void 0, importsValues);
+      });
+      result.source = source;
+      if (isError(result)) {
+        throw result;
+      }
+      return result;
+    }
+    module2.exports = template;
+  }
+});
+
+// node_modules/lodash/flatten.js
+var require_flatten = __commonJS({
+  "node_modules/lodash/flatten.js"(exports2, module2) {
+    var baseFlatten = require_baseFlatten();
+    function flatten(array) {
+      var length = array == null ? 0 : array.length;
+      return length ? baseFlatten(array, 1) : [];
+    }
+    module2.exports = flatten;
+  }
+});
+
+// node_modules/knex/lib/migrations/util/fs.js
+var require_fs = __commonJS({
+  "node_modules/knex/lib/migrations/util/fs.js"(exports2, module2) {
+    var fs = require("fs");
+    var flatten = require_flatten();
+    var os = require("os");
+    var path = require("path");
+    var { promisify } = require("util");
+    var stat = promisify(fs.stat);
+    var readFile = promisify(fs.readFile);
+    var writeFile = promisify(fs.writeFile);
+    var readdir = promisify(fs.readdir);
+    var mkdir = promisify(fs.mkdir);
+    function existsSync(path2) {
+      try {
+        fs.accessSync(path2);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+    function createTemp() {
+      return promisify(fs.mkdtemp)(`${os.tmpdir()}${path.sep}`);
+    }
+    function ensureDirectoryExists(dir) {
+      return stat(dir).catch(() => mkdir(dir, { recursive: true }));
+    }
+    async function getFilepathsInFolder(dir, recursive = false) {
+      const pathsList = await readdir(dir);
+      return flatten(await Promise.all(pathsList.sort().map(async (currentPath) => {
+        const currentFile = path.resolve(dir, currentPath);
+        const statFile = await stat(currentFile);
+        if (statFile && statFile.isDirectory()) {
+          if (recursive) {
+            return await getFilepathsInFolder(currentFile, true);
+          }
+          return [];
+        }
+        return [currentFile];
+      })));
+    }
+    module2.exports = {
+      existsSync,
+      stat,
+      readdir,
+      readFile,
+      writeFile,
+      createTemp,
+      ensureDirectoryExists,
+      getFilepathsInFolder
+    };
+  }
+});
+
+// node_modules/knex/lib/migrations/util/template.js
+var require_template2 = __commonJS({
+  "node_modules/knex/lib/migrations/util/template.js"(exports2, module2) {
+    var template = require_template();
+    var { readFile, writeFile } = require_fs();
+    var jsSourceTemplate = (content, options) => template(content, {
+      interpolate: /<%=([\s\S]+?)%>/g,
+      ...options
+    });
+    var jsFileTemplate = async (filePath, options) => {
+      const contentBuffer = await readFile(filePath);
+      return jsSourceTemplate(contentBuffer.toString(), options);
+    };
+    var writeJsFileUsingTemplate = async (targetFilePath, sourceFilePath, options, variables) => writeFile(targetFilePath, (await jsFileTemplate(sourceFilePath, options))(variables));
+    module2.exports = {
+      jsSourceTemplate,
+      jsFileTemplate,
+      writeJsFileUsingTemplate
+    };
+  }
+});
+
+// node_modules/lodash/_arraySome.js
+var require_arraySome = __commonJS({
+  "node_modules/lodash/_arraySome.js"(exports2, module2) {
+    function arraySome(array, predicate) {
+      var index = -1, length = array == null ? 0 : array.length;
+      while (++index < length) {
+        if (predicate(array[index], index, array)) {
+          return true;
+        }
+      }
+      return false;
+    }
+    module2.exports = arraySome;
+  }
+});
+
+// node_modules/lodash/_equalArrays.js
+var require_equalArrays = __commonJS({
+  "node_modules/lodash/_equalArrays.js"(exports2, module2) {
+    var SetCache = require_SetCache();
+    var arraySome = require_arraySome();
+    var cacheHas = require_cacheHas();
+    var COMPARE_PARTIAL_FLAG = 1;
+    var COMPARE_UNORDERED_FLAG = 2;
+    function equalArrays(array, other, bitmask, customizer, equalFunc, stack2) {
+      var isPartial = bitmask & COMPARE_PARTIAL_FLAG, arrLength = array.length, othLength = other.length;
+      if (arrLength != othLength && !(isPartial && othLength > arrLength)) {
+        return false;
+      }
+      var arrStacked = stack2.get(array);
+      var othStacked = stack2.get(other);
+      if (arrStacked && othStacked) {
+        return arrStacked == other && othStacked == array;
+      }
+      var index = -1, result = true, seen = bitmask & COMPARE_UNORDERED_FLAG ? new SetCache() : void 0;
+      stack2.set(array, other);
+      stack2.set(other, array);
+      while (++index < arrLength) {
+        var arrValue = array[index], othValue = other[index];
+        if (customizer) {
+          var compared = isPartial ? customizer(othValue, arrValue, index, other, array, stack2) : customizer(arrValue, othValue, index, array, other, stack2);
+        }
+        if (compared !== void 0) {
+          if (compared) {
+            continue;
+          }
+          result = false;
+          break;
+        }
+        if (seen) {
+          if (!arraySome(other, function(othValue2, othIndex) {
+            if (!cacheHas(seen, othIndex) && (arrValue === othValue2 || equalFunc(arrValue, othValue2, bitmask, customizer, stack2))) {
+              return seen.push(othIndex);
+            }
+          })) {
+            result = false;
+            break;
+          }
+        } else if (!(arrValue === othValue || equalFunc(arrValue, othValue, bitmask, customizer, stack2))) {
+          result = false;
+          break;
+        }
+      }
+      stack2["delete"](array);
+      stack2["delete"](other);
+      return result;
+    }
+    module2.exports = equalArrays;
+  }
+});
+
+// node_modules/lodash/_mapToArray.js
+var require_mapToArray = __commonJS({
+  "node_modules/lodash/_mapToArray.js"(exports2, module2) {
+    function mapToArray(map) {
+      var index = -1, result = Array(map.size);
+      map.forEach(function(value, key) {
+        result[++index] = [key, value];
+      });
+      return result;
+    }
+    module2.exports = mapToArray;
+  }
+});
+
+// node_modules/lodash/_setToArray.js
+var require_setToArray = __commonJS({
+  "node_modules/lodash/_setToArray.js"(exports2, module2) {
+    function setToArray(set) {
+      var index = -1, result = Array(set.size);
+      set.forEach(function(value) {
+        result[++index] = value;
+      });
+      return result;
+    }
+    module2.exports = setToArray;
+  }
+});
+
+// node_modules/lodash/_equalByTag.js
+var require_equalByTag = __commonJS({
+  "node_modules/lodash/_equalByTag.js"(exports2, module2) {
+    var Symbol2 = require_Symbol();
+    var Uint8Array2 = require_Uint8Array();
+    var eq = require_eq();
+    var equalArrays = require_equalArrays();
+    var mapToArray = require_mapToArray();
+    var setToArray = require_setToArray();
+    var COMPARE_PARTIAL_FLAG = 1;
+    var COMPARE_UNORDERED_FLAG = 2;
+    var boolTag = "[object Boolean]";
+    var dateTag = "[object Date]";
+    var errorTag = "[object Error]";
+    var mapTag = "[object Map]";
+    var numberTag = "[object Number]";
+    var regexpTag = "[object RegExp]";
+    var setTag = "[object Set]";
+    var stringTag = "[object String]";
+    var symbolTag = "[object Symbol]";
+    var arrayBufferTag = "[object ArrayBuffer]";
+    var dataViewTag = "[object DataView]";
+    var symbolProto = Symbol2 ? Symbol2.prototype : void 0;
+    var symbolValueOf = symbolProto ? symbolProto.valueOf : void 0;
+    function equalByTag(object, other, tag, bitmask, customizer, equalFunc, stack2) {
+      switch (tag) {
+        case dataViewTag:
+          if (object.byteLength != other.byteLength || object.byteOffset != other.byteOffset) {
+            return false;
+          }
+          object = object.buffer;
+          other = other.buffer;
+        case arrayBufferTag:
+          if (object.byteLength != other.byteLength || !equalFunc(new Uint8Array2(object), new Uint8Array2(other))) {
+            return false;
+          }
+          return true;
+        case boolTag:
+        case dateTag:
+        case numberTag:
+          return eq(+object, +other);
+        case errorTag:
+          return object.name == other.name && object.message == other.message;
+        case regexpTag:
+        case stringTag:
+          return object == other + "";
+        case mapTag:
+          var convert = mapToArray;
+        case setTag:
+          var isPartial = bitmask & COMPARE_PARTIAL_FLAG;
+          convert || (convert = setToArray);
+          if (object.size != other.size && !isPartial) {
+            return false;
+          }
+          var stacked = stack2.get(object);
+          if (stacked) {
+            return stacked == other;
+          }
+          bitmask |= COMPARE_UNORDERED_FLAG;
+          stack2.set(object, other);
+          var result = equalArrays(convert(object), convert(other), bitmask, customizer, equalFunc, stack2);
+          stack2["delete"](object);
+          return result;
+        case symbolTag:
+          if (symbolValueOf) {
+            return symbolValueOf.call(object) == symbolValueOf.call(other);
+          }
+      }
+      return false;
+    }
+    module2.exports = equalByTag;
+  }
+});
+
+// node_modules/lodash/_equalObjects.js
+var require_equalObjects = __commonJS({
+  "node_modules/lodash/_equalObjects.js"(exports2, module2) {
+    var getAllKeys = require_getAllKeys();
+    var COMPARE_PARTIAL_FLAG = 1;
+    var objectProto = Object.prototype;
+    var hasOwnProperty = objectProto.hasOwnProperty;
+    function equalObjects(object, other, bitmask, customizer, equalFunc, stack2) {
+      var isPartial = bitmask & COMPARE_PARTIAL_FLAG, objProps = getAllKeys(object), objLength = objProps.length, othProps = getAllKeys(other), othLength = othProps.length;
+      if (objLength != othLength && !isPartial) {
+        return false;
+      }
+      var index = objLength;
+      while (index--) {
+        var key = objProps[index];
+        if (!(isPartial ? key in other : hasOwnProperty.call(other, key))) {
+          return false;
+        }
+      }
+      var objStacked = stack2.get(object);
+      var othStacked = stack2.get(other);
+      if (objStacked && othStacked) {
+        return objStacked == other && othStacked == object;
+      }
+      var result = true;
+      stack2.set(object, other);
+      stack2.set(other, object);
+      var skipCtor = isPartial;
+      while (++index < objLength) {
+        key = objProps[index];
+        var objValue = object[key], othValue = other[key];
+        if (customizer) {
+          var compared = isPartial ? customizer(othValue, objValue, key, other, object, stack2) : customizer(objValue, othValue, key, object, other, stack2);
+        }
+        if (!(compared === void 0 ? objValue === othValue || equalFunc(objValue, othValue, bitmask, customizer, stack2) : compared)) {
+          result = false;
+          break;
+        }
+        skipCtor || (skipCtor = key == "constructor");
+      }
+      if (result && !skipCtor) {
+        var objCtor = object.constructor, othCtor = other.constructor;
+        if (objCtor != othCtor && ("constructor" in object && "constructor" in other) && !(typeof objCtor == "function" && objCtor instanceof objCtor && typeof othCtor == "function" && othCtor instanceof othCtor)) {
+          result = false;
+        }
+      }
+      stack2["delete"](object);
+      stack2["delete"](other);
+      return result;
+    }
+    module2.exports = equalObjects;
+  }
+});
+
+// node_modules/lodash/_baseIsEqualDeep.js
+var require_baseIsEqualDeep = __commonJS({
+  "node_modules/lodash/_baseIsEqualDeep.js"(exports2, module2) {
+    var Stack = require_Stack();
+    var equalArrays = require_equalArrays();
+    var equalByTag = require_equalByTag();
+    var equalObjects = require_equalObjects();
+    var getTag = require_getTag();
+    var isArray = require_isArray();
+    var isBuffer = require_isBuffer();
+    var isTypedArray = require_isTypedArray();
+    var COMPARE_PARTIAL_FLAG = 1;
+    var argsTag = "[object Arguments]";
+    var arrayTag = "[object Array]";
+    var objectTag = "[object Object]";
+    var objectProto = Object.prototype;
+    var hasOwnProperty = objectProto.hasOwnProperty;
+    function baseIsEqualDeep(object, other, bitmask, customizer, equalFunc, stack2) {
+      var objIsArr = isArray(object), othIsArr = isArray(other), objTag = objIsArr ? arrayTag : getTag(object), othTag = othIsArr ? arrayTag : getTag(other);
+      objTag = objTag == argsTag ? objectTag : objTag;
+      othTag = othTag == argsTag ? objectTag : othTag;
+      var objIsObj = objTag == objectTag, othIsObj = othTag == objectTag, isSameTag = objTag == othTag;
+      if (isSameTag && isBuffer(object)) {
+        if (!isBuffer(other)) {
+          return false;
+        }
+        objIsArr = true;
+        objIsObj = false;
+      }
+      if (isSameTag && !objIsObj) {
+        stack2 || (stack2 = new Stack());
+        return objIsArr || isTypedArray(object) ? equalArrays(object, other, bitmask, customizer, equalFunc, stack2) : equalByTag(object, other, objTag, bitmask, customizer, equalFunc, stack2);
+      }
+      if (!(bitmask & COMPARE_PARTIAL_FLAG)) {
+        var objIsWrapped = objIsObj && hasOwnProperty.call(object, "__wrapped__"), othIsWrapped = othIsObj && hasOwnProperty.call(other, "__wrapped__");
+        if (objIsWrapped || othIsWrapped) {
+          var objUnwrapped = objIsWrapped ? object.value() : object, othUnwrapped = othIsWrapped ? other.value() : other;
+          stack2 || (stack2 = new Stack());
+          return equalFunc(objUnwrapped, othUnwrapped, bitmask, customizer, stack2);
+        }
+      }
+      if (!isSameTag) {
+        return false;
+      }
+      stack2 || (stack2 = new Stack());
+      return equalObjects(object, other, bitmask, customizer, equalFunc, stack2);
+    }
+    module2.exports = baseIsEqualDeep;
+  }
+});
+
+// node_modules/lodash/_baseIsEqual.js
+var require_baseIsEqual = __commonJS({
+  "node_modules/lodash/_baseIsEqual.js"(exports2, module2) {
+    var baseIsEqualDeep = require_baseIsEqualDeep();
+    var isObjectLike = require_isObjectLike();
+    function baseIsEqual(value, other, bitmask, customizer, stack2) {
+      if (value === other) {
+        return true;
+      }
+      if (value == null || other == null || !isObjectLike(value) && !isObjectLike(other)) {
+        return value !== value && other !== other;
+      }
+      return baseIsEqualDeep(value, other, bitmask, customizer, baseIsEqual, stack2);
+    }
+    module2.exports = baseIsEqual;
+  }
+});
+
+// node_modules/lodash/_baseIsMatch.js
+var require_baseIsMatch = __commonJS({
+  "node_modules/lodash/_baseIsMatch.js"(exports2, module2) {
+    var Stack = require_Stack();
+    var baseIsEqual = require_baseIsEqual();
+    var COMPARE_PARTIAL_FLAG = 1;
+    var COMPARE_UNORDERED_FLAG = 2;
+    function baseIsMatch(object, source, matchData, customizer) {
+      var index = matchData.length, length = index, noCustomizer = !customizer;
+      if (object == null) {
+        return !length;
+      }
+      object = Object(object);
+      while (index--) {
+        var data = matchData[index];
+        if (noCustomizer && data[2] ? data[1] !== object[data[0]] : !(data[0] in object)) {
+          return false;
+        }
+      }
+      while (++index < length) {
+        data = matchData[index];
+        var key = data[0], objValue = object[key], srcValue = data[1];
+        if (noCustomizer && data[2]) {
+          if (objValue === void 0 && !(key in object)) {
+            return false;
+          }
+        } else {
+          var stack2 = new Stack();
+          if (customizer) {
+            var result = customizer(objValue, srcValue, key, object, source, stack2);
+          }
+          if (!(result === void 0 ? baseIsEqual(srcValue, objValue, COMPARE_PARTIAL_FLAG | COMPARE_UNORDERED_FLAG, customizer, stack2) : result)) {
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+    module2.exports = baseIsMatch;
+  }
+});
+
+// node_modules/lodash/_isStrictComparable.js
+var require_isStrictComparable = __commonJS({
+  "node_modules/lodash/_isStrictComparable.js"(exports2, module2) {
+    var isObject = require_isObject();
+    function isStrictComparable(value) {
+      return value === value && !isObject(value);
+    }
+    module2.exports = isStrictComparable;
+  }
+});
+
+// node_modules/lodash/_getMatchData.js
+var require_getMatchData = __commonJS({
+  "node_modules/lodash/_getMatchData.js"(exports2, module2) {
+    var isStrictComparable = require_isStrictComparable();
+    var keys = require_keys();
+    function getMatchData(object) {
+      var result = keys(object), length = result.length;
+      while (length--) {
+        var key = result[length], value = object[key];
+        result[length] = [key, value, isStrictComparable(value)];
+      }
+      return result;
+    }
+    module2.exports = getMatchData;
+  }
+});
+
+// node_modules/lodash/_matchesStrictComparable.js
+var require_matchesStrictComparable = __commonJS({
+  "node_modules/lodash/_matchesStrictComparable.js"(exports2, module2) {
+    function matchesStrictComparable(key, srcValue) {
+      return function(object) {
+        if (object == null) {
+          return false;
+        }
+        return object[key] === srcValue && (srcValue !== void 0 || key in Object(object));
+      };
+    }
+    module2.exports = matchesStrictComparable;
+  }
+});
+
+// node_modules/lodash/_baseMatches.js
+var require_baseMatches = __commonJS({
+  "node_modules/lodash/_baseMatches.js"(exports2, module2) {
+    var baseIsMatch = require_baseIsMatch();
+    var getMatchData = require_getMatchData();
+    var matchesStrictComparable = require_matchesStrictComparable();
+    function baseMatches(source) {
+      var matchData = getMatchData(source);
+      if (matchData.length == 1 && matchData[0][2]) {
+        return matchesStrictComparable(matchData[0][0], matchData[0][1]);
+      }
+      return function(object) {
+        return object === source || baseIsMatch(object, source, matchData);
+      };
+    }
+    module2.exports = baseMatches;
+  }
+});
+
+// node_modules/lodash/_baseHasIn.js
+var require_baseHasIn = __commonJS({
+  "node_modules/lodash/_baseHasIn.js"(exports2, module2) {
+    function baseHasIn(object, key) {
+      return object != null && key in Object(object);
+    }
+    module2.exports = baseHasIn;
+  }
+});
+
+// node_modules/lodash/_hasPath.js
+var require_hasPath = __commonJS({
+  "node_modules/lodash/_hasPath.js"(exports2, module2) {
+    var castPath = require_castPath();
+    var isArguments = require_isArguments();
+    var isArray = require_isArray();
+    var isIndex = require_isIndex();
+    var isLength = require_isLength();
+    var toKey = require_toKey();
+    function hasPath(object, path, hasFunc) {
+      path = castPath(path, object);
+      var index = -1, length = path.length, result = false;
+      while (++index < length) {
+        var key = toKey(path[index]);
+        if (!(result = object != null && hasFunc(object, key))) {
+          break;
+        }
+        object = object[key];
+      }
+      if (result || ++index != length) {
+        return result;
+      }
+      length = object == null ? 0 : object.length;
+      return !!length && isLength(length) && isIndex(key, length) && (isArray(object) || isArguments(object));
+    }
+    module2.exports = hasPath;
+  }
+});
+
+// node_modules/lodash/hasIn.js
+var require_hasIn = __commonJS({
+  "node_modules/lodash/hasIn.js"(exports2, module2) {
+    var baseHasIn = require_baseHasIn();
+    var hasPath = require_hasPath();
+    function hasIn(object, path) {
+      return object != null && hasPath(object, path, baseHasIn);
+    }
+    module2.exports = hasIn;
+  }
+});
+
+// node_modules/lodash/_baseMatchesProperty.js
+var require_baseMatchesProperty = __commonJS({
+  "node_modules/lodash/_baseMatchesProperty.js"(exports2, module2) {
+    var baseIsEqual = require_baseIsEqual();
+    var get = require_get();
+    var hasIn = require_hasIn();
+    var isKey = require_isKey();
+    var isStrictComparable = require_isStrictComparable();
+    var matchesStrictComparable = require_matchesStrictComparable();
+    var toKey = require_toKey();
+    var COMPARE_PARTIAL_FLAG = 1;
+    var COMPARE_UNORDERED_FLAG = 2;
+    function baseMatchesProperty(path, srcValue) {
+      if (isKey(path) && isStrictComparable(srcValue)) {
+        return matchesStrictComparable(toKey(path), srcValue);
+      }
+      return function(object) {
+        var objValue = get(object, path);
+        return objValue === void 0 && objValue === srcValue ? hasIn(object, path) : baseIsEqual(srcValue, objValue, COMPARE_PARTIAL_FLAG | COMPARE_UNORDERED_FLAG);
+      };
+    }
+    module2.exports = baseMatchesProperty;
+  }
+});
+
+// node_modules/lodash/_baseProperty.js
+var require_baseProperty = __commonJS({
+  "node_modules/lodash/_baseProperty.js"(exports2, module2) {
+    function baseProperty(key) {
+      return function(object) {
+        return object == null ? void 0 : object[key];
+      };
+    }
+    module2.exports = baseProperty;
+  }
+});
+
+// node_modules/lodash/_basePropertyDeep.js
+var require_basePropertyDeep = __commonJS({
+  "node_modules/lodash/_basePropertyDeep.js"(exports2, module2) {
+    var baseGet = require_baseGet();
+    function basePropertyDeep(path) {
+      return function(object) {
+        return baseGet(object, path);
+      };
+    }
+    module2.exports = basePropertyDeep;
+  }
+});
+
+// node_modules/lodash/property.js
+var require_property = __commonJS({
+  "node_modules/lodash/property.js"(exports2, module2) {
+    var baseProperty = require_baseProperty();
+    var basePropertyDeep = require_basePropertyDeep();
+    var isKey = require_isKey();
+    var toKey = require_toKey();
+    function property(path) {
+      return isKey(path) ? baseProperty(toKey(path)) : basePropertyDeep(path);
+    }
+    module2.exports = property;
+  }
+});
+
+// node_modules/lodash/_baseIteratee.js
+var require_baseIteratee = __commonJS({
+  "node_modules/lodash/_baseIteratee.js"(exports2, module2) {
+    var baseMatches = require_baseMatches();
+    var baseMatchesProperty = require_baseMatchesProperty();
+    var identity = require_identity();
+    var isArray = require_isArray();
+    var property = require_property();
+    function baseIteratee(value) {
+      if (typeof value == "function") {
+        return value;
+      }
+      if (value == null) {
+        return identity;
+      }
+      if (typeof value == "object") {
+        return isArray(value) ? baseMatchesProperty(value[0], value[1]) : baseMatches(value);
+      }
+      return property(value);
+    }
+    module2.exports = baseIteratee;
+  }
+});
+
+// node_modules/lodash/_createBaseFor.js
+var require_createBaseFor = __commonJS({
+  "node_modules/lodash/_createBaseFor.js"(exports2, module2) {
+    function createBaseFor(fromRight) {
+      return function(object, iteratee, keysFunc) {
+        var index = -1, iterable = Object(object), props = keysFunc(object), length = props.length;
+        while (length--) {
+          var key = props[fromRight ? length : ++index];
+          if (iteratee(iterable[key], key, iterable) === false) {
+            break;
+          }
+        }
+        return object;
+      };
+    }
+    module2.exports = createBaseFor;
+  }
+});
+
+// node_modules/lodash/_baseFor.js
+var require_baseFor = __commonJS({
+  "node_modules/lodash/_baseFor.js"(exports2, module2) {
+    var createBaseFor = require_createBaseFor();
+    var baseFor = createBaseFor();
+    module2.exports = baseFor;
+  }
+});
+
+// node_modules/lodash/_baseForOwn.js
+var require_baseForOwn = __commonJS({
+  "node_modules/lodash/_baseForOwn.js"(exports2, module2) {
+    var baseFor = require_baseFor();
+    var keys = require_keys();
+    function baseForOwn(object, iteratee) {
+      return object && baseFor(object, iteratee, keys);
+    }
+    module2.exports = baseForOwn;
+  }
+});
+
+// node_modules/lodash/_createBaseEach.js
+var require_createBaseEach = __commonJS({
+  "node_modules/lodash/_createBaseEach.js"(exports2, module2) {
+    var isArrayLike = require_isArrayLike();
+    function createBaseEach(eachFunc, fromRight) {
+      return function(collection, iteratee) {
+        if (collection == null) {
+          return collection;
+        }
+        if (!isArrayLike(collection)) {
+          return eachFunc(collection, iteratee);
+        }
+        var length = collection.length, index = fromRight ? length : -1, iterable = Object(collection);
+        while (fromRight ? index-- : ++index < length) {
+          if (iteratee(iterable[index], index, iterable) === false) {
+            break;
+          }
+        }
+        return collection;
+      };
+    }
+    module2.exports = createBaseEach;
+  }
+});
+
+// node_modules/lodash/_baseEach.js
+var require_baseEach = __commonJS({
+  "node_modules/lodash/_baseEach.js"(exports2, module2) {
+    var baseForOwn = require_baseForOwn();
+    var createBaseEach = require_createBaseEach();
+    var baseEach = createBaseEach(baseForOwn);
+    module2.exports = baseEach;
+  }
+});
+
+// node_modules/lodash/_baseMap.js
+var require_baseMap = __commonJS({
+  "node_modules/lodash/_baseMap.js"(exports2, module2) {
+    var baseEach = require_baseEach();
+    var isArrayLike = require_isArrayLike();
+    function baseMap(collection, iteratee) {
+      var index = -1, result = isArrayLike(collection) ? Array(collection.length) : [];
+      baseEach(collection, function(value, key, collection2) {
+        result[++index] = iteratee(value, key, collection2);
+      });
+      return result;
+    }
+    module2.exports = baseMap;
+  }
+});
+
+// node_modules/lodash/_baseSortBy.js
+var require_baseSortBy = __commonJS({
+  "node_modules/lodash/_baseSortBy.js"(exports2, module2) {
+    function baseSortBy(array, comparer) {
+      var length = array.length;
+      array.sort(comparer);
+      while (length--) {
+        array[length] = array[length].value;
+      }
+      return array;
+    }
+    module2.exports = baseSortBy;
+  }
+});
+
+// node_modules/lodash/_compareAscending.js
+var require_compareAscending = __commonJS({
+  "node_modules/lodash/_compareAscending.js"(exports2, module2) {
+    var isSymbol = require_isSymbol();
+    function compareAscending(value, other) {
+      if (value !== other) {
+        var valIsDefined = value !== void 0, valIsNull = value === null, valIsReflexive = value === value, valIsSymbol = isSymbol(value);
+        var othIsDefined = other !== void 0, othIsNull = other === null, othIsReflexive = other === other, othIsSymbol = isSymbol(other);
+        if (!othIsNull && !othIsSymbol && !valIsSymbol && value > other || valIsSymbol && othIsDefined && othIsReflexive && !othIsNull && !othIsSymbol || valIsNull && othIsDefined && othIsReflexive || !valIsDefined && othIsReflexive || !valIsReflexive) {
+          return 1;
+        }
+        if (!valIsNull && !valIsSymbol && !othIsSymbol && value < other || othIsSymbol && valIsDefined && valIsReflexive && !valIsNull && !valIsSymbol || othIsNull && valIsDefined && valIsReflexive || !othIsDefined && valIsReflexive || !othIsReflexive) {
+          return -1;
+        }
+      }
+      return 0;
+    }
+    module2.exports = compareAscending;
+  }
+});
+
+// node_modules/lodash/_compareMultiple.js
+var require_compareMultiple = __commonJS({
+  "node_modules/lodash/_compareMultiple.js"(exports2, module2) {
+    var compareAscending = require_compareAscending();
+    function compareMultiple(object, other, orders) {
+      var index = -1, objCriteria = object.criteria, othCriteria = other.criteria, length = objCriteria.length, ordersLength = orders.length;
+      while (++index < length) {
+        var result = compareAscending(objCriteria[index], othCriteria[index]);
+        if (result) {
+          if (index >= ordersLength) {
+            return result;
+          }
+          var order = orders[index];
+          return result * (order == "desc" ? -1 : 1);
+        }
+      }
+      return object.index - other.index;
+    }
+    module2.exports = compareMultiple;
+  }
+});
+
+// node_modules/lodash/_baseOrderBy.js
+var require_baseOrderBy = __commonJS({
+  "node_modules/lodash/_baseOrderBy.js"(exports2, module2) {
+    var arrayMap = require_arrayMap();
+    var baseGet = require_baseGet();
+    var baseIteratee = require_baseIteratee();
+    var baseMap = require_baseMap();
+    var baseSortBy = require_baseSortBy();
+    var baseUnary = require_baseUnary();
+    var compareMultiple = require_compareMultiple();
+    var identity = require_identity();
+    var isArray = require_isArray();
+    function baseOrderBy(collection, iteratees, orders) {
+      if (iteratees.length) {
+        iteratees = arrayMap(iteratees, function(iteratee) {
+          if (isArray(iteratee)) {
+            return function(value) {
+              return baseGet(value, iteratee.length === 1 ? iteratee[0] : iteratee);
+            };
+          }
+          return iteratee;
+        });
+      } else {
+        iteratees = [identity];
+      }
+      var index = -1;
+      iteratees = arrayMap(iteratees, baseUnary(baseIteratee));
+      var result = baseMap(collection, function(value, key, collection2) {
+        var criteria = arrayMap(iteratees, function(iteratee) {
+          return iteratee(value);
+        });
+        return { "criteria": criteria, "index": ++index, "value": value };
+      });
+      return baseSortBy(result, function(object, other) {
+        return compareMultiple(object, other, orders);
+      });
+    }
+    module2.exports = baseOrderBy;
+  }
+});
+
+// node_modules/lodash/sortBy.js
+var require_sortBy = __commonJS({
+  "node_modules/lodash/sortBy.js"(exports2, module2) {
+    var baseFlatten = require_baseFlatten();
+    var baseOrderBy = require_baseOrderBy();
+    var baseRest = require_baseRest();
+    var isIterateeCall = require_isIterateeCall();
+    var sortBy = baseRest(function(collection, iteratees) {
+      if (collection == null) {
+        return [];
+      }
+      var length = iteratees.length;
+      if (length > 1 && isIterateeCall(collection, iteratees[0], iteratees[1])) {
+        iteratees = [];
+      } else if (length > 2 && isIterateeCall(iteratees[0], iteratees[1], iteratees[2])) {
+        iteratees = [iteratees[0]];
+      }
+      return baseOrderBy(collection, baseFlatten(iteratees, 1), []);
+    });
+    module2.exports = sortBy;
+  }
+});
+
+// node_modules/knex/lib/migrations/util/is-module-type.js
+var require_is_module_type = __commonJS({
+  "node_modules/knex/lib/migrations/util/is-module-type.js"(exports2, module2) {
+    var { readFile } = require_fs();
+    module2.exports = async function isModuleType(filepath) {
+      if (process.env.npm_package_json) {
+        const packageJson = JSON.parse(await readFile(process.env.npm_package_json, "utf-8"));
+        if (packageJson.type === "module") {
+          return true;
+        }
+      }
+      return process.env.npm_package_type === "module" || filepath.endsWith(".mjs");
+    };
+  }
+});
+
+// node_modules/knex/lib/migrations/util/import-file.js
+var require_import_file = __commonJS({
+  "node_modules/knex/lib/migrations/util/import-file.js"(exports2, module2) {
+    var isModuleType = require_is_module_type();
+    module2.exports = async function importFile(filepath) {
+      return await isModuleType(filepath) ? import(require("url").pathToFileURL(filepath)) : require(filepath);
+    };
+  }
+});
+
+// node_modules/knex/lib/migrations/migrate/sources/fs-migrations.js
+var require_fs_migrations = __commonJS({
+  "node_modules/knex/lib/migrations/migrate/sources/fs-migrations.js"(exports2, module2) {
+    var path = require("path");
+    var sortBy = require_sortBy();
+    var { readdir } = require_fs();
+    var DEFAULT_LOAD_EXTENSIONS = Object.freeze([
+      ".co",
+      ".coffee",
+      ".eg",
+      ".iced",
+      ".js",
+      ".cjs",
+      ".litcoffee",
+      ".ls",
+      ".ts"
+    ]);
+    var FsMigrations = class {
+      constructor(migrationDirectories, sortDirsSeparately, loadExtensions) {
+        this.sortDirsSeparately = sortDirsSeparately;
+        if (!Array.isArray(migrationDirectories)) {
+          migrationDirectories = [migrationDirectories];
+        }
+        this.migrationsPaths = migrationDirectories;
+        this.loadExtensions = loadExtensions || DEFAULT_LOAD_EXTENSIONS;
+      }
+      getMigrations(loadExtensions) {
+        const readMigrationsPromises = this.migrationsPaths.map((configDir) => {
+          const absoluteDir = path.resolve(process.cwd(), configDir);
+          return readdir(absoluteDir).then((files) => ({
+            files,
+            configDir,
+            absoluteDir
+          }));
+        });
+        return Promise.all(readMigrationsPromises).then((allMigrations) => {
+          const migrations = allMigrations.reduce((acc, migrationDirectory) => {
+            if (this.sortDirsSeparately) {
+              migrationDirectory.files = migrationDirectory.files.sort();
+            }
+            migrationDirectory.files.forEach((file) => acc.push({ file, directory: migrationDirectory.configDir }));
+            return acc;
+          }, []);
+          if (this.sortDirsSeparately) {
+            return filterMigrations(this, migrations, loadExtensions || this.loadExtensions);
+          }
+          return filterMigrations(this, sortBy(migrations, "file"), loadExtensions || this.loadExtensions);
+        });
+      }
+      getMigrationName(migration) {
+        return migration.file;
+      }
+      getMigration(migration) {
+        const absoluteDir = path.resolve(process.cwd(), migration.directory);
+        const _path = path.join(absoluteDir, migration.file);
+        const importFile = require_import_file();
+        return importFile(_path);
+      }
+    };
+    function filterMigrations(migrationSource, migrations, loadExtensions) {
+      return migrations.filter((migration) => {
+        const migrationName = migrationSource.getMigrationName(migration);
+        const extension = path.extname(migrationName);
+        return loadExtensions.includes(extension);
+      });
+    }
+    module2.exports = {
+      DEFAULT_LOAD_EXTENSIONS,
+      FsMigrations
+    };
+  }
+});
+
+// node_modules/colorette/index.cjs
+var require_colorette = __commonJS({
+  "node_modules/colorette/index.cjs"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var tty = require("tty");
+    function _interopNamespace(e) {
+      if (e && e.__esModule)
+        return e;
+      var n = Object.create(null);
+      if (e) {
+        Object.keys(e).forEach(function(k) {
+          if (k !== "default") {
+            var d = Object.getOwnPropertyDescriptor(e, k);
+            Object.defineProperty(n, k, d.get ? d : {
+              enumerable: true,
+              get: function() {
+                return e[k];
+              }
+            });
+          }
+        });
+      }
+      n["default"] = e;
+      return Object.freeze(n);
+    }
+    var tty__namespace = /* @__PURE__ */ _interopNamespace(tty);
+    var env = process.env || {};
+    var argv = process.argv || [];
+    var isDisabled = "NO_COLOR" in env || argv.includes("--no-color");
+    var isForced = "FORCE_COLOR" in env || argv.includes("--color");
+    var isWindows = process.platform === "win32";
+    var isCompatibleTerminal = tty__namespace && tty__namespace.isatty && tty__namespace.isatty(1) && env.TERM && env.TERM !== "dumb";
+    var isCI = "CI" in env && ("GITHUB_ACTIONS" in env || "GITLAB_CI" in env || "CIRCLECI" in env);
+    var isColorSupported = !isDisabled && (isForced || isWindows || isCompatibleTerminal || isCI);
+    var replaceClose = (index, string, close, replace, head = string.substring(0, index) + replace, tail = string.substring(index + close.length), next = tail.indexOf(close)) => head + (next < 0 ? tail : replaceClose(next, tail, close, replace));
+    var clearBleed = (index, string, open, close, replace) => index < 0 ? open + string + close : open + replaceClose(index, string, close, replace) + close;
+    var filterEmpty = (open, close, replace = open, at = open.length + 1) => (string) => string || !(string === "" || string === void 0) ? clearBleed(("" + string).indexOf(close, at), string, open, close, replace) : "";
+    var init = (open, close, replace) => filterEmpty(`[${open}m`, `[${close}m`, replace);
+    var colors = {
+      reset: init(0, 0),
+      bold: init(1, 22, "[22m[1m"),
+      dim: init(2, 22, "[22m[2m"),
+      italic: init(3, 23),
+      underline: init(4, 24),
+      inverse: init(7, 27),
+      hidden: init(8, 28),
+      strikethrough: init(9, 29),
+      black: init(30, 39),
+      red: init(31, 39),
+      green: init(32, 39),
+      yellow: init(33, 39),
+      blue: init(34, 39),
+      magenta: init(35, 39),
+      cyan: init(36, 39),
+      white: init(37, 39),
+      gray: init(90, 39),
+      bgBlack: init(40, 49),
+      bgRed: init(41, 49),
+      bgGreen: init(42, 49),
+      bgYellow: init(43, 49),
+      bgBlue: init(44, 49),
+      bgMagenta: init(45, 49),
+      bgCyan: init(46, 49),
+      bgWhite: init(47, 49),
+      blackBright: init(90, 39),
+      redBright: init(91, 39),
+      greenBright: init(92, 39),
+      yellowBright: init(93, 39),
+      blueBright: init(94, 39),
+      magentaBright: init(95, 39),
+      cyanBright: init(96, 39),
+      whiteBright: init(97, 39),
+      bgBlackBright: init(100, 49),
+      bgRedBright: init(101, 49),
+      bgGreenBright: init(102, 49),
+      bgYellowBright: init(103, 49),
+      bgBlueBright: init(104, 49),
+      bgMagentaBright: init(105, 49),
+      bgCyanBright: init(106, 49),
+      bgWhiteBright: init(107, 49)
+    };
+    var none = (any) => any;
+    var createColors = ({ useColor = isColorSupported } = {}) => useColor ? colors : Object.keys(colors).reduce((colors2, key) => ({ ...colors2, [key]: none }), {});
+    var {
+      reset,
+      bold,
+      dim,
+      italic,
+      underline,
+      inverse,
+      hidden,
+      strikethrough,
+      black,
+      red,
+      green,
+      yellow,
+      blue,
+      magenta,
+      cyan,
+      white,
+      gray,
+      bgBlack,
+      bgRed,
+      bgGreen,
+      bgYellow,
+      bgBlue,
+      bgMagenta,
+      bgCyan,
+      bgWhite,
+      blackBright,
+      redBright,
+      greenBright,
+      yellowBright,
+      blueBright,
+      magentaBright,
+      cyanBright,
+      whiteBright,
+      bgBlackBright,
+      bgRedBright,
+      bgGreenBright,
+      bgYellowBright,
+      bgBlueBright,
+      bgMagentaBright,
+      bgCyanBright,
+      bgWhiteBright
+    } = createColors();
+    exports2.bgBlack = bgBlack;
+    exports2.bgBlackBright = bgBlackBright;
+    exports2.bgBlue = bgBlue;
+    exports2.bgBlueBright = bgBlueBright;
+    exports2.bgCyan = bgCyan;
+    exports2.bgCyanBright = bgCyanBright;
+    exports2.bgGreen = bgGreen;
+    exports2.bgGreenBright = bgGreenBright;
+    exports2.bgMagenta = bgMagenta;
+    exports2.bgMagentaBright = bgMagentaBright;
+    exports2.bgRed = bgRed;
+    exports2.bgRedBright = bgRedBright;
+    exports2.bgWhite = bgWhite;
+    exports2.bgWhiteBright = bgWhiteBright;
+    exports2.bgYellow = bgYellow;
+    exports2.bgYellowBright = bgYellowBright;
+    exports2.black = black;
+    exports2.blackBright = blackBright;
+    exports2.blue = blue;
+    exports2.blueBright = blueBright;
+    exports2.bold = bold;
+    exports2.createColors = createColors;
+    exports2.cyan = cyan;
+    exports2.cyanBright = cyanBright;
+    exports2.dim = dim;
+    exports2.gray = gray;
+    exports2.green = green;
+    exports2.greenBright = greenBright;
+    exports2.hidden = hidden;
+    exports2.inverse = inverse;
+    exports2.isColorSupported = isColorSupported;
+    exports2.italic = italic;
+    exports2.magenta = magenta;
+    exports2.magentaBright = magentaBright;
+    exports2.red = red;
+    exports2.redBright = redBright;
+    exports2.reset = reset;
+    exports2.strikethrough = strikethrough;
+    exports2.underline = underline;
+    exports2.white = white;
+    exports2.whiteBright = whiteBright;
+    exports2.yellow = yellow;
+    exports2.yellowBright = yellowBright;
+  }
+});
+
+// node_modules/knex/lib/util/is.js
+var require_is = __commonJS({
+  "node_modules/knex/lib/util/is.js"(exports2, module2) {
+    function isString(value) {
+      return typeof value === "string";
+    }
+    function isNumber(value) {
+      return typeof value === "number";
+    }
+    function isBoolean(value) {
+      return typeof value === "boolean";
+    }
+    function isUndefined(value) {
+      return typeof value === "undefined";
+    }
+    function isObject(value) {
+      return typeof value === "object" && value !== null;
+    }
+    function isFunction(value) {
+      return typeof value === "function";
+    }
+    module2.exports = {
+      isString,
+      isNumber,
+      isBoolean,
+      isUndefined,
+      isObject,
+      isFunction
+    };
+  }
+});
+
+// node_modules/knex/lib/logger.js
+var require_logger = __commonJS({
+  "node_modules/knex/lib/logger.js"(exports2, module2) {
+    var color = require_colorette();
+    var { inspect } = require("util");
+    var { isString, isFunction } = require_is();
+    var Logger = class {
+      constructor(config = {}) {
+        const {
+          log: {
+            debug,
+            warn,
+            error,
+            deprecate: deprecate2,
+            inspectionDepth,
+            enableColors
+          } = {}
+        } = config;
+        this._inspectionDepth = inspectionDepth || 5;
+        this._enableColors = resolveIsEnabledColors(enableColors);
+        this._debug = debug;
+        this._warn = warn;
+        this._error = error;
+        this._deprecate = deprecate2;
+      }
+      _log(message2, userFn, colorFn) {
+        if (userFn != null && !isFunction(userFn)) {
+          throw new TypeError("Extensions to knex logger must be functions!");
+        }
+        if (isFunction(userFn)) {
+          userFn(message2);
+          return;
+        }
+        if (!isString(message2)) {
+          message2 = inspect(message2, {
+            depth: this._inspectionDepth,
+            colors: this._enableColors
+          });
+        }
+        console.log(colorFn ? colorFn(message2) : message2);
+      }
+      debug(message2) {
+        this._log(message2, this._debug);
+      }
+      warn(message2) {
+        this._log(message2, this._warn, color.yellow);
+      }
+      error(message2) {
+        this._log(message2, this._error, color.red);
+      }
+      deprecate(method, alternative) {
+        const message2 = `${method} is deprecated, please use ${alternative}`;
+        this._log(message2, this._deprecate, color.yellow);
+      }
+    };
+    function resolveIsEnabledColors(enableColorsParam) {
+      if (enableColorsParam != null) {
+        return enableColorsParam;
+      }
+      if (process && process.stdout) {
+        return process.stdout.isTTY;
+      }
+      return false;
+    }
+    module2.exports = Logger;
+  }
+});
+
+// node_modules/knex/lib/migrations/migrate/configuration-merger.js
+var require_configuration_merger = __commonJS({
+  "node_modules/knex/lib/migrations/migrate/configuration-merger.js"(exports2, module2) {
+    var {
+      FsMigrations,
+      DEFAULT_LOAD_EXTENSIONS
+    } = require_fs_migrations();
+    var Logger = require_logger();
+    var defaultLogger = new Logger();
+    var CONFIG_DEFAULT = Object.freeze({
+      extension: "js",
+      loadExtensions: DEFAULT_LOAD_EXTENSIONS,
+      tableName: "knex_migrations",
+      schemaName: null,
+      directory: "./migrations",
+      disableTransactions: false,
+      disableMigrationsListValidation: false,
+      sortDirsSeparately: false
+    });
+    function getMergedConfig(config, currentConfig, logger = defaultLogger) {
+      const mergedConfig = Object.assign({}, CONFIG_DEFAULT, currentConfig || {}, config);
+      if (config && (config.directory || config.sortDirsSeparately !== void 0 || config.loadExtensions)) {
+        if (config.migrationSource) {
+          logger.warn("FS-related option specified for migration configuration. This resets migrationSource to default FsMigrations");
+        }
+        mergedConfig.migrationSource = null;
+      }
+      if (!mergedConfig.migrationSource) {
+        mergedConfig.migrationSource = new FsMigrations(mergedConfig.directory, mergedConfig.sortDirsSeparately, mergedConfig.loadExtensions);
+      }
+      return mergedConfig;
+    }
+    module2.exports = {
+      getMergedConfig
+    };
+  }
+});
+
+// node_modules/knex/lib/migrations/util/timestamp.js
+var require_timestamp = __commonJS({
+  "node_modules/knex/lib/migrations/util/timestamp.js"(exports2, module2) {
+    function yyyymmddhhmmss() {
+      const now = new Date();
+      return now.getUTCFullYear().toString() + (now.getUTCMonth() + 1).toString().padStart(2, "0") + now.getUTCDate().toString().padStart(2, "0") + now.getUTCHours().toString().padStart(2, "0") + now.getUTCMinutes().toString().padStart(2, "0") + now.getUTCSeconds().toString().padStart(2, "0");
+    }
+    module2.exports = { yyyymmddhhmmss };
+  }
+});
+
+// node_modules/knex/lib/migrations/migrate/MigrationGenerator.js
+var require_MigrationGenerator = __commonJS({
+  "node_modules/knex/lib/migrations/migrate/MigrationGenerator.js"(exports2, module2) {
+    var path = require("path");
+    var { writeJsFileUsingTemplate } = require_template2();
+    var { getMergedConfig } = require_configuration_merger();
+    var { ensureDirectoryExists } = require_fs();
+    var { yyyymmddhhmmss } = require_timestamp();
+    var MigrationGenerator = class {
+      constructor(migrationConfig, logger) {
+        this.config = getMergedConfig(migrationConfig, void 0, logger);
+      }
+      async make(name, config, logger) {
+        this.config = getMergedConfig(config, this.config, logger);
+        if (!name) {
+          return Promise.reject(new Error("A name must be specified for the generated migration"));
+        }
+        await this._ensureFolder();
+        const createdMigrationFilePath = await this._writeNewMigration(name);
+        return createdMigrationFilePath;
+      }
+      _ensureFolder() {
+        const dirs = this._absoluteConfigDirs();
+        const promises = dirs.map(ensureDirectoryExists);
+        return Promise.all(promises);
+      }
+      _getStubPath() {
+        return this.config.stub || path.join(__dirname, "stub", this.config.extension + ".stub");
+      }
+      _getNewMigrationName(name) {
+        if (name[0] === "-")
+          name = name.slice(1);
+        return yyyymmddhhmmss() + "_" + name + "." + this.config.extension;
+      }
+      _getNewMigrationPath(name) {
+        const fileName = this._getNewMigrationName(name);
+        const dirs = this._absoluteConfigDirs();
+        const dir = dirs.slice(-1)[0];
+        return path.join(dir, fileName);
+      }
+      async _writeNewMigration(name) {
+        const migrationPath = this._getNewMigrationPath(name);
+        await writeJsFileUsingTemplate(migrationPath, this._getStubPath(), { variable: "d" }, this.config.variables || {});
+        return migrationPath;
+      }
+      _absoluteConfigDirs() {
+        const directories = Array.isArray(this.config.directory) ? this.config.directory : [this.config.directory];
+        return directories.map((directory) => {
+          if (!directory) {
+            console.warn("Failed to resolve config file, knex cannot determine where to generate migrations");
+          }
+          return path.resolve(process.cwd(), directory);
+        });
+      }
+    };
+    module2.exports = MigrationGenerator;
+  }
+});
+
+// node_modules/knex/lib/migrations/migrate/Migrator.js
+var require_Migrator = __commonJS({
+  "node_modules/knex/lib/migrations/migrate/Migrator.js"(exports2, module2) {
+    var differenceWith = require_differenceWith();
+    var get = require_get();
+    var isEmpty = require_isEmpty();
+    var max = require_max();
+    var { inherits } = require("util");
+    var {
+      getLockTableName,
+      getTable,
+      getTableName
+    } = require_table_resolver();
+    var { getSchemaBuilder } = require_table_creator();
+    var migrationListResolver = require_migration_list_resolver();
+    var MigrationGenerator = require_MigrationGenerator();
+    var { getMergedConfig } = require_configuration_merger();
+    var { isBoolean, isFunction } = require_is();
+    function LockError(msg) {
+      this.name = "MigrationLocked";
+      this.message = msg;
+    }
+    inherits(LockError, Error);
+    var Migrator = class {
+      constructor(knex2) {
+        if (isFunction(knex2)) {
+          if (!knex2.isTransaction) {
+            this.knex = knex2.withUserParams({
+              ...knex2.userParams
+            });
+          } else {
+            this.knex = knex2;
+          }
+        } else {
+          this.knex = Object.assign({}, knex2);
+          this.knex.userParams = this.knex.userParams || {};
+        }
+        this.config = getMergedConfig(this.knex.client.config.migrations, void 0, this.knex.client.logger);
+        this.generator = new MigrationGenerator(this.knex.client.config.migrations, this.knex.client.logger);
+        this._activeMigration = {
+          fileName: null
+        };
+      }
+      async latest(config) {
+        this._disableProcessing();
+        this.config = getMergedConfig(config, this.config, this.knex.client.logger);
+        const allAndCompleted = await migrationListResolver.listAllAndCompleted(this.config, this.knex);
+        if (!this.config.disableMigrationsListValidation) {
+          validateMigrationList(this.config.migrationSource, allAndCompleted);
+        }
+        const [all, completed] = allAndCompleted;
+        const migrations = getNewMigrations(this.config.migrationSource, all, completed);
+        const transactionForAll = !this.config.disableTransactions && !(await Promise.all(migrations.map(async (migration) => {
+          const migrationContents = await this.config.migrationSource.getMigration(migration);
+          return !this._useTransaction(migrationContents);
+        }))).some((isTransactionUsed) => isTransactionUsed);
+        if (transactionForAll) {
+          return this.knex.transaction((trx) => {
+            return this._runBatch(migrations, "up", trx);
+          });
+        } else {
+          return this._runBatch(migrations, "up");
+        }
+      }
+      async up(config) {
+        this._disableProcessing();
+        this.config = getMergedConfig(config, this.config, this.knex.client.logger);
+        const allAndCompleted = await migrationListResolver.listAllAndCompleted(this.config, this.knex);
+        if (!this.config.disableMigrationsListValidation) {
+          validateMigrationList(this.config.migrationSource, allAndCompleted);
+        }
+        const [all, completed] = allAndCompleted;
+        const newMigrations = getNewMigrations(this.config.migrationSource, all, completed);
+        let migrationToRun;
+        const name = this.config.name;
+        if (name) {
+          if (!completed.includes(name)) {
+            migrationToRun = newMigrations.find((migration) => {
+              return this.config.migrationSource.getMigrationName(migration) === name;
+            });
+            if (!migrationToRun) {
+              throw new Error(`Migration "${name}" not found.`);
+            }
+          }
+        } else {
+          migrationToRun = newMigrations[0];
+        }
+        const useTransaction = !migrationToRun || this._useTransaction(await this.config.migrationSource.getMigration(migrationToRun));
+        const migrationsToRun = [];
+        if (migrationToRun) {
+          migrationsToRun.push(migrationToRun);
+        }
+        const transactionForAll = !this.config.disableTransactions && (!migrationToRun || useTransaction);
+        if (transactionForAll) {
+          return await this.knex.transaction((trx) => {
+            return this._runBatch(migrationsToRun, "up", trx);
+          });
+        } else {
+          return await this._runBatch(migrationsToRun, "up");
+        }
+      }
+      rollback(config, all = false) {
+        this._disableProcessing();
+        return new Promise((resolve, reject) => {
+          try {
+            this.config = getMergedConfig(config, this.config, this.knex.client.logger);
+          } catch (e) {
+            reject(e);
+          }
+          migrationListResolver.listAllAndCompleted(this.config, this.knex).then((value) => {
+            if (!this.config.disableMigrationsListValidation) {
+              validateMigrationList(this.config.migrationSource, value);
+            }
+            return value;
+          }).then((val) => {
+            const [allMigrations, completedMigrations] = val;
+            return all ? allMigrations.filter((migration) => {
+              return completedMigrations.includes(this.config.migrationSource.getMigrationName(migration));
+            }).reverse() : this._getLastBatch(val);
+          }).then((migrations) => {
+            return this._runBatch(migrations, "down");
+          }).then(resolve, reject);
+        });
+      }
+      down(config) {
+        this._disableProcessing();
+        this.config = getMergedConfig(config, this.config, this.knex.client.logger);
+        return migrationListResolver.listAllAndCompleted(this.config, this.knex).then((value) => {
+          if (!this.config.disableMigrationsListValidation) {
+            validateMigrationList(this.config.migrationSource, value);
+          }
+          return value;
+        }).then(([all, completed]) => {
+          const completedMigrations = all.filter((migration) => {
+            return completed.includes(this.config.migrationSource.getMigrationName(migration));
+          });
+          let migrationToRun;
+          const name = this.config.name;
+          if (name) {
+            migrationToRun = completedMigrations.find((migration) => {
+              return this.config.migrationSource.getMigrationName(migration) === name;
+            });
+            if (!migrationToRun) {
+              throw new Error(`Migration "${name}" was not run.`);
+            }
+          } else {
+            migrationToRun = completedMigrations[completedMigrations.length - 1];
+          }
+          const migrationsToRun = [];
+          if (migrationToRun) {
+            migrationsToRun.push(migrationToRun);
+          }
+          return this._runBatch(migrationsToRun, "down");
+        });
+      }
+      status(config) {
+        this._disableProcessing();
+        this.config = getMergedConfig(config, this.config, this.knex.client.logger);
+        return Promise.all([
+          getTable(this.knex, this.config.tableName, this.config.schemaName).select("*"),
+          migrationListResolver.listAll(this.config.migrationSource)
+        ]).then(([db, code]) => db.length - code.length);
+      }
+      currentVersion(config) {
+        this._disableProcessing();
+        this.config = getMergedConfig(config, this.config, this.knex.client.logger);
+        return migrationListResolver.listCompleted(this.config.tableName, this.config.schemaName, this.knex).then((completed) => {
+          const val = max(completed.map((value) => value.split("_")[0]));
+          return val === void 0 ? "none" : val;
+        });
+      }
+      async list(config) {
+        this._disableProcessing();
+        this.config = getMergedConfig(config, this.config, this.knex.client.logger);
+        const [all, completed] = await migrationListResolver.listAllAndCompleted(this.config, this.knex);
+        if (!this.config.disableMigrationsListValidation) {
+          validateMigrationList(this.config.migrationSource, [all, completed]);
+        }
+        const newMigrations = getNewMigrations(this.config.migrationSource, all, completed);
+        return [completed, newMigrations];
+      }
+      async forceFreeMigrationsLock(config) {
+        this.config = getMergedConfig(config, this.config, this.knex.client.logger);
+        const { schemaName, tableName } = this.config;
+        const lockTableName = getLockTableName(tableName);
+        const { knex: knex2 } = this;
+        const getLockTable = () => getTable(knex2, lockTableName, schemaName);
+        const tableExists = await getSchemaBuilder(knex2, schemaName).hasTable(lockTableName);
+        if (tableExists) {
+          await getLockTable().del();
+          await getLockTable().insert({
+            is_locked: 0
+          });
+        }
+      }
+      make(name, config) {
+        return this.generator.make(name, config, this.knex.client.logger);
+      }
+      _disableProcessing() {
+        if (this.knex.disableProcessing) {
+          this.knex.disableProcessing();
+        }
+      }
+      _lockMigrations(trx) {
+        const tableName = getLockTableName(this.config.tableName);
+        return getTable(this.knex, tableName, this.config.schemaName).transacting(trx).where("is_locked", "=", 0).update({ is_locked: 1 }).then((rowCount) => {
+          if (rowCount !== 1) {
+            throw new Error("Migration table is already locked");
+          }
+        });
+      }
+      _getLock(trx) {
+        const transact = trx ? (fn2) => fn2(trx) : (fn2) => this.knex.transaction(fn2);
+        return transact((trx2) => {
+          return this._lockMigrations(trx2);
+        }).catch((err) => {
+          throw new LockError(err.message);
+        });
+      }
+      _freeLock(trx = this.knex) {
+        const tableName = getLockTableName(this.config.tableName);
+        return getTable(trx, tableName, this.config.schemaName).update({
+          is_locked: 0
+        });
+      }
+      async _runBatch(migrations, direction, trx) {
+        const canGetLockInTransaction = this.knex.client.driverName !== "cockroachdb";
+        try {
+          await this._getLock(canGetLockInTransaction ? trx : void 0);
+          const completed = trx ? await migrationListResolver.listCompleted(this.config.tableName, this.config.schemaName, trx) : [];
+          migrations = getNewMigrations(this.config.migrationSource, migrations, completed);
+          await Promise.all(migrations.map(this._validateMigrationStructure.bind(this)));
+          let batchNo = await this._latestBatchNumber(trx);
+          if (direction === "up")
+            batchNo++;
+          const res = await this._waterfallBatch(batchNo, migrations, direction, trx);
+          await this._freeLock(canGetLockInTransaction ? trx : void 0);
+          return res;
+        } catch (error) {
+          let cleanupReady = Promise.resolve();
+          if (error instanceof LockError) {
+            this.knex.client.logger.warn(`Can't take lock to run migrations: ${error.message}`);
+            this.knex.client.logger.warn("If you are sure migrations are not running you can release the lock manually by running 'knex migrate:unlock'");
+          } else {
+            if (this._activeMigration.fileName) {
+              this.knex.client.logger.warn(`migration file "${this._activeMigration.fileName}" failed`);
+            }
+            this.knex.client.logger.warn(`migration failed with error: ${error.message}`);
+            cleanupReady = this._freeLock(canGetLockInTransaction ? trx : void 0);
+          }
+          try {
+            await cleanupReady;
+          } catch (e) {
+          }
+          throw error;
+        }
+      }
+      async _validateMigrationStructure(migration) {
+        const migrationName = this.config.migrationSource.getMigrationName(migration);
+        const migrationContent = await this.config.migrationSource.getMigration(migration);
+        if (typeof migrationContent.up !== "function" || typeof migrationContent.down !== "function") {
+          throw new Error(`Invalid migration: ${migrationName} must have both an up and down function`);
+        }
+        return migration;
+      }
+      async _getLastBatch([allMigrations]) {
+        const { tableName, schemaName } = this.config;
+        const migrationNames = await getTable(this.knex, tableName, schemaName).where("batch", function(qb) {
+          qb.max("batch").from(getTableName(tableName, schemaName));
+        }).orderBy("id", "desc");
+        const lastBatchMigrations = migrationNames.map((migration) => {
+          return allMigrations.find((entry) => {
+            return this.config.migrationSource.getMigrationName(entry) === migration.name;
+          });
+        });
+        return Promise.all(lastBatchMigrations);
+      }
+      _latestBatchNumber(trx = this.knex) {
+        return trx.from(getTableName(this.config.tableName, this.config.schemaName)).max("batch as max_batch").then((obj) => obj[0].max_batch || 0);
+      }
+      _useTransaction(migrationContent, allTransactionsDisabled) {
+        const singleTransactionValue = get(migrationContent, "config.transaction");
+        return isBoolean(singleTransactionValue) ? singleTransactionValue : !allTransactionsDisabled;
+      }
+      _waterfallBatch(batchNo, migrations, direction, trx) {
+        const trxOrKnex = trx || this.knex;
+        const { tableName, schemaName, disableTransactions } = this.config;
+        let current = Promise.resolve();
+        const log2 = [];
+        migrations.forEach((migration) => {
+          const name = this.config.migrationSource.getMigrationName(migration);
+          this._activeMigration.fileName = name;
+          const migrationContent = this.config.migrationSource.getMigration(migration);
+          current = current.then(async () => await migrationContent).then((migrationContent2) => {
+            this._activeMigration.fileName = name;
+            if (!trx && this._useTransaction(migrationContent2, disableTransactions)) {
+              this.knex.enableProcessing();
+              return this._transaction(this.knex, migrationContent2, direction, name);
+            }
+            trxOrKnex.enableProcessing();
+            return checkPromise(this.knex.client.logger, migrationContent2[direction](trxOrKnex), name);
+          }).then(() => {
+            trxOrKnex.disableProcessing();
+            this.knex.disableProcessing();
+            log2.push(name);
+            if (direction === "up") {
+              return trxOrKnex.into(getTableName(tableName, schemaName)).insert({
+                name,
+                batch: batchNo,
+                migration_time: new Date()
+              });
+            }
+            if (direction === "down") {
+              return trxOrKnex.from(getTableName(tableName, schemaName)).where({ name }).del();
+            }
+          });
+        });
+        return current.then(() => [batchNo, log2]);
+      }
+      _transaction(knex2, migrationContent, direction, name) {
+        return knex2.transaction((trx) => {
+          return checkPromise(knex2.client.logger, migrationContent[direction](trx), name, () => {
+            trx.commit();
+          });
+        });
+      }
+    };
+    function validateMigrationList(migrationSource, migrations) {
+      const [all, completed] = migrations;
+      const diff = getMissingMigrations(migrationSource, completed, all);
+      if (!isEmpty(diff)) {
+        throw new Error(`The migration directory is corrupt, the following files are missing: ${diff.join(", ")}`);
+      }
+    }
+    function getMissingMigrations(migrationSource, completed, all) {
+      return differenceWith(completed, all, (completedMigration, allMigration) => {
+        return completedMigration === migrationSource.getMigrationName(allMigration);
+      });
+    }
+    function getNewMigrations(migrationSource, all, completed) {
+      return differenceWith(all, completed, (allMigration, completedMigration) => {
+        return completedMigration === migrationSource.getMigrationName(allMigration);
+      });
+    }
+    function checkPromise(logger, migrationPromise, name, commitFn) {
+      if (!migrationPromise || typeof migrationPromise.then !== "function") {
+        logger.warn(`migration ${name} did not return a promise`);
+        if (commitFn) {
+          commitFn();
+        }
+      }
+      return migrationPromise;
+    }
+    module2.exports = {
+      Migrator
+    };
+  }
+});
+
+// node_modules/lodash/assignIn.js
+var require_assignIn = __commonJS({
+  "node_modules/lodash/assignIn.js"(exports2, module2) {
+    var copyObject = require_copyObject();
+    var createAssigner = require_createAssigner();
+    var keysIn = require_keysIn();
+    var assignIn = createAssigner(function(object, source) {
+      copyObject(source, keysIn(source), object);
+    });
+    module2.exports = assignIn;
+  }
+});
+
+// node_modules/lodash/extend.js
+var require_extend = __commonJS({
+  "node_modules/lodash/extend.js"(exports2, module2) {
+    module2.exports = require_assignIn();
+  }
+});
+
+// node_modules/lodash/isString.js
+var require_isString = __commonJS({
+  "node_modules/lodash/isString.js"(exports2, module2) {
+    var baseGetTag = require_baseGetTag();
+    var isArray = require_isArray();
+    var isObjectLike = require_isObjectLike();
+    var stringTag = "[object String]";
+    function isString(value) {
+      return typeof value == "string" || !isArray(value) && isObjectLike(value) && baseGetTag(value) == stringTag;
+    }
+    module2.exports = isString;
+  }
+});
+
+// node_modules/lodash/_trimmedEndIndex.js
+var require_trimmedEndIndex = __commonJS({
+  "node_modules/lodash/_trimmedEndIndex.js"(exports2, module2) {
+    var reWhitespace = /\s/;
+    function trimmedEndIndex(string) {
+      var index = string.length;
+      while (index-- && reWhitespace.test(string.charAt(index))) {
+      }
+      return index;
+    }
+    module2.exports = trimmedEndIndex;
+  }
+});
+
+// node_modules/lodash/_baseTrim.js
+var require_baseTrim = __commonJS({
+  "node_modules/lodash/_baseTrim.js"(exports2, module2) {
+    var trimmedEndIndex = require_trimmedEndIndex();
+    var reTrimStart = /^\s+/;
+    function baseTrim(string) {
+      return string ? string.slice(0, trimmedEndIndex(string) + 1).replace(reTrimStart, "") : string;
+    }
+    module2.exports = baseTrim;
+  }
+});
+
+// node_modules/lodash/toNumber.js
+var require_toNumber = __commonJS({
+  "node_modules/lodash/toNumber.js"(exports2, module2) {
+    var baseTrim = require_baseTrim();
+    var isObject = require_isObject();
+    var isSymbol = require_isSymbol();
+    var NAN = 0 / 0;
+    var reIsBadHex = /^[-+]0x[0-9a-f]+$/i;
+    var reIsBinary = /^0b[01]+$/i;
+    var reIsOctal = /^0o[0-7]+$/i;
+    var freeParseInt = parseInt;
+    function toNumber(value) {
+      if (typeof value == "number") {
+        return value;
+      }
+      if (isSymbol(value)) {
+        return NAN;
+      }
+      if (isObject(value)) {
+        var other = typeof value.valueOf == "function" ? value.valueOf() : value;
+        value = isObject(other) ? other + "" : other;
+      }
+      if (typeof value != "string") {
+        return value === 0 ? value : +value;
+      }
+      value = baseTrim(value);
+      var isBinary = reIsBinary.test(value);
+      return isBinary || reIsOctal.test(value) ? freeParseInt(value.slice(2), isBinary ? 2 : 8) : reIsBadHex.test(value) ? NAN : +value;
+    }
+    module2.exports = toNumber;
+  }
+});
+
+// node_modules/lodash/toFinite.js
+var require_toFinite = __commonJS({
+  "node_modules/lodash/toFinite.js"(exports2, module2) {
+    var toNumber = require_toNumber();
+    var INFINITY = 1 / 0;
+    var MAX_INTEGER = 17976931348623157e292;
+    function toFinite(value) {
+      if (!value) {
+        return value === 0 ? value : 0;
+      }
+      value = toNumber(value);
+      if (value === INFINITY || value === -INFINITY) {
+        var sign = value < 0 ? -1 : 1;
+        return sign * MAX_INTEGER;
+      }
+      return value === value ? value : 0;
+    }
+    module2.exports = toFinite;
+  }
+});
+
+// node_modules/lodash/toInteger.js
+var require_toInteger = __commonJS({
+  "node_modules/lodash/toInteger.js"(exports2, module2) {
+    var toFinite = require_toFinite();
+    function toInteger(value) {
+      var result = toFinite(value), remainder = result % 1;
+      return result === result ? remainder ? result - remainder : result : 0;
+    }
+    module2.exports = toInteger;
+  }
+});
+
+// node_modules/lodash/values.js
+var require_values = __commonJS({
+  "node_modules/lodash/values.js"(exports2, module2) {
+    var baseValues = require_baseValues();
+    var keys = require_keys();
+    function values(object) {
+      return object == null ? [] : baseValues(object, keys(object));
+    }
+    module2.exports = values;
+  }
+});
+
+// node_modules/lodash/includes.js
+var require_includes = __commonJS({
+  "node_modules/lodash/includes.js"(exports2, module2) {
+    var baseIndexOf = require_baseIndexOf();
+    var isArrayLike = require_isArrayLike();
+    var isString = require_isString();
+    var toInteger = require_toInteger();
+    var values = require_values();
+    var nativeMax = Math.max;
+    function includes(collection, value, fromIndex, guard) {
+      collection = isArrayLike(collection) ? collection : values(collection);
+      fromIndex = fromIndex && !guard ? toInteger(fromIndex) : 0;
+      var length = collection.length;
+      if (fromIndex < 0) {
+        fromIndex = nativeMax(length + fromIndex, 0);
+      }
+      return isString(collection) ? fromIndex <= length && collection.indexOf(value, fromIndex) > -1 : !!length && baseIndexOf(collection, value, fromIndex) > -1;
+    }
+    module2.exports = includes;
+  }
+});
+
+// node_modules/knex/lib/migrations/seed/Seeder.js
+var require_Seeder = __commonJS({
+  "node_modules/knex/lib/migrations/seed/Seeder.js"(exports2, module2) {
+    var path = require("path");
+    var flatten = require_flatten();
+    var extend = require_extend();
+    var includes = require_includes();
+    var { ensureDirectoryExists, getFilepathsInFolder } = require_fs();
+    var { writeJsFileUsingTemplate } = require_template2();
+    var { yyyymmddhhmmss } = require_timestamp();
+    var filterByLoadExtensions = (extensions) => (value) => {
+      const extension = path.extname(value);
+      return includes(extensions, extension);
+    };
+    var Seeder = class {
+      constructor(knex2) {
+        this.knex = knex2;
+        this.config = this.setConfig(knex2.client.config.seeds);
+      }
+      async run(config) {
+        this.config = this.setConfig(config);
+        let files = await this._listAll();
+        if (config && config.specific) {
+          files = files.filter((file) => path.basename(file) === config.specific);
+          if (files.length === 0) {
+            throw new Error(`Invalid argument provided: the specific seed "${config.specific}" does not exist.`);
+          }
+        }
+        return this._runSeeds(files);
+      }
+      async make(name, config) {
+        this.config = this.setConfig(config);
+        if (!name)
+          throw new Error("A name must be specified for the generated seed");
+        await this._ensureFolder(config);
+        const seedPath = await this._writeNewSeed(name);
+        return seedPath;
+      }
+      async _listAll(config) {
+        this.config = this.setConfig(config);
+        const { loadExtensions, recursive } = this.config;
+        const seeds = flatten(await Promise.all(this._absoluteConfigDirs().map((d) => getFilepathsInFolder(d, recursive))));
+        if (this.config.sortDirsSeparately) {
+          return seeds.filter(filterByLoadExtensions(loadExtensions));
+        } else {
+          return seeds.filter(filterByLoadExtensions(loadExtensions)).sort();
+        }
+      }
+      _ensureFolder() {
+        const dirs = this._absoluteConfigDirs();
+        const promises = dirs.map(ensureDirectoryExists);
+        return Promise.all(promises);
+      }
+      _runSeeds(seeds) {
+        seeds.forEach((seed) => this._validateSeedStructure(seed));
+        return this._waterfallBatch(seeds);
+      }
+      async _validateSeedStructure(filepath) {
+        const importFile = require_import_file();
+        const seed = await importFile(filepath);
+        if (typeof seed.seed !== "function") {
+          throw new Error(`Invalid seed file: ${filepath} must have a seed function`);
+        }
+        return filepath;
+      }
+      _getStubPath() {
+        return this.config.stub || path.join(__dirname, "stub", this.config.extension + ".stub");
+      }
+      _getNewStubFileName(name) {
+        if (name[0] === "-")
+          name = name.slice(1);
+        if (this.config.timestampFilenamePrefix === true) {
+          name = `${yyyymmddhhmmss()}_${name}`;
+        }
+        return `${name}.${this.config.extension}`;
+      }
+      _getNewStubFilePath(name) {
+        const fileName = this._getNewStubFileName(name);
+        const dirs = this._absoluteConfigDirs();
+        const dir = dirs.slice(-1)[0];
+        return path.join(dir, fileName);
+      }
+      async _writeNewSeed(name) {
+        const seedPath = this._getNewStubFilePath(name);
+        await writeJsFileUsingTemplate(seedPath, this._getStubPath(), { variable: "d" }, this.config.variables || {});
+        return seedPath;
+      }
+      async _waterfallBatch(seeds) {
+        const { knex: knex2 } = this;
+        const log2 = [];
+        for (const seedPath of seeds) {
+          const importFile = require_import_file();
+          const seed = await importFile(seedPath);
+          try {
+            await seed.seed(knex2);
+            log2.push(seedPath);
+          } catch (originalError) {
+            const error = new Error(`Error while executing "${seedPath}" seed: ${originalError.message}`);
+            error.original = originalError;
+            error.stack = error.stack.split("\n").slice(0, 2).join("\n") + "\n" + originalError.stack;
+            throw error;
+          }
+        }
+        return [log2];
+      }
+      _absoluteConfigDirs() {
+        const directories = Array.isArray(this.config.directory) ? this.config.directory : [this.config.directory];
+        return directories.map((directory) => {
+          if (!directory) {
+            console.warn("Failed to resolve config file, knex cannot determine where to run or make seeds");
+          }
+          return path.resolve(process.cwd(), directory);
+        });
+      }
+      setConfig(config) {
+        return extend({
+          extension: "js",
+          directory: "./seeds",
+          loadExtensions: [
+            ".co",
+            ".coffee",
+            ".eg",
+            ".iced",
+            ".js",
+            ".litcoffee",
+            ".ls",
+            ".ts",
+            ".cjs"
+          ],
+          timestampFilenamePrefix: false,
+          sortDirsSeparately: false,
+          recursive: false
+        }, this.config || {}, config);
+      }
+    };
+    module2.exports = Seeder;
+  }
+});
+
+// node_modules/knex/lib/knex-builder/FunctionHelper.js
+var require_FunctionHelper = __commonJS({
+  "node_modules/knex/lib/knex-builder/FunctionHelper.js"(exports2, module2) {
+    var FunctionHelper = class {
+      constructor(client) {
+        this.client = client;
+      }
+      now(precision) {
+        if (typeof precision === "number") {
+          return this.client.raw(`CURRENT_TIMESTAMP(${precision})`);
+        }
+        return this.client.raw("CURRENT_TIMESTAMP");
+      }
+    };
+    module2.exports = FunctionHelper;
+  }
+});
+
+// node_modules/knex/lib/query/method-constants.js
+var require_method_constants = __commonJS({
+  "node_modules/knex/lib/query/method-constants.js"(exports2, module2) {
+    module2.exports = [
+      "with",
+      "withRecursive",
+      "select",
+      "as",
+      "columns",
+      "column",
+      "from",
+      "fromJS",
+      "into",
+      "withSchema",
+      "table",
+      "distinct",
+      "join",
+      "joinRaw",
+      "innerJoin",
+      "leftJoin",
+      "leftOuterJoin",
+      "rightJoin",
+      "rightOuterJoin",
+      "outerJoin",
+      "fullOuterJoin",
+      "crossJoin",
+      "where",
+      "andWhere",
+      "orWhere",
+      "whereNot",
+      "orWhereNot",
+      "whereRaw",
+      "whereWrapped",
+      "havingWrapped",
+      "orWhereRaw",
+      "whereExists",
+      "orWhereExists",
+      "whereNotExists",
+      "orWhereNotExists",
+      "whereIn",
+      "orWhereIn",
+      "whereNotIn",
+      "orWhereNotIn",
+      "whereNull",
+      "orWhereNull",
+      "whereNotNull",
+      "orWhereNotNull",
+      "whereBetween",
+      "whereNotBetween",
+      "andWhereBetween",
+      "andWhereNotBetween",
+      "orWhereBetween",
+      "orWhereNotBetween",
+      "groupBy",
+      "groupByRaw",
+      "orderBy",
+      "orderByRaw",
+      "union",
+      "unionAll",
+      "intersect",
+      "having",
+      "havingRaw",
+      "orHaving",
+      "orHavingRaw",
+      "offset",
+      "limit",
+      "count",
+      "countDistinct",
+      "min",
+      "max",
+      "sum",
+      "sumDistinct",
+      "avg",
+      "avgDistinct",
+      "increment",
+      "decrement",
+      "first",
+      "debug",
+      "pluck",
+      "clearSelect",
+      "clearWhere",
+      "clearGroup",
+      "clearOrder",
+      "clearHaving",
+      "insert",
+      "update",
+      "returning",
+      "del",
+      "delete",
+      "truncate",
+      "transacting",
+      "connection"
+    ];
+  }
+});
+
+// node_modules/lodash/_assignMergeValue.js
+var require_assignMergeValue = __commonJS({
+  "node_modules/lodash/_assignMergeValue.js"(exports2, module2) {
+    var baseAssignValue = require_baseAssignValue();
+    var eq = require_eq();
+    function assignMergeValue(object, key, value) {
+      if (value !== void 0 && !eq(object[key], value) || value === void 0 && !(key in object)) {
+        baseAssignValue(object, key, value);
+      }
+    }
+    module2.exports = assignMergeValue;
+  }
+});
+
+// node_modules/lodash/_safeGet.js
+var require_safeGet = __commonJS({
+  "node_modules/lodash/_safeGet.js"(exports2, module2) {
+    function safeGet(object, key) {
+      if (key === "constructor" && typeof object[key] === "function") {
+        return;
+      }
+      if (key == "__proto__") {
+        return;
+      }
+      return object[key];
+    }
+    module2.exports = safeGet;
+  }
+});
+
+// node_modules/lodash/toPlainObject.js
+var require_toPlainObject = __commonJS({
+  "node_modules/lodash/toPlainObject.js"(exports2, module2) {
+    var copyObject = require_copyObject();
+    var keysIn = require_keysIn();
+    function toPlainObject(value) {
+      return copyObject(value, keysIn(value));
+    }
+    module2.exports = toPlainObject;
+  }
+});
+
+// node_modules/lodash/_baseMergeDeep.js
+var require_baseMergeDeep = __commonJS({
+  "node_modules/lodash/_baseMergeDeep.js"(exports2, module2) {
+    var assignMergeValue = require_assignMergeValue();
+    var cloneBuffer = require_cloneBuffer();
+    var cloneTypedArray = require_cloneTypedArray();
+    var copyArray = require_copyArray();
+    var initCloneObject = require_initCloneObject();
+    var isArguments = require_isArguments();
+    var isArray = require_isArray();
+    var isArrayLikeObject = require_isArrayLikeObject();
+    var isBuffer = require_isBuffer();
+    var isFunction = require_isFunction();
+    var isObject = require_isObject();
+    var isPlainObject = require_isPlainObject();
+    var isTypedArray = require_isTypedArray();
+    var safeGet = require_safeGet();
+    var toPlainObject = require_toPlainObject();
+    function baseMergeDeep(object, source, key, srcIndex, mergeFunc, customizer, stack2) {
+      var objValue = safeGet(object, key), srcValue = safeGet(source, key), stacked = stack2.get(srcValue);
+      if (stacked) {
+        assignMergeValue(object, key, stacked);
+        return;
+      }
+      var newValue = customizer ? customizer(objValue, srcValue, key + "", object, source, stack2) : void 0;
+      var isCommon = newValue === void 0;
+      if (isCommon) {
+        var isArr = isArray(srcValue), isBuff = !isArr && isBuffer(srcValue), isTyped = !isArr && !isBuff && isTypedArray(srcValue);
+        newValue = srcValue;
+        if (isArr || isBuff || isTyped) {
+          if (isArray(objValue)) {
+            newValue = objValue;
+          } else if (isArrayLikeObject(objValue)) {
+            newValue = copyArray(objValue);
+          } else if (isBuff) {
+            isCommon = false;
+            newValue = cloneBuffer(srcValue, true);
+          } else if (isTyped) {
+            isCommon = false;
+            newValue = cloneTypedArray(srcValue, true);
+          } else {
+            newValue = [];
+          }
+        } else if (isPlainObject(srcValue) || isArguments(srcValue)) {
+          newValue = objValue;
+          if (isArguments(objValue)) {
+            newValue = toPlainObject(objValue);
+          } else if (!isObject(objValue) || isFunction(objValue)) {
+            newValue = initCloneObject(srcValue);
+          }
+        } else {
+          isCommon = false;
+        }
+      }
+      if (isCommon) {
+        stack2.set(srcValue, newValue);
+        mergeFunc(newValue, srcValue, srcIndex, customizer, stack2);
+        stack2["delete"](srcValue);
+      }
+      assignMergeValue(object, key, newValue);
+    }
+    module2.exports = baseMergeDeep;
+  }
+});
+
+// node_modules/lodash/_baseMerge.js
+var require_baseMerge = __commonJS({
+  "node_modules/lodash/_baseMerge.js"(exports2, module2) {
+    var Stack = require_Stack();
+    var assignMergeValue = require_assignMergeValue();
+    var baseFor = require_baseFor();
+    var baseMergeDeep = require_baseMergeDeep();
+    var isObject = require_isObject();
+    var keysIn = require_keysIn();
+    var safeGet = require_safeGet();
+    function baseMerge(object, source, srcIndex, customizer, stack2) {
+      if (object === source) {
+        return;
+      }
+      baseFor(source, function(srcValue, key) {
+        stack2 || (stack2 = new Stack());
+        if (isObject(srcValue)) {
+          baseMergeDeep(object, source, key, srcIndex, baseMerge, customizer, stack2);
+        } else {
+          var newValue = customizer ? customizer(safeGet(object, key), srcValue, key + "", object, source, stack2) : void 0;
+          if (newValue === void 0) {
+            newValue = srcValue;
+          }
+          assignMergeValue(object, key, newValue);
+        }
+      }, keysIn);
+    }
+    module2.exports = baseMerge;
+  }
+});
+
+// node_modules/lodash/merge.js
+var require_merge = __commonJS({
+  "node_modules/lodash/merge.js"(exports2, module2) {
+    var baseMerge = require_baseMerge();
+    var createAssigner = require_createAssigner();
+    var merge = createAssigner(function(object, source, srcIndex) {
+      baseMerge(object, source, srcIndex);
+    });
+    module2.exports = merge;
+  }
+});
+
+// node_modules/lodash/_baseSlice.js
+var require_baseSlice = __commonJS({
+  "node_modules/lodash/_baseSlice.js"(exports2, module2) {
+    function baseSlice(array, start, end) {
+      var index = -1, length = array.length;
+      if (start < 0) {
+        start = -start > length ? 0 : length + start;
+      }
+      end = end > length ? length : end;
+      if (end < 0) {
+        end += length;
+      }
+      length = start > end ? 0 : end - start >>> 0;
+      start >>>= 0;
+      var result = Array(length);
+      while (++index < length) {
+        result[index] = array[index + start];
+      }
+      return result;
+    }
+    module2.exports = baseSlice;
+  }
+});
+
+// node_modules/lodash/chunk.js
+var require_chunk = __commonJS({
+  "node_modules/lodash/chunk.js"(exports2, module2) {
+    var baseSlice = require_baseSlice();
+    var isIterateeCall = require_isIterateeCall();
+    var toInteger = require_toInteger();
+    var nativeCeil = Math.ceil;
+    var nativeMax = Math.max;
+    function chunk(array, size, guard) {
+      if (guard ? isIterateeCall(array, size, guard) : size === void 0) {
+        size = 1;
+      } else {
+        size = nativeMax(toInteger(size), 0);
+      }
+      var length = array == null ? 0 : array.length;
+      if (!length || size < 1) {
+        return [];
+      }
+      var index = 0, resIndex = 0, result = Array(nativeCeil(length / size));
+      while (index < length) {
+        result[resIndex++] = baseSlice(array, index, index += size);
+      }
+      return result;
+    }
+    module2.exports = chunk;
+  }
+});
+
+// node_modules/knex/lib/execution/internal/delay.js
+var require_delay = __commonJS({
+  "node_modules/knex/lib/execution/internal/delay.js"(exports2, module2) {
+    module2.exports = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
+  }
+});
+
+// node_modules/knex/lib/execution/batch-insert.js
+var require_batch_insert = __commonJS({
+  "node_modules/knex/lib/execution/batch-insert.js"(exports2, module2) {
+    var chunk = require_chunk();
+    var flatten = require_flatten();
+    var delay = require_delay();
+    var { isNumber } = require_is();
+    function batchInsert(client, tableName, batch, chunkSize = 1e3) {
+      let returning = void 0;
+      let transaction = null;
+      if (!isNumber(chunkSize) || chunkSize < 1) {
+        throw new TypeError(`Invalid chunkSize: ${chunkSize}`);
+      }
+      if (!Array.isArray(batch)) {
+        throw new TypeError(`Invalid batch: Expected array, got ${typeof batch}`);
+      }
+      const chunks = chunk(batch, chunkSize);
+      const runInTransaction = (cb) => {
+        if (transaction) {
+          return cb(transaction);
+        }
+        return client.transaction(cb);
+      };
+      return Object.assign(Promise.resolve().then(async () => {
+        await delay(1);
+        return runInTransaction(async (tr) => {
+          const chunksResults = [];
+          for (const items of chunks) {
+            chunksResults.push(await tr(tableName).insert(items, returning));
+          }
+          return flatten(chunksResults);
+        });
+      }), {
+        returning(columns) {
+          returning = columns;
+          return this;
+        },
+        transacting(tr) {
+          transaction = tr;
+          return this;
+        }
+      });
+    }
+    module2.exports = batchInsert;
+  }
+});
+
+// node_modules/knex/lib/knex-builder/make-knex.js
+var require_make_knex = __commonJS({
+  "node_modules/knex/lib/knex-builder/make-knex.js"(exports2, module2) {
+    var { EventEmitter } = require("events");
+    var { Migrator } = require_Migrator();
+    var Seeder = require_Seeder();
+    var FunctionHelper = require_FunctionHelper();
+    var QueryInterface = require_method_constants();
+    var merge = require_merge();
+    var batchInsert = require_batch_insert();
+    var { isObject } = require_is();
+    var KNEX_PROPERTY_DEFINITIONS = {
+      client: {
+        get() {
+          return this.context.client;
+        },
+        set(client) {
+          this.context.client = client;
+        },
+        configurable: true
+      },
+      userParams: {
+        get() {
+          return this.context.userParams;
+        },
+        set(userParams) {
+          this.context.userParams = userParams;
+        },
+        configurable: true
+      },
+      schema: {
+        get() {
+          return this.client.schemaBuilder();
+        },
+        configurable: true
+      },
+      migrate: {
+        get() {
+          return new Migrator(this);
+        },
+        configurable: true
+      },
+      seed: {
+        get() {
+          return new Seeder(this);
+        },
+        configurable: true
+      },
+      fn: {
+        get() {
+          return new FunctionHelper(this.client);
+        },
+        configurable: true
+      }
+    };
+    var CONTEXT_METHODS = [
+      "raw",
+      "batchInsert",
+      "transaction",
+      "transactionProvider",
+      "initialize",
+      "destroy",
+      "ref",
+      "withUserParams",
+      "queryBuilder",
+      "disableProcessing",
+      "enableProcessing"
+    ];
+    for (const m of CONTEXT_METHODS) {
+      KNEX_PROPERTY_DEFINITIONS[m] = {
+        value: function(...args2) {
+          return this.context[m](...args2);
+        },
+        configurable: true
+      };
+    }
+    function makeKnex(client) {
+      function knex2(tableName, options) {
+        return createQueryBuilder(knex2.context, tableName, options);
+      }
+      redefineProperties(knex2, client);
+      return knex2;
+    }
+    function initContext(knexFn) {
+      const knexContext = knexFn.context || {};
+      Object.assign(knexContext, {
+        queryBuilder() {
+          return this.client.queryBuilder();
+        },
+        raw() {
+          return this.client.raw.apply(this.client, arguments);
+        },
+        batchInsert(table, batch, chunkSize = 1e3) {
+          return batchInsert(this, table, batch, chunkSize);
+        },
+        transaction(container, _config) {
+          if (!_config && isObject(container)) {
+            _config = container;
+            container = null;
+          }
+          const config = Object.assign({}, _config);
+          config.userParams = this.userParams || {};
+          if (config.doNotRejectOnRollback === void 0) {
+            config.doNotRejectOnRollback = true;
+          }
+          return this._transaction(container, config);
+        },
+        _transaction(container, config, outerTx = null) {
+          if (container) {
+            const trx = this.client.transaction(container, config, outerTx);
+            return trx;
+          } else {
+            return new Promise((resolve, reject) => {
+              this.client.transaction(resolve, config, outerTx).catch(reject);
+            });
+          }
+        },
+        transactionProvider(config) {
+          let trx;
+          return () => {
+            if (!trx) {
+              trx = this.transaction(void 0, config);
+            }
+            return trx;
+          };
+        },
+        initialize(config) {
+          return this.client.initializePool(config);
+        },
+        destroy(callback) {
+          return this.client.destroy(callback);
+        },
+        ref(ref) {
+          return this.client.ref(ref);
+        },
+        disableProcessing() {
+          if (this.userParams.isProcessingDisabled) {
+            return;
+          }
+          this.userParams.wrapIdentifier = this.client.config.wrapIdentifier;
+          this.userParams.postProcessResponse = this.client.config.postProcessResponse;
+          this.client.config.wrapIdentifier = null;
+          this.client.config.postProcessResponse = null;
+          this.userParams.isProcessingDisabled = true;
+        },
+        enableProcessing() {
+          if (!this.userParams.isProcessingDisabled) {
+            return;
+          }
+          this.client.config.wrapIdentifier = this.userParams.wrapIdentifier;
+          this.client.config.postProcessResponse = this.userParams.postProcessResponse;
+          this.userParams.isProcessingDisabled = false;
+        },
+        withUserParams(params) {
+          const knexClone = shallowCloneFunction(knexFn);
+          if (this.client) {
+            knexClone.client = Object.create(this.client.constructor.prototype);
+            merge(knexClone.client, this.client);
+            knexClone.client.config = Object.assign({}, this.client.config);
+          }
+          redefineProperties(knexClone, knexClone.client);
+          _copyEventListeners("query", knexFn, knexClone);
+          _copyEventListeners("query-error", knexFn, knexClone);
+          _copyEventListeners("query-response", knexFn, knexClone);
+          _copyEventListeners("start", knexFn, knexClone);
+          knexClone.userParams = params;
+          return knexClone;
+        }
+      });
+      if (!knexFn.context) {
+        knexFn.context = knexContext;
+      }
+    }
+    function _copyEventListeners(eventName, sourceKnex, targetKnex) {
+      const listeners = sourceKnex.listeners(eventName);
+      listeners.forEach((listener) => {
+        targetKnex.on(eventName, listener);
+      });
+    }
+    function redefineProperties(knex2, client) {
+      for (let i = 0; i < QueryInterface.length; i++) {
+        const method = QueryInterface[i];
+        knex2[method] = function() {
+          const builder = this.queryBuilder();
+          return builder[method].apply(builder, arguments);
+        };
+      }
+      Object.defineProperties(knex2, KNEX_PROPERTY_DEFINITIONS);
+      initContext(knex2);
+      knex2.client = client;
+      knex2.userParams = {};
+      const ee = new EventEmitter();
+      for (const key in ee) {
+        knex2[key] = ee[key];
+      }
+      if (knex2._internalListeners) {
+        knex2._internalListeners.forEach(({ eventName, listener }) => {
+          knex2.client.removeListener(eventName, listener);
+        });
+      }
+      knex2._internalListeners = [];
+      _addInternalListener(knex2, "start", (obj) => {
+        knex2.emit("start", obj);
+      });
+      _addInternalListener(knex2, "query", (obj) => {
+        knex2.emit("query", obj);
+      });
+      _addInternalListener(knex2, "query-error", (err, obj) => {
+        knex2.emit("query-error", err, obj);
+      });
+      _addInternalListener(knex2, "query-response", (response, obj, builder) => {
+        knex2.emit("query-response", response, obj, builder);
+      });
+    }
+    function _addInternalListener(knex2, eventName, listener) {
+      knex2.client.on(eventName, listener);
+      knex2._internalListeners.push({
+        eventName,
+        listener
+      });
+    }
+    function createQueryBuilder(knexContext, tableName, options) {
+      const qb = knexContext.queryBuilder();
+      if (!tableName)
+        knexContext.client.logger.warn("calling knex without a tableName is deprecated. Use knex.queryBuilder() instead.");
+      return tableName ? qb.table(tableName, options) : qb;
+    }
+    function shallowCloneFunction(originalFunction) {
+      const fnContext = Object.create(Object.getPrototypeOf(originalFunction), Object.getOwnPropertyDescriptors(originalFunction));
+      const knexContext = {};
+      const knexFnWrapper = (tableName, options) => {
+        return createQueryBuilder(knexContext, tableName, options);
+      };
+      const clonedFunction = knexFnWrapper.bind(fnContext);
+      Object.assign(clonedFunction, originalFunction);
+      clonedFunction.context = knexContext;
+      return clonedFunction;
+    }
+    module2.exports = makeKnex;
+  }
+});
+
+// node_modules/knex/lib/util/noop.js
+var require_noop = __commonJS({
+  "node_modules/knex/lib/util/noop.js"(exports2, module2) {
+    module2.exports = function() {
+    };
+  }
+});
+
+// node_modules/knex/lib/util/finally-mixin.js
+var require_finally_mixin = __commonJS({
+  "node_modules/knex/lib/util/finally-mixin.js"(exports2, module2) {
+    var noop = require_noop();
+    var finallyMixin = (prototype) => Object.assign(prototype, {
+      finally(onFinally) {
+        return this.then().finally(onFinally);
+      }
+    });
+    module2.exports = Promise.prototype.finally ? finallyMixin : noop;
+  }
+});
+
+// node_modules/knex/lib/execution/transaction.js
+var require_transaction = __commonJS({
+  "node_modules/knex/lib/execution/transaction.js"(exports2, module2) {
+    var { EventEmitter } = require("events");
+    var Debug = require_src5();
+    var uniqueId = require_uniqueId();
+    var { callbackify } = require("util");
+    var makeKnex = require_make_knex();
+    var { timeout, KnexTimeoutError } = require_timeout();
+    var finallyMixin = require_finally_mixin();
+    var debug = Debug("knex:tx");
+    function DEFAULT_CONFIG() {
+      return {
+        userParams: {},
+        doNotRejectOnRollback: true
+      };
+    }
+    var validIsolationLevels = [
+      "read uncommitted",
+      "read committed",
+      "snapshot",
+      "repeatable read",
+      "serializable"
+    ];
+    var Transaction = class extends EventEmitter {
+      constructor(client, container, config = DEFAULT_CONFIG(), outerTx = null) {
+        super();
+        this.userParams = config.userParams;
+        this.doNotRejectOnRollback = config.doNotRejectOnRollback;
+        const txid = this.txid = uniqueId("trx");
+        this.client = client;
+        this.logger = client.logger;
+        this.outerTx = outerTx;
+        this.trxClient = void 0;
+        this._completed = false;
+        this._debug = client.config && client.config.debug;
+        if (config.isolationLevel) {
+          this.setIsolationLevel(config.isolationLevel);
+        }
+        debug("%s: Starting %s transaction", txid, outerTx ? "nested" : "top level");
+        this._lastChild = Promise.resolve();
+        const _previousSibling = outerTx ? outerTx._lastChild : Promise.resolve();
+        const basePromise = _previousSibling.then(() => this._evaluateContainer(config, container));
+        this._promise = basePromise.then((x) => x);
+        if (outerTx) {
+          outerTx._lastChild = basePromise.catch(() => {
+          });
+        }
+      }
+      isCompleted() {
+        return this._completed || this.outerTx && this.outerTx.isCompleted() || false;
+      }
+      begin(conn) {
+        const runIsolationLevelQuery = this.isolationLevel ? this.query(conn, `SET TRANSACTION ISOLATION LEVEL ${this.isolationLevel};`) : Promise.resolve();
+        return runIsolationLevelQuery.then(() => this.query(conn, "BEGIN;"));
+      }
+      savepoint(conn) {
+        return this.query(conn, `SAVEPOINT ${this.txid};`);
+      }
+      commit(conn, value) {
+        return this.query(conn, "COMMIT;", 1, value);
+      }
+      release(conn, value) {
+        return this.query(conn, `RELEASE SAVEPOINT ${this.txid};`, 1, value);
+      }
+      setIsolationLevel(isolationLevel) {
+        if (!validIsolationLevels.includes(isolationLevel)) {
+          throw new Error(`Invalid isolationLevel, supported isolation levels are: ${JSON.stringify(validIsolationLevels)}`);
+        }
+        this.isolationLevel = isolationLevel;
+        return this;
+      }
+      rollback(conn, error) {
+        return timeout(this.query(conn, "ROLLBACK", 2, error), 5e3).catch((err) => {
+          if (!(err instanceof KnexTimeoutError)) {
+            return Promise.reject(err);
+          }
+          this._rejecter(error);
+        });
+      }
+      rollbackTo(conn, error) {
+        return timeout(this.query(conn, `ROLLBACK TO SAVEPOINT ${this.txid}`, 2, error), 5e3).catch((err) => {
+          if (!(err instanceof KnexTimeoutError)) {
+            return Promise.reject(err);
+          }
+          this._rejecter(error);
+        });
+      }
+      query(conn, sql, status, value) {
+        const q = this.trxClient.query(conn, sql).catch((err) => {
+          status = 2;
+          value = err;
+          this._completed = true;
+          debug("%s error running transaction query", this.txid);
+        }).then((res) => {
+          if (status === 1) {
+            this._resolver(value);
+          }
+          if (status === 2) {
+            if (value === void 0) {
+              if (this.doNotRejectOnRollback && /^ROLLBACK\b/i.test(sql)) {
+                this._resolver();
+                return;
+              }
+              value = new Error(`Transaction rejected with non-error: ${value}`);
+            }
+            this._rejecter(value);
+          }
+          return res;
+        });
+        if (status === 1 || status === 2) {
+          this._completed = true;
+        }
+        return q;
+      }
+      debug(enabled) {
+        this._debug = arguments.length ? enabled : true;
+        return this;
+      }
+      async _evaluateContainer(config, container) {
+        return this.acquireConnection(config, (connection) => {
+          const trxClient = this.trxClient = makeTxClient(this, this.client, connection);
+          const init = this.client.transacting ? this.savepoint(connection) : this.begin(connection);
+          const executionPromise = new Promise((resolver, rejecter) => {
+            this._resolver = resolver;
+            this._rejecter = rejecter;
+          });
+          init.then(() => {
+            return makeTransactor(this, connection, trxClient);
+          }).then((transactor) => {
+            transactor.executionPromise = executionPromise;
+            let result;
+            try {
+              result = container(transactor);
+            } catch (err) {
+              result = Promise.reject(err);
+            }
+            if (result && result.then && typeof result.then === "function") {
+              result.then((val) => {
+                return transactor.commit(val);
+              }).catch((err) => {
+                return transactor.rollback(err);
+              });
+            }
+            return null;
+          }).catch((e) => {
+            return this._rejecter(e);
+          });
+          return executionPromise;
+        });
+      }
+      async acquireConnection(config, cb) {
+        const configConnection = config && config.connection;
+        const connection = configConnection || await this.client.acquireConnection();
+        try {
+          connection.__knexTxId = this.txid;
+          return await cb(connection);
+        } finally {
+          if (!configConnection) {
+            debug("%s: releasing connection", this.txid);
+            this.client.releaseConnection(connection);
+          } else {
+            debug("%s: not releasing external connection", this.txid);
+          }
+        }
+      }
+      then(onResolve, onReject) {
+        return this._promise.then(onResolve, onReject);
+      }
+      catch(...args2) {
+        return this._promise.catch(...args2);
+      }
+      asCallback(cb) {
+        callbackify(() => this._promise)(cb);
+        return this._promise;
+      }
+    };
+    finallyMixin(Transaction.prototype);
+    function makeTransactor(trx, connection, trxClient) {
+      const transactor = makeKnex(trxClient);
+      transactor.context.withUserParams = () => {
+        throw new Error("Cannot set user params on a transaction - it can only inherit params from main knex instance");
+      };
+      transactor.isTransaction = true;
+      transactor.userParams = trx.userParams || {};
+      transactor.context.transaction = function(container, options) {
+        if (!options) {
+          options = { doNotRejectOnRollback: true };
+        } else if (options.doNotRejectOnRollback === void 0) {
+          options.doNotRejectOnRollback = true;
+        }
+        return this._transaction(container, options, trx);
+      };
+      transactor.savepoint = function(container, options) {
+        return transactor.transaction(container, options);
+      };
+      if (trx.client.transacting) {
+        transactor.commit = (value) => trx.release(connection, value);
+        transactor.rollback = (error) => trx.rollbackTo(connection, error);
+      } else {
+        transactor.commit = (value) => trx.commit(connection, value);
+        transactor.rollback = (error) => trx.rollback(connection, error);
+      }
+      transactor.isCompleted = () => trx.isCompleted();
+      return transactor;
+    }
+    function makeTxClient(trx, client, connection) {
+      const trxClient = Object.create(client.constructor.prototype);
+      trxClient.version = client.version;
+      trxClient.config = client.config;
+      trxClient.driver = client.driver;
+      trxClient.connectionSettings = client.connectionSettings;
+      trxClient.transacting = true;
+      trxClient.valueForUndefined = client.valueForUndefined;
+      trxClient.logger = client.logger;
+      trxClient.on("start", function(arg) {
+        trx.emit("start", arg);
+        client.emit("start", arg);
+      });
+      trxClient.on("query", function(arg) {
+        trx.emit("query", arg);
+        client.emit("query", arg);
+      });
+      trxClient.on("query-error", function(err, obj) {
+        trx.emit("query-error", err, obj);
+        client.emit("query-error", err, obj);
+      });
+      trxClient.on("query-response", function(response, obj, builder) {
+        trx.emit("query-response", response, obj, builder);
+        client.emit("query-response", response, obj, builder);
+      });
+      const _query = trxClient.query;
+      trxClient.query = function(conn, obj) {
+        const completed = trx.isCompleted();
+        return new Promise(function(resolve, reject) {
+          try {
+            if (conn !== connection)
+              throw new Error("Invalid connection for transaction query.");
+            if (completed)
+              completedError(trx, obj);
+            resolve(_query.call(trxClient, conn, obj));
+          } catch (e) {
+            reject(e);
+          }
+        });
+      };
+      const _stream = trxClient.stream;
+      trxClient.stream = function(conn, obj, stream, options) {
+        const completed = trx.isCompleted();
+        return new Promise(function(resolve, reject) {
+          try {
+            if (conn !== connection)
+              throw new Error("Invalid connection for transaction query.");
+            if (completed)
+              completedError(trx, obj);
+            resolve(_stream.call(trxClient, conn, obj, stream, options));
+          } catch (e) {
+            reject(e);
+          }
+        });
+      };
+      trxClient.acquireConnection = function() {
+        return Promise.resolve(connection);
+      };
+      trxClient.releaseConnection = function() {
+        return Promise.resolve();
+      };
+      return trxClient;
+    }
+    function completedError(trx, obj) {
+      const sql = typeof obj === "string" ? obj : obj && obj.sql;
+      debug("%s: Transaction completed: %s", trx.txid, sql);
+      throw new Error("Transaction query already complete, run with DEBUG=knex:tx for more info");
+    }
+    module2.exports = Transaction;
+  }
+});
+
+// node_modules/knex/lib/execution/internal/query-executioner.js
+var require_query_executioner = __commonJS({
+  "node_modules/knex/lib/execution/internal/query-executioner.js"(exports2, module2) {
+    var _debugQuery = require_src5()("knex:query");
+    var debugBindings = require_src5()("knex:bindings");
+    var debugQuery = (sql, txId) => _debugQuery(sql.replace(/%/g, "%%"), txId);
+    var { isString } = require_is();
+    function formatQuery(sql, bindings, timeZone, client) {
+      bindings = bindings == null ? [] : [].concat(bindings);
+      let index = 0;
+      return sql.replace(/\\?\?/g, (match) => {
+        if (match === "\\?") {
+          return "?";
+        }
+        if (index === bindings.length) {
+          return match;
+        }
+        const value = bindings[index++];
+        return client._escapeBinding(value, { timeZone });
+      });
+    }
+    function enrichQueryObject(connection, queryParam, client) {
+      const queryObject = isString(queryParam) ? { sql: queryParam } : queryParam;
+      queryObject.bindings = client.prepBindings(queryObject.bindings);
+      queryObject.sql = client.positionBindings(queryObject.sql);
+      const { __knexUid, __knexTxId } = connection;
+      client.emit("query", Object.assign({ __knexUid, __knexTxId }, queryObject));
+      debugQuery(queryObject.sql, __knexTxId);
+      debugBindings(queryObject.bindings, __knexTxId);
+      return queryObject;
+    }
+    function executeQuery(connection, queryObject, client) {
+      return client._query(connection, queryObject).catch((err) => {
+        err.message = formatQuery(queryObject.sql, queryObject.bindings, void 0, client) + " - " + err.message;
+        client.emit("query-error", err, Object.assign({ __knexUid: connection.__knexUid, __knexTxId: connection.__knexUid }, queryObject));
+        throw err;
+      });
+    }
+    module2.exports = {
+      enrichQueryObject,
+      executeQuery,
+      formatQuery
+    };
+  }
+});
+
+// node_modules/lodash/assign.js
+var require_assign = __commonJS({
+  "node_modules/lodash/assign.js"(exports2, module2) {
+    var assignValue = require_assignValue();
+    var copyObject = require_copyObject();
+    var createAssigner = require_createAssigner();
+    var isArrayLike = require_isArrayLike();
+    var isPrototype = require_isPrototype();
+    var keys = require_keys();
+    var objectProto = Object.prototype;
+    var hasOwnProperty = objectProto.hasOwnProperty;
+    var assign = createAssigner(function(object, source) {
+      if (isPrototype(source) || isArrayLike(source)) {
+        copyObject(source, keys(source), object);
+        return;
+      }
+      for (var key in source) {
+        if (hasOwnProperty.call(source, key)) {
+          assignValue(object, key, source[key]);
+        }
+      }
+    });
+    module2.exports = assign;
+  }
+});
+
+// node_modules/lodash/clone.js
+var require_clone = __commonJS({
+  "node_modules/lodash/clone.js"(exports2, module2) {
+    var baseClone = require_baseClone();
+    var CLONE_SYMBOLS_FLAG = 4;
+    function clone(value) {
+      return baseClone(value, CLONE_SYMBOLS_FLAG);
+    }
+    module2.exports = clone;
+  }
+});
+
+// node_modules/lodash/_castFunction.js
+var require_castFunction = __commonJS({
+  "node_modules/lodash/_castFunction.js"(exports2, module2) {
+    var identity = require_identity();
+    function castFunction(value) {
+      return typeof value == "function" ? value : identity;
+    }
+    module2.exports = castFunction;
+  }
+});
+
+// node_modules/lodash/forEach.js
+var require_forEach = __commonJS({
+  "node_modules/lodash/forEach.js"(exports2, module2) {
+    var arrayEach = require_arrayEach();
+    var baseEach = require_baseEach();
+    var castFunction = require_castFunction();
+    var isArray = require_isArray();
+    function forEach(collection, iteratee) {
+      var func = isArray(collection) ? arrayEach : baseEach;
+      return func(collection, castFunction(iteratee));
+    }
+    module2.exports = forEach;
+  }
+});
+
+// node_modules/lodash/each.js
+var require_each = __commonJS({
+  "node_modules/lodash/each.js"(exports2, module2) {
+    module2.exports = require_forEach();
+  }
+});
+
+// node_modules/lodash/_baseFilter.js
+var require_baseFilter = __commonJS({
+  "node_modules/lodash/_baseFilter.js"(exports2, module2) {
+    var baseEach = require_baseEach();
+    function baseFilter(collection, predicate) {
+      var result = [];
+      baseEach(collection, function(value, index, collection2) {
+        if (predicate(value, index, collection2)) {
+          result.push(value);
+        }
+      });
+      return result;
+    }
+    module2.exports = baseFilter;
+  }
+});
+
+// node_modules/lodash/negate.js
+var require_negate = __commonJS({
+  "node_modules/lodash/negate.js"(exports2, module2) {
+    var FUNC_ERROR_TEXT = "Expected a function";
+    function negate(predicate) {
+      if (typeof predicate != "function") {
+        throw new TypeError(FUNC_ERROR_TEXT);
+      }
+      return function() {
+        var args2 = arguments;
+        switch (args2.length) {
+          case 0:
+            return !predicate.call(this);
+          case 1:
+            return !predicate.call(this, args2[0]);
+          case 2:
+            return !predicate.call(this, args2[0], args2[1]);
+          case 3:
+            return !predicate.call(this, args2[0], args2[1], args2[2]);
+        }
+        return !predicate.apply(this, args2);
+      };
+    }
+    module2.exports = negate;
+  }
+});
+
+// node_modules/lodash/reject.js
+var require_reject = __commonJS({
+  "node_modules/lodash/reject.js"(exports2, module2) {
+    var arrayFilter = require_arrayFilter();
+    var baseFilter = require_baseFilter();
+    var baseIteratee = require_baseIteratee();
+    var isArray = require_isArray();
+    var negate = require_negate();
+    function reject(collection, predicate) {
+      var func = isArray(collection) ? arrayFilter : baseFilter;
+      return func(collection, negate(baseIteratee(predicate, 3)));
+    }
+    module2.exports = reject;
+  }
+});
+
+// node_modules/lodash/tail.js
+var require_tail = __commonJS({
+  "node_modules/lodash/tail.js"(exports2, module2) {
+    var baseSlice = require_baseSlice();
+    function tail(array) {
+      var length = array == null ? 0 : array.length;
+      return length ? baseSlice(array, 1, length) : [];
+    }
+    module2.exports = tail;
+  }
+});
+
+// node_modules/lodash/_iteratorToArray.js
+var require_iteratorToArray = __commonJS({
+  "node_modules/lodash/_iteratorToArray.js"(exports2, module2) {
+    function iteratorToArray(iterator) {
+      var data, result = [];
+      while (!(data = iterator.next()).done) {
+        result.push(data.value);
+      }
+      return result;
+    }
+    module2.exports = iteratorToArray;
+  }
+});
+
+// node_modules/lodash/_asciiToArray.js
+var require_asciiToArray = __commonJS({
+  "node_modules/lodash/_asciiToArray.js"(exports2, module2) {
+    function asciiToArray(string) {
+      return string.split("");
+    }
+    module2.exports = asciiToArray;
+  }
+});
+
+// node_modules/lodash/_hasUnicode.js
+var require_hasUnicode = __commonJS({
+  "node_modules/lodash/_hasUnicode.js"(exports2, module2) {
+    var rsAstralRange = "\\ud800-\\udfff";
+    var rsComboMarksRange = "\\u0300-\\u036f";
+    var reComboHalfMarksRange = "\\ufe20-\\ufe2f";
+    var rsComboSymbolsRange = "\\u20d0-\\u20ff";
+    var rsComboRange = rsComboMarksRange + reComboHalfMarksRange + rsComboSymbolsRange;
+    var rsVarRange = "\\ufe0e\\ufe0f";
+    var rsZWJ = "\\u200d";
+    var reHasUnicode = RegExp("[" + rsZWJ + rsAstralRange + rsComboRange + rsVarRange + "]");
+    function hasUnicode(string) {
+      return reHasUnicode.test(string);
+    }
+    module2.exports = hasUnicode;
+  }
+});
+
+// node_modules/lodash/_unicodeToArray.js
+var require_unicodeToArray = __commonJS({
+  "node_modules/lodash/_unicodeToArray.js"(exports2, module2) {
+    var rsAstralRange = "\\ud800-\\udfff";
+    var rsComboMarksRange = "\\u0300-\\u036f";
+    var reComboHalfMarksRange = "\\ufe20-\\ufe2f";
+    var rsComboSymbolsRange = "\\u20d0-\\u20ff";
+    var rsComboRange = rsComboMarksRange + reComboHalfMarksRange + rsComboSymbolsRange;
+    var rsVarRange = "\\ufe0e\\ufe0f";
+    var rsAstral = "[" + rsAstralRange + "]";
+    var rsCombo = "[" + rsComboRange + "]";
+    var rsFitz = "\\ud83c[\\udffb-\\udfff]";
+    var rsModifier = "(?:" + rsCombo + "|" + rsFitz + ")";
+    var rsNonAstral = "[^" + rsAstralRange + "]";
+    var rsRegional = "(?:\\ud83c[\\udde6-\\uddff]){2}";
+    var rsSurrPair = "[\\ud800-\\udbff][\\udc00-\\udfff]";
+    var rsZWJ = "\\u200d";
+    var reOptMod = rsModifier + "?";
+    var rsOptVar = "[" + rsVarRange + "]?";
+    var rsOptJoin = "(?:" + rsZWJ + "(?:" + [rsNonAstral, rsRegional, rsSurrPair].join("|") + ")" + rsOptVar + reOptMod + ")*";
+    var rsSeq = rsOptVar + reOptMod + rsOptJoin;
+    var rsSymbol = "(?:" + [rsNonAstral + rsCombo + "?", rsCombo, rsRegional, rsSurrPair, rsAstral].join("|") + ")";
+    var reUnicode = RegExp(rsFitz + "(?=" + rsFitz + ")|" + rsSymbol + rsSeq, "g");
+    function unicodeToArray(string) {
+      return string.match(reUnicode) || [];
+    }
+    module2.exports = unicodeToArray;
+  }
+});
+
+// node_modules/lodash/_stringToArray.js
+var require_stringToArray = __commonJS({
+  "node_modules/lodash/_stringToArray.js"(exports2, module2) {
+    var asciiToArray = require_asciiToArray();
+    var hasUnicode = require_hasUnicode();
+    var unicodeToArray = require_unicodeToArray();
+    function stringToArray(string) {
+      return hasUnicode(string) ? unicodeToArray(string) : asciiToArray(string);
+    }
+    module2.exports = stringToArray;
+  }
+});
+
+// node_modules/lodash/toArray.js
+var require_toArray = __commonJS({
+  "node_modules/lodash/toArray.js"(exports2, module2) {
+    var Symbol2 = require_Symbol();
+    var copyArray = require_copyArray();
+    var getTag = require_getTag();
+    var isArrayLike = require_isArrayLike();
+    var isString = require_isString();
+    var iteratorToArray = require_iteratorToArray();
+    var mapToArray = require_mapToArray();
+    var setToArray = require_setToArray();
+    var stringToArray = require_stringToArray();
+    var values = require_values();
+    var mapTag = "[object Map]";
+    var setTag = "[object Set]";
+    var symIterator = Symbol2 ? Symbol2.iterator : void 0;
+    function toArray(value) {
+      if (!value) {
+        return [];
+      }
+      if (isArrayLike(value)) {
+        return isString(value) ? stringToArray(value) : copyArray(value);
+      }
+      if (symIterator && value[symIterator]) {
+        return iteratorToArray(value[symIterator]());
+      }
+      var tag = getTag(value), func = tag == mapTag ? mapToArray : tag == setTag ? setToArray : values;
+      return func(value);
+    }
+    module2.exports = toArray;
+  }
+});
+
+// node_modules/knex/lib/constants.js
+var require_constants2 = __commonJS({
+  "node_modules/knex/lib/constants.js"(exports2, module2) {
+    var CLIENT_ALIASES = Object.freeze({
+      pg: "postgres",
+      postgresql: "postgres",
+      sqlite: "sqlite3"
+    });
+    var SUPPORTED_CLIENTS = Object.freeze([
+      "mssql",
+      "mysql",
+      "mysql2",
+      "oracledb",
+      "postgres",
+      "pgnative",
+      "redshift",
+      "sqlite3",
+      "cockroachdb"
+    ].concat(Object.keys(CLIENT_ALIASES)));
+    var DRIVER_NAMES = Object.freeze({
+      MsSQL: "mssql",
+      MySQL: "mysql",
+      MySQL2: "mysql2",
+      Oracle: "oracledb",
+      PostgreSQL: "pg",
+      PgNative: "pgnative",
+      Redshift: "pg-redshift",
+      SQLite: "sqlite3",
+      CockroachDB: "cockroachdb"
+    });
+    var POOL_CONFIG_OPTIONS = Object.freeze([
+      "maxWaitingClients",
+      "testOnBorrow",
+      "fifo",
+      "priorityRange",
+      "autostart",
+      "evictionRunIntervalMillis",
+      "numTestsPerRun",
+      "softIdleTimeoutMillis",
+      "Promise"
+    ]);
+    var COMMA_NO_PAREN_REGEX = /,[\s](?![^(]*\))/g;
+    module2.exports = {
+      CLIENT_ALIASES,
+      SUPPORTED_CLIENTS,
+      POOL_CONFIG_OPTIONS,
+      COMMA_NO_PAREN_REGEX,
+      DRIVER_NAMES
+    };
+  }
+});
+
+// node_modules/knex/lib/util/helpers.js
+var require_helpers = __commonJS({
+  "node_modules/knex/lib/util/helpers.js"(exports2, module2) {
+    var isPlainObject = require_isPlainObject();
+    var isTypedArray = require_isTypedArray();
+    var { CLIENT_ALIASES } = require_constants2();
+    var { isFunction } = require_is();
+    function normalizeArr(...args2) {
+      if (Array.isArray(args2[0])) {
+        return args2[0];
+      }
+      return args2;
+    }
+    function containsUndefined(mixed) {
+      let argContainsUndefined = false;
+      if (isTypedArray(mixed))
+        return false;
+      if (mixed && isFunction(mixed.toSQL)) {
+        return argContainsUndefined;
+      }
+      if (Array.isArray(mixed)) {
+        for (let i = 0; i < mixed.length; i++) {
+          if (argContainsUndefined)
+            break;
+          argContainsUndefined = containsUndefined(mixed[i]);
+        }
+      } else if (isPlainObject(mixed)) {
+        Object.keys(mixed).forEach((key) => {
+          if (!argContainsUndefined) {
+            argContainsUndefined = containsUndefined(mixed[key]);
+          }
+        });
+      } else {
+        argContainsUndefined = mixed === void 0;
+      }
+      return argContainsUndefined;
+    }
+    function getUndefinedIndices(mixed) {
+      const indices = [];
+      if (Array.isArray(mixed)) {
+        mixed.forEach((item, index) => {
+          if (containsUndefined(item)) {
+            indices.push(index);
+          }
+        });
+      } else if (isPlainObject(mixed)) {
+        Object.keys(mixed).forEach((key) => {
+          if (containsUndefined(mixed[key])) {
+            indices.push(key);
+          }
+        });
+      } else {
+        indices.push(0);
+      }
+      return indices;
+    }
+    function addQueryContext(Target) {
+      Target.prototype.queryContext = function(context) {
+        if (context === void 0) {
+          return this._queryContext;
+        }
+        this._queryContext = context;
+        return this;
+      };
+    }
+    function resolveClientNameWithAliases(clientName) {
+      return CLIENT_ALIASES[clientName] || clientName;
+    }
+    function toNumber(val, fallback) {
+      if (val === void 0 || val === null)
+        return fallback;
+      const number = parseInt(val, 10);
+      return isNaN(number) ? fallback : number;
+    }
+    module2.exports = {
+      addQueryContext,
+      containsUndefined,
+      getUndefinedIndices,
+      normalizeArr,
+      resolveClientNameWithAliases,
+      toNumber
+    };
+  }
+});
+
+// node_modules/knex/lib/query/joinclause.js
+var require_joinclause = __commonJS({
+  "node_modules/knex/lib/query/joinclause.js"(exports2, module2) {
+    var assert = require("assert");
+    function getClauseFromArguments(compilerType, bool, first, operator, second) {
+      if (typeof first === "function") {
+        return {
+          type: "onWrapped",
+          value: first,
+          bool
+        };
+      }
+      switch (arguments.length) {
+        case 3:
+          return { type: "onRaw", value: first, bool };
+        case 4:
+          return {
+            type: compilerType,
+            column: first,
+            operator: "=",
+            value: operator,
+            bool
+          };
+        default:
+          return {
+            type: compilerType,
+            column: first,
+            operator,
+            value: second,
+            bool
+          };
+      }
+    }
+    var JoinClause = class {
+      constructor(table, type, schema) {
+        this.schema = schema;
+        this.table = table;
+        this.joinType = type;
+        this.and = this;
+        this.clauses = [];
+      }
+      get or() {
+        return this._bool("or");
+      }
+      on(first) {
+        if (typeof first === "object" && typeof first.toSQL !== "function") {
+          const keys = Object.keys(first);
+          let i = -1;
+          const method = this._bool() === "or" ? "orOn" : "on";
+          while (++i < keys.length) {
+            this[method](keys[i], first[keys[i]]);
+          }
+          return this;
+        }
+        const data = getClauseFromArguments("onBasic", this._bool(), ...arguments);
+        if (data) {
+          this.clauses.push(data);
+        }
+        return this;
+      }
+      using(column) {
+        return this.clauses.push({ type: "onUsing", column, bool: this._bool() });
+      }
+      orOn(first, operator, second) {
+        return this._bool("or").on.apply(this, arguments);
+      }
+      onVal(first) {
+        if (typeof first === "object" && typeof first.toSQL !== "function") {
+          const keys = Object.keys(first);
+          let i = -1;
+          const method = this._bool() === "or" ? "orOnVal" : "onVal";
+          while (++i < keys.length) {
+            this[method](keys[i], first[keys[i]]);
+          }
+          return this;
+        }
+        const data = getClauseFromArguments("onVal", this._bool(), ...arguments);
+        if (data) {
+          this.clauses.push(data);
+        }
+        return this;
+      }
+      andOnVal() {
+        return this.onVal(...arguments);
+      }
+      orOnVal() {
+        return this._bool("or").onVal(...arguments);
+      }
+      onBetween(column, values) {
+        assert(Array.isArray(values), "The second argument to onBetween must be an array.");
+        assert(values.length === 2, "You must specify 2 values for the onBetween clause");
+        this.clauses.push({
+          type: "onBetween",
+          column,
+          value: values,
+          bool: this._bool(),
+          not: this._not()
+        });
+        return this;
+      }
+      onNotBetween(column, values) {
+        return this._not(true).onBetween(column, values);
+      }
+      orOnBetween(column, values) {
+        return this._bool("or").onBetween(column, values);
+      }
+      orOnNotBetween(column, values) {
+        return this._bool("or")._not(true).onBetween(column, values);
+      }
+      onIn(column, values) {
+        if (Array.isArray(values) && values.length === 0)
+          return this.on(1, "=", 0);
+        this.clauses.push({
+          type: "onIn",
+          column,
+          value: values,
+          not: this._not(),
+          bool: this._bool()
+        });
+        return this;
+      }
+      onNotIn(column, values) {
+        return this._not(true).onIn(column, values);
+      }
+      orOnIn(column, values) {
+        return this._bool("or").onIn(column, values);
+      }
+      orOnNotIn(column, values) {
+        return this._bool("or")._not(true).onIn(column, values);
+      }
+      onNull(column) {
+        this.clauses.push({
+          type: "onNull",
+          column,
+          not: this._not(),
+          bool: this._bool()
+        });
+        return this;
+      }
+      orOnNull(callback) {
+        return this._bool("or").onNull(callback);
+      }
+      onNotNull(callback) {
+        return this._not(true).onNull(callback);
+      }
+      orOnNotNull(callback) {
+        return this._not(true)._bool("or").onNull(callback);
+      }
+      onExists(callback) {
+        this.clauses.push({
+          type: "onExists",
+          value: callback,
+          not: this._not(),
+          bool: this._bool()
+        });
+        return this;
+      }
+      orOnExists(callback) {
+        return this._bool("or").onExists(callback);
+      }
+      onNotExists(callback) {
+        return this._not(true).onExists(callback);
+      }
+      orOnNotExists(callback) {
+        return this._not(true)._bool("or").onExists(callback);
+      }
+      type(type) {
+        this.joinType = type;
+        return this;
+      }
+      _bool(bool) {
+        if (arguments.length === 1) {
+          this._boolFlag = bool;
+          return this;
+        }
+        const ret = this._boolFlag || "and";
+        this._boolFlag = "and";
+        return ret;
+      }
+      _not(val) {
+        if (arguments.length === 1) {
+          this._notFlag = val;
+          return this;
+        }
+        const ret = this._notFlag;
+        this._notFlag = false;
+        return ret;
+      }
+    };
+    Object.assign(JoinClause.prototype, {
+      grouping: "join"
+    });
+    JoinClause.prototype.andOn = JoinClause.prototype.on;
+    JoinClause.prototype.andOnIn = JoinClause.prototype.onIn;
+    JoinClause.prototype.andOnNotIn = JoinClause.prototype.onNotIn;
+    JoinClause.prototype.andOnNull = JoinClause.prototype.onNull;
+    JoinClause.prototype.andOnNotNull = JoinClause.prototype.onNotNull;
+    JoinClause.prototype.andOnExists = JoinClause.prototype.onExists;
+    JoinClause.prototype.andOnNotExists = JoinClause.prototype.onNotExists;
+    JoinClause.prototype.andOnBetween = JoinClause.prototype.onBetween;
+    JoinClause.prototype.andOnNotBetween = JoinClause.prototype.onNotBetween;
+    module2.exports = JoinClause;
+  }
+});
+
+// node_modules/knex/lib/query/analytic.js
+var require_analytic = __commonJS({
+  "node_modules/knex/lib/query/analytic.js"(exports2, module2) {
+    var assert = require("assert");
+    var Analytic = class {
+      constructor(method, schema, alias, orderBy, partitions) {
+        this.schema = schema;
+        this.type = "analytic";
+        this.method = method;
+        this.order = orderBy || [];
+        this.partitions = partitions || [];
+        this.alias = alias;
+        this.and = this;
+        this.grouping = "columns";
+      }
+      partitionBy(column, direction) {
+        assert(Array.isArray(column) || typeof column === "string", `The argument to an analytic partitionBy function must be either a string
+            or an array of string.`);
+        if (Array.isArray(column)) {
+          this.partitions = this.partitions.concat(column);
+        } else {
+          this.partitions.push({ column, order: direction });
+        }
+        return this;
+      }
+      orderBy(column, direction) {
+        assert(Array.isArray(column) || typeof column === "string", `The argument to an analytic orderBy function must be either a string
+            or an array of string.`);
+        if (Array.isArray(column)) {
+          this.order = this.order.concat(column);
+        } else {
+          this.order.push({ column, order: direction });
+        }
+        return this;
+      }
+    };
+    module2.exports = Analytic;
+  }
+});
+
+// node_modules/knex/lib/util/save-async-stack.js
+var require_save_async_stack = __commonJS({
+  "node_modules/knex/lib/util/save-async-stack.js"(exports2, module2) {
+    module2.exports = function saveAsyncStack(instance, lines) {
+      if (instance.client.config.asyncStackTraces) {
+        instance._asyncStack = {
+          error: new Error(),
+          lines
+        };
+      }
+    };
+  }
+});
+
+// node_modules/knex/lib/query/constants.js
+var require_constants3 = __commonJS({
+  "node_modules/knex/lib/query/constants.js"(exports2, module2) {
+    module2.exports = {
+      lockMode: {
+        forShare: "forShare",
+        forUpdate: "forUpdate",
+        forNoKeyUpdate: "forNoKeyUpdate",
+        forKeyShare: "forKeyShare"
+      },
+      waitMode: {
+        skipLocked: "skipLocked",
+        noWait: "noWait"
+      }
+    };
+  }
+});
+
+// node_modules/knex/lib/builder-interface-augmenter.js
+var require_builder_interface_augmenter = __commonJS({
+  "node_modules/knex/lib/builder-interface-augmenter.js"(exports2, module2) {
+    var clone = require_clone();
+    var isEmpty = require_isEmpty();
+    var { callbackify } = require("util");
+    var finallyMixin = require_finally_mixin();
+    var { formatQuery } = require_query_executioner();
+    function augmentWithBuilderInterface(Target) {
+      Target.prototype.toQuery = function(tz) {
+        let data = this.toSQL(this._method, tz);
+        if (!Array.isArray(data))
+          data = [data];
+        if (!data.length) {
+          return "";
+        }
+        return data.map((statement) => {
+          return formatQuery(statement.sql, statement.bindings, tz, this.client);
+        }).reduce((a, c) => a.concat(a.endsWith(";") ? "\n" : ";\n", c));
+      };
+      Target.prototype.then = function() {
+        let result = this.client.runner(this).run();
+        if (this.client.config.asyncStackTraces) {
+          result = result.catch((err) => {
+            err.originalStack = err.stack;
+            const firstLine = err.stack.split("\n")[0];
+            const { error, lines } = this._asyncStack;
+            const stackByLines = error.stack.split("\n");
+            const asyncStack = stackByLines.slice(lines);
+            asyncStack.unshift(firstLine);
+            err.stack = asyncStack.join("\n");
+            throw err;
+          });
+        }
+        return result.then.apply(result, arguments);
+      };
+      Target.prototype.options = function(opts) {
+        this._options = this._options || [];
+        this._options.push(clone(opts) || {});
+        return this;
+      };
+      Target.prototype.connection = function(connection) {
+        this._connection = connection;
+        this.client.processPassedConnection(connection);
+        return this;
+      };
+      Target.prototype.debug = function(enabled) {
+        this._debug = arguments.length ? enabled : true;
+        return this;
+      };
+      Target.prototype.transacting = function(transaction) {
+        if (transaction && transaction.client) {
+          if (!transaction.client.transacting) {
+            transaction.client.logger.warn(`Invalid transaction value: ${transaction.client}`);
+          } else {
+            this.client = transaction.client;
+          }
+        }
+        if (isEmpty(transaction)) {
+          this.client.logger.error("Invalid value on transacting call, potential bug");
+          throw Error("Invalid transacting value (null, undefined or empty object)");
+        }
+        return this;
+      };
+      Target.prototype.stream = function(options) {
+        return this.client.runner(this).stream(options);
+      };
+      Target.prototype.pipe = function(writable, options) {
+        return this.client.runner(this).pipe(writable, options);
+      };
+      Target.prototype.asCallback = function(cb) {
+        const promise = this.then();
+        callbackify(() => promise)(cb);
+        return promise;
+      };
+      Target.prototype.catch = function(onReject) {
+        return this.then().catch(onReject);
+      };
+      Object.defineProperty(Target.prototype, Symbol.toStringTag, {
+        get: () => "object"
+      });
+      finallyMixin(Target.prototype);
+    }
+    module2.exports = {
+      augmentWithBuilderInterface
+    };
+  }
+});
+
+// node_modules/knex/lib/query/querybuilder.js
+var require_querybuilder = __commonJS({
+  "node_modules/knex/lib/query/querybuilder.js"(exports2, module2) {
+    var assert = require("assert");
+    var { EventEmitter } = require("events");
+    var assign = require_assign();
+    var clone = require_clone();
+    var each = require_each();
+    var isEmpty = require_isEmpty();
+    var isPlainObject = require_isPlainObject();
+    var last = require_last();
+    var reject = require_reject();
+    var tail = require_tail();
+    var toArray = require_toArray();
+    var { addQueryContext, normalizeArr } = require_helpers();
+    var JoinClause = require_joinclause();
+    var Analytic = require_analytic();
+    var saveAsyncStack = require_save_async_stack();
+    var {
+      isBoolean,
+      isNumber,
+      isObject,
+      isString,
+      isFunction
+    } = require_is();
+    var { lockMode, waitMode } = require_constants3();
+    var {
+      augmentWithBuilderInterface
+    } = require_builder_interface_augmenter();
+    var SELECT_COMMANDS = /* @__PURE__ */ new Set(["pluck", "first", "select"]);
+    var CLEARABLE_STATEMENTS = /* @__PURE__ */ new Set([
+      "with",
+      "select",
+      "columns",
+      "hintComments",
+      "where",
+      "union",
+      "join",
+      "group",
+      "order",
+      "having",
+      "limit",
+      "offset",
+      "counter",
+      "counters"
+    ]);
+    var LOCK_MODES = /* @__PURE__ */ new Set([
+      lockMode.forShare,
+      lockMode.forUpdate,
+      lockMode.forNoKeyUpdate,
+      lockMode.forKeyShare
+    ]);
+    var Builder = class extends EventEmitter {
+      constructor(client) {
+        super();
+        this.client = client;
+        this.and = this;
+        this._single = {};
+        this._statements = [];
+        this._method = "select";
+        if (client.config) {
+          saveAsyncStack(this, 5);
+          this._debug = client.config.debug;
+        }
+        this._joinFlag = "inner";
+        this._boolFlag = "and";
+        this._notFlag = false;
+        this._asColumnFlag = false;
+      }
+      toString() {
+        return this.toQuery();
+      }
+      toSQL(method, tz) {
+        return this.client.queryCompiler(this).toSQL(method || this._method, tz);
+      }
+      clone() {
+        const cloned = new this.constructor(this.client);
+        cloned._method = this._method;
+        cloned._single = clone(this._single);
+        cloned._statements = clone(this._statements);
+        cloned._debug = this._debug;
+        if (this._options !== void 0) {
+          cloned._options = clone(this._options);
+        }
+        if (this._queryContext !== void 0) {
+          cloned._queryContext = clone(this._queryContext);
+        }
+        if (this._connection !== void 0) {
+          cloned._connection = this._connection;
+        }
+        return cloned;
+      }
+      timeout(ms, { cancel } = {}) {
+        if (isNumber(ms) && ms > 0) {
+          this._timeout = ms;
+          if (cancel) {
+            this.client.assertCanCancelQuery();
+            this._cancelOnTimeout = true;
+          }
+        }
+        return this;
+      }
+      with(alias, statementOrColumnList, nothingOrStatement) {
+        validateWithArgs(alias, statementOrColumnList, nothingOrStatement, "with");
+        return this.withWrapped(alias, statementOrColumnList, nothingOrStatement);
+      }
+      withWrapped(alias, statementOrColumnList, nothingOrStatement) {
+        const [query, columnList] = typeof nothingOrStatement === "undefined" ? [statementOrColumnList, void 0] : [nothingOrStatement, statementOrColumnList];
+        this._statements.push({
+          grouping: "with",
+          type: "withWrapped",
+          alias,
+          columnList,
+          value: query
+        });
+        return this;
+      }
+      withRecursive(alias, statementOrColumnList, nothingOrStatement) {
+        validateWithArgs(alias, statementOrColumnList, nothingOrStatement, "withRecursive");
+        return this.withRecursiveWrapped(alias, statementOrColumnList, nothingOrStatement);
+      }
+      withRecursiveWrapped(alias, statementOrColumnList, nothingOrStatement) {
+        this.withWrapped(alias, statementOrColumnList, nothingOrStatement);
+        this._statements[this._statements.length - 1].recursive = true;
+        return this;
+      }
+      columns(column) {
+        if (!column && column !== 0)
+          return this;
+        this._statements.push({
+          grouping: "columns",
+          value: normalizeArr(...arguments)
+        });
+        return this;
+      }
+      as(column) {
+        this._single.as = column;
+        return this;
+      }
+      hintComment(hints) {
+        hints = Array.isArray(hints) ? hints : [hints];
+        if (hints.some((hint) => !isString(hint))) {
+          throw new Error("Hint comment must be a string");
+        }
+        if (hints.some((hint) => hint.includes("/*") || hint.includes("*/"))) {
+          throw new Error('Hint comment cannot include "/*" or "*/"');
+        }
+        if (hints.some((hint) => hint.includes("?"))) {
+          throw new Error('Hint comment cannot include "?"');
+        }
+        this._statements.push({
+          grouping: "hintComments",
+          value: hints
+        });
+        return this;
+      }
+      withSchema(schemaName) {
+        this._single.schema = schemaName;
+        return this;
+      }
+      table(tableName, options = {}) {
+        this._single.table = tableName;
+        this._single.only = options.only === true;
+        return this;
+      }
+      distinct(...args2) {
+        this._statements.push({
+          grouping: "columns",
+          value: normalizeArr(...args2),
+          distinct: true
+        });
+        return this;
+      }
+      distinctOn(...args2) {
+        if (isEmpty(args2)) {
+          throw new Error("distinctOn requires at least on argument");
+        }
+        this._statements.push({
+          grouping: "columns",
+          value: normalizeArr(...args2),
+          distinctOn: true
+        });
+        return this;
+      }
+      join(table, first, ...args2) {
+        let join;
+        const schema = table instanceof Builder || typeof table === "function" ? void 0 : this._single.schema;
+        const joinType = this._joinType();
+        if (typeof first === "function") {
+          join = new JoinClause(table, joinType, schema);
+          first.call(join, join);
+        } else if (joinType === "raw") {
+          join = new JoinClause(this.client.raw(table, first), "raw");
+        } else {
+          join = new JoinClause(table, joinType, schema);
+          if (first) {
+            join.on(first, ...args2);
+          }
+        }
+        this._statements.push(join);
+        return this;
+      }
+      innerJoin(...args2) {
+        return this._joinType("inner").join(...args2);
+      }
+      leftJoin(...args2) {
+        return this._joinType("left").join(...args2);
+      }
+      leftOuterJoin(...args2) {
+        return this._joinType("left outer").join(...args2);
+      }
+      rightJoin(...args2) {
+        return this._joinType("right").join(...args2);
+      }
+      rightOuterJoin(...args2) {
+        return this._joinType("right outer").join(...args2);
+      }
+      outerJoin(...args2) {
+        return this._joinType("outer").join(...args2);
+      }
+      fullOuterJoin(...args2) {
+        return this._joinType("full outer").join(...args2);
+      }
+      crossJoin(...args2) {
+        return this._joinType("cross").join(...args2);
+      }
+      joinRaw(...args2) {
+        return this._joinType("raw").join(...args2);
+      }
+      get or() {
+        return this._bool("or");
+      }
+      get not() {
+        return this._not(true);
+      }
+      where(column, operator, value) {
+        const argsLength = arguments.length;
+        if (column === false || column === true) {
+          return this.where(1, "=", column ? 1 : 0);
+        }
+        if (typeof column === "function") {
+          return this.whereWrapped(column);
+        }
+        if (isObject(column) && !column.isRawInstance)
+          return this._objectWhere(column);
+        if (column && column.isRawInstance && argsLength === 1)
+          return this.whereRaw(column);
+        if (argsLength === 2) {
+          value = operator;
+          operator = "=";
+          if (value === null) {
+            return this.whereNull(column);
+          }
+        }
+        const checkOperator = `${operator}`.toLowerCase().trim();
+        if (argsLength === 3) {
+          if (checkOperator === "in" || checkOperator === "not in") {
+            return this._not(checkOperator === "not in").whereIn(column, value);
+          }
+          if (checkOperator === "between" || checkOperator === "not between") {
+            return this._not(checkOperator === "not between").whereBetween(column, value);
+          }
+        }
+        if (value === null) {
+          if (checkOperator === "is" || checkOperator === "is not") {
+            return this._not(checkOperator === "is not").whereNull(column);
+          }
+        }
+        this._statements.push({
+          grouping: "where",
+          type: "whereBasic",
+          column,
+          operator,
+          value,
+          not: this._not(),
+          bool: this._bool(),
+          asColumn: this._asColumnFlag
+        });
+        return this;
+      }
+      whereColumn(...args2) {
+        this._asColumnFlag = true;
+        this.where(...args2);
+        this._asColumnFlag = false;
+        return this;
+      }
+      orWhere(column, ...args2) {
+        this._bool("or");
+        const obj = column;
+        if (isObject(obj) && !obj.isRawInstance) {
+          return this.whereWrapped(function() {
+            for (const key in obj) {
+              this.andWhere(key, obj[key]);
+            }
+          });
+        }
+        return this.where(column, ...args2);
+      }
+      orWhereColumn(column, ...args2) {
+        this._bool("or");
+        const obj = column;
+        if (isObject(obj) && !obj.isRawInstance) {
+          return this.whereWrapped(function() {
+            for (const key in obj) {
+              this.andWhereColumn(key, "=", obj[key]);
+            }
+          });
+        }
+        return this.whereColumn(column, ...args2);
+      }
+      whereNot(column, ...args2) {
+        if (args2.length >= 1) {
+          if (args2[0] === "in" || args2[0] === "between") {
+            this.client.logger.warn('whereNot is not suitable for "in" and "between" type subqueries. You should use "not in" and "not between" instead.');
+          }
+        }
+        return this._not(true).where(column, ...args2);
+      }
+      whereNotColumn(...args2) {
+        return this._not(true).whereColumn(...args2);
+      }
+      orWhereNot(...args2) {
+        return this._bool("or").whereNot(...args2);
+      }
+      orWhereNotColumn(...args2) {
+        return this._bool("or").whereNotColumn(...args2);
+      }
+      _objectWhere(obj) {
+        const boolVal = this._bool();
+        const notVal = this._not() ? "Not" : "";
+        for (const key in obj) {
+          this[boolVal + "Where" + notVal](key, obj[key]);
+        }
+        return this;
+      }
+      whereRaw(sql, bindings) {
+        const raw = sql.isRawInstance ? sql : this.client.raw(sql, bindings);
+        this._statements.push({
+          grouping: "where",
+          type: "whereRaw",
+          value: raw,
+          not: this._not(),
+          bool: this._bool()
+        });
+        return this;
+      }
+      orWhereRaw(sql, bindings) {
+        return this._bool("or").whereRaw(sql, bindings);
+      }
+      whereWrapped(callback) {
+        this._statements.push({
+          grouping: "where",
+          type: "whereWrapped",
+          value: callback,
+          not: this._not(),
+          bool: this._bool()
+        });
+        return this;
+      }
+      whereExists(callback) {
+        this._statements.push({
+          grouping: "where",
+          type: "whereExists",
+          value: callback,
+          not: this._not(),
+          bool: this._bool()
+        });
+        return this;
+      }
+      orWhereExists(callback) {
+        return this._bool("or").whereExists(callback);
+      }
+      whereNotExists(callback) {
+        return this._not(true).whereExists(callback);
+      }
+      orWhereNotExists(callback) {
+        return this._bool("or").whereNotExists(callback);
+      }
+      whereIn(column, values) {
+        if (Array.isArray(values) && isEmpty(values))
+          return this.where(this._not());
+        this._statements.push({
+          grouping: "where",
+          type: "whereIn",
+          column,
+          value: values,
+          not: this._not(),
+          bool: this._bool()
+        });
+        return this;
+      }
+      orWhereIn(column, values) {
+        return this._bool("or").whereIn(column, values);
+      }
+      whereNotIn(column, values) {
+        return this._not(true).whereIn(column, values);
+      }
+      orWhereNotIn(column, values) {
+        return this._bool("or")._not(true).whereIn(column, values);
+      }
+      whereNull(column) {
+        this._statements.push({
+          grouping: "where",
+          type: "whereNull",
+          column,
+          not: this._not(),
+          bool: this._bool()
+        });
+        return this;
+      }
+      orWhereNull(column) {
+        return this._bool("or").whereNull(column);
+      }
+      whereNotNull(column) {
+        return this._not(true).whereNull(column);
+      }
+      orWhereNotNull(column) {
+        return this._bool("or").whereNotNull(column);
+      }
+      whereBetween(column, values) {
+        assert(Array.isArray(values), "The second argument to whereBetween must be an array.");
+        assert(values.length === 2, "You must specify 2 values for the whereBetween clause");
+        this._statements.push({
+          grouping: "where",
+          type: "whereBetween",
+          column,
+          value: values,
+          not: this._not(),
+          bool: this._bool()
+        });
+        return this;
+      }
+      whereNotBetween(column, values) {
+        return this._not(true).whereBetween(column, values);
+      }
+      orWhereBetween(column, values) {
+        return this._bool("or").whereBetween(column, values);
+      }
+      orWhereNotBetween(column, values) {
+        return this._bool("or").whereNotBetween(column, values);
+      }
+      groupBy(item) {
+        if (item && item.isRawInstance) {
+          return this.groupByRaw.apply(this, arguments);
+        }
+        this._statements.push({
+          grouping: "group",
+          type: "groupByBasic",
+          value: normalizeArr(...arguments)
+        });
+        return this;
+      }
+      groupByRaw(sql, bindings) {
+        const raw = sql.isRawInstance ? sql : this.client.raw(sql, bindings);
+        this._statements.push({
+          grouping: "group",
+          type: "groupByRaw",
+          value: raw
+        });
+        return this;
+      }
+      orderBy(column, direction, nulls = "") {
+        if (Array.isArray(column)) {
+          return this._orderByArray(column);
+        }
+        this._statements.push({
+          grouping: "order",
+          type: "orderByBasic",
+          value: column,
+          direction,
+          nulls
+        });
+        return this;
+      }
+      _orderByArray(columnDefs) {
+        for (let i = 0; i < columnDefs.length; i++) {
+          const columnInfo = columnDefs[i];
+          if (isObject(columnInfo)) {
+            this._statements.push({
+              grouping: "order",
+              type: "orderByBasic",
+              value: columnInfo["column"],
+              direction: columnInfo["order"],
+              nulls: columnInfo["nulls"]
+            });
+          } else if (isString(columnInfo)) {
+            this._statements.push({
+              grouping: "order",
+              type: "orderByBasic",
+              value: columnInfo
+            });
+          }
+        }
+        return this;
+      }
+      orderByRaw(sql, bindings) {
+        const raw = sql.isRawInstance ? sql : this.client.raw(sql, bindings);
+        this._statements.push({
+          grouping: "order",
+          type: "orderByRaw",
+          value: raw
+        });
+        return this;
+      }
+      _union(clause, args2) {
+        let callbacks = args2[0];
+        let wrap = args2[1];
+        if (args2.length === 1 || args2.length === 2 && isBoolean(wrap)) {
+          if (!Array.isArray(callbacks)) {
+            callbacks = [callbacks];
+          }
+          for (let i = 0, l = callbacks.length; i < l; i++) {
+            this._statements.push({
+              grouping: "union",
+              clause,
+              value: callbacks[i],
+              wrap: wrap || false
+            });
+          }
+        } else {
+          callbacks = toArray(args2).slice(0, args2.length - 1);
+          wrap = args2[args2.length - 1];
+          if (!isBoolean(wrap)) {
+            callbacks.push(wrap);
+            wrap = false;
+          }
+          this._union(clause, [callbacks, wrap]);
+        }
+        return this;
+      }
+      union(...args2) {
+        return this._union("union", args2);
+      }
+      unionAll(...args2) {
+        return this._union("union all", args2);
+      }
+      intersect(callbacks, wrap) {
+        if (arguments.length === 1 || arguments.length === 2 && isBoolean(wrap)) {
+          if (!Array.isArray(callbacks)) {
+            callbacks = [callbacks];
+          }
+          for (let i = 0, l = callbacks.length; i < l; i++) {
+            this._statements.push({
+              grouping: "union",
+              clause: "intersect",
+              value: callbacks[i],
+              wrap: wrap || false
+            });
+          }
+        } else {
+          callbacks = toArray(arguments).slice(0, arguments.length - 1);
+          wrap = arguments[arguments.length - 1];
+          if (!isBoolean(wrap)) {
+            callbacks.push(wrap);
+            wrap = false;
+          }
+          this.intersect(callbacks, wrap);
+        }
+        return this;
+      }
+      having(column, operator, value) {
+        if (column.isRawInstance && arguments.length === 1) {
+          return this.havingRaw(column);
+        }
+        if (typeof column === "function") {
+          return this.havingWrapped(column);
+        }
+        this._statements.push({
+          grouping: "having",
+          type: "havingBasic",
+          column,
+          operator,
+          value,
+          bool: this._bool(),
+          not: this._not()
+        });
+        return this;
+      }
+      orHaving(column, ...args2) {
+        this._bool("or");
+        const obj = column;
+        if (isObject(obj) && !obj.isRawInstance) {
+          return this.havingWrapped(function() {
+            for (const key in obj) {
+              this.andHaving(key, obj[key]);
+            }
+          });
+        }
+        return this.having(column, ...args2);
+      }
+      havingWrapped(callback) {
+        this._statements.push({
+          grouping: "having",
+          type: "havingWrapped",
+          value: callback,
+          bool: this._bool(),
+          not: this._not()
+        });
+        return this;
+      }
+      havingNull(column) {
+        this._statements.push({
+          grouping: "having",
+          type: "havingNull",
+          column,
+          not: this._not(),
+          bool: this._bool()
+        });
+        return this;
+      }
+      orHavingNull(callback) {
+        return this._bool("or").havingNull(callback);
+      }
+      havingNotNull(callback) {
+        return this._not(true).havingNull(callback);
+      }
+      orHavingNotNull(callback) {
+        return this._not(true)._bool("or").havingNull(callback);
+      }
+      havingExists(callback) {
+        this._statements.push({
+          grouping: "having",
+          type: "havingExists",
+          value: callback,
+          not: this._not(),
+          bool: this._bool()
+        });
+        return this;
+      }
+      orHavingExists(callback) {
+        return this._bool("or").havingExists(callback);
+      }
+      havingNotExists(callback) {
+        return this._not(true).havingExists(callback);
+      }
+      orHavingNotExists(callback) {
+        return this._not(true)._bool("or").havingExists(callback);
+      }
+      havingBetween(column, values) {
+        assert(Array.isArray(values), "The second argument to havingBetween must be an array.");
+        assert(values.length === 2, "You must specify 2 values for the havingBetween clause");
+        this._statements.push({
+          grouping: "having",
+          type: "havingBetween",
+          column,
+          value: values,
+          not: this._not(),
+          bool: this._bool()
+        });
+        return this;
+      }
+      orHavingBetween(column, values) {
+        return this._bool("or").havingBetween(column, values);
+      }
+      havingNotBetween(column, values) {
+        return this._not(true).havingBetween(column, values);
+      }
+      orHavingNotBetween(column, values) {
+        return this._not(true)._bool("or").havingBetween(column, values);
+      }
+      havingIn(column, values) {
+        if (Array.isArray(values) && isEmpty(values))
+          return this.where(this._not());
+        this._statements.push({
+          grouping: "having",
+          type: "havingIn",
+          column,
+          value: values,
+          not: this._not(),
+          bool: this._bool()
+        });
+        return this;
+      }
+      orHavingIn(column, values) {
+        return this._bool("or").havingIn(column, values);
+      }
+      havingNotIn(column, values) {
+        return this._not(true).havingIn(column, values);
+      }
+      orHavingNotIn(column, values) {
+        return this._bool("or")._not(true).havingIn(column, values);
+      }
+      havingRaw(sql, bindings) {
+        const raw = sql.isRawInstance ? sql : this.client.raw(sql, bindings);
+        this._statements.push({
+          grouping: "having",
+          type: "havingRaw",
+          value: raw,
+          bool: this._bool(),
+          not: this._not()
+        });
+        return this;
+      }
+      orHavingRaw(sql, bindings) {
+        return this._bool("or").havingRaw(sql, bindings);
+      }
+      offset(value) {
+        if (value == null || value.isRawInstance || value instanceof Builder) {
+          this._single.offset = value;
+        } else {
+          const val = parseInt(value, 10);
+          if (isNaN(val)) {
+            this.client.logger.warn("A valid integer must be provided to offset");
+          } else if (val < 0) {
+            throw new Error(`A non-negative integer must be provided to offset.`);
+          } else {
+            this._single.offset = val;
+          }
+        }
+        return this;
+      }
+      limit(value) {
+        const val = parseInt(value, 10);
+        if (isNaN(val)) {
+          this.client.logger.warn("A valid integer must be provided to limit");
+        } else {
+          this._single.limit = val;
+        }
+        return this;
+      }
+      count(column, options) {
+        return this._aggregate("count", column || "*", options);
+      }
+      min(column, options) {
+        return this._aggregate("min", column, options);
+      }
+      max(column, options) {
+        return this._aggregate("max", column, options);
+      }
+      sum(column, options) {
+        return this._aggregate("sum", column, options);
+      }
+      avg(column, options) {
+        return this._aggregate("avg", column, options);
+      }
+      countDistinct(...columns) {
+        let options;
+        if (columns.length > 1 && isPlainObject(last(columns))) {
+          [options] = columns.splice(columns.length - 1, 1);
+        }
+        if (!columns.length) {
+          columns = "*";
+        } else if (columns.length === 1) {
+          columns = columns[0];
+        }
+        return this._aggregate("count", columns, { ...options, distinct: true });
+      }
+      sumDistinct(column, options) {
+        return this._aggregate("sum", column, { ...options, distinct: true });
+      }
+      avgDistinct(column, options) {
+        return this._aggregate("avg", column, { ...options, distinct: true });
+      }
+      increment(column, amount = 1) {
+        if (isObject(column)) {
+          for (const key in column) {
+            this._counter(key, column[key]);
+          }
+          return this;
+        }
+        return this._counter(column, amount);
+      }
+      decrement(column, amount = 1) {
+        if (isObject(column)) {
+          for (const key in column) {
+            this._counter(key, -column[key]);
+          }
+          return this;
+        }
+        return this._counter(column, -amount);
+      }
+      clearCounters() {
+        this._single.counter = {};
+        return this;
+      }
+      first(...args2) {
+        if (this._method && this._method !== "select") {
+          throw new Error(`Cannot chain .first() on "${this._method}" query`);
+        }
+        this.select(normalizeArr(...args2));
+        this._method = "first";
+        this.limit(1);
+        return this;
+      }
+      connection(_connection) {
+        this._connection = _connection;
+        this.client.processPassedConnection(_connection);
+        return this;
+      }
+      pluck(column) {
+        if (this._method && this._method !== "select") {
+          throw new Error(`Cannot chain .pluck() on "${this._method}" query`);
+        }
+        this._method = "pluck";
+        this._single.pluck = column;
+        this._statements.push({
+          grouping: "columns",
+          type: "pluck",
+          value: column
+        });
+        return this;
+      }
+      clearSelect() {
+        this._clearGrouping("columns");
+        return this;
+      }
+      clearWhere() {
+        this._clearGrouping("where");
+        return this;
+      }
+      clearGroup() {
+        this._clearGrouping("group");
+        return this;
+      }
+      clearOrder() {
+        this._clearGrouping("order");
+        return this;
+      }
+      clearHaving() {
+        this._clearGrouping("having");
+        return this;
+      }
+      clear(statement) {
+        if (!CLEARABLE_STATEMENTS.has(statement))
+          throw new Error(`Knex Error: unknown statement '${statement}'`);
+        if (statement.startsWith("counter"))
+          return this.clearCounters();
+        if (statement === "select") {
+          statement = "columns";
+        }
+        this._clearGrouping(statement);
+        return this;
+      }
+      insert(values, returning, options) {
+        this._method = "insert";
+        if (!isEmpty(returning))
+          this.returning(returning, options);
+        this._single.insert = values;
+        return this;
+      }
+      update(values, returning, options) {
+        let ret;
+        const obj = this._single.update || {};
+        this._method = "update";
+        if (isString(values)) {
+          obj[values] = returning;
+          if (arguments.length > 2) {
+            ret = arguments[2];
+          }
+        } else {
+          const keys = Object.keys(values);
+          if (this._single.update) {
+            this.client.logger.warn("Update called multiple times with objects.");
+          }
+          let i = -1;
+          while (++i < keys.length) {
+            obj[keys[i]] = values[keys[i]];
+          }
+          ret = arguments[1];
+        }
+        if (!isEmpty(ret))
+          this.returning(ret, options);
+        this._single.update = obj;
+        return this;
+      }
+      returning(returning, options) {
+        this._single.returning = returning;
+        this._single.options = options;
+        return this;
+      }
+      onConflict(columns) {
+        if (typeof columns === "string") {
+          columns = [columns];
+        }
+        return new OnConflictBuilder(this, columns || true);
+      }
+      delete(ret, options) {
+        this._method = "del";
+        if (!isEmpty(ret))
+          this.returning(ret, options);
+        return this;
+      }
+      truncate(tableName) {
+        this._method = "truncate";
+        if (tableName) {
+          this._single.table = tableName;
+        }
+        return this;
+      }
+      columnInfo(column) {
+        this._method = "columnInfo";
+        this._single.columnInfo = column;
+        return this;
+      }
+      forUpdate(...tables) {
+        this._single.lock = lockMode.forUpdate;
+        this._single.lockTables = tables;
+        return this;
+      }
+      forShare(...tables) {
+        this._single.lock = lockMode.forShare;
+        this._single.lockTables = tables;
+        return this;
+      }
+      forNoKeyUpdate(...tables) {
+        this._single.lock = lockMode.forNoKeyUpdate;
+        this._single.lockTables = tables;
+        return this;
+      }
+      forKeyShare(...tables) {
+        this._single.lock = lockMode.forKeyShare;
+        this._single.lockTables = tables;
+        return this;
+      }
+      skipLocked() {
+        if (!this._isSelectQuery()) {
+          throw new Error(`Cannot chain .skipLocked() on "${this._method}" query!`);
+        }
+        if (!this._hasLockMode()) {
+          throw new Error(".skipLocked() can only be used after a call to .forShare() or .forUpdate()!");
+        }
+        if (this._single.waitMode === waitMode.noWait) {
+          throw new Error(".skipLocked() cannot be used together with .noWait()!");
+        }
+        this._single.waitMode = waitMode.skipLocked;
+        return this;
+      }
+      noWait() {
+        if (!this._isSelectQuery()) {
+          throw new Error(`Cannot chain .noWait() on "${this._method}" query!`);
+        }
+        if (!this._hasLockMode()) {
+          throw new Error(".noWait() can only be used after a call to .forShare() or .forUpdate()!");
+        }
+        if (this._single.waitMode === waitMode.skipLocked) {
+          throw new Error(".noWait() cannot be used together with .skipLocked()!");
+        }
+        this._single.waitMode = waitMode.noWait;
+        return this;
+      }
+      fromJS(obj) {
+        each(obj, (val, key) => {
+          if (typeof this[key] !== "function") {
+            this.client.logger.warn(`Knex Error: unknown key ${key}`);
+          }
+          if (Array.isArray(val)) {
+            this[key].apply(this, val);
+          } else {
+            this[key](val);
+          }
+        });
+        return this;
+      }
+      modify(callback) {
+        callback.apply(this, [this].concat(tail(arguments)));
+        return this;
+      }
+      upsert(values, returning, options) {
+        throw new Error(`Upsert is not yet supported for dialect ${this.client.dialect}`);
+      }
+      _analytic(alias, second, third) {
+        let analytic;
+        const { schema } = this._single;
+        const method = this._analyticMethod();
+        alias = typeof alias === "string" ? alias : null;
+        assert(typeof second === "function" || second.isRawInstance || Array.isArray(second) || typeof second === "string" || typeof second === "object", `The second argument to an analytic function must be either a function, a raw,
+       an array of string or object, an object or a single string.`);
+        if (third) {
+          assert(Array.isArray(third) || typeof third === "string" || typeof third === "object", "The third argument to an analytic function must be either a string, an array of string or object or an object.");
+        }
+        if (isFunction(second)) {
+          analytic = new Analytic(method, schema, alias);
+          second.call(analytic, analytic);
+        } else if (second.isRawInstance) {
+          const raw = second;
+          analytic = {
+            grouping: "columns",
+            type: "analytic",
+            method,
+            raw,
+            alias
+          };
+        } else {
+          const order = !Array.isArray(second) ? [second] : second;
+          let partitions = third || [];
+          partitions = !Array.isArray(partitions) ? [partitions] : partitions;
+          analytic = {
+            grouping: "columns",
+            type: "analytic",
+            method,
+            order,
+            alias,
+            partitions
+          };
+        }
+        this._statements.push(analytic);
+        return this;
+      }
+      rank(...args2) {
+        return this._analyticMethod("rank")._analytic(...args2);
+      }
+      denseRank(...args2) {
+        return this._analyticMethod("dense_rank")._analytic(...args2);
+      }
+      rowNumber(...args2) {
+        return this._analyticMethod("row_number")._analytic(...args2);
+      }
+      _counter(column, amount) {
+        amount = parseFloat(amount);
+        this._method = "update";
+        this._single.counter = this._single.counter || {};
+        this._single.counter[column] = amount;
+        return this;
+      }
+      _bool(val) {
+        if (arguments.length === 1) {
+          this._boolFlag = val;
+          return this;
+        }
+        const ret = this._boolFlag;
+        this._boolFlag = "and";
+        return ret;
+      }
+      _not(val) {
+        if (arguments.length === 1) {
+          this._notFlag = val;
+          return this;
+        }
+        const ret = this._notFlag;
+        this._notFlag = false;
+        return ret;
+      }
+      _joinType(val) {
+        if (arguments.length === 1) {
+          this._joinFlag = val;
+          return this;
+        }
+        const ret = this._joinFlag || "inner";
+        this._joinFlag = "inner";
+        return ret;
+      }
+      _analyticMethod(val) {
+        if (arguments.length === 1) {
+          this._analyticFlag = val;
+          return this;
+        }
+        return this._analyticFlag || "row_number";
+      }
+      _aggregate(method, column, options = {}) {
+        this._statements.push({
+          grouping: "columns",
+          type: column.isRawInstance ? "aggregateRaw" : "aggregate",
+          method,
+          value: column,
+          aggregateDistinct: options.distinct || false,
+          alias: options.as
+        });
+        return this;
+      }
+      _clearGrouping(grouping) {
+        if (grouping in this._single) {
+          this._single[grouping] = void 0;
+        } else {
+          this._statements = reject(this._statements, { grouping });
+        }
+      }
+      _isSelectQuery() {
+        return SELECT_COMMANDS.has(this._method);
+      }
+      _hasLockMode() {
+        return LOCK_MODES.has(this._single.lock);
+      }
+    };
+    var isValidStatementArg = (statement) => typeof statement === "function" || statement instanceof Builder || statement && statement.isRawInstance;
+    var validateWithArgs = function(alias, statementOrColumnList, nothingOrStatement, method) {
+      const [query, columnList] = typeof nothingOrStatement === "undefined" ? [statementOrColumnList, void 0] : [nothingOrStatement, statementOrColumnList];
+      if (typeof alias !== "string") {
+        throw new Error(`${method}() first argument must be a string`);
+      }
+      if (isValidStatementArg(query) && typeof columnList === "undefined") {
+        return;
+      }
+      const isNonEmptyNameList = Array.isArray(columnList) && columnList.length > 0 && columnList.every((it) => typeof it === "string");
+      if (!isNonEmptyNameList) {
+        throw new Error(`${method}() second argument must be a statement or non-empty column name list.`);
+      }
+      if (isValidStatementArg(query)) {
+        return;
+      }
+      throw new Error(`${method}() third argument must be a function / QueryBuilder or a raw when its second argument is a column name list`);
+    };
+    Builder.prototype.select = Builder.prototype.columns;
+    Builder.prototype.column = Builder.prototype.columns;
+    Builder.prototype.andWhereNot = Builder.prototype.whereNot;
+    Builder.prototype.andWhereNotColumn = Builder.prototype.whereNotColumn;
+    Builder.prototype.andWhere = Builder.prototype.where;
+    Builder.prototype.andWhereColumn = Builder.prototype.whereColumn;
+    Builder.prototype.andWhereRaw = Builder.prototype.whereRaw;
+    Builder.prototype.andWhereBetween = Builder.prototype.whereBetween;
+    Builder.prototype.andWhereNotBetween = Builder.prototype.whereNotBetween;
+    Builder.prototype.andHaving = Builder.prototype.having;
+    Builder.prototype.andHavingIn = Builder.prototype.havingIn;
+    Builder.prototype.andHavingNotIn = Builder.prototype.havingNotIn;
+    Builder.prototype.andHavingNull = Builder.prototype.havingNull;
+    Builder.prototype.andHavingNotNull = Builder.prototype.havingNotNull;
+    Builder.prototype.andHavingExists = Builder.prototype.havingExists;
+    Builder.prototype.andHavingNotExists = Builder.prototype.havingNotExists;
+    Builder.prototype.andHavingBetween = Builder.prototype.havingBetween;
+    Builder.prototype.andHavingNotBetween = Builder.prototype.havingNotBetween;
+    Builder.prototype.from = Builder.prototype.table;
+    Builder.prototype.into = Builder.prototype.table;
+    Builder.prototype.del = Builder.prototype.delete;
+    augmentWithBuilderInterface(Builder);
+    addQueryContext(Builder);
+    Builder.extend = (methodName, fn2) => {
+      if (Object.prototype.hasOwnProperty.call(Builder.prototype, methodName)) {
+        throw new Error(`Can't extend QueryBuilder with existing method ('${methodName}').`);
+      }
+      assign(Builder.prototype, { [methodName]: fn2 });
+    };
+    var OnConflictBuilder = class {
+      constructor(builder, columns) {
+        this.builder = builder;
+        this._columns = columns;
+      }
+      ignore() {
+        this.builder._single.onConflict = this._columns;
+        this.builder._single.ignore = true;
+        return this.builder;
+      }
+      merge(updates) {
+        this.builder._single.onConflict = this._columns;
+        this.builder._single.merge = { updates };
+        return this.builder;
+      }
+      then() {
+        throw new Error("Incomplete onConflict clause. .onConflict() must be directly followed by either .merge() or .ignore()");
+      }
+    };
+    module2.exports = Builder;
+  }
+});
+
+// node_modules/lodash/_arrayReduce.js
+var require_arrayReduce = __commonJS({
+  "node_modules/lodash/_arrayReduce.js"(exports2, module2) {
+    function arrayReduce(array, iteratee, accumulator, initAccum) {
+      var index = -1, length = array == null ? 0 : array.length;
+      if (initAccum && length) {
+        accumulator = array[++index];
+      }
+      while (++index < length) {
+        accumulator = iteratee(accumulator, array[index], index, array);
+      }
+      return accumulator;
+    }
+    module2.exports = arrayReduce;
+  }
+});
+
+// node_modules/lodash/_baseReduce.js
+var require_baseReduce = __commonJS({
+  "node_modules/lodash/_baseReduce.js"(exports2, module2) {
+    function baseReduce(collection, iteratee, accumulator, initAccum, eachFunc) {
+      eachFunc(collection, function(value, index, collection2) {
+        accumulator = initAccum ? (initAccum = false, value) : iteratee(accumulator, value, index, collection2);
+      });
+      return accumulator;
+    }
+    module2.exports = baseReduce;
+  }
+});
+
+// node_modules/lodash/reduce.js
+var require_reduce = __commonJS({
+  "node_modules/lodash/reduce.js"(exports2, module2) {
+    var arrayReduce = require_arrayReduce();
+    var baseEach = require_baseEach();
+    var baseIteratee = require_baseIteratee();
+    var baseReduce = require_baseReduce();
+    var isArray = require_isArray();
+    function reduce(collection, iteratee, accumulator) {
+      var func = isArray(collection) ? arrayReduce : baseReduce, initAccum = arguments.length < 3;
+      return func(collection, baseIteratee(iteratee, 4), accumulator, initAccum, baseEach);
+    }
+    module2.exports = reduce;
+  }
+});
+
+// node_modules/lodash/transform.js
+var require_transform = __commonJS({
+  "node_modules/lodash/transform.js"(exports2, module2) {
+    var arrayEach = require_arrayEach();
+    var baseCreate = require_baseCreate();
+    var baseForOwn = require_baseForOwn();
+    var baseIteratee = require_baseIteratee();
+    var getPrototype = require_getPrototype();
+    var isArray = require_isArray();
+    var isBuffer = require_isBuffer();
+    var isFunction = require_isFunction();
+    var isObject = require_isObject();
+    var isTypedArray = require_isTypedArray();
+    function transform(object, iteratee, accumulator) {
+      var isArr = isArray(object), isArrLike = isArr || isBuffer(object) || isTypedArray(object);
+      iteratee = baseIteratee(iteratee, 4);
+      if (accumulator == null) {
+        var Ctor = object && object.constructor;
+        if (isArrLike) {
+          accumulator = isArr ? new Ctor() : [];
+        } else if (isObject(object)) {
+          accumulator = isFunction(Ctor) ? baseCreate(getPrototype(object)) : {};
+        } else {
+          accumulator = {};
+        }
+      }
+      (isArrLike ? arrayEach : baseForOwn)(object, function(value, index, object2) {
+        return iteratee(accumulator, value, index, object2);
+      });
+      return accumulator;
+    }
+    module2.exports = transform;
+  }
+});
+
+// node_modules/knex/lib/formatter/formatterUtils.js
+var require_formatterUtils = __commonJS({
+  "node_modules/knex/lib/formatter/formatterUtils.js"(exports2, module2) {
+    var { isObject } = require_is();
+    function compileCallback(callback, method, client, bindingsHolder) {
+      const builder = client.queryBuilder();
+      callback.call(builder, builder);
+      const compiler = client.queryCompiler(builder, bindingsHolder.bindings);
+      return compiler.toSQL(method || builder._method || "select");
+    }
+    function wrapAsIdentifier(value, builder, client) {
+      const queryContext = builder.queryContext();
+      return client.wrapIdentifier((value || "").trim(), queryContext);
+    }
+    function formatDefault(value, type, client) {
+      if (value === void 0) {
+        return "";
+      } else if (value === null) {
+        return "null";
+      } else if (value && value.isRawInstance) {
+        return value.toQuery();
+      } else if (type === "bool") {
+        if (value === "false")
+          value = 0;
+        return `'${value ? 1 : 0}'`;
+      } else if ((type === "json" || type === "jsonb") && isObject(value)) {
+        return `'${JSON.stringify(value)}'`;
+      } else {
+        return client._escapeBinding(value.toString());
+      }
+    }
+    module2.exports = {
+      compileCallback,
+      wrapAsIdentifier,
+      formatDefault
+    };
+  }
+});
+
+// node_modules/knex/lib/formatter/wrappingFormatter.js
+var require_wrappingFormatter = __commonJS({
+  "node_modules/knex/lib/formatter/wrappingFormatter.js"(exports2, module2) {
+    var transform = require_transform();
+    var QueryBuilder = require_querybuilder();
+    var { compileCallback, wrapAsIdentifier } = require_formatterUtils();
+    var orderBys = ["asc", "desc"];
+    var operators = transform([
+      "=",
+      "<",
+      ">",
+      "<=",
+      ">=",
+      "<>",
+      "!=",
+      "like",
+      "not like",
+      "between",
+      "not between",
+      "ilike",
+      "not ilike",
+      "exists",
+      "not exist",
+      "rlike",
+      "not rlike",
+      "regexp",
+      "not regexp",
+      "match",
+      "&",
+      "|",
+      "^",
+      "<<",
+      ">>",
+      "~",
+      "~=",
+      "~*",
+      "!~",
+      "!~*",
+      "#",
+      "&&",
+      "@>",
+      "<@",
+      "||",
+      "&<",
+      "&>",
+      "-|-",
+      "@@",
+      "!!",
+      ["?", "\\?"],
+      ["?|", "\\?|"],
+      ["?&", "\\?&"]
+    ], (result, key) => {
+      if (Array.isArray(key)) {
+        result[key[0]] = key[1];
+      } else {
+        result[key] = key;
+      }
+    }, {});
+    function columnize(target, builder, client, bindingHolder) {
+      const columns = Array.isArray(target) ? target : [target];
+      let str = "", i = -1;
+      while (++i < columns.length) {
+        if (i > 0)
+          str += ", ";
+        str += wrap(columns[i], void 0, builder, client, bindingHolder);
+      }
+      return str;
+    }
+    function wrap(value, isParameter, builder, client, bindingHolder) {
+      const raw = unwrapRaw(value, isParameter, builder, client, bindingHolder);
+      if (raw)
+        return raw;
+      switch (typeof value) {
+        case "function":
+          return outputQuery(compileCallback(value, void 0, client, bindingHolder), true, builder, client);
+        case "object":
+          return parseObject(value, builder, client, bindingHolder);
+        case "number":
+          return value;
+        default:
+          return wrapString(value + "", builder, client);
+      }
+    }
+    function unwrapRaw(value, isParameter, builder, client, bindingsHolder) {
+      let query;
+      if (value instanceof QueryBuilder) {
+        query = client.queryCompiler(value).toSQL();
+        if (query.bindings) {
+          bindingsHolder.bindings.push(...query.bindings);
+        }
+        return outputQuery(query, isParameter, builder, client);
+      }
+      if (value && value.isRawInstance) {
+        value.client = client;
+        if (builder._queryContext) {
+          value.queryContext = () => {
+            return builder._queryContext;
+          };
+        }
+        query = value.toSQL();
+        if (query.bindings) {
+          bindingsHolder.bindings.push(...query.bindings);
+        }
+        return query.sql;
+      }
+      if (isParameter) {
+        bindingsHolder.bindings.push(value);
+      }
+    }
+    function operator(value, builder, client, bindingsHolder) {
+      const raw = unwrapRaw(value, void 0, builder, client, bindingsHolder);
+      if (raw)
+        return raw;
+      const operator2 = operators[(value || "").toLowerCase()];
+      if (!operator2) {
+        throw new TypeError(`The operator "${value}" is not permitted`);
+      }
+      return operator2;
+    }
+    function wrapString(value, builder, client) {
+      const asIndex = value.toLowerCase().indexOf(" as ");
+      if (asIndex !== -1) {
+        const first = value.slice(0, asIndex);
+        const second = value.slice(asIndex + 4);
+        return client.alias(wrapString(first, builder, client), wrapAsIdentifier(second, builder, client));
+      }
+      const wrapped = [];
+      let i = -1;
+      const segments = value.split(".");
+      while (++i < segments.length) {
+        value = segments[i];
+        if (i === 0 && segments.length > 1) {
+          wrapped.push(wrapString((value || "").trim(), builder, client));
+        } else {
+          wrapped.push(wrapAsIdentifier(value, builder, client));
+        }
+      }
+      return wrapped.join(".");
+    }
+    function parseObject(obj, builder, client, formatter) {
+      const ret = [];
+      for (const alias in obj) {
+        const queryOrIdentifier = obj[alias];
+        if (typeof queryOrIdentifier === "function") {
+          const compiled = compileCallback(queryOrIdentifier, void 0, client, formatter);
+          compiled.as = alias;
+          ret.push(outputQuery(compiled, true, builder, client));
+        } else if (queryOrIdentifier instanceof QueryBuilder) {
+          ret.push(client.alias(`(${wrap(queryOrIdentifier, void 0, builder, client, formatter)})`, wrapAsIdentifier(alias, builder, client)));
+        } else {
+          ret.push(client.alias(wrap(queryOrIdentifier, void 0, builder, client, formatter), wrapAsIdentifier(alias, builder, client)));
+        }
+      }
+      return ret.join(", ");
+    }
+    function outputQuery(compiled, isParameter, builder, client) {
+      let sql = compiled.sql || "";
+      if (sql) {
+        if ((compiled.method === "select" || compiled.method === "first") && (isParameter || compiled.as)) {
+          sql = `(${sql})`;
+          if (compiled.as)
+            return client.alias(sql, wrapString(compiled.as, builder, client));
+        }
+      }
+      return sql;
+    }
+    function rawOrFn(value, method, builder, client, bindingHolder) {
+      if (typeof value === "function") {
+        return outputQuery(compileCallback(value, method, client, bindingHolder), void 0, builder, client, bindingHolder);
+      }
+      return unwrapRaw(value, void 0, builder, client, bindingHolder) || "";
+    }
+    function direction(value, builder, client, bindingsHolder) {
+      const raw = unwrapRaw(value, void 0, builder, client, bindingsHolder);
+      if (raw)
+        return raw;
+      return orderBys.indexOf((value || "").toLowerCase()) !== -1 ? value : "asc";
+    }
+    module2.exports = {
+      columnize,
+      direction,
+      operator,
+      outputQuery,
+      rawOrFn,
+      unwrapRaw,
+      wrap,
+      wrapString
+    };
+  }
+});
+
+// node_modules/knex/lib/formatter/rawFormatter.js
+var require_rawFormatter = __commonJS({
+  "node_modules/knex/lib/formatter/rawFormatter.js"(exports2, module2) {
+    var { columnize } = require_wrappingFormatter();
+    function replaceRawArrBindings(raw, client) {
+      const bindingsHolder = {
+        bindings: []
+      };
+      const builder = raw;
+      const expectedBindings = raw.bindings.length;
+      const values = raw.bindings;
+      let index = 0;
+      const sql = raw.sql.replace(/\\?\?\??/g, function(match) {
+        if (match === "\\?") {
+          return match;
+        }
+        const value = values[index++];
+        if (match === "??") {
+          return columnize(value, builder, client, bindingsHolder);
+        }
+        return client.parameter(value, builder, bindingsHolder);
+      });
+      if (expectedBindings !== index) {
+        throw new Error(`Expected ${expectedBindings} bindings, saw ${index}`);
+      }
+      return {
+        method: "raw",
+        sql,
+        bindings: bindingsHolder.bindings
+      };
+    }
+    function replaceKeyBindings(raw, client) {
+      const bindingsHolder = {
+        bindings: []
+      };
+      const builder = raw;
+      const values = raw.bindings;
+      const regex = /\\?(:(\w+):(?=::)|:(\w+):(?!:)|:(\w+))/g;
+      const sql = raw.sql.replace(regex, function(match, p1, p2, p3, p4) {
+        if (match !== p1) {
+          return p1;
+        }
+        const part = p2 || p3 || p4;
+        const key = match.trim();
+        const isIdentifier = key[key.length - 1] === ":";
+        const value = values[part];
+        if (value === void 0) {
+          if (Object.prototype.hasOwnProperty.call(values, part)) {
+            bindingsHolder.bindings.push(value);
+          }
+          return match;
+        }
+        if (isIdentifier) {
+          return match.replace(p1, columnize(value, builder, client, bindingsHolder));
+        }
+        return match.replace(p1, client.parameter(value, builder, bindingsHolder));
+      });
+      return {
+        method: "raw",
+        sql,
+        bindings: bindingsHolder.bindings
+      };
+    }
+    module2.exports = {
+      replaceKeyBindings,
+      replaceRawArrBindings
+    };
+  }
+});
+
+// node_modules/knex/lib/util/nanoid.js
+var require_nanoid = __commonJS({
+  "node_modules/knex/lib/util/nanoid.js"(exports2, module2) {
+    var urlAlphabet2 = "ModuleSymbhasOwnPr-0123456789ABCDEFGHNRVfgctiUvz_KqYTJkLxpZXIjQW";
+    var numberAlphabet = "0123456789";
+    function nanoid2(size = 21) {
+      let id = "";
+      let i = size;
+      while (i--) {
+        id += urlAlphabet2[Math.random() * 64 | 0];
+      }
+      return id;
+    }
+    function nanonum(size = 21) {
+      let id = "";
+      let i = size;
+      while (i--) {
+        id += numberAlphabet[Math.random() * 10 | 0];
+      }
+      return id;
+    }
+    module2.exports = { nanoid: nanoid2, nanonum };
+  }
+});
+
+// node_modules/knex/lib/raw.js
+var require_raw2 = __commonJS({
+  "node_modules/knex/lib/raw.js"(exports2, module2) {
+    var { EventEmitter } = require("events");
+    var debug = require_src5();
+    var assign = require_assign();
+    var isPlainObject = require_isPlainObject();
+    var reduce = require_reduce();
+    var {
+      replaceRawArrBindings,
+      replaceKeyBindings
+    } = require_rawFormatter();
+    var helpers = require_helpers();
+    var saveAsyncStack = require_save_async_stack();
+    var { nanoid: nanoid2 } = require_nanoid();
+    var { isNumber, isObject } = require_is();
+    var {
+      augmentWithBuilderInterface
+    } = require_builder_interface_augmenter();
+    var debugBindings = debug("knex:bindings");
+    var Raw = class extends EventEmitter {
+      constructor(client) {
+        super();
+        this.client = client;
+        this.sql = "";
+        this.bindings = [];
+        this._wrappedBefore = void 0;
+        this._wrappedAfter = void 0;
+        if (client && client.config) {
+          this._debug = client.config.debug;
+          saveAsyncStack(this, 4);
+        }
+      }
+      set(sql, bindings) {
+        this.sql = sql;
+        this.bindings = isObject(bindings) && !bindings.toSQL || bindings === void 0 ? bindings : [bindings];
+        return this;
+      }
+      timeout(ms, { cancel } = {}) {
+        if (isNumber(ms) && ms > 0) {
+          this._timeout = ms;
+          if (cancel) {
+            this.client.assertCanCancelQuery();
+            this._cancelOnTimeout = true;
+          }
+        }
+        return this;
+      }
+      wrap(before, after) {
+        this._wrappedBefore = before;
+        this._wrappedAfter = after;
+        return this;
+      }
+      toString() {
+        return this.toQuery();
+      }
+      toSQL(method, tz) {
+        let obj;
+        if (Array.isArray(this.bindings)) {
+          obj = replaceRawArrBindings(this, this.client);
+        } else if (this.bindings && isPlainObject(this.bindings)) {
+          obj = replaceKeyBindings(this, this.client);
+        } else {
+          obj = {
+            method: "raw",
+            sql: this.sql,
+            bindings: this.bindings === void 0 ? [] : [this.bindings]
+          };
+        }
+        if (this._wrappedBefore) {
+          obj.sql = this._wrappedBefore + obj.sql;
+        }
+        if (this._wrappedAfter) {
+          obj.sql = obj.sql + this._wrappedAfter;
+        }
+        obj.options = reduce(this._options, assign, {});
+        if (this._timeout) {
+          obj.timeout = this._timeout;
+          if (this._cancelOnTimeout) {
+            obj.cancelOnTimeout = this._cancelOnTimeout;
+          }
+        }
+        obj.bindings = obj.bindings || [];
+        if (helpers.containsUndefined(obj.bindings)) {
+          const undefinedBindingIndices = helpers.getUndefinedIndices(this.bindings);
+          debugBindings(obj.bindings);
+          throw new Error(`Undefined binding(s) detected for keys [${undefinedBindingIndices}] when compiling RAW query: ${obj.sql}`);
+        }
+        obj.__knexQueryUid = nanoid2();
+        Object.defineProperties(obj, {
+          toNative: {
+            value: () => ({
+              sql: this.client.positionBindings(obj.sql),
+              bindings: this.client.prepBindings(obj.bindings)
+            }),
+            enumerable: false
+          }
+        });
+        return obj;
+      }
+    };
+    Raw.prototype.isRawInstance = true;
+    augmentWithBuilderInterface(Raw);
+    helpers.addQueryContext(Raw);
+    module2.exports = Raw;
+  }
+});
+
+// node_modules/lodash/compact.js
+var require_compact = __commonJS({
+  "node_modules/lodash/compact.js"(exports2, module2) {
+    function compact(array) {
+      var index = -1, length = array == null ? 0 : array.length, resIndex = 0, result = [];
+      while (++index < length) {
+        var value = array[index];
+        if (value) {
+          result[resIndex++] = value;
+        }
+      }
+      return result;
+    }
+    module2.exports = compact;
+  }
+});
+
+// node_modules/lodash/_arrayAggregator.js
+var require_arrayAggregator = __commonJS({
+  "node_modules/lodash/_arrayAggregator.js"(exports2, module2) {
+    function arrayAggregator(array, setter, iteratee, accumulator) {
+      var index = -1, length = array == null ? 0 : array.length;
+      while (++index < length) {
+        var value = array[index];
+        setter(accumulator, value, iteratee(value), array);
+      }
+      return accumulator;
+    }
+    module2.exports = arrayAggregator;
+  }
+});
+
+// node_modules/lodash/_baseAggregator.js
+var require_baseAggregator = __commonJS({
+  "node_modules/lodash/_baseAggregator.js"(exports2, module2) {
+    var baseEach = require_baseEach();
+    function baseAggregator(collection, setter, iteratee, accumulator) {
+      baseEach(collection, function(value, key, collection2) {
+        setter(accumulator, value, iteratee(value), collection2);
+      });
+      return accumulator;
+    }
+    module2.exports = baseAggregator;
+  }
+});
+
+// node_modules/lodash/_createAggregator.js
+var require_createAggregator = __commonJS({
+  "node_modules/lodash/_createAggregator.js"(exports2, module2) {
+    var arrayAggregator = require_arrayAggregator();
+    var baseAggregator = require_baseAggregator();
+    var baseIteratee = require_baseIteratee();
+    var isArray = require_isArray();
+    function createAggregator(setter, initializer) {
+      return function(collection, iteratee) {
+        var func = isArray(collection) ? arrayAggregator : baseAggregator, accumulator = initializer ? initializer() : {};
+        return func(collection, setter, baseIteratee(iteratee, 2), accumulator);
+      };
+    }
+    module2.exports = createAggregator;
+  }
+});
+
+// node_modules/lodash/groupBy.js
+var require_groupBy = __commonJS({
+  "node_modules/lodash/groupBy.js"(exports2, module2) {
+    var baseAssignValue = require_baseAssignValue();
+    var createAggregator = require_createAggregator();
+    var objectProto = Object.prototype;
+    var hasOwnProperty = objectProto.hasOwnProperty;
+    var groupBy = createAggregator(function(result, value, key) {
+      if (hasOwnProperty.call(result, key)) {
+        result[key].push(value);
+      } else {
+        baseAssignValue(result, key, [value]);
+      }
+    });
+    module2.exports = groupBy;
+  }
+});
+
+// node_modules/lodash/_baseHas.js
+var require_baseHas = __commonJS({
+  "node_modules/lodash/_baseHas.js"(exports2, module2) {
+    var objectProto = Object.prototype;
+    var hasOwnProperty = objectProto.hasOwnProperty;
+    function baseHas(object, key) {
+      return object != null && hasOwnProperty.call(object, key);
+    }
+    module2.exports = baseHas;
+  }
+});
+
+// node_modules/lodash/has.js
+var require_has = __commonJS({
+  "node_modules/lodash/has.js"(exports2, module2) {
+    var baseHas = require_baseHas();
+    var hasPath = require_hasPath();
+    function has(object, path) {
+      return object != null && hasPath(object, path, baseHas);
+    }
+    module2.exports = has;
+  }
+});
+
+// node_modules/lodash/map.js
+var require_map = __commonJS({
+  "node_modules/lodash/map.js"(exports2, module2) {
+    var arrayMap = require_arrayMap();
+    var baseIteratee = require_baseIteratee();
+    var baseMap = require_baseMap();
+    var isArray = require_isArray();
+    function map(collection, iteratee) {
+      var func = isArray(collection) ? arrayMap : baseMap;
+      return func(collection, baseIteratee(iteratee, 3));
+    }
+    module2.exports = map;
+  }
+});
+
+// node_modules/lodash/_baseSet.js
+var require_baseSet = __commonJS({
+  "node_modules/lodash/_baseSet.js"(exports2, module2) {
+    var assignValue = require_assignValue();
+    var castPath = require_castPath();
+    var isIndex = require_isIndex();
+    var isObject = require_isObject();
+    var toKey = require_toKey();
+    function baseSet(object, path, value, customizer) {
+      if (!isObject(object)) {
+        return object;
+      }
+      path = castPath(path, object);
+      var index = -1, length = path.length, lastIndex = length - 1, nested = object;
+      while (nested != null && ++index < length) {
+        var key = toKey(path[index]), newValue = value;
+        if (key === "__proto__" || key === "constructor" || key === "prototype") {
+          return object;
+        }
+        if (index != lastIndex) {
+          var objValue = nested[key];
+          newValue = customizer ? customizer(objValue, key, nested) : void 0;
+          if (newValue === void 0) {
+            newValue = isObject(objValue) ? objValue : isIndex(path[index + 1]) ? [] : {};
+          }
+        }
+        assignValue(nested, key, newValue);
+        nested = nested[key];
+      }
+      return object;
+    }
+    module2.exports = baseSet;
+  }
+});
+
+// node_modules/lodash/_basePickBy.js
+var require_basePickBy = __commonJS({
+  "node_modules/lodash/_basePickBy.js"(exports2, module2) {
+    var baseGet = require_baseGet();
+    var baseSet = require_baseSet();
+    var castPath = require_castPath();
+    function basePickBy(object, paths, predicate) {
+      var index = -1, length = paths.length, result = {};
+      while (++index < length) {
+        var path = paths[index], value = baseGet(object, path);
+        if (predicate(value, path)) {
+          baseSet(result, castPath(path, object), value);
+        }
+      }
+      return result;
+    }
+    module2.exports = basePickBy;
+  }
+});
+
+// node_modules/lodash/pickBy.js
+var require_pickBy = __commonJS({
+  "node_modules/lodash/pickBy.js"(exports2, module2) {
+    var arrayMap = require_arrayMap();
+    var baseIteratee = require_baseIteratee();
+    var basePickBy = require_basePickBy();
+    var getAllKeysIn = require_getAllKeysIn();
+    function pickBy(object, predicate) {
+      if (object == null) {
+        return {};
+      }
+      var props = arrayMap(getAllKeysIn(object), function(prop) {
+        return [prop];
+      });
+      predicate = baseIteratee(predicate);
+      return basePickBy(object, props, function(value, path) {
+        return predicate(value, path[0]);
+      });
+    }
+    module2.exports = pickBy;
+  }
+});
+
+// node_modules/lodash/omitBy.js
+var require_omitBy = __commonJS({
+  "node_modules/lodash/omitBy.js"(exports2, module2) {
+    var baseIteratee = require_baseIteratee();
+    var negate = require_negate();
+    var pickBy = require_pickBy();
+    function omitBy(object, predicate) {
+      return pickBy(object, negate(baseIteratee(predicate)));
+    }
+    module2.exports = omitBy;
+  }
+});
+
+// node_modules/knex/lib/query/querycompiler.js
+var require_querycompiler = __commonJS({
+  "node_modules/knex/lib/query/querycompiler.js"(exports2, module2) {
+    var helpers = require_helpers();
+    var Raw = require_raw2();
+    var QueryBuilder = require_querybuilder();
+    var JoinClause = require_joinclause();
+    var debug = require_src5();
+    var assign = require_assign();
+    var compact = require_compact();
+    var groupBy = require_groupBy();
+    var has = require_has();
+    var isEmpty = require_isEmpty();
+    var map = require_map();
+    var omitBy = require_omitBy();
+    var reduce = require_reduce();
+    var { nanoid: nanoid2 } = require_nanoid();
+    var { isString, isUndefined } = require_is();
+    var {
+      columnize: columnize_,
+      direction: direction_,
+      operator: operator_,
+      wrap: wrap_,
+      unwrapRaw: unwrapRaw_,
+      rawOrFn: rawOrFn_
+    } = require_wrappingFormatter();
+    var debugBindings = debug("knex:bindings");
+    var components = [
+      "columns",
+      "join",
+      "where",
+      "union",
+      "group",
+      "having",
+      "order",
+      "limit",
+      "offset",
+      "lock",
+      "waitMode"
+    ];
+    var QueryCompiler = class {
+      constructor(client, builder, bindings) {
+        this.client = client;
+        this.method = builder._method || "select";
+        this.options = builder._options;
+        this.single = builder._single;
+        this.timeout = builder._timeout || false;
+        this.cancelOnTimeout = builder._cancelOnTimeout || false;
+        this.grouped = groupBy(builder._statements, "grouping");
+        this.formatter = client.formatter(builder);
+        this._emptyInsertValue = "default values";
+        this.first = this.select;
+        this.bindings = bindings || [];
+        this.formatter.bindings = this.bindings;
+        this.bindingsHolder = this;
+        this.builder = this.formatter.builder;
+      }
+      toSQL(method, tz) {
+        this._undefinedInWhereClause = false;
+        this.undefinedBindingsInfo = [];
+        method = method || this.method;
+        const val = this[method]() || "";
+        const query = {
+          method,
+          options: reduce(this.options, assign, {}),
+          timeout: this.timeout,
+          cancelOnTimeout: this.cancelOnTimeout,
+          bindings: this.bindingsHolder.bindings || [],
+          __knexQueryUid: nanoid2()
+        };
+        Object.defineProperties(query, {
+          toNative: {
+            value: () => {
+              return {
+                sql: this.client.positionBindings(query.sql),
+                bindings: this.client.prepBindings(query.bindings)
+              };
+            },
+            enumerable: false
+          }
+        });
+        if (isString(val)) {
+          query.sql = val;
+        } else {
+          assign(query, val);
+        }
+        if (method === "select" || method === "first") {
+          if (this.single.as) {
+            query.as = this.single.as;
+          }
+        }
+        if (this._undefinedInWhereClause) {
+          debugBindings(query.bindings);
+          throw new Error(`Undefined binding(s) detected when compiling ${method.toUpperCase()}. Undefined column(s): [${this.undefinedBindingsInfo.join(", ")}] query: ${query.sql}`);
+        }
+        return query;
+      }
+      select() {
+        let sql = this.with();
+        const statements = components.map((component) => this[component](this));
+        sql += compact(statements).join(" ");
+        return sql;
+      }
+      pluck() {
+        let toPluck = this.single.pluck;
+        if (toPluck.indexOf(".") !== -1) {
+          toPluck = toPluck.split(".").slice(-1)[0];
+        }
+        return {
+          sql: this.select(),
+          pluck: toPluck
+        };
+      }
+      insert() {
+        const insertValues = this.single.insert || [];
+        let sql = this.with() + `insert into ${this.tableName} `;
+        if (Array.isArray(insertValues)) {
+          if (insertValues.length === 0) {
+            return "";
+          }
+        } else if (typeof insertValues === "object" && isEmpty(insertValues)) {
+          return sql + this._emptyInsertValue;
+        }
+        const insertData = this._prepInsert(insertValues);
+        if (typeof insertData === "string") {
+          sql += insertData;
+        } else {
+          if (insertData.columns.length) {
+            sql += `(${columnize_(insertData.columns, this.builder, this.client, this.bindingsHolder)}`;
+            sql += ") values (";
+            let i = -1;
+            while (++i < insertData.values.length) {
+              if (i !== 0)
+                sql += "), (";
+              sql += this.client.parameterize(insertData.values[i], this.client.valueForUndefined, this.builder, this.bindingsHolder);
+            }
+            sql += ")";
+          } else if (insertValues.length === 1 && insertValues[0]) {
+            sql += this._emptyInsertValue;
+          } else {
+            sql = "";
+          }
+        }
+        return sql;
+      }
+      update() {
+        const withSQL = this.with();
+        const { tableName } = this;
+        const updateData = this._prepUpdate(this.single.update);
+        const wheres = this.where();
+        return withSQL + `update ${this.single.only ? "only " : ""}${tableName} set ` + updateData.join(", ") + (wheres ? ` ${wheres}` : "");
+      }
+      _hintComments() {
+        let hints = this.grouped.hintComments || [];
+        hints = hints.map((hint) => compact(hint.value).join(" "));
+        hints = compact(hints).join(" ");
+        return hints ? `/*+ ${hints} */ ` : "";
+      }
+      columns() {
+        let distinctClause = "";
+        if (this.onlyUnions())
+          return "";
+        const hints = this._hintComments();
+        const columns = this.grouped.columns || [];
+        let i = -1, sql = [];
+        if (columns) {
+          while (++i < columns.length) {
+            const stmt = columns[i];
+            if (stmt.distinct)
+              distinctClause = "distinct ";
+            if (stmt.distinctOn) {
+              distinctClause = this.distinctOn(stmt.value);
+              continue;
+            }
+            if (stmt.type === "aggregate") {
+              sql.push(...this.aggregate(stmt));
+            } else if (stmt.type === "aggregateRaw") {
+              sql.push(this.aggregateRaw(stmt));
+            } else if (stmt.type === "analytic") {
+              sql.push(this.analytic(stmt));
+            } else if (stmt.value && stmt.value.length > 0) {
+              sql.push(columnize_(stmt.value, this.builder, this.client, this.bindingsHolder));
+            }
+          }
+        }
+        if (sql.length === 0)
+          sql = ["*"];
+        return `select ${hints}${distinctClause}` + sql.join(", ") + (this.tableName ? ` from ${this.single.only ? "only " : ""}${this.tableName}` : "");
+      }
+      _aggregate(stmt, { aliasSeparator = " as ", distinctParentheses } = {}) {
+        const value = stmt.value;
+        const method = stmt.method;
+        const distinct = stmt.aggregateDistinct ? "distinct " : "";
+        const wrap = (identifier) => wrap_(identifier, void 0, this.builder, this.client, this.bindingsHolder);
+        const addAlias = (value2, alias2) => {
+          if (alias2) {
+            return value2 + aliasSeparator + wrap(alias2);
+          }
+          return value2;
+        };
+        const aggregateArray = (value2, alias2) => {
+          let columns = value2.map(wrap).join(", ");
+          if (distinct) {
+            const openParen = distinctParentheses ? "(" : " ";
+            const closeParen = distinctParentheses ? ")" : "";
+            columns = distinct.trim() + openParen + columns + closeParen;
+          }
+          const aggregated = `${method}(${columns})`;
+          return addAlias(aggregated, alias2);
+        };
+        const aggregateString = (value2, alias2) => {
+          const aggregated = `${method}(${distinct + wrap(value2)})`;
+          return addAlias(aggregated, alias2);
+        };
+        if (Array.isArray(value)) {
+          return [aggregateArray(value)];
+        }
+        if (typeof value === "object") {
+          if (stmt.alias) {
+            throw new Error("When using an object explicit alias can not be used");
+          }
+          return Object.entries(value).map(([alias2, column2]) => {
+            if (Array.isArray(column2)) {
+              return aggregateArray(column2, alias2);
+            }
+            return aggregateString(column2, alias2);
+          });
+        }
+        const splitOn = value.toLowerCase().indexOf(" as ");
+        let column = value;
+        let { alias } = stmt;
+        if (splitOn !== -1) {
+          column = value.slice(0, splitOn);
+          if (alias) {
+            throw new Error(`Found multiple aliases for same column: ${column}`);
+          }
+          alias = value.slice(splitOn + 4);
+        }
+        return [aggregateString(column, alias)];
+      }
+      aggregate(stmt) {
+        return this._aggregate(stmt);
+      }
+      aggregateRaw(stmt) {
+        const distinct = stmt.aggregateDistinct ? "distinct " : "";
+        return `${stmt.method}(${distinct + unwrapRaw_(stmt.value, void 0, this.builder, this.client, this.bindingsHolder)})`;
+      }
+      join() {
+        let sql = "";
+        let i = -1;
+        const joins = this.grouped.join;
+        if (!joins)
+          return "";
+        while (++i < joins.length) {
+          const join = joins[i];
+          const table = join.schema && !(join.table instanceof Raw) ? `${join.schema}.${join.table}` : join.table;
+          if (i > 0)
+            sql += " ";
+          if (join.joinType === "raw") {
+            sql += unwrapRaw_(join.table, void 0, this.builder, this.client, this.bindingsHolder);
+          } else {
+            sql += join.joinType + " join " + wrap_(table, void 0, this.builder, this.client, this.bindingsHolder);
+            let ii = -1;
+            while (++ii < join.clauses.length) {
+              const clause = join.clauses[ii];
+              if (ii > 0) {
+                sql += ` ${clause.bool} `;
+              } else {
+                sql += ` ${clause.type === "onUsing" ? "using" : "on"} `;
+              }
+              const val = this[clause.type](clause);
+              if (val) {
+                sql += val;
+              }
+            }
+          }
+        }
+        return sql;
+      }
+      onBetween(statement) {
+        return wrap_(statement.column, void 0, this.builder, this.client, this.bindingsHolder) + " " + this._not(statement, "between") + " " + statement.value.map((value) => this.client.parameter(value, this.builder, this.bindingsHolder)).join(" and ");
+      }
+      onNull(statement) {
+        return wrap_(statement.column, void 0, this.builder, this.client, this.bindingsHolder) + " is " + this._not(statement, "null");
+      }
+      onExists(statement) {
+        return this._not(statement, "exists") + " (" + rawOrFn_(statement.value, void 0, this.builder, this.client, this.bindingsHolder) + ")";
+      }
+      onIn(statement) {
+        if (Array.isArray(statement.column))
+          return this.multiOnIn(statement);
+        return wrap_(statement.column, void 0, this.builder, this.client, this.bindingsHolder) + " " + this._not(statement, "in ") + this.wrap(this.client.parameterize(statement.value, void 0, this.builder, this.bindingsHolder));
+      }
+      multiOnIn(statement) {
+        let i = -1, sql = `(${columnize_(statement.column, this.builder, this.client, this.bindingsHolder)}) `;
+        sql += this._not(statement, "in ") + "((";
+        while (++i < statement.value.length) {
+          if (i !== 0)
+            sql += "),(";
+          sql += this.client.parameterize(statement.value[i], void 0, this.builder, this.bindingsHolder);
+        }
+        return sql + "))";
+      }
+      where() {
+        const wheres = this.grouped.where;
+        if (!wheres)
+          return;
+        const sql = [];
+        let i = -1;
+        while (++i < wheres.length) {
+          const stmt = wheres[i];
+          if (Object.prototype.hasOwnProperty.call(stmt, "value") && helpers.containsUndefined(stmt.value)) {
+            this.undefinedBindingsInfo.push(stmt.column);
+            this._undefinedInWhereClause = true;
+          }
+          const val = this[stmt.type](stmt);
+          if (val) {
+            if (sql.length === 0) {
+              sql[0] = "where";
+            } else {
+              sql.push(stmt.bool);
+            }
+            sql.push(val);
+          }
+        }
+        return sql.length > 1 ? sql.join(" ") : "";
+      }
+      group() {
+        return this._groupsOrders("group");
+      }
+      order() {
+        return this._groupsOrders("order");
+      }
+      having() {
+        const havings = this.grouped.having;
+        if (!havings)
+          return "";
+        const sql = ["having"];
+        for (let i = 0, l = havings.length; i < l; i++) {
+          const s = havings[i];
+          const val = this[s.type](s);
+          if (val) {
+            if (sql.length === 0) {
+              sql[0] = "where";
+            }
+            if (sql.length > 1 || sql.length === 1 && sql[0] !== "having") {
+              sql.push(s.bool);
+            }
+            sql.push(val);
+          }
+        }
+        return sql.length > 1 ? sql.join(" ") : "";
+      }
+      havingRaw(statement) {
+        return this._not(statement, "") + unwrapRaw_(statement.value, void 0, this.builder, this.client, this.bindingsHolder);
+      }
+      havingWrapped(statement) {
+        const val = rawOrFn_(statement.value, "where", this.builder, this.client, this.bindingsHolder);
+        return val && this._not(statement, "") + "(" + val.slice(6) + ")" || "";
+      }
+      havingBasic(statement) {
+        return this._not(statement, "") + wrap_(statement.column, void 0, this.builder, this.client, this.bindingsHolder) + " " + operator_(statement.operator, this.builder, this.client, this.bindingsHolder) + " " + this.client.parameter(statement.value, this.builder, this.bindingsHolder);
+      }
+      havingNull(statement) {
+        return wrap_(statement.column, void 0, this.builder, this.client, this.bindingsHolder) + " is " + this._not(statement, "null");
+      }
+      havingExists(statement) {
+        return this._not(statement, "exists") + " (" + rawOrFn_(statement.value, void 0, this.builder, this.client, this.bindingsHolder) + ")";
+      }
+      havingBetween(statement) {
+        return wrap_(statement.column, void 0, this.builder, this.client, this.bindingsHolder) + " " + this._not(statement, "between") + " " + statement.value.map((value) => this.client.parameter(value, this.builder, this.bindingsHolder)).join(" and ");
+      }
+      havingIn(statement) {
+        if (Array.isArray(statement.column))
+          return this.multiHavingIn(statement);
+        return wrap_(statement.column, void 0, this.builder, this.client, this.bindingsHolder) + " " + this._not(statement, "in ") + this.wrap(this.client.parameterize(statement.value, void 0, this.builder, this.bindingsHolder));
+      }
+      multiHavingIn(statement) {
+        let i = -1, sql = `(${columnize_(statement.column, this.builder, this.client, this.bindingsHolder)}) `;
+        sql += this._not(statement, "in ") + "((";
+        while (++i < statement.value.length) {
+          if (i !== 0)
+            sql += "),(";
+          sql += this.client.parameterize(statement.value[i], void 0, this.builder, this.bindingsHolder);
+        }
+        return sql + "))";
+      }
+      union() {
+        const onlyUnions = this.onlyUnions();
+        const unions = this.grouped.union;
+        if (!unions)
+          return "";
+        let sql = "";
+        for (let i = 0, l = unions.length; i < l; i++) {
+          const union = unions[i];
+          if (i > 0)
+            sql += " ";
+          if (i > 0 || !onlyUnions)
+            sql += union.clause + " ";
+          const statement = rawOrFn_(union.value, void 0, this.builder, this.client, this.bindingsHolder);
+          if (statement) {
+            if (union.wrap)
+              sql += "(";
+            sql += statement;
+            if (union.wrap)
+              sql += ")";
+          }
+        }
+        return sql;
+      }
+      onlyUnions() {
+        return !this.grouped.columns && this.grouped.union && !this.tableName;
+      }
+      limit() {
+        const noLimit = !this.single.limit && this.single.limit !== 0;
+        if (noLimit)
+          return "";
+        return `limit ${this.client.parameter(this.single.limit, this.builder, this.bindingsHolder)}`;
+      }
+      offset() {
+        if (!this.single.offset)
+          return "";
+        return `offset ${this.client.parameter(this.single.offset, this.builder, this.bindingsHolder)}`;
+      }
+      del() {
+        const { tableName } = this;
+        const withSQL = this.with();
+        const wheres = this.where();
+        const joins = this.join();
+        const deleteSelector = joins ? tableName + " " : "";
+        return withSQL + `delete ${deleteSelector}from ${this.single.only ? "only " : ""}${tableName}` + (joins ? ` ${joins}` : "") + (wheres ? ` ${wheres}` : "");
+      }
+      truncate() {
+        return `truncate ${this.tableName}`;
+      }
+      lock() {
+        if (this.single.lock) {
+          return this[this.single.lock]();
+        }
+      }
+      waitMode() {
+        if (this.single.waitMode) {
+          return this[this.single.waitMode]();
+        }
+      }
+      skipLocked() {
+        throw new Error(".skipLocked() is currently only supported on MySQL 8.0+ and PostgreSQL 9.5+");
+      }
+      noWait() {
+        throw new Error(".noWait() is currently only supported on MySQL 8.0+, MariaDB 10.3.0+ and PostgreSQL 9.5+");
+      }
+      distinctOn(value) {
+        throw new Error(".distinctOn() is currently only supported on PostgreSQL");
+      }
+      onWrapped(clause) {
+        const self2 = this;
+        const wrapJoin = new JoinClause();
+        clause.value.call(wrapJoin, wrapJoin);
+        let sql = "";
+        for (let ii = 0; ii < wrapJoin.clauses.length; ii++) {
+          const wrapClause = wrapJoin.clauses[ii];
+          if (ii > 0) {
+            sql += ` ${wrapClause.bool} `;
+          }
+          const val = self2[wrapClause.type](wrapClause);
+          if (val) {
+            sql += val;
+          }
+        }
+        if (sql.length) {
+          return `(${sql})`;
+        }
+        return "";
+      }
+      onBasic(clause) {
+        return wrap_(clause.column, void 0, this.builder, this.client, this.bindingsHolder) + " " + operator_(clause.operator, this.builder, this.client, this.bindingsHolder) + " " + wrap_(clause.value, void 0, this.builder, this.client, this.bindingsHolder);
+      }
+      onVal(clause) {
+        return wrap_(clause.column, void 0, this.builder, this.client, this.bindingsHolder) + " " + operator_(clause.operator, this.builder, this.client, this.bindingsHolder) + " " + this.client.parameter(clause.value, this.builder, this.bindingsHolder);
+      }
+      onRaw(clause) {
+        return unwrapRaw_(clause.value, void 0, this.builder, this.client, this.bindingsHolder);
+      }
+      onUsing(clause) {
+        return "(" + columnize_(clause.column, this.builder, this.client, this.bindingsHolder) + ")";
+      }
+      whereIn(statement) {
+        let columns;
+        if (Array.isArray(statement.column)) {
+          columns = `(${columnize_(statement.column, this.builder, this.client, this.bindingsHolder)})`;
+        } else {
+          columns = wrap_(statement.column, void 0, this.builder, this.client, this.bindingsHolder);
+        }
+        const values = this.client.values(statement.value, this.builder, this.bindingsHolder);
+        return `${columns} ${this._not(statement, "in ")}${values}`;
+      }
+      whereNull(statement) {
+        return wrap_(statement.column, void 0, this.builder, this.client, this.bindingsHolder) + " is " + this._not(statement, "null");
+      }
+      whereBasic(statement) {
+        return this._not(statement, "") + wrap_(statement.column, void 0, this.builder, this.client, this.bindingsHolder) + " " + operator_(statement.operator, this.builder, this.client, this.bindingsHolder) + " " + (statement.asColumn ? wrap_(statement.value, void 0, this.builder, this.client, this.bindingsHolder) : this.client.parameter(statement.value, this.builder, this.bindingsHolder));
+      }
+      whereExists(statement) {
+        return this._not(statement, "exists") + " (" + rawOrFn_(statement.value, void 0, this.builder, this.client, this.bindingsHolder) + ")";
+      }
+      whereWrapped(statement) {
+        const val = rawOrFn_(statement.value, "where", this.builder, this.client, this.bindingsHolder);
+        return val && this._not(statement, "") + "(" + val.slice(6) + ")" || "";
+      }
+      whereBetween(statement) {
+        return wrap_(statement.column, void 0, this.builder, this.client, this.bindingsHolder) + " " + this._not(statement, "between") + " " + statement.value.map((value) => this.client.parameter(value, this.builder, this.bindingsHolder)).join(" and ");
+      }
+      whereRaw(statement) {
+        return this._not(statement, "") + unwrapRaw_(statement.value, void 0, this.builder, this.client, this.bindingsHolder);
+      }
+      wrap(str) {
+        if (str.charAt(0) !== "(")
+          return `(${str})`;
+        return str;
+      }
+      analytic(stmt) {
+        let sql = "";
+        const self2 = this;
+        sql += stmt.method + "() over (";
+        if (stmt.raw) {
+          sql += stmt.raw;
+        } else {
+          if (stmt.partitions.length) {
+            sql += "partition by ";
+            sql += map(stmt.partitions, function(partition) {
+              if (isString(partition)) {
+                return self2.formatter.columnize(partition);
+              } else
+                return self2.formatter.columnize(partition.column) + (partition.order ? " " + partition.order : "");
+            }).join(", ") + " ";
+          }
+          sql += "order by ";
+          sql += map(stmt.order, function(order) {
+            if (isString(order)) {
+              return self2.formatter.columnize(order);
+            } else
+              return self2.formatter.columnize(order.column) + (order.order ? " " + order.order : "");
+          }).join(", ");
+        }
+        sql += ")";
+        if (stmt.alias) {
+          sql += " as " + stmt.alias;
+        }
+        return sql;
+      }
+      with() {
+        if (!this.grouped.with || !this.grouped.with.length) {
+          return "";
+        }
+        const withs = this.grouped.with;
+        if (!withs)
+          return;
+        const sql = [];
+        let i = -1;
+        let isRecursive = false;
+        while (++i < withs.length) {
+          const stmt = withs[i];
+          if (stmt.recursive) {
+            isRecursive = true;
+          }
+          const val = this[stmt.type](stmt);
+          sql.push(val);
+        }
+        return `with ${isRecursive ? "recursive " : ""}${sql.join(", ")} `;
+      }
+      withWrapped(statement) {
+        const val = rawOrFn_(statement.value, void 0, this.builder, this.client, this.bindingsHolder);
+        const columnList = statement.columnList ? "(" + columnize_(statement.columnList, this.builder, this.client, this.bindingsHolder) + ")" : "";
+        return val && columnize_(statement.alias, this.builder, this.client, this.bindingsHolder) + columnList + " as (" + val + ")" || "";
+      }
+      _not(statement, str) {
+        if (statement.not)
+          return `not ${str}`;
+        return str;
+      }
+      _prepInsert(data) {
+        const isRaw = rawOrFn_(data, void 0, this.builder, this.client, this.bindingsHolder);
+        if (isRaw)
+          return isRaw;
+        let columns = [];
+        const values = [];
+        if (!Array.isArray(data))
+          data = data ? [data] : [];
+        let i = -1;
+        while (++i < data.length) {
+          if (data[i] == null)
+            break;
+          if (i === 0)
+            columns = Object.keys(data[i]).sort();
+          const row = new Array(columns.length);
+          const keys = Object.keys(data[i]);
+          let j = -1;
+          while (++j < keys.length) {
+            const key = keys[j];
+            let idx = columns.indexOf(key);
+            if (idx === -1) {
+              columns = columns.concat(key).sort();
+              idx = columns.indexOf(key);
+              let k = -1;
+              while (++k < values.length) {
+                values[k].splice(idx, 0, void 0);
+              }
+              row.splice(idx, 0, void 0);
+            }
+            row[idx] = data[i][key];
+          }
+          values.push(row);
+        }
+        return {
+          columns,
+          values
+        };
+      }
+      _prepUpdate(data = {}) {
+        const { counter = {} } = this.single;
+        for (const column of Object.keys(counter)) {
+          if (has(data, column)) {
+            this.client.logger.warn(`increment/decrement called for a column that has already been specified in main .update() call. Ignoring increment/decrement and using value from .update() call.`);
+            continue;
+          }
+          let value = counter[column];
+          const symbol = value < 0 ? "-" : "+";
+          if (symbol === "-") {
+            value = -value;
+          }
+          data[column] = this.client.raw(`?? ${symbol} ?`, [column, value]);
+        }
+        data = omitBy(data, isUndefined);
+        const vals = [];
+        const columns = Object.keys(data);
+        let i = -1;
+        while (++i < columns.length) {
+          vals.push(wrap_(columns[i], void 0, this.builder, this.client, this.bindingsHolder) + " = " + this.client.parameter(data[columns[i]], this.builder, this.bindingsHolder));
+        }
+        if (isEmpty(vals)) {
+          throw new Error([
+            "Empty .update() call detected!",
+            "Update data does not contain any values to update.",
+            "This will result in a faulty query.",
+            this.single.table ? `Table: ${this.single.table}.` : "",
+            this.single.update ? `Columns: ${Object.keys(this.single.update)}.` : ""
+          ].join(" "));
+        }
+        return vals;
+      }
+      _formatGroupsItemValue(value, nulls) {
+        const { formatter } = this;
+        let nullOrder = "";
+        if (nulls === "last") {
+          nullOrder = " is null";
+        } else if (nulls === "first") {
+          nullOrder = " is not null";
+        }
+        if (value instanceof Raw) {
+          return unwrapRaw_(value, void 0, this.builder, this.client, this.bindingsHolder);
+        } else if (value instanceof QueryBuilder || nulls) {
+          return "(" + formatter.columnize(value) + nullOrder + ")";
+        } else {
+          return formatter.columnize(value);
+        }
+      }
+      _groupsOrders(type) {
+        const items = this.grouped[type];
+        if (!items)
+          return "";
+        const sql = items.map((item) => {
+          const column = this._formatGroupsItemValue(item.value, item.nulls);
+          const direction = type === "order" && item.type !== "orderByRaw" ? ` ${direction_(item.direction, this.builder, this.client, this.bindingsHolder)}` : "";
+          return column + direction;
+        });
+        return sql.length ? type + " by " + sql.join(", ") : "";
+      }
+      get tableName() {
+        if (!this._tableName) {
+          let tableName = this.single.table;
+          const schemaName = this.single.schema;
+          if (tableName && schemaName) {
+            const isQueryBuilder = tableName instanceof QueryBuilder;
+            const isRawQuery = tableName instanceof Raw;
+            const isFunction = typeof tableName === "function";
+            if (!isQueryBuilder && !isRawQuery && !isFunction) {
+              tableName = `${schemaName}.${tableName}`;
+            }
+          }
+          this._tableName = tableName ? wrap_(tableName, tableName instanceof QueryBuilder, this.builder, this.client, this.bindingsHolder) : "";
+        }
+        return this._tableName;
+      }
+    };
+    module2.exports = QueryCompiler;
+  }
+});
+
+// node_modules/knex/lib/schema/builder.js
+var require_builder = __commonJS({
+  "node_modules/knex/lib/schema/builder.js"(exports2, module2) {
+    var { EventEmitter } = require("events");
+    var toArray = require_toArray();
+    var { addQueryContext } = require_helpers();
+    var saveAsyncStack = require_save_async_stack();
+    var {
+      augmentWithBuilderInterface
+    } = require_builder_interface_augmenter();
+    var SchemaBuilder = class extends EventEmitter {
+      constructor(client) {
+        super();
+        this.client = client;
+        this._sequence = [];
+        if (client.config) {
+          this._debug = client.config.debug;
+          saveAsyncStack(this, 4);
+        }
+      }
+      withSchema(schemaName) {
+        this._schema = schemaName;
+        return this;
+      }
+      toString() {
+        return this.toQuery();
+      }
+      toSQL() {
+        return this.client.schemaCompiler(this).toSQL();
+      }
+      async generateDdlCommands() {
+        return await this.client.schemaCompiler(this).generateDdlCommands();
+      }
+    };
+    [
+      "createTable",
+      "createTableIfNotExists",
+      "createTableLike",
+      "createView",
+      "createViewOrReplace",
+      "createMaterializedView",
+      "refreshMaterializedView",
+      "dropView",
+      "dropViewIfExists",
+      "dropMaterializedView",
+      "dropMaterializedViewIfExists",
+      "createSchema",
+      "createSchemaIfNotExists",
+      "dropSchema",
+      "dropSchemaIfExists",
+      "createExtension",
+      "createExtensionIfNotExists",
+      "dropExtension",
+      "dropExtensionIfExists",
+      "table",
+      "alterTable",
+      "view",
+      "alterView",
+      "hasTable",
+      "hasColumn",
+      "dropTable",
+      "renameTable",
+      "renameView",
+      "dropTableIfExists",
+      "raw"
+    ].forEach(function(method) {
+      SchemaBuilder.prototype[method] = function() {
+        if (method === "createTableIfNotExists") {
+          this.client.logger.warn([
+            "Use async .hasTable to check if table exists and then use plain .createTable. Since ",
+            '.createTableIfNotExists actually just generates plain "CREATE TABLE IF NOT EXIST..." ',
+            "query it will not work correctly if there are any alter table queries generated for ",
+            "columns afterwards. To not break old migrations this function is left untouched for now",
+            ", but it should not be used when writing new code and it is removed from documentation."
+          ].join(""));
+        }
+        if (method === "table")
+          method = "alterTable";
+        if (method === "view")
+          method = "alterView";
+        this._sequence.push({
+          method,
+          args: toArray(arguments)
+        });
+        return this;
+      };
+    });
+    augmentWithBuilderInterface(SchemaBuilder);
+    addQueryContext(SchemaBuilder);
+    module2.exports = SchemaBuilder;
+  }
+});
+
+// node_modules/knex/lib/schema/internal/helpers.js
+var require_helpers2 = __commonJS({
+  "node_modules/knex/lib/schema/internal/helpers.js"(exports2, module2) {
+    var tail = require_tail();
+    var { isString } = require_is();
+    function pushQuery(query) {
+      if (!query)
+        return;
+      if (isString(query)) {
+        query = { sql: query };
+      }
+      if (!query.bindings) {
+        query.bindings = this.bindingsHolder.bindings;
+      }
+      this.sequence.push(query);
+      this.formatter = this.client.formatter(this._commonBuilder);
+      this.bindings = [];
+      this.formatter.bindings = this.bindings;
+    }
+    function pushAdditional(fn2) {
+      const child = new this.constructor(this.client, this.tableCompiler, this.columnBuilder);
+      fn2.call(child, tail(arguments));
+      this.sequence.additional = (this.sequence.additional || []).concat(child.sequence);
+    }
+    function unshiftQuery(query) {
+      if (!query)
+        return;
+      if (isString(query)) {
+        query = { sql: query };
+      }
+      if (!query.bindings) {
+        query.bindings = this.bindingsHolder.bindings;
+      }
+      this.sequence.unshift(query);
+      this.formatter = this.client.formatter(this._commonBuilder);
+      this.bindings = [];
+      this.formatter.bindings = this.bindings;
+    }
+    module2.exports = {
+      pushAdditional,
+      pushQuery,
+      unshiftQuery
+    };
+  }
+});
+
+// node_modules/knex/lib/schema/compiler.js
+var require_compiler = __commonJS({
+  "node_modules/knex/lib/schema/compiler.js"(exports2, module2) {
+    var {
+      pushQuery,
+      pushAdditional,
+      unshiftQuery
+    } = require_helpers2();
+    var SchemaCompiler = class {
+      constructor(client, builder) {
+        this.builder = builder;
+        this._commonBuilder = this.builder;
+        this.client = client;
+        this.schema = builder._schema;
+        this.bindings = [];
+        this.bindingsHolder = this;
+        this.formatter = client.formatter(builder);
+        this.formatter.bindings = this.bindings;
+        this.sequence = [];
+      }
+      createSchema() {
+        throwOnlyPGError("createSchema");
+      }
+      createSchemaIfNotExists() {
+        throwOnlyPGError("createSchemaIfNotExists");
+      }
+      dropSchema() {
+        throwOnlyPGError("dropSchema");
+      }
+      dropSchemaIfExists() {
+        throwOnlyPGError("dropSchemaIfExists");
+      }
+      dropTable(tableName) {
+        this.pushQuery(this.dropTablePrefix + this.formatter.wrap(prefixedTableName(this.schema, tableName)));
+      }
+      dropTableIfExists(tableName) {
+        this.pushQuery(this.dropTablePrefix + "if exists " + this.formatter.wrap(prefixedTableName(this.schema, tableName)));
+      }
+      dropView(viewName) {
+        this._dropView(viewName, false, false);
+      }
+      dropViewIfExists(viewName) {
+        this._dropView(viewName, true, false);
+      }
+      dropMaterializedView(viewName) {
+        throw new Error("materialized views are not supported by this dialect.");
+      }
+      dropMaterializedViewIfExists(viewName) {
+        throw new Error("materialized views are not supported by this dialect.");
+      }
+      renameView(from, to) {
+        throw new Error("rename view is not supported by this dialect (instead drop then create another view).");
+      }
+      refreshMaterializedView() {
+        throw new Error("materialized views are not supported by this dialect.");
+      }
+      _dropView(viewName, ifExists, materialized) {
+        this.pushQuery((materialized ? this.dropMaterializedViewPrefix : this.dropViewPrefix) + (ifExists ? "if exists " : "") + this.formatter.wrap(prefixedTableName(this.schema, viewName)));
+      }
+      raw(sql, bindings) {
+        this.sequence.push(this.client.raw(sql, bindings).toSQL());
+      }
+      toSQL() {
+        const sequence = this.builder._sequence;
+        for (let i = 0, l = sequence.length; i < l; i++) {
+          const query = sequence[i];
+          this[query.method].apply(this, query.args);
+        }
+        return this.sequence;
+      }
+      async generateDdlCommands() {
+        const generatedCommands = this.toSQL();
+        return {
+          pre: [],
+          sql: Array.isArray(generatedCommands) ? generatedCommands : [generatedCommands],
+          post: []
+        };
+      }
+    };
+    SchemaCompiler.prototype.dropTablePrefix = "drop table ";
+    SchemaCompiler.prototype.dropViewPrefix = "drop view ";
+    SchemaCompiler.prototype.dropMaterializedViewPrefix = "drop materialized view ";
+    SchemaCompiler.prototype.alterViewPrefix = "alter view ";
+    SchemaCompiler.prototype.alterTable = buildTable("alter");
+    SchemaCompiler.prototype.createTable = buildTable("create");
+    SchemaCompiler.prototype.createTableIfNotExists = buildTable("createIfNot");
+    SchemaCompiler.prototype.createTableLike = buildTable("createLike");
+    SchemaCompiler.prototype.createView = buildView("create");
+    SchemaCompiler.prototype.createViewOrReplace = buildView("createOrReplace");
+    SchemaCompiler.prototype.createMaterializedView = buildView("createMaterializedView");
+    SchemaCompiler.prototype.alterView = buildView("alter");
+    SchemaCompiler.prototype.pushQuery = pushQuery;
+    SchemaCompiler.prototype.pushAdditional = pushAdditional;
+    SchemaCompiler.prototype.unshiftQuery = unshiftQuery;
+    function build(builder) {
+      const queryContext = this.builder.queryContext();
+      if (queryContext !== void 0 && builder.queryContext() === void 0) {
+        builder.queryContext(queryContext);
+      }
+      builder.setSchema(this.schema);
+      const sql = builder.toSQL();
+      for (let i = 0, l = sql.length; i < l; i++) {
+        this.sequence.push(sql[i]);
+      }
+    }
+    function buildTable(type) {
+      if (type === "createLike") {
+        return function(tableName, tableNameLike, fn2) {
+          const builder = this.client.tableBuilder(type, tableName, tableNameLike, fn2);
+          build.call(this, builder);
+        };
+      } else {
+        return function(tableName, fn2) {
+          const builder = this.client.tableBuilder(type, tableName, null, fn2);
+          build.call(this, builder);
+        };
+      }
+    }
+    function buildView(type) {
+      return function(viewName, fn2) {
+        const builder = this.client.viewBuilder(type, viewName, fn2);
+        build.call(this, builder);
+      };
+    }
+    function prefixedTableName(prefix, table) {
+      return prefix ? `${prefix}.${table}` : table;
+    }
+    function throwOnlyPGError(operationName) {
+      throw new Error(`${operationName} is not supported for this dialect (only PostgreSQL supports it currently).`);
+    }
+    module2.exports = SchemaCompiler;
+  }
+});
+
+// node_modules/knex/lib/schema/tablebuilder.js
+var require_tablebuilder = __commonJS({
+  "node_modules/knex/lib/schema/tablebuilder.js"(exports2, module2) {
+    var each = require_each();
+    var extend = require_extend();
+    var toArray = require_toArray();
+    var helpers = require_helpers();
+    var { isString, isFunction } = require_is();
+    var TableBuilder = class {
+      constructor(client, method, tableName, tableNameLike, fn2) {
+        this.client = client;
+        this._fn = fn2;
+        this._method = method;
+        this._schemaName = void 0;
+        this._tableName = tableName;
+        this._tableNameLike = tableNameLike;
+        this._statements = [];
+        this._single = {};
+        if (!tableNameLike && !isFunction(this._fn)) {
+          throw new TypeError("A callback function must be supplied to calls against `.createTable` and `.table`");
+        }
+      }
+      setSchema(schemaName) {
+        this._schemaName = schemaName;
+      }
+      toSQL() {
+        if (this._method === "alter") {
+          extend(this, AlterMethods);
+        }
+        if (this._fn) {
+          this._fn.call(this, this);
+        }
+        return this.client.tableCompiler(this).toSQL();
+      }
+      timestamps() {
+        const method = arguments[0] === true ? "timestamp" : "datetime";
+        const createdAt = this[method]("created_at");
+        const updatedAt = this[method]("updated_at");
+        if (arguments[1] === true) {
+          const now = this.client.raw("CURRENT_TIMESTAMP");
+          createdAt.notNullable().defaultTo(now);
+          updatedAt.notNullable().defaultTo(now);
+        }
+        return;
+      }
+      comment(value) {
+        if (typeof value !== "string") {
+          throw new TypeError("Table comment must be string");
+        }
+        this._single.comment = value;
+      }
+      foreign(column, keyName) {
+        const foreignData = { column, keyName };
+        this._statements.push({
+          grouping: "alterTable",
+          method: "foreign",
+          args: [foreignData]
+        });
+        let returnObj = {
+          references(tableColumn) {
+            let pieces;
+            if (isString(tableColumn)) {
+              pieces = tableColumn.split(".");
+            }
+            if (!pieces || pieces.length === 1) {
+              foreignData.references = pieces ? pieces[0] : tableColumn;
+              return {
+                on(tableName) {
+                  if (typeof tableName !== "string") {
+                    throw new TypeError(`Expected tableName to be a string, got: ${typeof tableName}`);
+                  }
+                  foreignData.inTable = tableName;
+                  return returnObj;
+                },
+                inTable() {
+                  return this.on.apply(this, arguments);
+                }
+              };
+            }
+            foreignData.inTable = pieces[0];
+            foreignData.references = pieces[1];
+            return returnObj;
+          },
+          withKeyName(keyName2) {
+            foreignData.keyName = keyName2;
+            return returnObj;
+          },
+          onUpdate(statement) {
+            foreignData.onUpdate = statement;
+            return returnObj;
+          },
+          onDelete(statement) {
+            foreignData.onDelete = statement;
+            return returnObj;
+          },
+          deferrable: (type) => {
+            const unSupported = [
+              "mysql",
+              "mssql",
+              "redshift",
+              "mysql2",
+              "oracledb"
+            ];
+            if (unSupported.indexOf(this.client.dialect) !== -1) {
+              throw new Error(`${this.client.dialect} does not support deferrable`);
+            }
+            foreignData.deferrable = type;
+            return returnObj;
+          },
+          _columnBuilder(builder) {
+            extend(builder, returnObj);
+            returnObj = builder;
+            return builder;
+          }
+        };
+        return returnObj;
+      }
+    };
+    [
+      "index",
+      "primary",
+      "unique",
+      "dropPrimary",
+      "dropUnique",
+      "dropIndex",
+      "dropForeign"
+    ].forEach((method) => {
+      TableBuilder.prototype[method] = function() {
+        this._statements.push({
+          grouping: "alterTable",
+          method,
+          args: toArray(arguments)
+        });
+        return this;
+      };
+    });
+    var specialMethods = {
+      mysql: ["engine", "charset", "collate"],
+      postgresql: ["inherits"]
+    };
+    each(specialMethods, function(methods, dialect) {
+      methods.forEach(function(method) {
+        TableBuilder.prototype[method] = function(value) {
+          if (this.client.dialect !== dialect) {
+            throw new Error(`Knex only supports ${method} statement with ${dialect}.`);
+          }
+          if (this._method === "alter") {
+            throw new Error(`Knex does not support altering the ${method} outside of create table, please use knex.raw statement.`);
+          }
+          this._single[method] = value;
+        };
+      });
+    });
+    helpers.addQueryContext(TableBuilder);
+    var columnTypes = [
+      "tinyint",
+      "smallint",
+      "mediumint",
+      "int",
+      "bigint",
+      "decimal",
+      "float",
+      "double",
+      "real",
+      "bit",
+      "boolean",
+      "serial",
+      "date",
+      "datetime",
+      "timestamp",
+      "time",
+      "year",
+      "geometry",
+      "geography",
+      "point",
+      "char",
+      "varchar",
+      "tinytext",
+      "tinyText",
+      "text",
+      "mediumtext",
+      "mediumText",
+      "longtext",
+      "longText",
+      "binary",
+      "varbinary",
+      "tinyblob",
+      "tinyBlob",
+      "mediumblob",
+      "mediumBlob",
+      "blob",
+      "longblob",
+      "longBlob",
+      "enum",
+      "set",
+      "bool",
+      "dateTime",
+      "increments",
+      "bigincrements",
+      "bigIncrements",
+      "integer",
+      "biginteger",
+      "bigInteger",
+      "string",
+      "json",
+      "jsonb",
+      "uuid",
+      "enu",
+      "specificType"
+    ];
+    columnTypes.forEach((type) => {
+      TableBuilder.prototype[type] = function() {
+        const args2 = toArray(arguments);
+        const builder = this.client.columnBuilder(this, type, args2);
+        this._statements.push({
+          grouping: "columns",
+          builder
+        });
+        return builder;
+      };
+    });
+    var AlterMethods = {
+      renameColumn(from, to) {
+        this._statements.push({
+          grouping: "alterTable",
+          method: "renameColumn",
+          args: [from, to]
+        });
+        return this;
+      },
+      dropTimestamps() {
+        return this.dropColumns(["created_at", "updated_at"]);
+      },
+      setNullable(column) {
+        this._statements.push({
+          grouping: "alterTable",
+          method: "setNullable",
+          args: [column]
+        });
+        return this;
+      },
+      dropNullable(column) {
+        this._statements.push({
+          grouping: "alterTable",
+          method: "dropNullable",
+          args: [column]
+        });
+        return this;
+      }
+    };
+    AlterMethods.dropColumn = AlterMethods.dropColumns = function() {
+      this._statements.push({
+        grouping: "alterTable",
+        method: "dropColumn",
+        args: toArray(arguments)
+      });
+      return this;
+    };
+    module2.exports = TableBuilder;
+  }
+});
+
+// node_modules/lodash/indexOf.js
+var require_indexOf = __commonJS({
+  "node_modules/lodash/indexOf.js"(exports2, module2) {
+    var baseIndexOf = require_baseIndexOf();
+    var toInteger = require_toInteger();
+    var nativeMax = Math.max;
+    function indexOf(array, value, fromIndex) {
+      var length = array == null ? 0 : array.length;
+      if (!length) {
+        return -1;
+      }
+      var index = fromIndex == null ? 0 : toInteger(fromIndex);
+      if (index < 0) {
+        index = nativeMax(length + index, 0);
+      }
+      return baseIndexOf(array, value, index);
+    }
+    module2.exports = indexOf;
+  }
+});
+
+// node_modules/knex/lib/schema/tablecompiler.js
+var require_tablecompiler = __commonJS({
+  "node_modules/knex/lib/schema/tablecompiler.js"(exports2, module2) {
+    var {
+      pushAdditional,
+      pushQuery,
+      unshiftQuery
+    } = require_helpers2();
+    var helpers = require_helpers();
+    var groupBy = require_groupBy();
+    var indexOf = require_indexOf();
+    var isEmpty = require_isEmpty();
+    var tail = require_tail();
+    var TableCompiler = class {
+      constructor(client, tableBuilder) {
+        this.client = client;
+        this.tableBuilder = tableBuilder;
+        this._commonBuilder = this.tableBuilder;
+        this.method = tableBuilder._method;
+        this.schemaNameRaw = tableBuilder._schemaName;
+        this.tableNameRaw = tableBuilder._tableName;
+        this.tableNameLikeRaw = tableBuilder._tableNameLike;
+        this.single = tableBuilder._single;
+        this.grouped = groupBy(tableBuilder._statements, "grouping");
+        this.formatter = client.formatter(tableBuilder);
+        this.bindings = [];
+        this.formatter.bindings = this.bindings;
+        this.bindingsHolder = this;
+        this.sequence = [];
+        this._formatting = client.config && client.config.formatting;
+      }
+      toSQL() {
+        this[this.method]();
+        return this.sequence;
+      }
+      create(ifNot, like) {
+        const columnBuilders = this.getColumns();
+        const columns = columnBuilders.map((col) => col.toSQL());
+        const columnTypes = this.getColumnTypes(columns);
+        if (this.createAlterTableMethods) {
+          this.alterTableForCreate(columnTypes);
+        }
+        this.createQuery(columnTypes, ifNot, like);
+        this.columnQueries(columns);
+        delete this.single.comment;
+        this.alterTable();
+      }
+      createIfNot() {
+        this.create(true);
+      }
+      createLike() {
+        this.create(false, true);
+      }
+      createLikeIfNot() {
+        this.create(true, true);
+      }
+      alter() {
+        const addColBuilders = this.getColumns();
+        const addColumns = addColBuilders.map((col) => col.toSQL());
+        const alterColBuilders = this.getColumns("alter");
+        const alterColumns = alterColBuilders.map((col) => col.toSQL());
+        const addColumnTypes = this.getColumnTypes(addColumns);
+        const alterColumnTypes = this.getColumnTypes(alterColumns);
+        this.addColumns(addColumnTypes);
+        this.alterColumns(alterColumnTypes, alterColBuilders);
+        this.columnQueries(addColumns);
+        this.columnQueries(alterColumns);
+        this.alterTable();
+      }
+      foreign(foreignData) {
+        if (foreignData.inTable && foreignData.references) {
+          const keyName = foreignData.keyName ? this.formatter.wrap(foreignData.keyName) : this._indexCommand("foreign", this.tableNameRaw, foreignData.column);
+          const column = this.formatter.columnize(foreignData.column);
+          const references = this.formatter.columnize(foreignData.references);
+          const inTable = this.formatter.wrap(foreignData.inTable);
+          const onUpdate = foreignData.onUpdate ? (this.lowerCase ? " on update " : " ON UPDATE ") + foreignData.onUpdate : "";
+          const onDelete = foreignData.onDelete ? (this.lowerCase ? " on delete " : " ON DELETE ") + foreignData.onDelete : "";
+          const deferrable = foreignData.deferrable ? this.lowerCase ? ` deferrable initially ${foreignData.deferrable.toLowerCase()} ` : ` DEFERRABLE INITIALLY ${foreignData.deferrable.toUpperCase()} ` : "";
+          if (this.lowerCase) {
+            this.pushQuery((!this.forCreate ? `alter table ${this.tableName()} add ` : "") + "constraint " + keyName + " foreign key (" + column + ") references " + inTable + " (" + references + ")" + deferrable + onUpdate + onDelete);
+          } else {
+            this.pushQuery((!this.forCreate ? `ALTER TABLE ${this.tableName()} ADD ` : "") + "CONSTRAINT " + keyName + " FOREIGN KEY (" + column + ") REFERENCES " + inTable + " (" + references + ")" + deferrable + onUpdate + onDelete);
+          }
+        }
+      }
+      getColumnTypes(columns) {
+        return columns.reduce(function(memo, columnSQL) {
+          const column = columnSQL[0];
+          memo.sql.push(column.sql);
+          memo.bindings.concat(column.bindings);
+          return memo;
+        }, { sql: [], bindings: [] });
+      }
+      columnQueries(columns) {
+        const queries = columns.reduce(function(memo, columnSQL) {
+          const column = tail(columnSQL);
+          if (!isEmpty(column))
+            return memo.concat(column);
+          return memo;
+        }, []);
+        for (const q of queries) {
+          this.pushQuery(q);
+        }
+      }
+      addColumns(columns, prefix) {
+        prefix = prefix || this.addColumnsPrefix;
+        if (columns.sql.length > 0) {
+          const columnSql = columns.sql.map((column) => {
+            return prefix + column;
+          });
+          this.pushQuery({
+            sql: (this.lowerCase ? "alter table " : "ALTER TABLE ") + this.tableName() + " " + columnSql.join(", "),
+            bindings: columns.bindings
+          });
+        }
+      }
+      alterColumns(columns, colBuilders) {
+        if (columns.sql.length > 0) {
+          this.addColumns(columns, this.alterColumnsPrefix, colBuilders);
+        }
+      }
+      getColumns(method) {
+        const columns = this.grouped.columns || [];
+        method = method || "add";
+        const queryContext = this.tableBuilder.queryContext();
+        return columns.filter((column) => column.builder._method === method).map((column) => {
+          if (queryContext !== void 0 && column.builder.queryContext() === void 0) {
+            column.builder.queryContext(queryContext);
+          }
+          return this.client.columnCompiler(this, column.builder);
+        });
+      }
+      tableName() {
+        const name = this.schemaNameRaw ? `${this.schemaNameRaw}.${this.tableNameRaw}` : this.tableNameRaw;
+        return this.formatter.wrap(name);
+      }
+      tableNameLike() {
+        const name = this.schemaNameRaw ? `${this.schemaNameRaw}.${this.tableNameLikeRaw}` : this.tableNameLikeRaw;
+        return this.formatter.wrap(name);
+      }
+      alterTable() {
+        const alterTable = this.grouped.alterTable || [];
+        for (let i = 0, l = alterTable.length; i < l; i++) {
+          const statement = alterTable[i];
+          if (this[statement.method]) {
+            this[statement.method].apply(this, statement.args);
+          } else {
+            this.client.logger.error(`Debug: ${statement.method} does not exist`);
+          }
+        }
+        for (const item in this.single) {
+          if (typeof this[item] === "function")
+            this[item](this.single[item]);
+        }
+      }
+      alterTableForCreate(columnTypes) {
+        this.forCreate = true;
+        const savedSequence = this.sequence;
+        const alterTable = this.grouped.alterTable || [];
+        this.grouped.alterTable = [];
+        for (let i = 0, l = alterTable.length; i < l; i++) {
+          const statement = alterTable[i];
+          if (indexOf(this.createAlterTableMethods, statement.method) < 0) {
+            this.grouped.alterTable.push(statement);
+            continue;
+          }
+          if (this[statement.method]) {
+            this.sequence = [];
+            this[statement.method].apply(this, statement.args);
+            columnTypes.sql.push(this.sequence[0].sql);
+          } else {
+            this.client.logger.error(`Debug: ${statement.method} does not exist`);
+          }
+        }
+        this.sequence = savedSequence;
+        this.forCreate = false;
+      }
+      dropIndex(value) {
+        this.pushQuery(`drop index${value}`);
+      }
+      dropUnique() {
+        throw new Error("Method implemented in the dialect driver");
+      }
+      dropForeign() {
+        throw new Error("Method implemented in the dialect driver");
+      }
+      dropColumn() {
+        const columns = helpers.normalizeArr.apply(null, arguments);
+        const drops = (Array.isArray(columns) ? columns : [columns]).map((column) => {
+          return this.dropColumnPrefix + this.formatter.wrap(column);
+        });
+        this.pushQuery((this.lowerCase ? "alter table " : "ALTER TABLE ") + this.tableName() + " " + drops.join(", "));
+      }
+      _setNullableState(column, nullable) {
+        const tableName = this.tableName();
+        const columnName = this.formatter.columnize(column);
+        const alterColumnPrefix = this.alterColumnsPrefix;
+        return this.pushQuery({
+          sql: "SELECT 1",
+          output: () => {
+            return this.client.queryBuilder().from(this.tableNameRaw).columnInfo(column).then((columnInfo) => {
+              if (isEmpty(columnInfo)) {
+                throw new Error(`.setNullable: Column ${columnName} does not exist in table ${tableName}.`);
+              }
+              const nullableType = nullable ? "null" : "not null";
+              const columnType = columnInfo.type + (columnInfo.maxLength ? `(${columnInfo.maxLength})` : "");
+              const defaultValue = columnInfo.defaultValue !== null && columnInfo.defaultValue !== void 0 ? `default '${columnInfo.defaultValue}'` : "";
+              const sql = `alter table ${tableName} ${alterColumnPrefix} ${columnName} ${columnType} ${nullableType} ${defaultValue}`;
+              return this.client.raw(sql);
+            });
+          }
+        });
+      }
+      setNullable(column) {
+        return this._setNullableState(column, true);
+      }
+      dropNullable(column) {
+        return this._setNullableState(column, false);
+      }
+      _indexCommand(type, tableName, columns) {
+        if (!Array.isArray(columns))
+          columns = columns ? [columns] : [];
+        const table = tableName.replace(/\.|-/g, "_");
+        const indexName = (table + "_" + columns.join("_") + "_" + type).toLowerCase();
+        return this.formatter.wrap(indexName);
+      }
+    };
+    TableCompiler.prototype.pushQuery = pushQuery;
+    TableCompiler.prototype.pushAdditional = pushAdditional;
+    TableCompiler.prototype.unshiftQuery = unshiftQuery;
+    TableCompiler.prototype.lowerCase = true;
+    TableCompiler.prototype.createAlterTableMethods = null;
+    TableCompiler.prototype.addColumnsPrefix = "add column ";
+    TableCompiler.prototype.alterColumnsPrefix = "alter column ";
+    TableCompiler.prototype.modifyColumnPrefix = "modify column ";
+    TableCompiler.prototype.dropColumnPrefix = "drop column ";
+    module2.exports = TableCompiler;
+  }
+});
+
+// node_modules/knex/lib/schema/columnbuilder.js
+var require_columnbuilder = __commonJS({
+  "node_modules/knex/lib/schema/columnbuilder.js"(exports2, module2) {
+    var extend = require_extend();
+    var toArray = require_toArray();
+    var { addQueryContext } = require_helpers();
+    var ColumnBuilder = class {
+      constructor(client, tableBuilder, type, args2) {
+        this.client = client;
+        this._method = "add";
+        this._single = {};
+        this._modifiers = {};
+        this._statements = [];
+        this._type = columnAlias[type] || type;
+        this._args = args2;
+        this._tableBuilder = tableBuilder;
+        if (tableBuilder._method === "alter") {
+          extend(this, AlterMethods);
+        }
+      }
+      references(value) {
+        return this._tableBuilder.foreign.call(this._tableBuilder, this._args[0], void 0, this)._columnBuilder(this).references(value);
+      }
+    };
+    var modifiers = [
+      "default",
+      "defaultsTo",
+      "defaultTo",
+      "unsigned",
+      "nullable",
+      "first",
+      "after",
+      "comment",
+      "collate"
+    ];
+    var aliasMethod = {
+      default: "defaultTo",
+      defaultsTo: "defaultTo"
+    };
+    modifiers.forEach(function(method) {
+      const key = aliasMethod[method] || method;
+      ColumnBuilder.prototype[method] = function() {
+        this._modifiers[key] = toArray(arguments);
+        return this;
+      };
+    });
+    addQueryContext(ColumnBuilder);
+    ColumnBuilder.prototype.notNull = ColumnBuilder.prototype.notNullable = function notNullable() {
+      return this.nullable(false);
+    };
+    ["index", "primary", "unique"].forEach(function(method) {
+      ColumnBuilder.prototype[method] = function() {
+        if (this._type.toLowerCase().indexOf("increments") === -1) {
+          this._tableBuilder[method].apply(this._tableBuilder, [this._args[0]].concat(toArray(arguments)));
+        }
+        return this;
+      };
+    });
+    var AlterMethods = {};
+    AlterMethods.drop = function() {
+      this._single.drop = true;
+      return this;
+    };
+    AlterMethods.alterType = function(type) {
+      this._statements.push({
+        grouping: "alterType",
+        value: type
+      });
+      return this;
+    };
+    AlterMethods.alter = function() {
+      this._method = "alter";
+      return this;
+    };
+    var columnAlias = {
+      float: "floating",
+      enum: "enu",
+      boolean: "bool",
+      string: "varchar",
+      bigint: "bigInteger"
+    };
+    module2.exports = ColumnBuilder;
+  }
+});
+
+// node_modules/lodash/head.js
+var require_head = __commonJS({
+  "node_modules/lodash/head.js"(exports2, module2) {
+    function head(array) {
+      return array && array.length ? array[0] : void 0;
+    }
+    module2.exports = head;
+  }
+});
+
+// node_modules/lodash/first.js
+var require_first = __commonJS({
+  "node_modules/lodash/first.js"(exports2, module2) {
+    module2.exports = require_head();
+  }
+});
+
+// node_modules/knex/lib/schema/columncompiler.js
+var require_columncompiler = __commonJS({
+  "node_modules/knex/lib/schema/columncompiler.js"(exports2, module2) {
+    var helpers = require_helpers2();
+    var groupBy = require_groupBy();
+    var first = require_first();
+    var has = require_has();
+    var tail = require_tail();
+    var { toNumber } = require_helpers();
+    var { formatDefault } = require_formatterUtils();
+    var ColumnCompiler = class {
+      constructor(client, tableCompiler, columnBuilder) {
+        this.client = client;
+        this.tableCompiler = tableCompiler;
+        this.columnBuilder = columnBuilder;
+        this._commonBuilder = this.columnBuilder;
+        this.args = columnBuilder._args;
+        this.type = columnBuilder._type.toLowerCase();
+        this.grouped = groupBy(columnBuilder._statements, "grouping");
+        this.modified = columnBuilder._modifiers;
+        this.isIncrements = this.type.indexOf("increments") !== -1;
+        this.formatter = client.formatter(columnBuilder);
+        this.bindings = [];
+        this.formatter.bindings = this.bindings;
+        this.bindingsHolder = this;
+        this.sequence = [];
+        this.modifiers = [];
+      }
+      defaults(label) {
+        if (Object.prototype.hasOwnProperty.call(this._defaultMap, label)) {
+          return this._defaultMap[label].bind(this)();
+        } else {
+          throw new Error(`There is no default for the specified identifier ${label}`);
+        }
+      }
+      toSQL() {
+        this.pushQuery(this.compileColumn());
+        if (this.sequence.additional) {
+          this.sequence = this.sequence.concat(this.sequence.additional);
+        }
+        return this.sequence;
+      }
+      compileColumn() {
+        return this.formatter.wrap(this.getColumnName()) + " " + this.getColumnType() + this.getModifiers();
+      }
+      getColumnName() {
+        const value = first(this.args);
+        return value || this.defaults("columnName");
+      }
+      getColumnType() {
+        if (!this._columnType) {
+          const type = this[this.type];
+          this._columnType = typeof type === "function" ? type.apply(this, tail(this.args)) : type;
+        }
+        return this._columnType;
+      }
+      getModifiers() {
+        const modifiers = [];
+        for (let i = 0, l = this.modifiers.length; i < l; i++) {
+          const modifier = this.modifiers[i];
+          if (!this.isIncrements || this.isIncrements && modifier === "comment") {
+            if (has(this.modified, modifier)) {
+              const val = this[modifier].apply(this, this.modified[modifier]);
+              if (val)
+                modifiers.push(val);
+            }
+          }
+        }
+        return modifiers.length > 0 ? ` ${modifiers.join(" ")}` : "";
+      }
+      varchar(length) {
+        return `varchar(${toNumber(length, 255)})`;
+      }
+      floating(precision, scale) {
+        return `float(${toNumber(precision, 8)}, ${toNumber(scale, 2)})`;
+      }
+      decimal(precision, scale) {
+        if (precision === null) {
+          throw new Error("Specifying no precision on decimal columns is not supported for that SQL dialect.");
+        }
+        return `decimal(${toNumber(precision, 8)}, ${toNumber(scale, 2)})`;
+      }
+      specifictype(type) {
+        return type;
+      }
+      nullable(nullable) {
+        return nullable === false ? "not null" : "null";
+      }
+      notNullable() {
+        return this.nullable(false);
+      }
+      defaultTo(value) {
+        return `default ${formatDefault(value, this.type, this.client)}`;
+      }
+    };
+    ColumnCompiler.prototype.binary = "blob";
+    ColumnCompiler.prototype.bool = "boolean";
+    ColumnCompiler.prototype.date = "date";
+    ColumnCompiler.prototype.datetime = "datetime";
+    ColumnCompiler.prototype.time = "time";
+    ColumnCompiler.prototype.timestamp = "timestamp";
+    ColumnCompiler.prototype.geometry = "geometry";
+    ColumnCompiler.prototype.geography = "geography";
+    ColumnCompiler.prototype.point = "point";
+    ColumnCompiler.prototype.enu = "varchar";
+    ColumnCompiler.prototype.bit = ColumnCompiler.prototype.json = "text";
+    ColumnCompiler.prototype.uuid = "char(36)";
+    ColumnCompiler.prototype.increments = ({ primaryKey = true } = {}) => "integer not null" + (primaryKey ? " primary key" : "") + " autoincrement";
+    ColumnCompiler.prototype.bigincrements = ({ primaryKey = true } = {}) => "integer not null" + (primaryKey ? " primary key" : "") + " autoincrement";
+    ColumnCompiler.prototype.integer = ColumnCompiler.prototype.smallint = ColumnCompiler.prototype.mediumint = "integer";
+    ColumnCompiler.prototype.biginteger = "bigint";
+    ColumnCompiler.prototype.text = "text";
+    ColumnCompiler.prototype.tinyint = "tinyint";
+    ColumnCompiler.prototype.pushQuery = helpers.pushQuery;
+    ColumnCompiler.prototype.pushAdditional = helpers.pushAdditional;
+    ColumnCompiler.prototype.unshiftQuery = helpers.unshiftQuery;
+    ColumnCompiler.prototype._defaultMap = {
+      columnName: function() {
+        if (!this.isIncrements) {
+          throw new Error(`You did not specify a column name for the ${this.type} column.`);
+        }
+        return "id";
+      }
+    };
+    module2.exports = ColumnCompiler;
+  }
+});
+
+// node_modules/knex/lib/ref.js
+var require_ref = __commonJS({
+  "node_modules/knex/lib/ref.js"(exports2, module2) {
+    var Raw = require_raw2();
+    var Ref = class extends Raw {
+      constructor(client, ref) {
+        super(client);
+        this.ref = ref;
+        this._schema = null;
+        this._alias = null;
+      }
+      withSchema(schema) {
+        this._schema = schema;
+        return this;
+      }
+      as(alias) {
+        this._alias = alias;
+        return this;
+      }
+      toSQL() {
+        const string = this._schema ? `${this._schema}.${this.ref}` : this.ref;
+        const formatter = this.client.formatter(this);
+        const ref = formatter.columnize(string);
+        const sql = this._alias ? `${ref} as ${formatter.wrap(this._alias)}` : ref;
+        this.set(sql, []);
+        return super.toSQL(...arguments);
+      }
+    };
+    module2.exports = Ref;
+  }
+});
+
+// node_modules/knex/lib/formatter.js
+var require_formatter = __commonJS({
+  "node_modules/knex/lib/formatter.js"(exports2, module2) {
+    var {
+      columnize: columnize_,
+      wrap: wrap_
+    } = require_wrappingFormatter();
+    var Formatter = class {
+      constructor(client, builder) {
+        this.client = client;
+        this.builder = builder;
+        this.bindings = [];
+      }
+      columnize(target) {
+        return columnize_(target, this.builder, this.client, this);
+      }
+      wrap(value, isParameter) {
+        return wrap_(value, isParameter, this.builder, this.client, this);
+      }
+    };
+    module2.exports = Formatter;
+  }
+});
+
+// node_modules/knex/lib/schema/viewbuilder.js
+var require_viewbuilder = __commonJS({
+  "node_modules/knex/lib/schema/viewbuilder.js"(exports2, module2) {
+    var helpers = require_helpers();
+    var extend = require_extend();
+    var ViewBuilder = class {
+      constructor(client, method, viewName, fn2) {
+        this.client = client;
+        this._method = method;
+        this._schemaName = void 0;
+        this._columns = void 0;
+        this._fn = fn2;
+        this._viewName = viewName;
+        this._statements = [];
+        this._single = {};
+      }
+      setSchema(schemaName) {
+        this._schemaName = schemaName;
+      }
+      columns(columns) {
+        this._columns = columns;
+      }
+      as(selectQuery) {
+        this._selectQuery = selectQuery;
+      }
+      checkOption() {
+        throw new Error("check option definition is not supported by this dialect.");
+      }
+      localCheckOption() {
+        throw new Error("check option definition is not supported by this dialect.");
+      }
+      cascadedCheckOption() {
+        throw new Error("check option definition is not supported by this dialect.");
+      }
+      toSQL() {
+        if (this._method === "alter") {
+          extend(this, AlterMethods);
+        }
+        this._fn.call(this, this);
+        return this.client.viewCompiler(this).toSQL();
+      }
+    };
+    var AlterMethods = {
+      column(column) {
+        const self2 = this;
+        return {
+          rename: function(newName) {
+            self2._statements.push({
+              grouping: "alterView",
+              method: "renameColumn",
+              args: [column, newName]
+            });
+            return this;
+          },
+          defaultTo: function(defaultValue) {
+            self2._statements.push({
+              grouping: "alterView",
+              method: "defaultTo",
+              args: [column, defaultValue]
+            });
+            return this;
+          }
+        };
+      }
+    };
+    helpers.addQueryContext(ViewBuilder);
+    module2.exports = ViewBuilder;
+  }
+});
+
+// node_modules/knex/lib/schema/viewcompiler.js
+var require_viewcompiler = __commonJS({
+  "node_modules/knex/lib/schema/viewcompiler.js"(exports2, module2) {
+    var { pushQuery } = require_helpers2();
+    var groupBy = require_groupBy();
+    var { columnize: columnize_ } = require_wrappingFormatter();
+    var ViewCompiler = class {
+      constructor(client, viewBuilder) {
+        this.client = client;
+        this.viewBuilder = viewBuilder;
+        this._commonBuilder = this.viewBuilder;
+        this.method = viewBuilder._method;
+        this.schemaNameRaw = viewBuilder._schemaName;
+        this.viewNameRaw = viewBuilder._viewName;
+        this.single = viewBuilder._single;
+        this.selectQuery = viewBuilder._selectQuery;
+        this.columns = viewBuilder._columns;
+        this.grouped = groupBy(viewBuilder._statements, "grouping");
+        this.formatter = client.formatter(viewBuilder);
+        this.bindings = [];
+        this.formatter.bindings = this.bindings;
+        this.bindingsHolder = this;
+        this.sequence = [];
+      }
+      toSQL() {
+        this[this.method]();
+        return this.sequence;
+      }
+      create() {
+        this.createQuery(this.columns, this.selectQuery);
+      }
+      createOrReplace() {
+        throw new Error("replace views is not supported by this dialect.");
+      }
+      createMaterializedView() {
+        throw new Error("materialized views are not supported by this dialect.");
+      }
+      createQuery(columns, selectQuery, materialized, replace) {
+        const createStatement = "create " + (materialized ? "materialized " : "") + "view " + (replace ? "or replace " : "");
+        const formatColumns = [];
+        for (const c of columns) {
+          formatColumns.push(columnize_(c, this.viewBuilder, this.client, this.bindingsHolder));
+        }
+        let sql = createStatement + this.viewName() + " (" + formatColumns.join(", ") + ")";
+        sql += " as ";
+        sql += selectQuery.toString();
+        switch (this.single.checkOption) {
+          case "default_option":
+            sql += " with check option";
+            break;
+          case "local":
+            sql += " with local check option";
+            break;
+          case "cascaded":
+            sql += " with cascaded check option";
+            break;
+          default:
+            break;
+        }
+        this.pushQuery({
+          sql
+        });
+      }
+      renameView(from, to) {
+        throw new Error("rename view is not supported by this dialect (instead drop, then create another view).");
+      }
+      refreshMaterializedView() {
+        throw new Error("materialized views are not supported by this dialect.");
+      }
+      alter() {
+        this.alterView();
+      }
+      alterView() {
+        const alterView = this.grouped.alterView || [];
+        for (let i = 0, l = alterView.length; i < l; i++) {
+          const statement = alterView[i];
+          if (this[statement.method]) {
+            this[statement.method].apply(this, statement.args);
+          } else {
+            this.client.logger.error(`Debug: ${statement.method} does not exist`);
+          }
+        }
+        for (const item in this.single) {
+          if (typeof this[item] === "function")
+            this[item](this.single[item]);
+        }
+      }
+      renameColumn(from, to) {
+        throw new Error("rename column of views is not supported by this dialect.");
+      }
+      defaultTo(column, defaultValue) {
+        throw new Error("change default values of views is not supported by this dialect.");
+      }
+      viewName() {
+        const name = this.schemaNameRaw ? `${this.schemaNameRaw}.${this.viewNameRaw}` : this.viewNameRaw;
+        return this.formatter.wrap(name);
+      }
+    };
+    ViewCompiler.prototype.pushQuery = pushQuery;
+    module2.exports = ViewCompiler;
+  }
+});
+
+// node_modules/knex/lib/client.js
+var require_client2 = __commonJS({
+  "node_modules/knex/lib/client.js"(exports2, module2) {
+    var { Pool, TimeoutError } = require_tarn();
+    var { EventEmitter } = require("events");
+    var { promisify } = require("util");
+    var { makeEscape } = require_string();
+    var cloneDeep = require_cloneDeep();
+    var defaults = require_defaults();
+    var uniqueId = require_uniqueId();
+    var Runner = require_runner();
+    var Transaction = require_transaction();
+    var {
+      executeQuery,
+      enrichQueryObject
+    } = require_query_executioner();
+    var QueryBuilder = require_querybuilder();
+    var QueryCompiler = require_querycompiler();
+    var SchemaBuilder = require_builder();
+    var SchemaCompiler = require_compiler();
+    var TableBuilder = require_tablebuilder();
+    var TableCompiler = require_tablecompiler();
+    var ColumnBuilder = require_columnbuilder();
+    var ColumnCompiler = require_columncompiler();
+    var { KnexTimeoutError } = require_timeout();
+    var { outputQuery, unwrapRaw } = require_wrappingFormatter();
+    var { compileCallback } = require_formatterUtils();
+    var Raw = require_raw2();
+    var Ref = require_ref();
+    var Formatter = require_formatter();
+    var Logger = require_logger();
+    var { POOL_CONFIG_OPTIONS } = require_constants2();
+    var ViewBuilder = require_viewbuilder();
+    var ViewCompiler = require_viewcompiler();
+    var debug = require_src5()("knex:client");
+    var Client = class extends EventEmitter {
+      constructor(config = {}) {
+        super();
+        this.config = config;
+        this.logger = new Logger(config);
+        if (this.dialect && !this.config.client) {
+          this.logger.warn(`Using 'this.dialect' to identify the client is deprecated and support for it will be removed in the future. Please use configuration option 'client' instead.`);
+        }
+        const dbClient = this.config.client || this.dialect;
+        if (!dbClient) {
+          throw new Error(`knex: Required configuration option 'client' is missing.`);
+        }
+        if (config.version) {
+          this.version = config.version;
+        }
+        if (config.connection && config.connection instanceof Function) {
+          this.connectionConfigProvider = config.connection;
+          this.connectionConfigExpirationChecker = () => true;
+        } else {
+          this.connectionSettings = cloneDeep(config.connection || {});
+          this.connectionConfigExpirationChecker = null;
+        }
+        if (this.driverName && config.connection) {
+          this.initializeDriver();
+          if (!config.pool || config.pool && config.pool.max !== 0) {
+            this.initializePool(config);
+          }
+        }
+        this.valueForUndefined = this.raw("DEFAULT");
+        if (config.useNullAsDefault) {
+          this.valueForUndefined = null;
+        }
+      }
+      formatter(builder) {
+        return new Formatter(this, builder);
+      }
+      queryBuilder() {
+        return new QueryBuilder(this);
+      }
+      queryCompiler(builder, formatter) {
+        return new QueryCompiler(this, builder, formatter);
+      }
+      schemaBuilder() {
+        return new SchemaBuilder(this);
+      }
+      schemaCompiler(builder) {
+        return new SchemaCompiler(this, builder);
+      }
+      tableBuilder(type, tableName, tableNameLike, fn2) {
+        return new TableBuilder(this, type, tableName, tableNameLike, fn2);
+      }
+      viewBuilder(type, viewBuilder, fn2) {
+        return new ViewBuilder(this, type, viewBuilder, fn2);
+      }
+      tableCompiler(tableBuilder) {
+        return new TableCompiler(this, tableBuilder);
+      }
+      viewCompiler(viewCompiler) {
+        return new ViewCompiler(this, viewCompiler);
+      }
+      columnBuilder(tableBuilder, type, args2) {
+        return new ColumnBuilder(this, tableBuilder, type, args2);
+      }
+      columnCompiler(tableBuilder, columnBuilder) {
+        return new ColumnCompiler(this, tableBuilder, columnBuilder);
+      }
+      runner(builder) {
+        return new Runner(this, builder);
+      }
+      transaction(container, config, outerTx) {
+        return new Transaction(this, container, config, outerTx);
+      }
+      raw() {
+        return new Raw(this).set(...arguments);
+      }
+      ref() {
+        return new Ref(this, ...arguments);
+      }
+      query(connection, queryParam) {
+        const queryObject = enrichQueryObject(connection, queryParam, this);
+        return executeQuery(connection, queryObject, this);
+      }
+      stream(connection, queryParam, stream, options) {
+        const queryObject = enrichQueryObject(connection, queryParam, this);
+        return this._stream(connection, queryObject, stream, options);
+      }
+      prepBindings(bindings) {
+        return bindings;
+      }
+      positionBindings(sql) {
+        return sql;
+      }
+      postProcessResponse(resp, queryContext) {
+        if (this.config.postProcessResponse) {
+          return this.config.postProcessResponse(resp, queryContext);
+        }
+        return resp;
+      }
+      wrapIdentifier(value, queryContext) {
+        return this.customWrapIdentifier(value, this.wrapIdentifierImpl, queryContext);
+      }
+      customWrapIdentifier(value, origImpl, queryContext) {
+        if (this.config.wrapIdentifier) {
+          return this.config.wrapIdentifier(value, origImpl, queryContext);
+        }
+        return origImpl(value);
+      }
+      wrapIdentifierImpl(value) {
+        return value !== "*" ? `"${value.replace(/"/g, '""')}"` : "*";
+      }
+      initializeDriver() {
+        try {
+          this.driver = this._driver();
+        } catch (e) {
+          const message2 = `Knex: run
+$ npm install ${this.driverName} --save`;
+          this.logger.error(`${message2}
+${e.message}
+${e.stack}`);
+          throw new Error(`${message2}
+${e.message}`);
+        }
+      }
+      poolDefaults() {
+        return { min: 2, max: 10, propagateCreateError: true };
+      }
+      getPoolSettings(poolConfig) {
+        poolConfig = defaults({}, poolConfig, this.poolDefaults());
+        POOL_CONFIG_OPTIONS.forEach((option) => {
+          if (option in poolConfig) {
+            this.logger.warn([
+              `Pool config option "${option}" is no longer supported.`,
+              `See https://github.com/Vincit/tarn.js for possible pool config options.`
+            ].join(" "));
+          }
+        });
+        const timeouts = [
+          this.config.acquireConnectionTimeout || 6e4,
+          poolConfig.acquireTimeoutMillis
+        ].filter((timeout) => timeout !== void 0);
+        poolConfig.acquireTimeoutMillis = Math.min(...timeouts);
+        const updatePoolConnectionSettingsFromProvider = async () => {
+          if (!this.connectionConfigProvider) {
+            return;
+          }
+          if (!this.connectionConfigExpirationChecker || !this.connectionConfigExpirationChecker()) {
+            return;
+          }
+          const providerResult = await this.connectionConfigProvider();
+          if (providerResult.expirationChecker) {
+            this.connectionConfigExpirationChecker = providerResult.expirationChecker;
+            delete providerResult.expirationChecker;
+          } else {
+            this.connectionConfigExpirationChecker = null;
+          }
+          this.connectionSettings = providerResult;
+        };
+        return Object.assign(poolConfig, {
+          create: async () => {
+            await updatePoolConnectionSettingsFromProvider();
+            const connection = await this.acquireRawConnection();
+            connection.__knexUid = uniqueId("__knexUid");
+            if (poolConfig.afterCreate) {
+              await promisify(poolConfig.afterCreate)(connection);
+            }
+            return connection;
+          },
+          destroy: (connection) => {
+            if (connection !== void 0) {
+              return this.destroyRawConnection(connection);
+            }
+          },
+          validate: (connection) => {
+            if (connection.__knex__disposed) {
+              this.logger.warn(`Connection Error: ${connection.__knex__disposed}`);
+              return false;
+            }
+            return this.validateConnection(connection);
+          }
+        });
+      }
+      initializePool(config = this.config) {
+        if (this.pool) {
+          this.logger.warn("The pool has already been initialized");
+          return;
+        }
+        const tarnPoolConfig = {
+          ...this.getPoolSettings(config.pool)
+        };
+        if (tarnPoolConfig.afterCreate) {
+          delete tarnPoolConfig.afterCreate;
+        }
+        this.pool = new Pool(tarnPoolConfig);
+      }
+      validateConnection(connection) {
+        return true;
+      }
+      async acquireConnection() {
+        if (!this.pool) {
+          throw new Error("Unable to acquire a connection");
+        }
+        try {
+          const connection = await this.pool.acquire().promise;
+          debug("acquired connection from pool: %s", connection.__knexUid);
+          return connection;
+        } catch (error) {
+          let convertedError = error;
+          if (error instanceof TimeoutError) {
+            convertedError = new KnexTimeoutError("Knex: Timeout acquiring a connection. The pool is probably full. Are you missing a .transacting(trx) call?");
+          }
+          throw convertedError;
+        }
+      }
+      releaseConnection(connection) {
+        debug("releasing connection to pool: %s", connection.__knexUid);
+        const didRelease = this.pool.release(connection);
+        if (!didRelease) {
+          debug("pool refused connection: %s", connection.__knexUid);
+        }
+        return Promise.resolve();
+      }
+      async destroy(callback) {
+        try {
+          if (this.pool && this.pool.destroy) {
+            await this.pool.destroy();
+          }
+          this.pool = void 0;
+          if (typeof callback === "function") {
+            callback();
+          }
+        } catch (err) {
+          if (typeof callback === "function") {
+            return callback(err);
+          }
+          throw err;
+        }
+      }
+      database() {
+        return this.connectionSettings.database;
+      }
+      toString() {
+        return "[object KnexClient]";
+      }
+      assertCanCancelQuery() {
+        if (!this.canCancelQuery) {
+          throw new Error("Query cancelling not supported for this dialect");
+        }
+      }
+      cancelQuery() {
+        throw new Error("Query cancelling not supported for this dialect");
+      }
+      alias(first, second) {
+        return first + " as " + second;
+      }
+      parameter(value, builder, bindingsHolder) {
+        if (typeof value === "function") {
+          return outputQuery(compileCallback(value, void 0, this, bindingsHolder), true, builder, this);
+        }
+        return unwrapRaw(value, true, builder, this, bindingsHolder) || "?";
+      }
+      parameterize(values, notSetValue, builder, bindingsHolder) {
+        if (typeof values === "function")
+          return this.parameter(values, builder, bindingsHolder);
+        values = Array.isArray(values) ? values : [values];
+        let str = "", i = -1;
+        while (++i < values.length) {
+          if (i > 0)
+            str += ", ";
+          str += this.parameter(values[i] === void 0 ? notSetValue : values[i], builder, bindingsHolder);
+        }
+        return str;
+      }
+      values(values, builder, bindingsHolder) {
+        if (Array.isArray(values)) {
+          if (Array.isArray(values[0])) {
+            return `(${values.map((value) => `(${this.parameterize(value, void 0, builder, bindingsHolder)})`).join(", ")})`;
+          }
+          return `(${this.parameterize(values, void 0, builder, bindingsHolder)})`;
+        }
+        if (values && values.isRawInstance) {
+          return `(${this.parameter(values, builder, bindingsHolder)})`;
+        }
+        return this.parameter(values, builder, bindingsHolder);
+      }
+      processPassedConnection(connection) {
+      }
+    };
+    Object.assign(Client.prototype, {
+      _escapeBinding: makeEscape({
+        escapeString(str) {
+          return `'${str.replace(/'/g, "''")}'`;
+        }
+      }),
+      canCancelQuery: false
+    });
+    module2.exports = Client;
+  }
+});
+
+// node_modules/pg-connection-string/index.js
+var require_pg_connection_string = __commonJS({
+  "node_modules/pg-connection-string/index.js"(exports2, module2) {
+    "use strict";
+    var url = require("url");
+    var fs = require("fs");
+    function parse(str) {
+      if (str.charAt(0) === "/") {
+        var config = str.split(" ");
+        return { host: config[0], database: config[1] };
+      }
+      var result = url.parse(/ |%[^a-f0-9]|%[a-f0-9][^a-f0-9]/i.test(str) ? encodeURI(str).replace(/\%25(\d\d)/g, "%$1") : str, true);
+      var config = result.query;
+      for (var k in config) {
+        if (Array.isArray(config[k])) {
+          config[k] = config[k][config[k].length - 1];
+        }
+      }
+      var auth = (result.auth || ":").split(":");
+      config.user = auth[0];
+      config.password = auth.splice(1).join(":");
+      config.port = result.port;
+      if (result.protocol == "socket:") {
+        config.host = decodeURI(result.pathname);
+        config.database = result.query.db;
+        config.client_encoding = result.query.encoding;
+        return config;
+      }
+      if (!config.host) {
+        config.host = result.hostname;
+      }
+      var pathname = result.pathname;
+      if (!config.host && pathname && /^%2f/i.test(pathname)) {
+        var pathnameSplit = pathname.split("/");
+        config.host = decodeURIComponent(pathnameSplit[0]);
+        pathname = pathnameSplit.splice(1).join("/");
+      }
+      if (pathname && pathname.charAt(0) === "/") {
+        pathname = pathname.slice(1) || null;
+      }
+      config.database = pathname && decodeURI(pathname);
+      if (config.ssl === "true" || config.ssl === "1") {
+        config.ssl = true;
+      }
+      if (config.ssl === "0") {
+        config.ssl = false;
+      }
+      if (config.sslcert || config.sslkey || config.sslrootcert || config.sslmode) {
+        config.ssl = {};
+      }
+      if (config.sslcert) {
+        config.ssl.cert = fs.readFileSync(config.sslcert).toString();
+      }
+      if (config.sslkey) {
+        config.ssl.key = fs.readFileSync(config.sslkey).toString();
+      }
+      if (config.sslrootcert) {
+        config.ssl.ca = fs.readFileSync(config.sslrootcert).toString();
+      }
+      switch (config.sslmode) {
+        case "disable": {
+          config.ssl = false;
+          break;
+        }
+        case "prefer":
+        case "require":
+        case "verify-ca":
+        case "verify-full": {
+          break;
+        }
+        case "no-verify": {
+          config.ssl.rejectUnauthorized = false;
+          break;
+        }
+      }
+      return config;
+    }
+    module2.exports = parse;
+    parse.parse = parse;
+  }
+});
+
+// node_modules/knex/lib/knex-builder/internal/parse-connection.js
+var require_parse_connection = __commonJS({
+  "node_modules/knex/lib/knex-builder/internal/parse-connection.js"(exports2, module2) {
+    var { parse } = require_pg_connection_string();
+    var parsePG = parse;
+    var isWindows = process && process.platform && process.platform === "win32";
+    function tryParse(str) {
+      try {
+        return new URL(str);
+      } catch (e) {
+        return null;
+      }
+    }
+    module2.exports = function parseConnectionString(str) {
+      const parsed = tryParse(str);
+      const isDriveLetter = isWindows && parsed && parsed.protocol.length === 2;
+      if (!parsed || isDriveLetter) {
+        return {
+          client: "sqlite3",
+          connection: {
+            filename: str
+          }
+        };
+      }
+      let { protocol } = parsed;
+      if (protocol.slice(-1) === ":") {
+        protocol = protocol.slice(0, -1);
+      }
+      const isPG = ["postgresql", "postgres"].includes(protocol);
+      return {
+        client: protocol,
+        connection: isPG ? parsePG(str) : connectionObject(parsed)
+      };
+    };
+    function connectionObject(parsed) {
+      const connection = {};
+      let db = parsed.pathname;
+      if (db[0] === "/") {
+        db = db.slice(1);
+      }
+      connection.database = db;
+      if (parsed.hostname) {
+        if (parsed.protocol.indexOf("mssql") === 0) {
+          connection.server = parsed.hostname;
+        } else {
+          connection.host = parsed.hostname;
+        }
+      }
+      if (parsed.port) {
+        connection.port = parsed.port;
+      }
+      if (parsed.username || parsed.password) {
+        connection.user = decodeURIComponent(parsed.username);
+      }
+      if (parsed.password) {
+        connection.password = decodeURIComponent(parsed.password);
+      }
+      if (parsed.searchParams) {
+        for (const [key, value] of parsed.searchParams.entries()) {
+          const isMySQLLike = ["mysql:", "mariadb:"].includes(parsed.protocol);
+          if (isMySQLLike) {
+            try {
+              connection[key] = JSON.parse(value);
+            } catch (err) {
+              connection[key] = value;
+            }
+          } else {
+            connection[key] = value;
+          }
+        }
+      }
+      return connection;
+    }
+  }
+});
+
+// node_modules/knex/lib/knex-builder/internal/config-resolver.js
+var require_config_resolver = __commonJS({
+  "node_modules/knex/lib/knex-builder/internal/config-resolver.js"(exports2, module2) {
+    var Client = require_client2();
+    var { SUPPORTED_CLIENTS } = require_constants2();
+    var parseConnection = require_parse_connection();
+    var { resolveClientNameWithAliases } = require_helpers();
+    function resolveConfig(config) {
+      let Dialect;
+      let resolvedConfig;
+      const parsedConfig = typeof config === "string" ? Object.assign(parseConnection(config), arguments[2]) : config;
+      if (arguments.length === 0 || !parsedConfig.client && !parsedConfig.dialect) {
+        Dialect = Client;
+      } else if (typeof parsedConfig.client === "function") {
+        Dialect = parsedConfig.client;
+      } else {
+        const clientName = parsedConfig.client || parsedConfig.dialect;
+        if (!SUPPORTED_CLIENTS.includes(clientName)) {
+          throw new Error(`knex: Unknown configuration option 'client' value ${clientName}. Note that it is case-sensitive, check documentation for supported values.`);
+        }
+        const resolvedClientName = resolveClientNameWithAliases(clientName);
+        Dialect = require(`../../dialects/${resolvedClientName}/index.js`);
+      }
+      if (typeof parsedConfig.connection === "string") {
+        resolvedConfig = Object.assign({}, parsedConfig, {
+          connection: parseConnection(parsedConfig.connection).connection
+        });
+      } else {
+        resolvedConfig = Object.assign({}, parsedConfig);
+      }
+      return {
+        resolvedConfig,
+        Dialect
+      };
+    }
+    module2.exports = {
+      resolveConfig
+    };
+  }
+});
+
+// node_modules/knex/lib/knex-builder/Knex.js
+var require_Knex = __commonJS({
+  "node_modules/knex/lib/knex-builder/Knex.js"(exports2, module2) {
+    var Client = require_client2();
+    var QueryBuilder = require_querybuilder();
+    var QueryInterface = require_method_constants();
+    var makeKnex = require_make_knex();
+    var { KnexTimeoutError } = require_timeout();
+    var { resolveConfig } = require_config_resolver();
+    function knex2(config) {
+      const { resolvedConfig, Dialect } = resolveConfig(...arguments);
+      const newKnex = makeKnex(new Dialect(resolvedConfig));
+      if (resolvedConfig.userParams) {
+        newKnex.userParams = resolvedConfig.userParams;
+      }
+      return newKnex;
+    }
+    knex2.Client = Client;
+    knex2.KnexTimeoutError = KnexTimeoutError;
+    knex2.QueryBuilder = {
+      extend: function(methodName, fn2) {
+        QueryBuilder.extend(methodName, fn2);
+        QueryInterface.push(methodName);
+      }
+    };
+    module2.exports = knex2;
+  }
+});
+
+// node_modules/knex/lib/index.js
+var require_lib4 = __commonJS({
+  "node_modules/knex/lib/index.js"(exports2, module2) {
+    var Knex2 = require_Knex();
+    module2.exports = Knex2;
+  }
+});
+
+// node_modules/knex/knex.js
+var require_knex = __commonJS({
+  "node_modules/knex/knex.js"(exports2, module2) {
+    var knex2 = require_lib4();
+    knex2.knex = knex2;
+    knex2.default = knex2;
+    module2.exports = knex2;
+  }
+});
+
+// node_modules/knex/lib/dialects/postgres/execution/pg-transaction.js
+var require_pg_transaction = __commonJS({
+  "node_modules/knex/lib/dialects/postgres/execution/pg-transaction.js"(exports2, module2) {
+    var Transaction = require_transaction();
+    var Transaction_PG = class extends Transaction {
+      begin(conn) {
+        if (this.isolationLevel) {
+          return this.query(conn, `BEGIN ISOLATION LEVEL ${this.isolationLevel};`);
+        }
+        return this.query(conn, "BEGIN;");
+      }
+    };
+    module2.exports = Transaction_PG;
+  }
+});
+
+// node_modules/knex/lib/dialects/postgres/query/pg-querycompiler.js
+var require_pg_querycompiler = __commonJS({
+  "node_modules/knex/lib/dialects/postgres/query/pg-querycompiler.js"(exports2, module2) {
+    var identity = require_identity();
+    var reduce = require_reduce();
+    var QueryCompiler = require_querycompiler();
+    var { wrapString } = require_wrappingFormatter();
+    var QueryCompiler_PG = class extends QueryCompiler {
+      constructor(client, builder, formatter) {
+        super(client, builder, formatter);
+        this._defaultInsertValue = "default";
+      }
+      truncate() {
+        return `truncate ${this.tableName} restart identity`;
+      }
+      insert() {
+        let sql = super.insert();
+        if (sql === "")
+          return sql;
+        const { returning, onConflict, ignore, merge, insert } = this.single;
+        if (onConflict && ignore)
+          sql += this._ignore(onConflict);
+        if (onConflict && merge) {
+          sql += this._merge(merge.updates, onConflict, insert);
+          const wheres = this.where();
+          if (wheres)
+            sql += ` ${wheres}`;
+        }
+        if (returning)
+          sql += this._returning(returning);
+        return {
+          sql,
+          returning
+        };
+      }
+      update() {
+        const withSQL = this.with();
+        const updateData = this._prepUpdate(this.single.update);
+        const wheres = this.where();
+        const { returning } = this.single;
+        return {
+          sql: withSQL + `update ${this.single.only ? "only " : ""}${this.tableName} set ${updateData.join(", ")}` + (wheres ? ` ${wheres}` : "") + this._returning(returning),
+          returning
+        };
+      }
+      del() {
+        const sql = super.del(...arguments);
+        const { returning } = this.single;
+        return {
+          sql: sql + this._returning(returning),
+          returning
+        };
+      }
+      aggregate(stmt) {
+        return this._aggregate(stmt, { distinctParentheses: true });
+      }
+      _returning(value) {
+        return value ? ` returning ${this.formatter.columnize(value)}` : "";
+      }
+      _ignore(columns) {
+        if (columns === true) {
+          return " on conflict do nothing";
+        }
+        return ` on conflict (${this.formatter.columnize(columns)}) do nothing`;
+      }
+      _merge(updates, columns, insert) {
+        let sql = ` on conflict (${this.formatter.columnize(columns)}) do update set `;
+        if (updates && Array.isArray(updates)) {
+          sql += updates.map((column) => wrapString(column.split(".").pop(), this.formatter.builder, this.client, this.formatter)).map((column) => `${column} = excluded.${column}`).join(", ");
+          return sql;
+        } else if (updates && typeof updates === "object") {
+          const updateData = this._prepUpdate(updates);
+          if (typeof updateData === "string") {
+            sql += updateData;
+          } else {
+            sql += updateData.join(",");
+          }
+          return sql;
+        } else {
+          const insertData = this._prepInsert(insert);
+          if (typeof insertData === "string") {
+            throw new Error("If using merge with a raw insert query, then updates must be provided");
+          }
+          sql += insertData.columns.map((column) => wrapString(column.split(".").pop(), this.builder, this.client)).map((column) => `${column} = excluded.${column}`).join(", ");
+          return sql;
+        }
+      }
+      _tableNames(tables) {
+        const schemaName = this.single.schema;
+        const sql = [];
+        for (let i = 0; i < tables.length; i++) {
+          let tableName = tables[i];
+          if (tableName) {
+            if (schemaName) {
+              tableName = `${schemaName}.${tableName}`;
+            }
+            sql.push(this.formatter.wrap(tableName));
+          }
+        }
+        return sql.join(", ");
+      }
+      _lockingClause(lockMode) {
+        const tables = this.single.lockTables || [];
+        return lockMode + (tables.length ? " of " + this._tableNames(tables) : "");
+      }
+      forUpdate() {
+        return this._lockingClause("for update");
+      }
+      forShare() {
+        return this._lockingClause("for share");
+      }
+      forNoKeyUpdate() {
+        return this._lockingClause("for no key update");
+      }
+      forKeyShare() {
+        return this._lockingClause("for key share");
+      }
+      skipLocked() {
+        return "skip locked";
+      }
+      noWait() {
+        return "nowait";
+      }
+      columnInfo() {
+        const column = this.single.columnInfo;
+        let schema = this.single.schema;
+        const table = this.client.customWrapIdentifier(this.single.table, identity);
+        if (schema) {
+          schema = this.client.customWrapIdentifier(schema, identity);
+        }
+        let sql = "select * from information_schema.columns where table_name = ? and table_catalog = current_database()";
+        const bindings = [table];
+        if (schema) {
+          sql += " and table_schema = ?";
+          bindings.push(schema);
+        } else {
+          sql += " and table_schema = current_schema()";
+        }
+        return {
+          sql,
+          bindings,
+          output(resp) {
+            const out = reduce(resp.rows, function(columns, val) {
+              columns[val.column_name] = {
+                type: val.data_type,
+                maxLength: val.character_maximum_length,
+                nullable: val.is_nullable === "YES",
+                defaultValue: val.column_default
+              };
+              return columns;
+            }, {});
+            return column && out[column] || out;
+          }
+        };
+      }
+      distinctOn(value) {
+        return "distinct on (" + this.formatter.columnize(value) + ") ";
+      }
+    };
+    module2.exports = QueryCompiler_PG;
+  }
+});
+
+// node_modules/knex/lib/dialects/postgres/schema/pg-columncompiler.js
+var require_pg_columncompiler = __commonJS({
+  "node_modules/knex/lib/dialects/postgres/schema/pg-columncompiler.js"(exports2, module2) {
+    var ColumnCompiler = require_columncompiler();
+    var { isObject } = require_is();
+    var { toNumber } = require_helpers();
+    var commentEscapeRegex = /(?<!')'(?!')/g;
+    var ColumnCompiler_PG = class extends ColumnCompiler {
+      constructor(client, tableCompiler, columnBuilder) {
+        super(client, tableCompiler, columnBuilder);
+        this.modifiers = ["nullable", "defaultTo", "comment"];
+      }
+      bit(column) {
+        return column.length !== false ? `bit(${column.length})` : "bit";
+      }
+      enu(allowed, options) {
+        options = options || {};
+        const values = options.useNative && options.existingType ? void 0 : allowed.join("', '");
+        if (options.useNative) {
+          let enumName = "";
+          const schemaName = options.schemaName || this.tableCompiler.schemaNameRaw;
+          if (schemaName) {
+            enumName += `"${schemaName}".`;
+          }
+          enumName += `"${options.enumName}"`;
+          if (!options.existingType) {
+            this.tableCompiler.unshiftQuery(`create type ${enumName} as enum ('${values}')`);
+          }
+          return enumName;
+        }
+        return `text check (${this.formatter.wrap(this.args[0])} in ('${values}'))`;
+      }
+      decimal(precision, scale) {
+        if (precision === null)
+          return "decimal";
+        return `decimal(${toNumber(precision, 8)}, ${toNumber(scale, 2)})`;
+      }
+      json(jsonb) {
+        if (jsonb)
+          this.client.logger.deprecate("json(true)", "jsonb()");
+        return jsonColumn(this.client, jsonb);
+      }
+      jsonb() {
+        return jsonColumn(this.client, true);
+      }
+      datetime(withoutTz = false, precision) {
+        let useTz;
+        if (isObject(withoutTz)) {
+          ({ useTz, precision } = withoutTz);
+        } else {
+          useTz = !withoutTz;
+        }
+        useTz = typeof useTz === "boolean" ? useTz : true;
+        precision = precision !== void 0 && precision !== null ? "(" + precision + ")" : "";
+        return `${useTz ? "timestamptz" : "timestamp"}${precision}`;
+      }
+      timestamp(withoutTz = false, precision) {
+        return this.datetime(withoutTz, precision);
+      }
+      comment(comment) {
+        const columnName = this.args[0] || this.defaults("columnName");
+        const escapedComment = comment ? `'${comment.replace(commentEscapeRegex, "''")}'` : "NULL";
+        this.pushAdditional(function() {
+          this.pushQuery(`comment on column ${this.tableCompiler.tableName()}.` + this.formatter.wrap(columnName) + ` is ${escapedComment}`);
+        }, comment);
+      }
+    };
+    ColumnCompiler_PG.prototype.bigincrements = ({ primaryKey = true } = {}) => "bigserial" + (primaryKey ? " primary key" : "");
+    ColumnCompiler_PG.prototype.increments = ({ primaryKey = true } = {}) => "serial" + (primaryKey ? " primary key" : "");
+    ColumnCompiler_PG.prototype.bigint = "bigint";
+    ColumnCompiler_PG.prototype.binary = "bytea";
+    ColumnCompiler_PG.prototype.bool = "boolean";
+    ColumnCompiler_PG.prototype.double = "double precision";
+    ColumnCompiler_PG.prototype.floating = "real";
+    ColumnCompiler_PG.prototype.smallint = "smallint";
+    ColumnCompiler_PG.prototype.tinyint = "smallint";
+    ColumnCompiler_PG.prototype.uuid = "uuid";
+    function jsonColumn(client, jsonb) {
+      if (!client.version || client.config.client === "cockroachdb" || parseFloat(client.version) >= 9.2) {
+        return jsonb ? "jsonb" : "json";
+      }
+      return "text";
+    }
+    module2.exports = ColumnCompiler_PG;
+  }
+});
+
+// node_modules/knex/lib/dialects/postgres/schema/pg-tablecompiler.js
+var require_pg_tablecompiler = __commonJS({
+  "node_modules/knex/lib/dialects/postgres/schema/pg-tablecompiler.js"(exports2, module2) {
+    var has = require_has();
+    var TableCompiler = require_tablecompiler();
+    var { isObject, isString } = require_is();
+    var TableCompiler_PG = class extends TableCompiler {
+      constructor(client, tableBuilder) {
+        super(client, tableBuilder);
+      }
+      renameColumn(from, to) {
+        return this.pushQuery({
+          sql: `alter table ${this.tableName()} rename ${this.formatter.wrap(from)} to ${this.formatter.wrap(to)}`
+        });
+      }
+      _setNullableState(column, isNullable) {
+        const constraintAction = isNullable ? "drop not null" : "set not null";
+        const sql = `alter table ${this.tableName()} alter column ${this.formatter.wrap(column)} ${constraintAction}`;
+        return this.pushQuery({
+          sql
+        });
+      }
+      compileAdd(builder) {
+        const table = this.formatter.wrap(builder);
+        const columns = this.prefixArray("add column", this.getColumns(builder));
+        return this.pushQuery({
+          sql: `alter table ${table} ${columns.join(", ")}`
+        });
+      }
+      createQuery(columns, ifNot, like) {
+        const createStatement = ifNot ? "create table if not exists " : "create table ";
+        const columnsSql = " (" + columns.sql.join(", ") + ")";
+        let sql = createStatement + this.tableName() + (like && this.tableNameLike() ? " (like " + this.tableNameLike() + " including all)" : columnsSql);
+        if (this.single.inherits)
+          sql += ` inherits (${this.formatter.wrap(this.single.inherits)})`;
+        this.pushQuery({
+          sql,
+          bindings: columns.bindings
+        });
+        const hasComment = has(this.single, "comment");
+        if (hasComment)
+          this.comment(this.single.comment);
+      }
+      addColumns(columns, prefix, colCompilers) {
+        if (prefix === this.alterColumnsPrefix) {
+          for (const col of colCompilers) {
+            const quotedTableName = this.tableName();
+            const type = col.getColumnType();
+            const colName = this.client.wrapIdentifier(col.getColumnName(), col.columnBuilder.queryContext());
+            const isEnum = col.type === "enu";
+            this.pushQuery({
+              sql: `alter table ${quotedTableName} alter column ${colName} drop default`,
+              bindings: []
+            });
+            this.pushQuery({
+              sql: `alter table ${quotedTableName} alter column ${colName} drop not null`,
+              bindings: []
+            });
+            this.pushQuery({
+              sql: `alter table ${quotedTableName} alter column ${colName} type ${type} using (${colName}${isEnum ? "::text::" : "::"}${type})`,
+              bindings: []
+            });
+            const defaultTo = col.modified["defaultTo"];
+            if (defaultTo) {
+              const modifier = col.defaultTo.apply(col, defaultTo);
+              this.pushQuery({
+                sql: `alter table ${quotedTableName} alter column ${colName} set ${modifier}`,
+                bindings: []
+              });
+            }
+            const nullable = col.modified["nullable"];
+            if (nullable && nullable[0] === false) {
+              this.pushQuery({
+                sql: `alter table ${quotedTableName} alter column ${colName} set not null`,
+                bindings: []
+              });
+            }
+          }
+        } else {
+          super.addColumns(columns, prefix);
+        }
+      }
+      comment(comment) {
+        this.pushQuery(`comment on table ${this.tableName()} is '${this.single.comment}'`);
+      }
+      primary(columns, constraintName) {
+        let deferrable;
+        if (isObject(constraintName)) {
+          ({ constraintName, deferrable } = constraintName);
+        }
+        deferrable = deferrable ? ` deferrable initially ${deferrable}` : "";
+        constraintName = constraintName ? this.formatter.wrap(constraintName) : this.formatter.wrap(`${this.tableNameRaw}_pkey`);
+        this.pushQuery(`alter table ${this.tableName()} add constraint ${constraintName} primary key (${this.formatter.columnize(columns)})${deferrable}`);
+      }
+      unique(columns, indexName) {
+        let deferrable;
+        if (isObject(indexName)) {
+          ({ indexName, deferrable } = indexName);
+        }
+        deferrable = deferrable ? ` deferrable initially ${deferrable}` : "";
+        indexName = indexName ? this.formatter.wrap(indexName) : this._indexCommand("unique", this.tableNameRaw, columns);
+        this.pushQuery(`alter table ${this.tableName()} add constraint ${indexName} unique (` + this.formatter.columnize(columns) + ")" + deferrable);
+      }
+      index(columns, indexName, options) {
+        indexName = indexName ? this.formatter.wrap(indexName) : this._indexCommand("index", this.tableNameRaw, columns);
+        let predicate;
+        let indexType;
+        if (isString(options)) {
+          indexType = options;
+        } else if (isObject(options)) {
+          ({ indexType, predicate } = options);
+        }
+        const predicateQuery = predicate ? " " + this.client.queryCompiler(predicate).where() : "";
+        this.pushQuery(`create index ${indexName} on ${this.tableName()}${indexType && ` using ${indexType}` || ""} (` + this.formatter.columnize(columns) + `)${predicateQuery}`);
+      }
+      dropPrimary(constraintName) {
+        constraintName = constraintName ? this.formatter.wrap(constraintName) : this.formatter.wrap(this.tableNameRaw + "_pkey");
+        this.pushQuery(`alter table ${this.tableName()} drop constraint ${constraintName}`);
+      }
+      dropIndex(columns, indexName) {
+        indexName = indexName ? this.formatter.wrap(indexName) : this._indexCommand("index", this.tableNameRaw, columns);
+        indexName = this.schemaNameRaw ? `${this.formatter.wrap(this.schemaNameRaw)}.${indexName}` : indexName;
+        this.pushQuery(`drop index ${indexName}`);
+      }
+      dropUnique(columns, indexName) {
+        indexName = indexName ? this.formatter.wrap(indexName) : this._indexCommand("unique", this.tableNameRaw, columns);
+        this.pushQuery(`alter table ${this.tableName()} drop constraint ${indexName}`);
+      }
+      dropForeign(columns, indexName) {
+        indexName = indexName ? this.formatter.wrap(indexName) : this._indexCommand("foreign", this.tableNameRaw, columns);
+        this.pushQuery(`alter table ${this.tableName()} drop constraint ${indexName}`);
+      }
+    };
+    module2.exports = TableCompiler_PG;
+  }
+});
+
+// node_modules/knex/lib/dialects/postgres/schema/pg-viewcompiler.js
+var require_pg_viewcompiler = __commonJS({
+  "node_modules/knex/lib/dialects/postgres/schema/pg-viewcompiler.js"(exports2, module2) {
+    var ViewCompiler = require_viewcompiler();
+    var ViewCompiler_PG = class extends ViewCompiler {
+      constructor(client, viewCompiler) {
+        super(client, viewCompiler);
+      }
+      renameColumn(from, to) {
+        return this.pushQuery({
+          sql: `alter view ${this.viewName()} rename ${this.formatter.wrap(from)} to ${this.formatter.wrap(to)}`
+        });
+      }
+      defaultTo(column, defaultValue) {
+        return this.pushQuery({
+          sql: `alter view ${this.viewName()} alter ${this.formatter.wrap(column)} set default ${defaultValue}`
+        });
+      }
+      createOrReplace() {
+        this.createQuery(this.columns, this.selectQuery, false, true);
+      }
+      createMaterializedView() {
+        this.createQuery(this.columns, this.selectQuery, true);
+      }
+    };
+    module2.exports = ViewCompiler_PG;
+  }
+});
+
+// node_modules/knex/lib/dialects/postgres/schema/pg-viewbuilder.js
+var require_pg_viewbuilder = __commonJS({
+  "node_modules/knex/lib/dialects/postgres/schema/pg-viewbuilder.js"(exports2, module2) {
+    var ViewBuilder = require_viewbuilder();
+    var ViewBuilder_PG = class extends ViewBuilder {
+      constructor() {
+        super(...arguments);
+      }
+      checkOption() {
+        this._single.checkOption = "default_option";
+      }
+      localCheckOption() {
+        this._single.checkOption = "local";
+      }
+      cascadedCheckOption() {
+        this._single.checkOption = "cascaded";
+      }
+    };
+    module2.exports = ViewBuilder_PG;
+  }
+});
+
+// node_modules/knex/lib/dialects/postgres/schema/pg-compiler.js
+var require_pg_compiler = __commonJS({
+  "node_modules/knex/lib/dialects/postgres/schema/pg-compiler.js"(exports2, module2) {
+    var SchemaCompiler = require_compiler();
+    var SchemaCompiler_PG = class extends SchemaCompiler {
+      constructor(client, builder) {
+        super(client, builder);
+      }
+      hasTable(tableName) {
+        let sql = "select * from information_schema.tables where table_name = ?";
+        const bindings = [tableName];
+        if (this.schema) {
+          sql += " and table_schema = ?";
+          bindings.push(this.schema);
+        } else {
+          sql += " and table_schema = current_schema()";
+        }
+        this.pushQuery({
+          sql,
+          bindings,
+          output(resp) {
+            return resp.rows.length > 0;
+          }
+        });
+      }
+      hasColumn(tableName, columnName) {
+        let sql = "select * from information_schema.columns where table_name = ? and column_name = ?";
+        const bindings = [tableName, columnName];
+        if (this.schema) {
+          sql += " and table_schema = ?";
+          bindings.push(this.schema);
+        } else {
+          sql += " and table_schema = current_schema()";
+        }
+        this.pushQuery({
+          sql,
+          bindings,
+          output(resp) {
+            return resp.rows.length > 0;
+          }
+        });
+      }
+      qualifiedTableName(tableName) {
+        const name = this.schema ? `${this.schema}.${tableName}` : tableName;
+        return this.formatter.wrap(name);
+      }
+      renameTable(from, to) {
+        this.pushQuery(`alter table ${this.qualifiedTableName(from)} rename to ${this.formatter.wrap(to)}`);
+      }
+      createSchema(schemaName) {
+        this.pushQuery(`create schema ${this.formatter.wrap(schemaName)}`);
+      }
+      createSchemaIfNotExists(schemaName) {
+        this.pushQuery(`create schema if not exists ${this.formatter.wrap(schemaName)}`);
+      }
+      dropSchema(schemaName, cascade = false) {
+        this.pushQuery(`drop schema ${this.formatter.wrap(schemaName)}${cascade ? " cascade" : ""}`);
+      }
+      dropSchemaIfExists(schemaName, cascade = false) {
+        this.pushQuery(`drop schema if exists ${this.formatter.wrap(schemaName)}${cascade ? " cascade" : ""}`);
+      }
+      dropExtension(extensionName) {
+        this.pushQuery(`drop extension ${this.formatter.wrap(extensionName)}`);
+      }
+      dropExtensionIfExists(extensionName) {
+        this.pushQuery(`drop extension if exists ${this.formatter.wrap(extensionName)}`);
+      }
+      createExtension(extensionName) {
+        this.pushQuery(`create extension ${this.formatter.wrap(extensionName)}`);
+      }
+      createExtensionIfNotExists(extensionName) {
+        this.pushQuery(`create extension if not exists ${this.formatter.wrap(extensionName)}`);
+      }
+      renameView(from, to) {
+        this.pushQuery(this.alterViewPrefix + `${this.formatter.wrap(from)} rename to ${this.formatter.wrap(to)}`);
+      }
+      refreshMaterializedView(viewName) {
+        this.pushQuery({
+          sql: `refresh materialized view ${this.formatter.wrap(viewName)}`
+        });
+      }
+      dropMaterializedView(viewName) {
+        this._dropView(viewName, false, true);
+      }
+      dropMaterializedViewIfExists(viewName) {
+        this._dropView(viewName, true, true);
+      }
+    };
+    module2.exports = SchemaCompiler_PG;
+  }
+});
+
+// node_modules/postgres-array/index.js
+var require_postgres_array = __commonJS({
+  "node_modules/postgres-array/index.js"(exports2) {
+    "use strict";
+    exports2.parse = function(source, transform) {
+      return new ArrayParser(source, transform).parse();
+    };
+    var ArrayParser = class {
+      constructor(source, transform) {
+        this.source = source;
+        this.transform = transform || identity;
+        this.position = 0;
+        this.entries = [];
+        this.recorded = [];
+        this.dimension = 0;
+      }
+      isEof() {
+        return this.position >= this.source.length;
+      }
+      nextCharacter() {
+        var character = this.source[this.position++];
+        if (character === "\\") {
+          return {
+            value: this.source[this.position++],
+            escaped: true
+          };
+        }
+        return {
+          value: character,
+          escaped: false
+        };
+      }
+      record(character) {
+        this.recorded.push(character);
+      }
+      newEntry(includeEmpty) {
+        var entry;
+        if (this.recorded.length > 0 || includeEmpty) {
+          entry = this.recorded.join("");
+          if (entry === "NULL" && !includeEmpty) {
+            entry = null;
+          }
+          if (entry !== null)
+            entry = this.transform(entry);
+          this.entries.push(entry);
+          this.recorded = [];
+        }
+      }
+      consumeDimensions() {
+        if (this.source[0] === "[") {
+          while (!this.isEof()) {
+            var char = this.nextCharacter();
+            if (char.value === "=")
+              break;
+          }
+        }
+      }
+      parse(nested) {
+        var character, parser, quote;
+        this.consumeDimensions();
+        while (!this.isEof()) {
+          character = this.nextCharacter();
+          if (character.value === "{" && !quote) {
+            this.dimension++;
+            if (this.dimension > 1) {
+              parser = new ArrayParser(this.source.substr(this.position - 1), this.transform);
+              this.entries.push(parser.parse(true));
+              this.position += parser.position - 2;
+            }
+          } else if (character.value === "}" && !quote) {
+            this.dimension--;
+            if (!this.dimension) {
+              this.newEntry();
+              if (nested)
+                return this.entries;
+            }
+          } else if (character.value === '"' && !character.escaped) {
+            if (quote)
+              this.newEntry(true);
+            quote = !quote;
+          } else if (character.value === "," && !quote) {
+            this.newEntry();
+          } else {
+            this.record(character.value);
+          }
+        }
+        if (this.dimension !== 0) {
+          throw new Error("array dimension not balanced");
+        }
+        return this.entries;
+      }
+    };
+    function identity(value) {
+      return value;
+    }
+  }
+});
+
+// node_modules/pg-types/lib/arrayParser.js
+var require_arrayParser = __commonJS({
+  "node_modules/pg-types/lib/arrayParser.js"(exports2, module2) {
+    var array = require_postgres_array();
+    module2.exports = {
+      create: function(source, transform) {
+        return {
+          parse: function() {
+            return array.parse(source, transform);
+          }
+        };
+      }
+    };
+  }
+});
+
+// node_modules/postgres-date/index.js
+var require_postgres_date = __commonJS({
+  "node_modules/postgres-date/index.js"(exports2, module2) {
+    "use strict";
+    var DATE_TIME = /(\d{1,})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})(\.\d{1,})?.*?( BC)?$/;
+    var DATE = /^(\d{1,})-(\d{2})-(\d{2})( BC)?$/;
+    var TIME_ZONE = /([Z+-])(\d{2})?:?(\d{2})?:?(\d{2})?/;
+    var INFINITY = /^-?infinity$/;
+    module2.exports = function parseDate(isoDate) {
+      if (INFINITY.test(isoDate)) {
+        return Number(isoDate.replace("i", "I"));
+      }
+      var matches = DATE_TIME.exec(isoDate);
+      if (!matches) {
+        return getDate(isoDate) || null;
+      }
+      var isBC = !!matches[8];
+      var year = parseInt(matches[1], 10);
+      if (isBC) {
+        year = bcYearToNegativeYear(year);
+      }
+      var month = parseInt(matches[2], 10) - 1;
+      var day = matches[3];
+      var hour = parseInt(matches[4], 10);
+      var minute = parseInt(matches[5], 10);
+      var second = parseInt(matches[6], 10);
+      var ms = matches[7];
+      ms = ms ? 1e3 * parseFloat(ms) : 0;
+      var date;
+      var offset = timeZoneOffset(isoDate);
+      if (offset != null) {
+        date = new Date(Date.UTC(year, month, day, hour, minute, second, ms));
+        if (is0To99(year)) {
+          date.setUTCFullYear(year);
+        }
+        if (offset !== 0) {
+          date.setTime(date.getTime() - offset);
+        }
+      } else {
+        date = new Date(year, month, day, hour, minute, second, ms);
+        if (is0To99(year)) {
+          date.setFullYear(year);
+        }
+      }
+      return date;
+    };
+    function getDate(isoDate) {
+      var matches = DATE.exec(isoDate);
+      if (!matches) {
+        return;
+      }
+      var year = parseInt(matches[1], 10);
+      var isBC = !!matches[4];
+      if (isBC) {
+        year = bcYearToNegativeYear(year);
+      }
+      var month = parseInt(matches[2], 10) - 1;
+      var day = matches[3];
+      var date = new Date(year, month, day);
+      if (is0To99(year)) {
+        date.setFullYear(year);
+      }
+      return date;
+    }
+    function timeZoneOffset(isoDate) {
+      if (isoDate.endsWith("+00")) {
+        return 0;
+      }
+      var zone = TIME_ZONE.exec(isoDate.split(" ")[1]);
+      if (!zone)
+        return;
+      var type = zone[1];
+      if (type === "Z") {
+        return 0;
+      }
+      var sign = type === "-" ? -1 : 1;
+      var offset = parseInt(zone[2], 10) * 3600 + parseInt(zone[3] || 0, 10) * 60 + parseInt(zone[4] || 0, 10);
+      return offset * sign * 1e3;
+    }
+    function bcYearToNegativeYear(year) {
+      return -(year - 1);
+    }
+    function is0To99(num) {
+      return num >= 0 && num < 100;
+    }
+  }
+});
+
+// node_modules/xtend/mutable.js
+var require_mutable = __commonJS({
+  "node_modules/xtend/mutable.js"(exports2, module2) {
+    module2.exports = extend;
+    var hasOwnProperty = Object.prototype.hasOwnProperty;
+    function extend(target) {
+      for (var i = 1; i < arguments.length; i++) {
+        var source = arguments[i];
+        for (var key in source) {
+          if (hasOwnProperty.call(source, key)) {
+            target[key] = source[key];
+          }
+        }
+      }
+      return target;
+    }
+  }
+});
+
+// node_modules/postgres-interval/index.js
+var require_postgres_interval = __commonJS({
+  "node_modules/postgres-interval/index.js"(exports2, module2) {
+    "use strict";
+    var extend = require_mutable();
+    module2.exports = PostgresInterval;
+    function PostgresInterval(raw) {
+      if (!(this instanceof PostgresInterval)) {
+        return new PostgresInterval(raw);
+      }
+      extend(this, parse(raw));
+    }
+    var properties = ["seconds", "minutes", "hours", "days", "months", "years"];
+    PostgresInterval.prototype.toPostgres = function() {
+      var filtered = properties.filter(this.hasOwnProperty, this);
+      if (this.milliseconds && filtered.indexOf("seconds") < 0) {
+        filtered.push("seconds");
+      }
+      if (filtered.length === 0)
+        return "0";
+      return filtered.map(function(property) {
+        var value = this[property] || 0;
+        if (property === "seconds" && this.milliseconds) {
+          value = (value + this.milliseconds / 1e3).toFixed(6).replace(/\.?0+$/, "");
+        }
+        return value + " " + property;
+      }, this).join(" ");
+    };
+    var propertiesISOEquivalent = {
+      years: "Y",
+      months: "M",
+      days: "D",
+      hours: "H",
+      minutes: "M",
+      seconds: "S"
+    };
+    var dateProperties = ["years", "months", "days"];
+    var timeProperties = ["hours", "minutes", "seconds"];
+    PostgresInterval.prototype.toISOString = PostgresInterval.prototype.toISO = function() {
+      var datePart = dateProperties.map(buildProperty, this).join("");
+      var timePart = timeProperties.map(buildProperty, this).join("");
+      return "P" + datePart + "T" + timePart;
+      function buildProperty(property) {
+        var value = this[property] || 0;
+        if (property === "seconds" && this.milliseconds) {
+          value = (value + this.milliseconds / 1e3).toFixed(6).replace(/0+$/, "");
+        }
+        return value + propertiesISOEquivalent[property];
+      }
+    };
+    var NUMBER = "([+-]?\\d+)";
+    var YEAR = NUMBER + "\\s+years?";
+    var MONTH = NUMBER + "\\s+mons?";
+    var DAY = NUMBER + "\\s+days?";
+    var TIME = "([+-])?([\\d]*):(\\d\\d):(\\d\\d)\\.?(\\d{1,6})?";
+    var INTERVAL = new RegExp([YEAR, MONTH, DAY, TIME].map(function(regexString) {
+      return "(" + regexString + ")?";
+    }).join("\\s*"));
+    var positions = {
+      years: 2,
+      months: 4,
+      days: 6,
+      hours: 9,
+      minutes: 10,
+      seconds: 11,
+      milliseconds: 12
+    };
+    var negatives = ["hours", "minutes", "seconds", "milliseconds"];
+    function parseMilliseconds(fraction) {
+      var microseconds = fraction + "000000".slice(fraction.length);
+      return parseInt(microseconds, 10) / 1e3;
+    }
+    function parse(interval) {
+      if (!interval)
+        return {};
+      var matches = INTERVAL.exec(interval);
+      var isNegative = matches[8] === "-";
+      return Object.keys(positions).reduce(function(parsed, property) {
+        var position = positions[property];
+        var value = matches[position];
+        if (!value)
+          return parsed;
+        value = property === "milliseconds" ? parseMilliseconds(value) : parseInt(value, 10);
+        if (!value)
+          return parsed;
+        if (isNegative && ~negatives.indexOf(property)) {
+          value *= -1;
+        }
+        parsed[property] = value;
+        return parsed;
+      }, {});
+    }
+  }
+});
+
+// node_modules/postgres-bytea/index.js
+var require_postgres_bytea = __commonJS({
+  "node_modules/postgres-bytea/index.js"(exports2, module2) {
+    "use strict";
+    module2.exports = function parseBytea(input) {
+      if (/^\\x/.test(input)) {
+        return new Buffer(input.substr(2), "hex");
+      }
+      var output = "";
+      var i = 0;
+      while (i < input.length) {
+        if (input[i] !== "\\") {
+          output += input[i];
+          ++i;
+        } else {
+          if (/[0-7]{3}/.test(input.substr(i + 1, 3))) {
+            output += String.fromCharCode(parseInt(input.substr(i + 1, 3), 8));
+            i += 4;
+          } else {
+            var backslashes = 1;
+            while (i + backslashes < input.length && input[i + backslashes] === "\\") {
+              backslashes++;
+            }
+            for (var k = 0; k < Math.floor(backslashes / 2); ++k) {
+              output += "\\";
+            }
+            i += Math.floor(backslashes / 2) * 2;
+          }
+        }
+      }
+      return new Buffer(output, "binary");
+    };
+  }
+});
+
+// node_modules/pg-types/lib/textParsers.js
+var require_textParsers = __commonJS({
+  "node_modules/pg-types/lib/textParsers.js"(exports2, module2) {
+    var array = require_postgres_array();
+    var arrayParser = require_arrayParser();
+    var parseDate = require_postgres_date();
+    var parseInterval = require_postgres_interval();
+    var parseByteA = require_postgres_bytea();
+    function allowNull(fn2) {
+      return function nullAllowed(value) {
+        if (value === null)
+          return value;
+        return fn2(value);
+      };
+    }
+    function parseBool(value) {
+      if (value === null)
+        return value;
+      return value === "TRUE" || value === "t" || value === "true" || value === "y" || value === "yes" || value === "on" || value === "1";
+    }
+    function parseBoolArray(value) {
+      if (!value)
+        return null;
+      return array.parse(value, parseBool);
+    }
+    function parseBaseTenInt(string) {
+      return parseInt(string, 10);
+    }
+    function parseIntegerArray(value) {
+      if (!value)
+        return null;
+      return array.parse(value, allowNull(parseBaseTenInt));
+    }
+    function parseBigIntegerArray(value) {
+      if (!value)
+        return null;
+      return array.parse(value, allowNull(function(entry) {
+        return parseBigInteger(entry).trim();
+      }));
+    }
+    var parsePointArray = function(value) {
+      if (!value) {
+        return null;
+      }
+      var p = arrayParser.create(value, function(entry) {
+        if (entry !== null) {
+          entry = parsePoint(entry);
+        }
+        return entry;
+      });
+      return p.parse();
+    };
+    var parseFloatArray = function(value) {
+      if (!value) {
+        return null;
+      }
+      var p = arrayParser.create(value, function(entry) {
+        if (entry !== null) {
+          entry = parseFloat(entry);
+        }
+        return entry;
+      });
+      return p.parse();
+    };
+    var parseStringArray = function(value) {
+      if (!value) {
+        return null;
+      }
+      var p = arrayParser.create(value);
+      return p.parse();
+    };
+    var parseDateArray = function(value) {
+      if (!value) {
+        return null;
+      }
+      var p = arrayParser.create(value, function(entry) {
+        if (entry !== null) {
+          entry = parseDate(entry);
+        }
+        return entry;
+      });
+      return p.parse();
+    };
+    var parseIntervalArray = function(value) {
+      if (!value) {
+        return null;
+      }
+      var p = arrayParser.create(value, function(entry) {
+        if (entry !== null) {
+          entry = parseInterval(entry);
+        }
+        return entry;
+      });
+      return p.parse();
+    };
+    var parseByteAArray = function(value) {
+      if (!value) {
+        return null;
+      }
+      return array.parse(value, allowNull(parseByteA));
+    };
+    var parseInteger = function(value) {
+      return parseInt(value, 10);
+    };
+    var parseBigInteger = function(value) {
+      var valStr = String(value);
+      if (/^\d+$/.test(valStr)) {
+        return valStr;
+      }
+      return value;
+    };
+    var parseJsonArray = function(value) {
+      if (!value) {
+        return null;
+      }
+      return array.parse(value, allowNull(JSON.parse));
+    };
+    var parsePoint = function(value) {
+      if (value[0] !== "(") {
+        return null;
+      }
+      value = value.substring(1, value.length - 1).split(",");
+      return {
+        x: parseFloat(value[0]),
+        y: parseFloat(value[1])
+      };
+    };
+    var parseCircle = function(value) {
+      if (value[0] !== "<" && value[1] !== "(") {
+        return null;
+      }
+      var point = "(";
+      var radius = "";
+      var pointParsed = false;
+      for (var i = 2; i < value.length - 1; i++) {
+        if (!pointParsed) {
+          point += value[i];
+        }
+        if (value[i] === ")") {
+          pointParsed = true;
+          continue;
+        } else if (!pointParsed) {
+          continue;
+        }
+        if (value[i] === ",") {
+          continue;
+        }
+        radius += value[i];
+      }
+      var result = parsePoint(point);
+      result.radius = parseFloat(radius);
+      return result;
+    };
+    var init = function(register) {
+      register(20, parseBigInteger);
+      register(21, parseInteger);
+      register(23, parseInteger);
+      register(26, parseInteger);
+      register(700, parseFloat);
+      register(701, parseFloat);
+      register(16, parseBool);
+      register(1082, parseDate);
+      register(1114, parseDate);
+      register(1184, parseDate);
+      register(600, parsePoint);
+      register(651, parseStringArray);
+      register(718, parseCircle);
+      register(1e3, parseBoolArray);
+      register(1001, parseByteAArray);
+      register(1005, parseIntegerArray);
+      register(1007, parseIntegerArray);
+      register(1028, parseIntegerArray);
+      register(1016, parseBigIntegerArray);
+      register(1017, parsePointArray);
+      register(1021, parseFloatArray);
+      register(1022, parseFloatArray);
+      register(1231, parseFloatArray);
+      register(1014, parseStringArray);
+      register(1015, parseStringArray);
+      register(1008, parseStringArray);
+      register(1009, parseStringArray);
+      register(1040, parseStringArray);
+      register(1041, parseStringArray);
+      register(1115, parseDateArray);
+      register(1182, parseDateArray);
+      register(1185, parseDateArray);
+      register(1186, parseInterval);
+      register(1187, parseIntervalArray);
+      register(17, parseByteA);
+      register(114, JSON.parse.bind(JSON));
+      register(3802, JSON.parse.bind(JSON));
+      register(199, parseJsonArray);
+      register(3807, parseJsonArray);
+      register(3907, parseStringArray);
+      register(2951, parseStringArray);
+      register(791, parseStringArray);
+      register(1183, parseStringArray);
+      register(1270, parseStringArray);
+    };
+    module2.exports = {
+      init
+    };
+  }
+});
+
+// node_modules/pg-int8/index.js
+var require_pg_int8 = __commonJS({
+  "node_modules/pg-int8/index.js"(exports2, module2) {
+    "use strict";
+    var BASE = 1e6;
+    function readInt8(buffer) {
+      var high = buffer.readInt32BE(0);
+      var low = buffer.readUInt32BE(4);
+      var sign = "";
+      if (high < 0) {
+        high = ~high + (low === 0);
+        low = ~low + 1 >>> 0;
+        sign = "-";
+      }
+      var result = "";
+      var carry;
+      var t;
+      var digits;
+      var pad;
+      var l;
+      var i;
+      {
+        carry = high % BASE;
+        high = high / BASE >>> 0;
+        t = 4294967296 * carry + low;
+        low = t / BASE >>> 0;
+        digits = "" + (t - BASE * low);
+        if (low === 0 && high === 0) {
+          return sign + digits + result;
+        }
+        pad = "";
+        l = 6 - digits.length;
+        for (i = 0; i < l; i++) {
+          pad += "0";
+        }
+        result = pad + digits + result;
+      }
+      {
+        carry = high % BASE;
+        high = high / BASE >>> 0;
+        t = 4294967296 * carry + low;
+        low = t / BASE >>> 0;
+        digits = "" + (t - BASE * low);
+        if (low === 0 && high === 0) {
+          return sign + digits + result;
+        }
+        pad = "";
+        l = 6 - digits.length;
+        for (i = 0; i < l; i++) {
+          pad += "0";
+        }
+        result = pad + digits + result;
+      }
+      {
+        carry = high % BASE;
+        high = high / BASE >>> 0;
+        t = 4294967296 * carry + low;
+        low = t / BASE >>> 0;
+        digits = "" + (t - BASE * low);
+        if (low === 0 && high === 0) {
+          return sign + digits + result;
+        }
+        pad = "";
+        l = 6 - digits.length;
+        for (i = 0; i < l; i++) {
+          pad += "0";
+        }
+        result = pad + digits + result;
+      }
+      {
+        carry = high % BASE;
+        t = 4294967296 * carry + low;
+        digits = "" + t % BASE;
+        return sign + digits + result;
+      }
+    }
+    module2.exports = readInt8;
+  }
+});
+
+// node_modules/pg-types/lib/binaryParsers.js
+var require_binaryParsers = __commonJS({
+  "node_modules/pg-types/lib/binaryParsers.js"(exports2, module2) {
+    var parseInt64 = require_pg_int8();
+    var parseBits = function(data, bits, offset, invert, callback) {
+      offset = offset || 0;
+      invert = invert || false;
+      callback = callback || function(lastValue, newValue, bits2) {
+        return lastValue * Math.pow(2, bits2) + newValue;
+      };
+      var offsetBytes = offset >> 3;
+      var inv = function(value) {
+        if (invert) {
+          return ~value & 255;
+        }
+        return value;
+      };
+      var mask = 255;
+      var firstBits = 8 - offset % 8;
+      if (bits < firstBits) {
+        mask = 255 << 8 - bits & 255;
+        firstBits = bits;
+      }
+      if (offset) {
+        mask = mask >> offset % 8;
+      }
+      var result = 0;
+      if (offset % 8 + bits >= 8) {
+        result = callback(0, inv(data[offsetBytes]) & mask, firstBits);
+      }
+      var bytes = bits + offset >> 3;
+      for (var i = offsetBytes + 1; i < bytes; i++) {
+        result = callback(result, inv(data[i]), 8);
+      }
+      var lastBits = (bits + offset) % 8;
+      if (lastBits > 0) {
+        result = callback(result, inv(data[bytes]) >> 8 - lastBits, lastBits);
+      }
+      return result;
+    };
+    var parseFloatFromBits = function(data, precisionBits, exponentBits) {
+      var bias = Math.pow(2, exponentBits - 1) - 1;
+      var sign = parseBits(data, 1);
+      var exponent = parseBits(data, exponentBits, 1);
+      if (exponent === 0) {
+        return 0;
+      }
+      var precisionBitsCounter = 1;
+      var parsePrecisionBits = function(lastValue, newValue, bits) {
+        if (lastValue === 0) {
+          lastValue = 1;
+        }
+        for (var i = 1; i <= bits; i++) {
+          precisionBitsCounter /= 2;
+          if ((newValue & 1 << bits - i) > 0) {
+            lastValue += precisionBitsCounter;
+          }
+        }
+        return lastValue;
+      };
+      var mantissa = parseBits(data, precisionBits, exponentBits + 1, false, parsePrecisionBits);
+      if (exponent == Math.pow(2, exponentBits + 1) - 1) {
+        if (mantissa === 0) {
+          return sign === 0 ? Infinity : -Infinity;
+        }
+        return NaN;
+      }
+      return (sign === 0 ? 1 : -1) * Math.pow(2, exponent - bias) * mantissa;
+    };
+    var parseInt16 = function(value) {
+      if (parseBits(value, 1) == 1) {
+        return -1 * (parseBits(value, 15, 1, true) + 1);
+      }
+      return parseBits(value, 15, 1);
+    };
+    var parseInt32 = function(value) {
+      if (parseBits(value, 1) == 1) {
+        return -1 * (parseBits(value, 31, 1, true) + 1);
+      }
+      return parseBits(value, 31, 1);
+    };
+    var parseFloat32 = function(value) {
+      return parseFloatFromBits(value, 23, 8);
+    };
+    var parseFloat64 = function(value) {
+      return parseFloatFromBits(value, 52, 11);
+    };
+    var parseNumeric = function(value) {
+      var sign = parseBits(value, 16, 32);
+      if (sign == 49152) {
+        return NaN;
+      }
+      var weight = Math.pow(1e4, parseBits(value, 16, 16));
+      var result = 0;
+      var digits = [];
+      var ndigits = parseBits(value, 16);
+      for (var i = 0; i < ndigits; i++) {
+        result += parseBits(value, 16, 64 + 16 * i) * weight;
+        weight /= 1e4;
+      }
+      var scale = Math.pow(10, parseBits(value, 16, 48));
+      return (sign === 0 ? 1 : -1) * Math.round(result * scale) / scale;
+    };
+    var parseDate = function(isUTC, value) {
+      var sign = parseBits(value, 1);
+      var rawValue = parseBits(value, 63, 1);
+      var result = new Date((sign === 0 ? 1 : -1) * rawValue / 1e3 + 9466848e5);
+      if (!isUTC) {
+        result.setTime(result.getTime() + result.getTimezoneOffset() * 6e4);
+      }
+      result.usec = rawValue % 1e3;
+      result.getMicroSeconds = function() {
+        return this.usec;
+      };
+      result.setMicroSeconds = function(value2) {
+        this.usec = value2;
+      };
+      result.getUTCMicroSeconds = function() {
+        return this.usec;
+      };
+      return result;
+    };
+    var parseArray = function(value) {
+      var dim = parseBits(value, 32);
+      var flags = parseBits(value, 32, 32);
+      var elementType = parseBits(value, 32, 64);
+      var offset = 96;
+      var dims = [];
+      for (var i = 0; i < dim; i++) {
+        dims[i] = parseBits(value, 32, offset);
+        offset += 32;
+        offset += 32;
+      }
+      var parseElement = function(elementType2) {
+        var length = parseBits(value, 32, offset);
+        offset += 32;
+        if (length == 4294967295) {
+          return null;
+        }
+        var result;
+        if (elementType2 == 23 || elementType2 == 20) {
+          result = parseBits(value, length * 8, offset);
+          offset += length * 8;
+          return result;
+        } else if (elementType2 == 25) {
+          result = value.toString(this.encoding, offset >> 3, (offset += length << 3) >> 3);
+          return result;
+        } else {
+          console.log("ERROR: ElementType not implemented: " + elementType2);
+        }
+      };
+      var parse = function(dimension, elementType2) {
+        var array = [];
+        var i2;
+        if (dimension.length > 1) {
+          var count = dimension.shift();
+          for (i2 = 0; i2 < count; i2++) {
+            array[i2] = parse(dimension, elementType2);
+          }
+          dimension.unshift(count);
+        } else {
+          for (i2 = 0; i2 < dimension[0]; i2++) {
+            array[i2] = parseElement(elementType2);
+          }
+        }
+        return array;
+      };
+      return parse(dims, elementType);
+    };
+    var parseText = function(value) {
+      return value.toString("utf8");
+    };
+    var parseBool = function(value) {
+      if (value === null)
+        return null;
+      return parseBits(value, 8) > 0;
+    };
+    var init = function(register) {
+      register(20, parseInt64);
+      register(21, parseInt16);
+      register(23, parseInt32);
+      register(26, parseInt32);
+      register(1700, parseNumeric);
+      register(700, parseFloat32);
+      register(701, parseFloat64);
+      register(16, parseBool);
+      register(1114, parseDate.bind(null, false));
+      register(1184, parseDate.bind(null, true));
+      register(1e3, parseArray);
+      register(1007, parseArray);
+      register(1016, parseArray);
+      register(1008, parseArray);
+      register(1009, parseArray);
+      register(25, parseText);
+    };
+    module2.exports = {
+      init
+    };
+  }
+});
+
+// node_modules/pg-types/lib/builtins.js
+var require_builtins = __commonJS({
+  "node_modules/pg-types/lib/builtins.js"(exports2, module2) {
+    module2.exports = {
+      BOOL: 16,
+      BYTEA: 17,
+      CHAR: 18,
+      INT8: 20,
+      INT2: 21,
+      INT4: 23,
+      REGPROC: 24,
+      TEXT: 25,
+      OID: 26,
+      TID: 27,
+      XID: 28,
+      CID: 29,
+      JSON: 114,
+      XML: 142,
+      PG_NODE_TREE: 194,
+      SMGR: 210,
+      PATH: 602,
+      POLYGON: 604,
+      CIDR: 650,
+      FLOAT4: 700,
+      FLOAT8: 701,
+      ABSTIME: 702,
+      RELTIME: 703,
+      TINTERVAL: 704,
+      CIRCLE: 718,
+      MACADDR8: 774,
+      MONEY: 790,
+      MACADDR: 829,
+      INET: 869,
+      ACLITEM: 1033,
+      BPCHAR: 1042,
+      VARCHAR: 1043,
+      DATE: 1082,
+      TIME: 1083,
+      TIMESTAMP: 1114,
+      TIMESTAMPTZ: 1184,
+      INTERVAL: 1186,
+      TIMETZ: 1266,
+      BIT: 1560,
+      VARBIT: 1562,
+      NUMERIC: 1700,
+      REFCURSOR: 1790,
+      REGPROCEDURE: 2202,
+      REGOPER: 2203,
+      REGOPERATOR: 2204,
+      REGCLASS: 2205,
+      REGTYPE: 2206,
+      UUID: 2950,
+      TXID_SNAPSHOT: 2970,
+      PG_LSN: 3220,
+      PG_NDISTINCT: 3361,
+      PG_DEPENDENCIES: 3402,
+      TSVECTOR: 3614,
+      TSQUERY: 3615,
+      GTSVECTOR: 3642,
+      REGCONFIG: 3734,
+      REGDICTIONARY: 3769,
+      JSONB: 3802,
+      REGNAMESPACE: 4089,
+      REGROLE: 4096
+    };
+  }
+});
+
+// node_modules/pg-types/index.js
+var require_pg_types = __commonJS({
+  "node_modules/pg-types/index.js"(exports2) {
+    var textParsers = require_textParsers();
+    var binaryParsers = require_binaryParsers();
+    var arrayParser = require_arrayParser();
+    var builtinTypes = require_builtins();
+    exports2.getTypeParser = getTypeParser;
+    exports2.setTypeParser = setTypeParser;
+    exports2.arrayParser = arrayParser;
+    exports2.builtins = builtinTypes;
+    var typeParsers = {
+      text: {},
+      binary: {}
+    };
+    function noParse(val) {
+      return String(val);
+    }
+    function getTypeParser(oid, format) {
+      format = format || "text";
+      if (!typeParsers[format]) {
+        return noParse;
+      }
+      return typeParsers[format][oid] || noParse;
+    }
+    function setTypeParser(oid, format, parseFn) {
+      if (typeof format == "function") {
+        parseFn = format;
+        format = "text";
+      }
+      typeParsers[format][oid] = parseFn;
+    }
+    textParsers.init(function(oid, converter) {
+      typeParsers.text[oid] = converter;
+    });
+    binaryParsers.init(function(oid, converter) {
+      typeParsers.binary[oid] = converter;
+    });
+  }
+});
+
+// node_modules/pg/lib/defaults.js
+var require_defaults2 = __commonJS({
+  "node_modules/pg/lib/defaults.js"(exports2, module2) {
+    "use strict";
+    module2.exports = {
+      host: "localhost",
+      user: process.platform === "win32" ? process.env.USERNAME : process.env.USER,
+      database: void 0,
+      password: null,
+      connectionString: void 0,
+      port: 5432,
+      rows: 0,
+      binary: false,
+      max: 10,
+      idleTimeoutMillis: 3e4,
+      client_encoding: "",
+      ssl: false,
+      application_name: void 0,
+      fallback_application_name: void 0,
+      options: void 0,
+      parseInputDatesAsUTC: false,
+      statement_timeout: false,
+      idle_in_transaction_session_timeout: false,
+      query_timeout: false,
+      connect_timeout: 0,
+      keepalives: 1,
+      keepalives_idle: 0
+    };
+    var pgTypes = require_pg_types();
+    var parseBigInteger = pgTypes.getTypeParser(20, "text");
+    var parseBigIntegerArray = pgTypes.getTypeParser(1016, "text");
+    module2.exports.__defineSetter__("parseInt8", function(val) {
+      pgTypes.setTypeParser(20, "text", val ? pgTypes.getTypeParser(23, "text") : parseBigInteger);
+      pgTypes.setTypeParser(1016, "text", val ? pgTypes.getTypeParser(1007, "text") : parseBigIntegerArray);
+    });
+  }
+});
+
+// node_modules/pg/lib/utils.js
+var require_utils4 = __commonJS({
+  "node_modules/pg/lib/utils.js"(exports2, module2) {
+    "use strict";
+    var crypto2 = require("crypto");
+    var defaults = require_defaults2();
+    function escapeElement(elementRepresentation) {
+      var escaped = elementRepresentation.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+      return '"' + escaped + '"';
+    }
+    function arrayString(val) {
+      var result = "{";
+      for (var i = 0; i < val.length; i++) {
+        if (i > 0) {
+          result = result + ",";
+        }
+        if (val[i] === null || typeof val[i] === "undefined") {
+          result = result + "NULL";
+        } else if (Array.isArray(val[i])) {
+          result = result + arrayString(val[i]);
+        } else if (val[i] instanceof Buffer) {
+          result += "\\\\x" + val[i].toString("hex");
+        } else {
+          result += escapeElement(prepareValue(val[i]));
+        }
+      }
+      result = result + "}";
+      return result;
+    }
+    var prepareValue = function(val, seen) {
+      if (val == null) {
+        return null;
+      }
+      if (val instanceof Buffer) {
+        return val;
+      }
+      if (ArrayBuffer.isView(val)) {
+        var buf = Buffer.from(val.buffer, val.byteOffset, val.byteLength);
+        if (buf.length === val.byteLength) {
+          return buf;
+        }
+        return buf.slice(val.byteOffset, val.byteOffset + val.byteLength);
+      }
+      if (val instanceof Date) {
+        if (defaults.parseInputDatesAsUTC) {
+          return dateToStringUTC(val);
+        } else {
+          return dateToString(val);
+        }
+      }
+      if (Array.isArray(val)) {
+        return arrayString(val);
+      }
+      if (typeof val === "object") {
+        return prepareObject(val, seen);
+      }
+      return val.toString();
+    };
+    function prepareObject(val, seen) {
+      if (val && typeof val.toPostgres === "function") {
+        seen = seen || [];
+        if (seen.indexOf(val) !== -1) {
+          throw new Error('circular reference detected while preparing "' + val + '" for query');
+        }
+        seen.push(val);
+        return prepareValue(val.toPostgres(prepareValue), seen);
+      }
+      return JSON.stringify(val);
+    }
+    function pad(number, digits) {
+      number = "" + number;
+      while (number.length < digits) {
+        number = "0" + number;
+      }
+      return number;
+    }
+    function dateToString(date) {
+      var offset = -date.getTimezoneOffset();
+      var year = date.getFullYear();
+      var isBCYear = year < 1;
+      if (isBCYear)
+        year = Math.abs(year) + 1;
+      var ret = pad(year, 4) + "-" + pad(date.getMonth() + 1, 2) + "-" + pad(date.getDate(), 2) + "T" + pad(date.getHours(), 2) + ":" + pad(date.getMinutes(), 2) + ":" + pad(date.getSeconds(), 2) + "." + pad(date.getMilliseconds(), 3);
+      if (offset < 0) {
+        ret += "-";
+        offset *= -1;
+      } else {
+        ret += "+";
+      }
+      ret += pad(Math.floor(offset / 60), 2) + ":" + pad(offset % 60, 2);
+      if (isBCYear)
+        ret += " BC";
+      return ret;
+    }
+    function dateToStringUTC(date) {
+      var year = date.getUTCFullYear();
+      var isBCYear = year < 1;
+      if (isBCYear)
+        year = Math.abs(year) + 1;
+      var ret = pad(year, 4) + "-" + pad(date.getUTCMonth() + 1, 2) + "-" + pad(date.getUTCDate(), 2) + "T" + pad(date.getUTCHours(), 2) + ":" + pad(date.getUTCMinutes(), 2) + ":" + pad(date.getUTCSeconds(), 2) + "." + pad(date.getUTCMilliseconds(), 3);
+      ret += "+00:00";
+      if (isBCYear)
+        ret += " BC";
+      return ret;
+    }
+    function normalizeQueryConfig(config, values, callback) {
+      config = typeof config === "string" ? { text: config } : config;
+      if (values) {
+        if (typeof values === "function") {
+          config.callback = values;
+        } else {
+          config.values = values;
+        }
+      }
+      if (callback) {
+        config.callback = callback;
+      }
+      return config;
+    }
+    var md5 = function(string) {
+      return crypto2.createHash("md5").update(string, "utf-8").digest("hex");
+    };
+    var postgresMd5PasswordHash = function(user, password, salt) {
+      var inner = md5(password + user);
+      var outer = md5(Buffer.concat([Buffer.from(inner), salt]));
+      return "md5" + outer;
+    };
+    module2.exports = {
+      prepareValue: function prepareValueWrapper(value) {
+        return prepareValue(value);
+      },
+      normalizeQueryConfig,
+      postgresMd5PasswordHash,
+      md5
+    };
+  }
+});
+
+// node_modules/pg/lib/sasl.js
+var require_sasl = __commonJS({
+  "node_modules/pg/lib/sasl.js"(exports2, module2) {
+    "use strict";
+    var crypto2 = require("crypto");
+    function startSession(mechanisms) {
+      if (mechanisms.indexOf("SCRAM-SHA-256") === -1) {
+        throw new Error("SASL: Only mechanism SCRAM-SHA-256 is currently supported");
+      }
+      const clientNonce = crypto2.randomBytes(18).toString("base64");
+      return {
+        mechanism: "SCRAM-SHA-256",
+        clientNonce,
+        response: "n,,n=*,r=" + clientNonce,
+        message: "SASLInitialResponse"
+      };
+    }
+    function continueSession(session, password, serverData) {
+      if (session.message !== "SASLInitialResponse") {
+        throw new Error("SASL: Last message was not SASLInitialResponse");
+      }
+      if (typeof password !== "string") {
+        throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: client password must be a string");
+      }
+      if (typeof serverData !== "string") {
+        throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: serverData must be a string");
+      }
+      const sv = parseServerFirstMessage(serverData);
+      if (!sv.nonce.startsWith(session.clientNonce)) {
+        throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: server nonce does not start with client nonce");
+      } else if (sv.nonce.length === session.clientNonce.length) {
+        throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: server nonce is too short");
+      }
+      var saltBytes = Buffer.from(sv.salt, "base64");
+      var saltedPassword = Hi(password, saltBytes, sv.iteration);
+      var clientKey = hmacSha256(saltedPassword, "Client Key");
+      var storedKey = sha256(clientKey);
+      var clientFirstMessageBare = "n=*,r=" + session.clientNonce;
+      var serverFirstMessage = "r=" + sv.nonce + ",s=" + sv.salt + ",i=" + sv.iteration;
+      var clientFinalMessageWithoutProof = "c=biws,r=" + sv.nonce;
+      var authMessage = clientFirstMessageBare + "," + serverFirstMessage + "," + clientFinalMessageWithoutProof;
+      var clientSignature = hmacSha256(storedKey, authMessage);
+      var clientProofBytes = xorBuffers(clientKey, clientSignature);
+      var clientProof = clientProofBytes.toString("base64");
+      var serverKey = hmacSha256(saltedPassword, "Server Key");
+      var serverSignatureBytes = hmacSha256(serverKey, authMessage);
+      session.message = "SASLResponse";
+      session.serverSignature = serverSignatureBytes.toString("base64");
+      session.response = clientFinalMessageWithoutProof + ",p=" + clientProof;
+    }
+    function finalizeSession(session, serverData) {
+      if (session.message !== "SASLResponse") {
+        throw new Error("SASL: Last message was not SASLResponse");
+      }
+      if (typeof serverData !== "string") {
+        throw new Error("SASL: SCRAM-SERVER-FINAL-MESSAGE: serverData must be a string");
+      }
+      const { serverSignature } = parseServerFinalMessage(serverData);
+      if (serverSignature !== session.serverSignature) {
+        throw new Error("SASL: SCRAM-SERVER-FINAL-MESSAGE: server signature does not match");
+      }
+    }
+    function isPrintableChars(text) {
+      if (typeof text !== "string") {
+        throw new TypeError("SASL: text must be a string");
+      }
+      return text.split("").map((_, i) => text.charCodeAt(i)).every((c) => c >= 33 && c <= 43 || c >= 45 && c <= 126);
+    }
+    function isBase64(text) {
+      return /^(?:[a-zA-Z0-9+/]{4})*(?:[a-zA-Z0-9+/]{2}==|[a-zA-Z0-9+/]{3}=)?$/.test(text);
+    }
+    function parseAttributePairs(text) {
+      if (typeof text !== "string") {
+        throw new TypeError("SASL: attribute pairs text must be a string");
+      }
+      return new Map(text.split(",").map((attrValue) => {
+        if (!/^.=/.test(attrValue)) {
+          throw new Error("SASL: Invalid attribute pair entry");
+        }
+        const name = attrValue[0];
+        const value = attrValue.substring(2);
+        return [name, value];
+      }));
+    }
+    function parseServerFirstMessage(data) {
+      const attrPairs = parseAttributePairs(data);
+      const nonce = attrPairs.get("r");
+      if (!nonce) {
+        throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: nonce missing");
+      } else if (!isPrintableChars(nonce)) {
+        throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: nonce must only contain printable characters");
+      }
+      const salt = attrPairs.get("s");
+      if (!salt) {
+        throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: salt missing");
+      } else if (!isBase64(salt)) {
+        throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: salt must be base64");
+      }
+      const iterationText = attrPairs.get("i");
+      if (!iterationText) {
+        throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: iteration missing");
+      } else if (!/^[1-9][0-9]*$/.test(iterationText)) {
+        throw new Error("SASL: SCRAM-SERVER-FIRST-MESSAGE: invalid iteration count");
+      }
+      const iteration = parseInt(iterationText, 10);
+      return {
+        nonce,
+        salt,
+        iteration
+      };
+    }
+    function parseServerFinalMessage(serverData) {
+      const attrPairs = parseAttributePairs(serverData);
+      const serverSignature = attrPairs.get("v");
+      if (!serverSignature) {
+        throw new Error("SASL: SCRAM-SERVER-FINAL-MESSAGE: server signature is missing");
+      } else if (!isBase64(serverSignature)) {
+        throw new Error("SASL: SCRAM-SERVER-FINAL-MESSAGE: server signature must be base64");
+      }
+      return {
+        serverSignature
+      };
+    }
+    function xorBuffers(a, b) {
+      if (!Buffer.isBuffer(a)) {
+        throw new TypeError("first argument must be a Buffer");
+      }
+      if (!Buffer.isBuffer(b)) {
+        throw new TypeError("second argument must be a Buffer");
+      }
+      if (a.length !== b.length) {
+        throw new Error("Buffer lengths must match");
+      }
+      if (a.length === 0) {
+        throw new Error("Buffers cannot be empty");
+      }
+      return Buffer.from(a.map((_, i) => a[i] ^ b[i]));
+    }
+    function sha256(text) {
+      return crypto2.createHash("sha256").update(text).digest();
+    }
+    function hmacSha256(key, msg) {
+      return crypto2.createHmac("sha256", key).update(msg).digest();
+    }
+    function Hi(password, saltBytes, iterations) {
+      var ui1 = hmacSha256(password, Buffer.concat([saltBytes, Buffer.from([0, 0, 0, 1])]));
+      var ui = ui1;
+      for (var i = 0; i < iterations - 1; i++) {
+        ui1 = hmacSha256(password, ui1);
+        ui = xorBuffers(ui, ui1);
+      }
+      return ui;
+    }
+    module2.exports = {
+      startSession,
+      continueSession,
+      finalizeSession
+    };
+  }
+});
+
+// node_modules/split2/index.js
+var require_split2 = __commonJS({
+  "node_modules/split2/index.js"(exports2, module2) {
+    "use strict";
+    var { Transform } = require("stream");
+    var { StringDecoder } = require("string_decoder");
+    var kLast = Symbol("last");
+    var kDecoder = Symbol("decoder");
+    function transform(chunk, enc, cb) {
+      let list;
+      if (this.overflow) {
+        const buf = this[kDecoder].write(chunk);
+        list = buf.split(this.matcher);
+        if (list.length === 1)
+          return cb();
+        list.shift();
+        this.overflow = false;
+      } else {
+        this[kLast] += this[kDecoder].write(chunk);
+        list = this[kLast].split(this.matcher);
+      }
+      this[kLast] = list.pop();
+      for (let i = 0; i < list.length; i++) {
+        try {
+          push(this, this.mapper(list[i]));
+        } catch (error) {
+          return cb(error);
+        }
+      }
+      this.overflow = this[kLast].length > this.maxLength;
+      if (this.overflow && !this.skipOverflow) {
+        cb(new Error("maximum buffer reached"));
+        return;
+      }
+      cb();
+    }
+    function flush(cb) {
+      this[kLast] += this[kDecoder].end();
+      if (this[kLast]) {
+        try {
+          push(this, this.mapper(this[kLast]));
+        } catch (error) {
+          return cb(error);
+        }
+      }
+      cb();
+    }
+    function push(self2, val) {
+      if (val !== void 0) {
+        self2.push(val);
+      }
+    }
+    function noop(incoming) {
+      return incoming;
+    }
+    function split(matcher, mapper, options) {
+      matcher = matcher || /\r?\n/;
+      mapper = mapper || noop;
+      options = options || {};
+      switch (arguments.length) {
+        case 1:
+          if (typeof matcher === "function") {
+            mapper = matcher;
+            matcher = /\r?\n/;
+          } else if (typeof matcher === "object" && !(matcher instanceof RegExp)) {
+            options = matcher;
+            matcher = /\r?\n/;
+          }
+          break;
+        case 2:
+          if (typeof matcher === "function") {
+            options = mapper;
+            mapper = matcher;
+            matcher = /\r?\n/;
+          } else if (typeof mapper === "object") {
+            options = mapper;
+            mapper = noop;
+          }
+      }
+      options = Object.assign({}, options);
+      options.autoDestroy = true;
+      options.transform = transform;
+      options.flush = flush;
+      options.readableObjectMode = true;
+      const stream = new Transform(options);
+      stream[kLast] = "";
+      stream[kDecoder] = new StringDecoder("utf8");
+      stream.matcher = matcher;
+      stream.mapper = mapper;
+      stream.maxLength = options.maxLength;
+      stream.skipOverflow = options.skipOverflow || false;
+      stream.overflow = false;
+      stream._destroy = function(err, cb) {
+        this._writableState.errorEmitted = false;
+        cb(err);
+      };
+      return stream;
+    }
+    module2.exports = split;
+  }
+});
+
+// node_modules/pgpass/lib/helper.js
+var require_helper = __commonJS({
+  "node_modules/pgpass/lib/helper.js"(exports2, module2) {
+    "use strict";
+    var path = require("path");
+    var Stream = require("stream").Stream;
+    var split = require_split2();
+    var util = require("util");
+    var defaultPort = 5432;
+    var isWin = process.platform === "win32";
+    var warnStream = process.stderr;
+    var S_IRWXG = 56;
+    var S_IRWXO = 7;
+    var S_IFMT = 61440;
+    var S_IFREG = 32768;
+    function isRegFile(mode) {
+      return (mode & S_IFMT) == S_IFREG;
+    }
+    var fieldNames = ["host", "port", "database", "user", "password"];
+    var nrOfFields = fieldNames.length;
+    var passKey = fieldNames[nrOfFields - 1];
+    function warn() {
+      var isWritable = warnStream instanceof Stream && warnStream.writable === true;
+      if (isWritable) {
+        var args2 = Array.prototype.slice.call(arguments).concat("\n");
+        warnStream.write(util.format.apply(util, args2));
+      }
+    }
+    Object.defineProperty(module2.exports, "isWin", {
+      get: function() {
+        return isWin;
+      },
+      set: function(val) {
+        isWin = val;
+      }
+    });
+    module2.exports.warnTo = function(stream) {
+      var old = warnStream;
+      warnStream = stream;
+      return old;
+    };
+    module2.exports.getFileName = function(rawEnv) {
+      var env = rawEnv || process.env;
+      var file = env.PGPASSFILE || (isWin ? path.join(env.APPDATA || "./", "postgresql", "pgpass.conf") : path.join(env.HOME || "./", ".pgpass"));
+      return file;
+    };
+    module2.exports.usePgPass = function(stats, fname) {
+      if (Object.prototype.hasOwnProperty.call(process.env, "PGPASSWORD")) {
+        return false;
+      }
+      if (isWin) {
+        return true;
+      }
+      fname = fname || "<unkn>";
+      if (!isRegFile(stats.mode)) {
+        warn('WARNING: password file "%s" is not a plain file', fname);
+        return false;
+      }
+      if (stats.mode & (S_IRWXG | S_IRWXO)) {
+        warn('WARNING: password file "%s" has group or world access; permissions should be u=rw (0600) or less', fname);
+        return false;
+      }
+      return true;
+    };
+    var matcher = module2.exports.match = function(connInfo, entry) {
+      return fieldNames.slice(0, -1).reduce(function(prev, field, idx) {
+        if (idx == 1) {
+          if (Number(connInfo[field] || defaultPort) === Number(entry[field])) {
+            return prev && true;
+          }
+        }
+        return prev && (entry[field] === "*" || entry[field] === connInfo[field]);
+      }, true);
+    };
+    module2.exports.getPassword = function(connInfo, stream, cb) {
+      var pass;
+      var lineStream = stream.pipe(split());
+      function onLine(line) {
+        var entry = parseLine(line);
+        if (entry && isValidEntry(entry) && matcher(connInfo, entry)) {
+          pass = entry[passKey];
+          lineStream.end();
+        }
+      }
+      var onEnd = function() {
+        stream.destroy();
+        cb(pass);
+      };
+      var onErr = function(err) {
+        stream.destroy();
+        warn("WARNING: error on reading file: %s", err);
+        cb(void 0);
+      };
+      stream.on("error", onErr);
+      lineStream.on("data", onLine).on("end", onEnd).on("error", onErr);
+    };
+    var parseLine = module2.exports.parseLine = function(line) {
+      if (line.length < 11 || line.match(/^\s+#/)) {
+        return null;
+      }
+      var curChar = "";
+      var prevChar = "";
+      var fieldIdx = 0;
+      var startIdx = 0;
+      var endIdx = 0;
+      var obj = {};
+      var isLastField = false;
+      var addToObj = function(idx, i0, i1) {
+        var field = line.substring(i0, i1);
+        if (!Object.hasOwnProperty.call(process.env, "PGPASS_NO_DEESCAPE")) {
+          field = field.replace(/\\([:\\])/g, "$1");
+        }
+        obj[fieldNames[idx]] = field;
+      };
+      for (var i = 0; i < line.length - 1; i += 1) {
+        curChar = line.charAt(i + 1);
+        prevChar = line.charAt(i);
+        isLastField = fieldIdx == nrOfFields - 1;
+        if (isLastField) {
+          addToObj(fieldIdx, startIdx);
+          break;
+        }
+        if (i >= 0 && curChar == ":" && prevChar !== "\\") {
+          addToObj(fieldIdx, startIdx, i + 1);
+          startIdx = i + 2;
+          fieldIdx += 1;
+        }
+      }
+      obj = Object.keys(obj).length === nrOfFields ? obj : null;
+      return obj;
+    };
+    var isValidEntry = module2.exports.isValidEntry = function(entry) {
+      var rules = {
+        0: function(x) {
+          return x.length > 0;
+        },
+        1: function(x) {
+          if (x === "*") {
+            return true;
+          }
+          x = Number(x);
+          return isFinite(x) && x > 0 && x < 9007199254740992 && Math.floor(x) === x;
+        },
+        2: function(x) {
+          return x.length > 0;
+        },
+        3: function(x) {
+          return x.length > 0;
+        },
+        4: function(x) {
+          return x.length > 0;
+        }
+      };
+      for (var idx = 0; idx < fieldNames.length; idx += 1) {
+        var rule = rules[idx];
+        var value = entry[fieldNames[idx]] || "";
+        var res = rule(value);
+        if (!res) {
+          return false;
+        }
+      }
+      return true;
+    };
+  }
+});
+
+// node_modules/pgpass/lib/index.js
+var require_lib5 = __commonJS({
+  "node_modules/pgpass/lib/index.js"(exports2, module2) {
+    "use strict";
+    var path = require("path");
+    var fs = require("fs");
+    var helper = require_helper();
+    module2.exports = function(connInfo, cb) {
+      var file = helper.getFileName();
+      fs.stat(file, function(err, stat) {
+        if (err || !helper.usePgPass(stat, file)) {
+          return cb(void 0);
+        }
+        var st = fs.createReadStream(file);
+        helper.getPassword(connInfo, st, cb);
+      });
+    };
+    module2.exports.warnTo = helper.warnTo;
+  }
+});
+
+// node_modules/pg/lib/type-overrides.js
+var require_type_overrides = __commonJS({
+  "node_modules/pg/lib/type-overrides.js"(exports2, module2) {
+    "use strict";
+    var types = require_pg_types();
+    function TypeOverrides(userTypes) {
+      this._types = userTypes || types;
+      this.text = {};
+      this.binary = {};
+    }
+    TypeOverrides.prototype.getOverrides = function(format) {
+      switch (format) {
+        case "text":
+          return this.text;
+        case "binary":
+          return this.binary;
+        default:
+          return {};
+      }
+    };
+    TypeOverrides.prototype.setTypeParser = function(oid, format, parseFn) {
+      if (typeof format === "function") {
+        parseFn = format;
+        format = "text";
+      }
+      this.getOverrides(format)[oid] = parseFn;
+    };
+    TypeOverrides.prototype.getTypeParser = function(oid, format) {
+      format = format || "text";
+      return this.getOverrides(format)[oid] || this._types.getTypeParser(oid, format);
+    };
+    module2.exports = TypeOverrides;
+  }
+});
+
+// node_modules/pg/lib/connection-parameters.js
+var require_connection_parameters = __commonJS({
+  "node_modules/pg/lib/connection-parameters.js"(exports2, module2) {
+    "use strict";
+    var dns = require("dns");
+    var defaults = require_defaults2();
+    var parse = require_pg_connection_string().parse;
+    var val = function(key, config, envVar) {
+      if (envVar === void 0) {
+        envVar = process.env["PG" + key.toUpperCase()];
+      } else if (envVar === false) {
+      } else {
+        envVar = process.env[envVar];
+      }
+      return config[key] || envVar || defaults[key];
+    };
+    var readSSLConfigFromEnvironment = function() {
+      switch (process.env.PGSSLMODE) {
+        case "disable":
+          return false;
+        case "prefer":
+        case "require":
+        case "verify-ca":
+        case "verify-full":
+          return true;
+        case "no-verify":
+          return { rejectUnauthorized: false };
+      }
+      return defaults.ssl;
+    };
+    var quoteParamValue = function(value) {
+      return "'" + ("" + value).replace(/\\/g, "\\\\").replace(/'/g, "\\'") + "'";
+    };
+    var add = function(params, config, paramName) {
+      var value = config[paramName];
+      if (value !== void 0 && value !== null) {
+        params.push(paramName + "=" + quoteParamValue(value));
+      }
+    };
+    var ConnectionParameters = class {
+      constructor(config) {
+        config = typeof config === "string" ? parse(config) : config || {};
+        if (config.connectionString) {
+          config = Object.assign({}, config, parse(config.connectionString));
+        }
+        this.user = val("user", config);
+        this.database = val("database", config);
+        if (this.database === void 0) {
+          this.database = this.user;
+        }
+        this.port = parseInt(val("port", config), 10);
+        this.host = val("host", config);
+        Object.defineProperty(this, "password", {
+          configurable: true,
+          enumerable: false,
+          writable: true,
+          value: val("password", config)
+        });
+        this.binary = val("binary", config);
+        this.options = val("options", config);
+        this.ssl = typeof config.ssl === "undefined" ? readSSLConfigFromEnvironment() : config.ssl;
+        if (typeof this.ssl === "string") {
+          if (this.ssl === "true") {
+            this.ssl = true;
+          }
+        }
+        if (this.ssl === "no-verify") {
+          this.ssl = { rejectUnauthorized: false };
+        }
+        if (this.ssl && this.ssl.key) {
+          Object.defineProperty(this.ssl, "key", {
+            enumerable: false
+          });
+        }
+        this.client_encoding = val("client_encoding", config);
+        this.replication = val("replication", config);
+        this.isDomainSocket = !(this.host || "").indexOf("/");
+        this.application_name = val("application_name", config, "PGAPPNAME");
+        this.fallback_application_name = val("fallback_application_name", config, false);
+        this.statement_timeout = val("statement_timeout", config, false);
+        this.idle_in_transaction_session_timeout = val("idle_in_transaction_session_timeout", config, false);
+        this.query_timeout = val("query_timeout", config, false);
+        if (config.connectionTimeoutMillis === void 0) {
+          this.connect_timeout = process.env.PGCONNECT_TIMEOUT || 0;
+        } else {
+          this.connect_timeout = Math.floor(config.connectionTimeoutMillis / 1e3);
+        }
+        if (config.keepAlive === false) {
+          this.keepalives = 0;
+        } else if (config.keepAlive === true) {
+          this.keepalives = 1;
+        }
+        if (typeof config.keepAliveInitialDelayMillis === "number") {
+          this.keepalives_idle = Math.floor(config.keepAliveInitialDelayMillis / 1e3);
+        }
+      }
+      getLibpqConnectionString(cb) {
+        var params = [];
+        add(params, this, "user");
+        add(params, this, "password");
+        add(params, this, "port");
+        add(params, this, "application_name");
+        add(params, this, "fallback_application_name");
+        add(params, this, "connect_timeout");
+        add(params, this, "options");
+        var ssl = typeof this.ssl === "object" ? this.ssl : this.ssl ? { sslmode: this.ssl } : {};
+        add(params, ssl, "sslmode");
+        add(params, ssl, "sslca");
+        add(params, ssl, "sslkey");
+        add(params, ssl, "sslcert");
+        add(params, ssl, "sslrootcert");
+        if (this.database) {
+          params.push("dbname=" + quoteParamValue(this.database));
+        }
+        if (this.replication) {
+          params.push("replication=" + quoteParamValue(this.replication));
+        }
+        if (this.host) {
+          params.push("host=" + quoteParamValue(this.host));
+        }
+        if (this.isDomainSocket) {
+          return cb(null, params.join(" "));
+        }
+        if (this.client_encoding) {
+          params.push("client_encoding=" + quoteParamValue(this.client_encoding));
+        }
+        dns.lookup(this.host, function(err, address) {
+          if (err)
+            return cb(err, null);
+          params.push("hostaddr=" + quoteParamValue(address));
+          return cb(null, params.join(" "));
+        });
+      }
+    };
+    module2.exports = ConnectionParameters;
+  }
+});
+
+// node_modules/pg/lib/result.js
+var require_result = __commonJS({
+  "node_modules/pg/lib/result.js"(exports2, module2) {
+    "use strict";
+    var types = require_pg_types();
+    var matchRegexp = /^([A-Za-z]+)(?: (\d+))?(?: (\d+))?/;
+    var Result = class {
+      constructor(rowMode, types2) {
+        this.command = null;
+        this.rowCount = null;
+        this.oid = null;
+        this.rows = [];
+        this.fields = [];
+        this._parsers = void 0;
+        this._types = types2;
+        this.RowCtor = null;
+        this.rowAsArray = rowMode === "array";
+        if (this.rowAsArray) {
+          this.parseRow = this._parseRowAsArray;
+        }
+      }
+      addCommandComplete(msg) {
+        var match;
+        if (msg.text) {
+          match = matchRegexp.exec(msg.text);
+        } else {
+          match = matchRegexp.exec(msg.command);
+        }
+        if (match) {
+          this.command = match[1];
+          if (match[3]) {
+            this.oid = parseInt(match[2], 10);
+            this.rowCount = parseInt(match[3], 10);
+          } else if (match[2]) {
+            this.rowCount = parseInt(match[2], 10);
+          }
+        }
+      }
+      _parseRowAsArray(rowData) {
+        var row = new Array(rowData.length);
+        for (var i = 0, len = rowData.length; i < len; i++) {
+          var rawValue = rowData[i];
+          if (rawValue !== null) {
+            row[i] = this._parsers[i](rawValue);
+          } else {
+            row[i] = null;
+          }
+        }
+        return row;
+      }
+      parseRow(rowData) {
+        var row = {};
+        for (var i = 0, len = rowData.length; i < len; i++) {
+          var rawValue = rowData[i];
+          var field = this.fields[i].name;
+          if (rawValue !== null) {
+            row[field] = this._parsers[i](rawValue);
+          } else {
+            row[field] = null;
+          }
+        }
+        return row;
+      }
+      addRow(row) {
+        this.rows.push(row);
+      }
+      addFields(fieldDescriptions) {
+        this.fields = fieldDescriptions;
+        if (this.fields.length) {
+          this._parsers = new Array(fieldDescriptions.length);
+        }
+        for (var i = 0; i < fieldDescriptions.length; i++) {
+          var desc = fieldDescriptions[i];
+          if (this._types) {
+            this._parsers[i] = this._types.getTypeParser(desc.dataTypeID, desc.format || "text");
+          } else {
+            this._parsers[i] = types.getTypeParser(desc.dataTypeID, desc.format || "text");
+          }
+        }
+      }
+    };
+    module2.exports = Result;
+  }
+});
+
+// node_modules/pg/lib/query.js
+var require_query2 = __commonJS({
+  "node_modules/pg/lib/query.js"(exports2, module2) {
+    "use strict";
+    var { EventEmitter } = require("events");
+    var Result = require_result();
+    var utils = require_utils4();
+    var Query = class extends EventEmitter {
+      constructor(config, values, callback) {
+        super();
+        config = utils.normalizeQueryConfig(config, values, callback);
+        this.text = config.text;
+        this.values = config.values;
+        this.rows = config.rows;
+        this.types = config.types;
+        this.name = config.name;
+        this.binary = config.binary;
+        this.portal = config.portal || "";
+        this.callback = config.callback;
+        this._rowMode = config.rowMode;
+        if (process.domain && config.callback) {
+          this.callback = process.domain.bind(config.callback);
+        }
+        this._result = new Result(this._rowMode, this.types);
+        this._results = this._result;
+        this.isPreparedStatement = false;
+        this._canceledDueToError = false;
+        this._promise = null;
+      }
+      requiresPreparation() {
+        if (this.name) {
+          return true;
+        }
+        if (this.rows) {
+          return true;
+        }
+        if (!this.text) {
+          return false;
+        }
+        if (!this.values) {
+          return false;
+        }
+        return this.values.length > 0;
+      }
+      _checkForMultirow() {
+        if (this._result.command) {
+          if (!Array.isArray(this._results)) {
+            this._results = [this._result];
+          }
+          this._result = new Result(this._rowMode, this.types);
+          this._results.push(this._result);
+        }
+      }
+      handleRowDescription(msg) {
+        this._checkForMultirow();
+        this._result.addFields(msg.fields);
+        this._accumulateRows = this.callback || !this.listeners("row").length;
+      }
+      handleDataRow(msg) {
+        let row;
+        if (this._canceledDueToError) {
+          return;
+        }
+        try {
+          row = this._result.parseRow(msg.fields);
+        } catch (err) {
+          this._canceledDueToError = err;
+          return;
+        }
+        this.emit("row", row, this._result);
+        if (this._accumulateRows) {
+          this._result.addRow(row);
+        }
+      }
+      handleCommandComplete(msg, connection) {
+        this._checkForMultirow();
+        this._result.addCommandComplete(msg);
+        if (this.rows) {
+          connection.sync();
+        }
+      }
+      handleEmptyQuery(connection) {
+        if (this.rows) {
+          connection.sync();
+        }
+      }
+      handleError(err, connection) {
+        if (this._canceledDueToError) {
+          err = this._canceledDueToError;
+          this._canceledDueToError = false;
+        }
+        if (this.callback) {
+          return this.callback(err);
+        }
+        this.emit("error", err);
+      }
+      handleReadyForQuery(con) {
+        if (this._canceledDueToError) {
+          return this.handleError(this._canceledDueToError, con);
+        }
+        if (this.callback) {
+          this.callback(null, this._results);
+        }
+        this.emit("end", this._results);
+      }
+      submit(connection) {
+        if (typeof this.text !== "string" && typeof this.name !== "string") {
+          return new Error("A query must have either text or a name. Supplying neither is unsupported.");
+        }
+        const previous = connection.parsedStatements[this.name];
+        if (this.text && previous && this.text !== previous) {
+          return new Error(`Prepared statements must be unique - '${this.name}' was used for a different statement`);
+        }
+        if (this.values && !Array.isArray(this.values)) {
+          return new Error("Query values must be an array");
+        }
+        if (this.requiresPreparation()) {
+          this.prepare(connection);
+        } else {
+          connection.query(this.text);
+        }
+        return null;
+      }
+      hasBeenParsed(connection) {
+        return this.name && connection.parsedStatements[this.name];
+      }
+      handlePortalSuspended(connection) {
+        this._getRows(connection, this.rows);
+      }
+      _getRows(connection, rows) {
+        connection.execute({
+          portal: this.portal,
+          rows
+        });
+        if (!rows) {
+          connection.sync();
+        } else {
+          connection.flush();
+        }
+      }
+      prepare(connection) {
+        this.isPreparedStatement = true;
+        if (!this.hasBeenParsed(connection)) {
+          connection.parse({
+            text: this.text,
+            name: this.name,
+            types: this.types
+          });
+        }
+        try {
+          connection.bind({
+            portal: this.portal,
+            statement: this.name,
+            values: this.values,
+            binary: this.binary,
+            valueMapper: utils.prepareValue
+          });
+        } catch (err) {
+          this.handleError(err, connection);
+          return;
+        }
+        connection.describe({
+          type: "P",
+          name: this.portal || ""
+        });
+        this._getRows(connection, this.rows);
+      }
+      handleCopyInResponse(connection) {
+        connection.sendCopyFail("No source stream defined");
+      }
+      handleCopyData(msg, connection) {
+      }
+    };
+    module2.exports = Query;
+  }
+});
+
+// node_modules/pg-protocol/dist/messages.js
+var require_messages = __commonJS({
+  "node_modules/pg-protocol/dist/messages.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.NoticeMessage = exports2.DataRowMessage = exports2.CommandCompleteMessage = exports2.ReadyForQueryMessage = exports2.NotificationResponseMessage = exports2.BackendKeyDataMessage = exports2.AuthenticationMD5Password = exports2.ParameterStatusMessage = exports2.ParameterDescriptionMessage = exports2.RowDescriptionMessage = exports2.Field = exports2.CopyResponse = exports2.CopyDataMessage = exports2.DatabaseError = exports2.copyDone = exports2.emptyQuery = exports2.replicationStart = exports2.portalSuspended = exports2.noData = exports2.closeComplete = exports2.bindComplete = exports2.parseComplete = void 0;
+    exports2.parseComplete = {
+      name: "parseComplete",
+      length: 5
+    };
+    exports2.bindComplete = {
+      name: "bindComplete",
+      length: 5
+    };
+    exports2.closeComplete = {
+      name: "closeComplete",
+      length: 5
+    };
+    exports2.noData = {
+      name: "noData",
+      length: 5
+    };
+    exports2.portalSuspended = {
+      name: "portalSuspended",
+      length: 5
+    };
+    exports2.replicationStart = {
+      name: "replicationStart",
+      length: 4
+    };
+    exports2.emptyQuery = {
+      name: "emptyQuery",
+      length: 4
+    };
+    exports2.copyDone = {
+      name: "copyDone",
+      length: 4
+    };
+    var DatabaseError = class extends Error {
+      constructor(message2, length, name) {
+        super(message2);
+        this.length = length;
+        this.name = name;
+      }
+    };
+    exports2.DatabaseError = DatabaseError;
+    var CopyDataMessage = class {
+      constructor(length, chunk) {
+        this.length = length;
+        this.chunk = chunk;
+        this.name = "copyData";
+      }
+    };
+    exports2.CopyDataMessage = CopyDataMessage;
+    var CopyResponse = class {
+      constructor(length, name, binary, columnCount) {
+        this.length = length;
+        this.name = name;
+        this.binary = binary;
+        this.columnTypes = new Array(columnCount);
+      }
+    };
+    exports2.CopyResponse = CopyResponse;
+    var Field = class {
+      constructor(name, tableID, columnID, dataTypeID, dataTypeSize, dataTypeModifier, format) {
+        this.name = name;
+        this.tableID = tableID;
+        this.columnID = columnID;
+        this.dataTypeID = dataTypeID;
+        this.dataTypeSize = dataTypeSize;
+        this.dataTypeModifier = dataTypeModifier;
+        this.format = format;
+      }
+    };
+    exports2.Field = Field;
+    var RowDescriptionMessage = class {
+      constructor(length, fieldCount) {
+        this.length = length;
+        this.fieldCount = fieldCount;
+        this.name = "rowDescription";
+        this.fields = new Array(this.fieldCount);
+      }
+    };
+    exports2.RowDescriptionMessage = RowDescriptionMessage;
+    var ParameterDescriptionMessage = class {
+      constructor(length, parameterCount) {
+        this.length = length;
+        this.parameterCount = parameterCount;
+        this.name = "parameterDescription";
+        this.dataTypeIDs = new Array(this.parameterCount);
+      }
+    };
+    exports2.ParameterDescriptionMessage = ParameterDescriptionMessage;
+    var ParameterStatusMessage = class {
+      constructor(length, parameterName, parameterValue) {
+        this.length = length;
+        this.parameterName = parameterName;
+        this.parameterValue = parameterValue;
+        this.name = "parameterStatus";
+      }
+    };
+    exports2.ParameterStatusMessage = ParameterStatusMessage;
+    var AuthenticationMD5Password = class {
+      constructor(length, salt) {
+        this.length = length;
+        this.salt = salt;
+        this.name = "authenticationMD5Password";
+      }
+    };
+    exports2.AuthenticationMD5Password = AuthenticationMD5Password;
+    var BackendKeyDataMessage = class {
+      constructor(length, processID, secretKey) {
+        this.length = length;
+        this.processID = processID;
+        this.secretKey = secretKey;
+        this.name = "backendKeyData";
+      }
+    };
+    exports2.BackendKeyDataMessage = BackendKeyDataMessage;
+    var NotificationResponseMessage = class {
+      constructor(length, processId, channel, payload) {
+        this.length = length;
+        this.processId = processId;
+        this.channel = channel;
+        this.payload = payload;
+        this.name = "notification";
+      }
+    };
+    exports2.NotificationResponseMessage = NotificationResponseMessage;
+    var ReadyForQueryMessage = class {
+      constructor(length, status) {
+        this.length = length;
+        this.status = status;
+        this.name = "readyForQuery";
+      }
+    };
+    exports2.ReadyForQueryMessage = ReadyForQueryMessage;
+    var CommandCompleteMessage = class {
+      constructor(length, text) {
+        this.length = length;
+        this.text = text;
+        this.name = "commandComplete";
+      }
+    };
+    exports2.CommandCompleteMessage = CommandCompleteMessage;
+    var DataRowMessage = class {
+      constructor(length, fields) {
+        this.length = length;
+        this.fields = fields;
+        this.name = "dataRow";
+        this.fieldCount = fields.length;
+      }
+    };
+    exports2.DataRowMessage = DataRowMessage;
+    var NoticeMessage = class {
+      constructor(length, message2) {
+        this.length = length;
+        this.message = message2;
+        this.name = "notice";
+      }
+    };
+    exports2.NoticeMessage = NoticeMessage;
+  }
+});
+
+// node_modules/pg-protocol/dist/buffer-writer.js
+var require_buffer_writer = __commonJS({
+  "node_modules/pg-protocol/dist/buffer-writer.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.Writer = void 0;
+    var Writer = class {
+      constructor(size = 256) {
+        this.size = size;
+        this.offset = 5;
+        this.headerPosition = 0;
+        this.buffer = Buffer.allocUnsafe(size);
+      }
+      ensure(size) {
+        var remaining = this.buffer.length - this.offset;
+        if (remaining < size) {
+          var oldBuffer = this.buffer;
+          var newSize = oldBuffer.length + (oldBuffer.length >> 1) + size;
+          this.buffer = Buffer.allocUnsafe(newSize);
+          oldBuffer.copy(this.buffer);
+        }
+      }
+      addInt32(num) {
+        this.ensure(4);
+        this.buffer[this.offset++] = num >>> 24 & 255;
+        this.buffer[this.offset++] = num >>> 16 & 255;
+        this.buffer[this.offset++] = num >>> 8 & 255;
+        this.buffer[this.offset++] = num >>> 0 & 255;
+        return this;
+      }
+      addInt16(num) {
+        this.ensure(2);
+        this.buffer[this.offset++] = num >>> 8 & 255;
+        this.buffer[this.offset++] = num >>> 0 & 255;
+        return this;
+      }
+      addCString(string) {
+        if (!string) {
+          this.ensure(1);
+        } else {
+          var len = Buffer.byteLength(string);
+          this.ensure(len + 1);
+          this.buffer.write(string, this.offset, "utf-8");
+          this.offset += len;
+        }
+        this.buffer[this.offset++] = 0;
+        return this;
+      }
+      addString(string = "") {
+        var len = Buffer.byteLength(string);
+        this.ensure(len);
+        this.buffer.write(string, this.offset);
+        this.offset += len;
+        return this;
+      }
+      add(otherBuffer) {
+        this.ensure(otherBuffer.length);
+        otherBuffer.copy(this.buffer, this.offset);
+        this.offset += otherBuffer.length;
+        return this;
+      }
+      join(code) {
+        if (code) {
+          this.buffer[this.headerPosition] = code;
+          const length = this.offset - (this.headerPosition + 1);
+          this.buffer.writeInt32BE(length, this.headerPosition + 1);
+        }
+        return this.buffer.slice(code ? 0 : 5, this.offset);
+      }
+      flush(code) {
+        var result = this.join(code);
+        this.offset = 5;
+        this.headerPosition = 0;
+        this.buffer = Buffer.allocUnsafe(this.size);
+        return result;
+      }
+    };
+    exports2.Writer = Writer;
+  }
+});
+
+// node_modules/pg-protocol/dist/serializer.js
+var require_serializer = __commonJS({
+  "node_modules/pg-protocol/dist/serializer.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.serialize = void 0;
+    var buffer_writer_1 = require_buffer_writer();
+    var writer = new buffer_writer_1.Writer();
+    var startup = (opts) => {
+      writer.addInt16(3).addInt16(0);
+      for (const key of Object.keys(opts)) {
+        writer.addCString(key).addCString(opts[key]);
+      }
+      writer.addCString("client_encoding").addCString("UTF8");
+      var bodyBuffer = writer.addCString("").flush();
+      var length = bodyBuffer.length + 4;
+      return new buffer_writer_1.Writer().addInt32(length).add(bodyBuffer).flush();
+    };
+    var requestSsl = () => {
+      const response = Buffer.allocUnsafe(8);
+      response.writeInt32BE(8, 0);
+      response.writeInt32BE(80877103, 4);
+      return response;
+    };
+    var password = (password2) => {
+      return writer.addCString(password2).flush(112);
+    };
+    var sendSASLInitialResponseMessage = function(mechanism, initialResponse) {
+      writer.addCString(mechanism).addInt32(Buffer.byteLength(initialResponse)).addString(initialResponse);
+      return writer.flush(112);
+    };
+    var sendSCRAMClientFinalMessage = function(additionalData) {
+      return writer.addString(additionalData).flush(112);
+    };
+    var query = (text) => {
+      return writer.addCString(text).flush(81);
+    };
+    var emptyArray = [];
+    var parse = (query2) => {
+      const name = query2.name || "";
+      if (name.length > 63) {
+        console.error("Warning! Postgres only supports 63 characters for query names.");
+        console.error("You supplied %s (%s)", name, name.length);
+        console.error("This can cause conflicts and silent errors executing queries");
+      }
+      const types = query2.types || emptyArray;
+      var len = types.length;
+      var buffer = writer.addCString(name).addCString(query2.text).addInt16(len);
+      for (var i = 0; i < len; i++) {
+        buffer.addInt32(types[i]);
+      }
+      return writer.flush(80);
+    };
+    var paramWriter = new buffer_writer_1.Writer();
+    var writeValues = function(values, valueMapper) {
+      for (let i = 0; i < values.length; i++) {
+        const mappedVal = valueMapper ? valueMapper(values[i], i) : values[i];
+        if (mappedVal == null) {
+          writer.addInt16(0);
+          paramWriter.addInt32(-1);
+        } else if (mappedVal instanceof Buffer) {
+          writer.addInt16(1);
+          paramWriter.addInt32(mappedVal.length);
+          paramWriter.add(mappedVal);
+        } else {
+          writer.addInt16(0);
+          paramWriter.addInt32(Buffer.byteLength(mappedVal));
+          paramWriter.addString(mappedVal);
+        }
+      }
+    };
+    var bind = (config = {}) => {
+      const portal = config.portal || "";
+      const statement = config.statement || "";
+      const binary = config.binary || false;
+      const values = config.values || emptyArray;
+      const len = values.length;
+      writer.addCString(portal).addCString(statement);
+      writer.addInt16(len);
+      writeValues(values, config.valueMapper);
+      writer.addInt16(len);
+      writer.add(paramWriter.flush());
+      writer.addInt16(binary ? 1 : 0);
+      return writer.flush(66);
+    };
+    var emptyExecute = Buffer.from([69, 0, 0, 0, 9, 0, 0, 0, 0, 0]);
+    var execute = (config) => {
+      if (!config || !config.portal && !config.rows) {
+        return emptyExecute;
+      }
+      const portal = config.portal || "";
+      const rows = config.rows || 0;
+      const portalLength = Buffer.byteLength(portal);
+      const len = 4 + portalLength + 1 + 4;
+      const buff = Buffer.allocUnsafe(1 + len);
+      buff[0] = 69;
+      buff.writeInt32BE(len, 1);
+      buff.write(portal, 5, "utf-8");
+      buff[portalLength + 5] = 0;
+      buff.writeUInt32BE(rows, buff.length - 4);
+      return buff;
+    };
+    var cancel = (processID, secretKey) => {
+      const buffer = Buffer.allocUnsafe(16);
+      buffer.writeInt32BE(16, 0);
+      buffer.writeInt16BE(1234, 4);
+      buffer.writeInt16BE(5678, 6);
+      buffer.writeInt32BE(processID, 8);
+      buffer.writeInt32BE(secretKey, 12);
+      return buffer;
+    };
+    var cstringMessage = (code, string) => {
+      const stringLen = Buffer.byteLength(string);
+      const len = 4 + stringLen + 1;
+      const buffer = Buffer.allocUnsafe(1 + len);
+      buffer[0] = code;
+      buffer.writeInt32BE(len, 1);
+      buffer.write(string, 5, "utf-8");
+      buffer[len] = 0;
+      return buffer;
+    };
+    var emptyDescribePortal = writer.addCString("P").flush(68);
+    var emptyDescribeStatement = writer.addCString("S").flush(68);
+    var describe = (msg) => {
+      return msg.name ? cstringMessage(68, `${msg.type}${msg.name || ""}`) : msg.type === "P" ? emptyDescribePortal : emptyDescribeStatement;
+    };
+    var close = (msg) => {
+      const text = `${msg.type}${msg.name || ""}`;
+      return cstringMessage(67, text);
+    };
+    var copyData = (chunk) => {
+      return writer.add(chunk).flush(100);
+    };
+    var copyFail = (message2) => {
+      return cstringMessage(102, message2);
+    };
+    var codeOnlyBuffer = (code) => Buffer.from([code, 0, 0, 0, 4]);
+    var flushBuffer = codeOnlyBuffer(72);
+    var syncBuffer = codeOnlyBuffer(83);
+    var endBuffer = codeOnlyBuffer(88);
+    var copyDoneBuffer = codeOnlyBuffer(99);
+    var serialize = {
+      startup,
+      password,
+      requestSsl,
+      sendSASLInitialResponseMessage,
+      sendSCRAMClientFinalMessage,
+      query,
+      parse,
+      bind,
+      execute,
+      describe,
+      close,
+      flush: () => flushBuffer,
+      sync: () => syncBuffer,
+      end: () => endBuffer,
+      copyData,
+      copyDone: () => copyDoneBuffer,
+      copyFail,
+      cancel
+    };
+    exports2.serialize = serialize;
+  }
+});
+
+// node_modules/pg-protocol/dist/buffer-reader.js
+var require_buffer_reader = __commonJS({
+  "node_modules/pg-protocol/dist/buffer-reader.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.BufferReader = void 0;
+    var emptyBuffer = Buffer.allocUnsafe(0);
+    var BufferReader = class {
+      constructor(offset = 0) {
+        this.offset = offset;
+        this.buffer = emptyBuffer;
+        this.encoding = "utf-8";
+      }
+      setBuffer(offset, buffer) {
+        this.offset = offset;
+        this.buffer = buffer;
+      }
+      int16() {
+        const result = this.buffer.readInt16BE(this.offset);
+        this.offset += 2;
+        return result;
+      }
+      byte() {
+        const result = this.buffer[this.offset];
+        this.offset++;
+        return result;
+      }
+      int32() {
+        const result = this.buffer.readInt32BE(this.offset);
+        this.offset += 4;
+        return result;
+      }
+      string(length) {
+        const result = this.buffer.toString(this.encoding, this.offset, this.offset + length);
+        this.offset += length;
+        return result;
+      }
+      cstring() {
+        const start = this.offset;
+        let end = start;
+        while (this.buffer[end++] !== 0) {
+        }
+        this.offset = end;
+        return this.buffer.toString(this.encoding, start, end - 1);
+      }
+      bytes(length) {
+        const result = this.buffer.slice(this.offset, this.offset + length);
+        this.offset += length;
+        return result;
+      }
+    };
+    exports2.BufferReader = BufferReader;
+  }
+});
+
+// node_modules/pg-protocol/dist/parser.js
+var require_parser = __commonJS({
+  "node_modules/pg-protocol/dist/parser.js"(exports2) {
+    "use strict";
+    var __importDefault = exports2 && exports2.__importDefault || function(mod) {
+      return mod && mod.__esModule ? mod : { "default": mod };
+    };
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.Parser = void 0;
+    var messages_1 = require_messages();
+    var buffer_reader_1 = require_buffer_reader();
+    var assert_1 = __importDefault(require("assert"));
+    var CODE_LENGTH = 1;
+    var LEN_LENGTH = 4;
+    var HEADER_LENGTH = CODE_LENGTH + LEN_LENGTH;
+    var emptyBuffer = Buffer.allocUnsafe(0);
+    var Parser = class {
+      constructor(opts) {
+        this.buffer = emptyBuffer;
+        this.bufferLength = 0;
+        this.bufferOffset = 0;
+        this.reader = new buffer_reader_1.BufferReader();
+        if ((opts === null || opts === void 0 ? void 0 : opts.mode) === "binary") {
+          throw new Error("Binary mode not supported yet");
+        }
+        this.mode = (opts === null || opts === void 0 ? void 0 : opts.mode) || "text";
+      }
+      parse(buffer, callback) {
+        this.mergeBuffer(buffer);
+        const bufferFullLength = this.bufferOffset + this.bufferLength;
+        let offset = this.bufferOffset;
+        while (offset + HEADER_LENGTH <= bufferFullLength) {
+          const code = this.buffer[offset];
+          const length = this.buffer.readUInt32BE(offset + CODE_LENGTH);
+          const fullMessageLength = CODE_LENGTH + length;
+          if (fullMessageLength + offset <= bufferFullLength) {
+            const message2 = this.handlePacket(offset + HEADER_LENGTH, code, length, this.buffer);
+            callback(message2);
+            offset += fullMessageLength;
+          } else {
+            break;
+          }
+        }
+        if (offset === bufferFullLength) {
+          this.buffer = emptyBuffer;
+          this.bufferLength = 0;
+          this.bufferOffset = 0;
+        } else {
+          this.bufferLength = bufferFullLength - offset;
+          this.bufferOffset = offset;
+        }
+      }
+      mergeBuffer(buffer) {
+        if (this.bufferLength > 0) {
+          const newLength = this.bufferLength + buffer.byteLength;
+          const newFullLength = newLength + this.bufferOffset;
+          if (newFullLength > this.buffer.byteLength) {
+            let newBuffer;
+            if (newLength <= this.buffer.byteLength && this.bufferOffset >= this.bufferLength) {
+              newBuffer = this.buffer;
+            } else {
+              let newBufferLength = this.buffer.byteLength * 2;
+              while (newLength >= newBufferLength) {
+                newBufferLength *= 2;
+              }
+              newBuffer = Buffer.allocUnsafe(newBufferLength);
+            }
+            this.buffer.copy(newBuffer, 0, this.bufferOffset, this.bufferOffset + this.bufferLength);
+            this.buffer = newBuffer;
+            this.bufferOffset = 0;
+          }
+          buffer.copy(this.buffer, this.bufferOffset + this.bufferLength);
+          this.bufferLength = newLength;
+        } else {
+          this.buffer = buffer;
+          this.bufferOffset = 0;
+          this.bufferLength = buffer.byteLength;
+        }
+      }
+      handlePacket(offset, code, length, bytes) {
+        switch (code) {
+          case 50:
+            return messages_1.bindComplete;
+          case 49:
+            return messages_1.parseComplete;
+          case 51:
+            return messages_1.closeComplete;
+          case 110:
+            return messages_1.noData;
+          case 115:
+            return messages_1.portalSuspended;
+          case 99:
+            return messages_1.copyDone;
+          case 87:
+            return messages_1.replicationStart;
+          case 73:
+            return messages_1.emptyQuery;
+          case 68:
+            return this.parseDataRowMessage(offset, length, bytes);
+          case 67:
+            return this.parseCommandCompleteMessage(offset, length, bytes);
+          case 90:
+            return this.parseReadyForQueryMessage(offset, length, bytes);
+          case 65:
+            return this.parseNotificationMessage(offset, length, bytes);
+          case 82:
+            return this.parseAuthenticationResponse(offset, length, bytes);
+          case 83:
+            return this.parseParameterStatusMessage(offset, length, bytes);
+          case 75:
+            return this.parseBackendKeyData(offset, length, bytes);
+          case 69:
+            return this.parseErrorMessage(offset, length, bytes, "error");
+          case 78:
+            return this.parseErrorMessage(offset, length, bytes, "notice");
+          case 84:
+            return this.parseRowDescriptionMessage(offset, length, bytes);
+          case 116:
+            return this.parseParameterDescriptionMessage(offset, length, bytes);
+          case 71:
+            return this.parseCopyInMessage(offset, length, bytes);
+          case 72:
+            return this.parseCopyOutMessage(offset, length, bytes);
+          case 100:
+            return this.parseCopyData(offset, length, bytes);
+          default:
+            assert_1.default.fail(`unknown message code: ${code.toString(16)}`);
+        }
+      }
+      parseReadyForQueryMessage(offset, length, bytes) {
+        this.reader.setBuffer(offset, bytes);
+        const status = this.reader.string(1);
+        return new messages_1.ReadyForQueryMessage(length, status);
+      }
+      parseCommandCompleteMessage(offset, length, bytes) {
+        this.reader.setBuffer(offset, bytes);
+        const text = this.reader.cstring();
+        return new messages_1.CommandCompleteMessage(length, text);
+      }
+      parseCopyData(offset, length, bytes) {
+        const chunk = bytes.slice(offset, offset + (length - 4));
+        return new messages_1.CopyDataMessage(length, chunk);
+      }
+      parseCopyInMessage(offset, length, bytes) {
+        return this.parseCopyMessage(offset, length, bytes, "copyInResponse");
+      }
+      parseCopyOutMessage(offset, length, bytes) {
+        return this.parseCopyMessage(offset, length, bytes, "copyOutResponse");
+      }
+      parseCopyMessage(offset, length, bytes, messageName) {
+        this.reader.setBuffer(offset, bytes);
+        const isBinary = this.reader.byte() !== 0;
+        const columnCount = this.reader.int16();
+        const message2 = new messages_1.CopyResponse(length, messageName, isBinary, columnCount);
+        for (let i = 0; i < columnCount; i++) {
+          message2.columnTypes[i] = this.reader.int16();
+        }
+        return message2;
+      }
+      parseNotificationMessage(offset, length, bytes) {
+        this.reader.setBuffer(offset, bytes);
+        const processId = this.reader.int32();
+        const channel = this.reader.cstring();
+        const payload = this.reader.cstring();
+        return new messages_1.NotificationResponseMessage(length, processId, channel, payload);
+      }
+      parseRowDescriptionMessage(offset, length, bytes) {
+        this.reader.setBuffer(offset, bytes);
+        const fieldCount = this.reader.int16();
+        const message2 = new messages_1.RowDescriptionMessage(length, fieldCount);
+        for (let i = 0; i < fieldCount; i++) {
+          message2.fields[i] = this.parseField();
+        }
+        return message2;
+      }
+      parseField() {
+        const name = this.reader.cstring();
+        const tableID = this.reader.int32();
+        const columnID = this.reader.int16();
+        const dataTypeID = this.reader.int32();
+        const dataTypeSize = this.reader.int16();
+        const dataTypeModifier = this.reader.int32();
+        const mode = this.reader.int16() === 0 ? "text" : "binary";
+        return new messages_1.Field(name, tableID, columnID, dataTypeID, dataTypeSize, dataTypeModifier, mode);
+      }
+      parseParameterDescriptionMessage(offset, length, bytes) {
+        this.reader.setBuffer(offset, bytes);
+        const parameterCount = this.reader.int16();
+        const message2 = new messages_1.ParameterDescriptionMessage(length, parameterCount);
+        for (let i = 0; i < parameterCount; i++) {
+          message2.dataTypeIDs[i] = this.reader.int32();
+        }
+        return message2;
+      }
+      parseDataRowMessage(offset, length, bytes) {
+        this.reader.setBuffer(offset, bytes);
+        const fieldCount = this.reader.int16();
+        const fields = new Array(fieldCount);
+        for (let i = 0; i < fieldCount; i++) {
+          const len = this.reader.int32();
+          fields[i] = len === -1 ? null : this.reader.string(len);
+        }
+        return new messages_1.DataRowMessage(length, fields);
+      }
+      parseParameterStatusMessage(offset, length, bytes) {
+        this.reader.setBuffer(offset, bytes);
+        const name = this.reader.cstring();
+        const value = this.reader.cstring();
+        return new messages_1.ParameterStatusMessage(length, name, value);
+      }
+      parseBackendKeyData(offset, length, bytes) {
+        this.reader.setBuffer(offset, bytes);
+        const processID = this.reader.int32();
+        const secretKey = this.reader.int32();
+        return new messages_1.BackendKeyDataMessage(length, processID, secretKey);
+      }
+      parseAuthenticationResponse(offset, length, bytes) {
+        this.reader.setBuffer(offset, bytes);
+        const code = this.reader.int32();
+        const message2 = {
+          name: "authenticationOk",
+          length
+        };
+        switch (code) {
+          case 0:
+            break;
+          case 3:
+            if (message2.length === 8) {
+              message2.name = "authenticationCleartextPassword";
+            }
+            break;
+          case 5:
+            if (message2.length === 12) {
+              message2.name = "authenticationMD5Password";
+              const salt = this.reader.bytes(4);
+              return new messages_1.AuthenticationMD5Password(length, salt);
+            }
+            break;
+          case 10:
+            message2.name = "authenticationSASL";
+            message2.mechanisms = [];
+            let mechanism;
+            do {
+              mechanism = this.reader.cstring();
+              if (mechanism) {
+                message2.mechanisms.push(mechanism);
+              }
+            } while (mechanism);
+            break;
+          case 11:
+            message2.name = "authenticationSASLContinue";
+            message2.data = this.reader.string(length - 8);
+            break;
+          case 12:
+            message2.name = "authenticationSASLFinal";
+            message2.data = this.reader.string(length - 8);
+            break;
+          default:
+            throw new Error("Unknown authenticationOk message type " + code);
+        }
+        return message2;
+      }
+      parseErrorMessage(offset, length, bytes, name) {
+        this.reader.setBuffer(offset, bytes);
+        const fields = {};
+        let fieldType = this.reader.string(1);
+        while (fieldType !== "\0") {
+          fields[fieldType] = this.reader.cstring();
+          fieldType = this.reader.string(1);
+        }
+        const messageValue = fields.M;
+        const message2 = name === "notice" ? new messages_1.NoticeMessage(length, messageValue) : new messages_1.DatabaseError(messageValue, length, name);
+        message2.severity = fields.S;
+        message2.code = fields.C;
+        message2.detail = fields.D;
+        message2.hint = fields.H;
+        message2.position = fields.P;
+        message2.internalPosition = fields.p;
+        message2.internalQuery = fields.q;
+        message2.where = fields.W;
+        message2.schema = fields.s;
+        message2.table = fields.t;
+        message2.column = fields.c;
+        message2.dataType = fields.d;
+        message2.constraint = fields.n;
+        message2.file = fields.F;
+        message2.line = fields.L;
+        message2.routine = fields.R;
+        return message2;
+      }
+    };
+    exports2.Parser = Parser;
+  }
+});
+
+// node_modules/pg-protocol/dist/index.js
+var require_dist4 = __commonJS({
+  "node_modules/pg-protocol/dist/index.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.DatabaseError = exports2.serialize = exports2.parse = void 0;
+    var messages_1 = require_messages();
+    Object.defineProperty(exports2, "DatabaseError", { enumerable: true, get: function() {
+      return messages_1.DatabaseError;
+    } });
+    var serializer_1 = require_serializer();
+    Object.defineProperty(exports2, "serialize", { enumerable: true, get: function() {
+      return serializer_1.serialize;
+    } });
+    var parser_1 = require_parser();
+    function parse(stream, callback) {
+      const parser = new parser_1.Parser();
+      stream.on("data", (buffer) => parser.parse(buffer, callback));
+      return new Promise((resolve) => stream.on("end", () => resolve()));
+    }
+    exports2.parse = parse;
+  }
+});
+
+// node_modules/pg/lib/connection.js
+var require_connection = __commonJS({
+  "node_modules/pg/lib/connection.js"(exports2, module2) {
+    "use strict";
+    var net = require("net");
+    var EventEmitter = require("events").EventEmitter;
+    var { parse, serialize } = require_dist4();
+    var flushBuffer = serialize.flush();
+    var syncBuffer = serialize.sync();
+    var endBuffer = serialize.end();
+    var Connection = class extends EventEmitter {
+      constructor(config) {
+        super();
+        config = config || {};
+        this.stream = config.stream || new net.Socket();
+        this._keepAlive = config.keepAlive;
+        this._keepAliveInitialDelayMillis = config.keepAliveInitialDelayMillis;
+        this.lastBuffer = false;
+        this.parsedStatements = {};
+        this.ssl = config.ssl || false;
+        this._ending = false;
+        this._emitMessage = false;
+        var self2 = this;
+        this.on("newListener", function(eventName) {
+          if (eventName === "message") {
+            self2._emitMessage = true;
+          }
+        });
+      }
+      connect(port2, host) {
+        var self2 = this;
+        this._connecting = true;
+        this.stream.setNoDelay(true);
+        this.stream.connect(port2, host);
+        this.stream.once("connect", function() {
+          if (self2._keepAlive) {
+            self2.stream.setKeepAlive(true, self2._keepAliveInitialDelayMillis);
+          }
+          self2.emit("connect");
+        });
+        const reportStreamError = function(error) {
+          if (self2._ending && (error.code === "ECONNRESET" || error.code === "EPIPE")) {
+            return;
+          }
+          self2.emit("error", error);
+        };
+        this.stream.on("error", reportStreamError);
+        this.stream.on("close", function() {
+          self2.emit("end");
+        });
+        if (!this.ssl) {
+          return this.attachListeners(this.stream);
+        }
+        this.stream.once("data", function(buffer) {
+          var responseCode = buffer.toString("utf8");
+          switch (responseCode) {
+            case "S":
+              break;
+            case "N":
+              self2.stream.end();
+              return self2.emit("error", new Error("The server does not support SSL connections"));
+            default:
+              self2.stream.end();
+              return self2.emit("error", new Error("There was an error establishing an SSL connection"));
+          }
+          var tls = require("tls");
+          const options = {
+            socket: self2.stream
+          };
+          if (self2.ssl !== true) {
+            Object.assign(options, self2.ssl);
+            if ("key" in self2.ssl) {
+              options.key = self2.ssl.key;
+            }
+          }
+          if (net.isIP(host) === 0) {
+            options.servername = host;
+          }
+          try {
+            self2.stream = tls.connect(options);
+          } catch (err) {
+            return self2.emit("error", err);
+          }
+          self2.attachListeners(self2.stream);
+          self2.stream.on("error", reportStreamError);
+          self2.emit("sslconnect");
+        });
+      }
+      attachListeners(stream) {
+        stream.on("end", () => {
+          this.emit("end");
+        });
+        parse(stream, (msg) => {
+          var eventName = msg.name === "error" ? "errorMessage" : msg.name;
+          if (this._emitMessage) {
+            this.emit("message", msg);
+          }
+          this.emit(eventName, msg);
+        });
+      }
+      requestSsl() {
+        this.stream.write(serialize.requestSsl());
+      }
+      startup(config) {
+        this.stream.write(serialize.startup(config));
+      }
+      cancel(processID, secretKey) {
+        this._send(serialize.cancel(processID, secretKey));
+      }
+      password(password) {
+        this._send(serialize.password(password));
+      }
+      sendSASLInitialResponseMessage(mechanism, initialResponse) {
+        this._send(serialize.sendSASLInitialResponseMessage(mechanism, initialResponse));
+      }
+      sendSCRAMClientFinalMessage(additionalData) {
+        this._send(serialize.sendSCRAMClientFinalMessage(additionalData));
+      }
+      _send(buffer) {
+        if (!this.stream.writable) {
+          return false;
+        }
+        return this.stream.write(buffer);
+      }
+      query(text) {
+        this._send(serialize.query(text));
+      }
+      parse(query) {
+        this._send(serialize.parse(query));
+      }
+      bind(config) {
+        this._send(serialize.bind(config));
+      }
+      execute(config) {
+        this._send(serialize.execute(config));
+      }
+      flush() {
+        if (this.stream.writable) {
+          this.stream.write(flushBuffer);
+        }
+      }
+      sync() {
+        this._ending = true;
+        this._send(flushBuffer);
+        this._send(syncBuffer);
+      }
+      ref() {
+        this.stream.ref();
+      }
+      unref() {
+        this.stream.unref();
+      }
+      end() {
+        this._ending = true;
+        if (!this._connecting || !this.stream.writable) {
+          this.stream.end();
+          return;
+        }
+        return this.stream.write(endBuffer, () => {
+          this.stream.end();
+        });
+      }
+      close(msg) {
+        this._send(serialize.close(msg));
+      }
+      describe(msg) {
+        this._send(serialize.describe(msg));
+      }
+      sendCopyFromChunk(chunk) {
+        this._send(serialize.copyData(chunk));
+      }
+      endCopyFrom() {
+        this._send(serialize.copyDone());
+      }
+      sendCopyFail(msg) {
+        this._send(serialize.copyFail(msg));
+      }
+    };
+    module2.exports = Connection;
+  }
+});
+
+// node_modules/pg/lib/client.js
+var require_client3 = __commonJS({
+  "node_modules/pg/lib/client.js"(exports2, module2) {
+    "use strict";
+    var EventEmitter = require("events").EventEmitter;
+    var util = require("util");
+    var utils = require_utils4();
+    var sasl = require_sasl();
+    var pgPass = require_lib5();
+    var TypeOverrides = require_type_overrides();
+    var ConnectionParameters = require_connection_parameters();
+    var Query = require_query2();
+    var defaults = require_defaults2();
+    var Connection = require_connection();
+    var Client = class extends EventEmitter {
+      constructor(config) {
+        super();
+        this.connectionParameters = new ConnectionParameters(config);
+        this.user = this.connectionParameters.user;
+        this.database = this.connectionParameters.database;
+        this.port = this.connectionParameters.port;
+        this.host = this.connectionParameters.host;
+        Object.defineProperty(this, "password", {
+          configurable: true,
+          enumerable: false,
+          writable: true,
+          value: this.connectionParameters.password
+        });
+        this.replication = this.connectionParameters.replication;
+        var c = config || {};
+        this._Promise = c.Promise || global.Promise;
+        this._types = new TypeOverrides(c.types);
+        this._ending = false;
+        this._connecting = false;
+        this._connected = false;
+        this._connectionError = false;
+        this._queryable = true;
+        this.connection = c.connection || new Connection({
+          stream: c.stream,
+          ssl: this.connectionParameters.ssl,
+          keepAlive: c.keepAlive || false,
+          keepAliveInitialDelayMillis: c.keepAliveInitialDelayMillis || 0,
+          encoding: this.connectionParameters.client_encoding || "utf8"
+        });
+        this.queryQueue = [];
+        this.binary = c.binary || defaults.binary;
+        this.processID = null;
+        this.secretKey = null;
+        this.ssl = this.connectionParameters.ssl || false;
+        if (this.ssl && this.ssl.key) {
+          Object.defineProperty(this.ssl, "key", {
+            enumerable: false
+          });
+        }
+        this._connectionTimeoutMillis = c.connectionTimeoutMillis || 0;
+      }
+      _errorAllQueries(err) {
+        const enqueueError = (query) => {
+          process.nextTick(() => {
+            query.handleError(err, this.connection);
+          });
+        };
+        if (this.activeQuery) {
+          enqueueError(this.activeQuery);
+          this.activeQuery = null;
+        }
+        this.queryQueue.forEach(enqueueError);
+        this.queryQueue.length = 0;
+      }
+      _connect(callback) {
+        var self2 = this;
+        var con = this.connection;
+        this._connectionCallback = callback;
+        if (this._connecting || this._connected) {
+          const err = new Error("Client has already been connected. You cannot reuse a client.");
+          process.nextTick(() => {
+            callback(err);
+          });
+          return;
+        }
+        this._connecting = true;
+        this.connectionTimeoutHandle;
+        if (this._connectionTimeoutMillis > 0) {
+          this.connectionTimeoutHandle = setTimeout(() => {
+            con._ending = true;
+            con.stream.destroy(new Error("timeout expired"));
+          }, this._connectionTimeoutMillis);
+        }
+        if (this.host && this.host.indexOf("/") === 0) {
+          con.connect(this.host + "/.s.PGSQL." + this.port);
+        } else {
+          con.connect(this.port, this.host);
+        }
+        con.on("connect", function() {
+          if (self2.ssl) {
+            con.requestSsl();
+          } else {
+            con.startup(self2.getStartupConf());
+          }
+        });
+        con.on("sslconnect", function() {
+          con.startup(self2.getStartupConf());
+        });
+        this._attachListeners(con);
+        con.once("end", () => {
+          const error = this._ending ? new Error("Connection terminated") : new Error("Connection terminated unexpectedly");
+          clearTimeout(this.connectionTimeoutHandle);
+          this._errorAllQueries(error);
+          if (!this._ending) {
+            if (this._connecting && !this._connectionError) {
+              if (this._connectionCallback) {
+                this._connectionCallback(error);
+              } else {
+                this._handleErrorEvent(error);
+              }
+            } else if (!this._connectionError) {
+              this._handleErrorEvent(error);
+            }
+          }
+          process.nextTick(() => {
+            this.emit("end");
+          });
+        });
+      }
+      connect(callback) {
+        if (callback) {
+          this._connect(callback);
+          return;
+        }
+        return new this._Promise((resolve, reject) => {
+          this._connect((error) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve();
+            }
+          });
+        });
+      }
+      _attachListeners(con) {
+        con.on("authenticationCleartextPassword", this._handleAuthCleartextPassword.bind(this));
+        con.on("authenticationMD5Password", this._handleAuthMD5Password.bind(this));
+        con.on("authenticationSASL", this._handleAuthSASL.bind(this));
+        con.on("authenticationSASLContinue", this._handleAuthSASLContinue.bind(this));
+        con.on("authenticationSASLFinal", this._handleAuthSASLFinal.bind(this));
+        con.on("backendKeyData", this._handleBackendKeyData.bind(this));
+        con.on("error", this._handleErrorEvent.bind(this));
+        con.on("errorMessage", this._handleErrorMessage.bind(this));
+        con.on("readyForQuery", this._handleReadyForQuery.bind(this));
+        con.on("notice", this._handleNotice.bind(this));
+        con.on("rowDescription", this._handleRowDescription.bind(this));
+        con.on("dataRow", this._handleDataRow.bind(this));
+        con.on("portalSuspended", this._handlePortalSuspended.bind(this));
+        con.on("emptyQuery", this._handleEmptyQuery.bind(this));
+        con.on("commandComplete", this._handleCommandComplete.bind(this));
+        con.on("parseComplete", this._handleParseComplete.bind(this));
+        con.on("copyInResponse", this._handleCopyInResponse.bind(this));
+        con.on("copyData", this._handleCopyData.bind(this));
+        con.on("notification", this._handleNotification.bind(this));
+      }
+      _checkPgPass(cb) {
+        const con = this.connection;
+        if (typeof this.password === "function") {
+          this._Promise.resolve().then(() => this.password()).then((pass) => {
+            if (pass !== void 0) {
+              if (typeof pass !== "string") {
+                con.emit("error", new TypeError("Password must be a string"));
+                return;
+              }
+              this.connectionParameters.password = this.password = pass;
+            } else {
+              this.connectionParameters.password = this.password = null;
+            }
+            cb();
+          }).catch((err) => {
+            con.emit("error", err);
+          });
+        } else if (this.password !== null) {
+          cb();
+        } else {
+          pgPass(this.connectionParameters, (pass) => {
+            if (pass !== void 0) {
+              this.connectionParameters.password = this.password = pass;
+            }
+            cb();
+          });
+        }
+      }
+      _handleAuthCleartextPassword(msg) {
+        this._checkPgPass(() => {
+          this.connection.password(this.password);
+        });
+      }
+      _handleAuthMD5Password(msg) {
+        this._checkPgPass(() => {
+          const hashedPassword = utils.postgresMd5PasswordHash(this.user, this.password, msg.salt);
+          this.connection.password(hashedPassword);
+        });
+      }
+      _handleAuthSASL(msg) {
+        this._checkPgPass(() => {
+          this.saslSession = sasl.startSession(msg.mechanisms);
+          this.connection.sendSASLInitialResponseMessage(this.saslSession.mechanism, this.saslSession.response);
+        });
+      }
+      _handleAuthSASLContinue(msg) {
+        sasl.continueSession(this.saslSession, this.password, msg.data);
+        this.connection.sendSCRAMClientFinalMessage(this.saslSession.response);
+      }
+      _handleAuthSASLFinal(msg) {
+        sasl.finalizeSession(this.saslSession, msg.data);
+        this.saslSession = null;
+      }
+      _handleBackendKeyData(msg) {
+        this.processID = msg.processID;
+        this.secretKey = msg.secretKey;
+      }
+      _handleReadyForQuery(msg) {
+        if (this._connecting) {
+          this._connecting = false;
+          this._connected = true;
+          clearTimeout(this.connectionTimeoutHandle);
+          if (this._connectionCallback) {
+            this._connectionCallback(null, this);
+            this._connectionCallback = null;
+          }
+          this.emit("connect");
+        }
+        const { activeQuery } = this;
+        this.activeQuery = null;
+        this.readyForQuery = true;
+        if (activeQuery) {
+          activeQuery.handleReadyForQuery(this.connection);
+        }
+        this._pulseQueryQueue();
+      }
+      _handleErrorWhileConnecting(err) {
+        if (this._connectionError) {
+          return;
+        }
+        this._connectionError = true;
+        clearTimeout(this.connectionTimeoutHandle);
+        if (this._connectionCallback) {
+          return this._connectionCallback(err);
+        }
+        this.emit("error", err);
+      }
+      _handleErrorEvent(err) {
+        if (this._connecting) {
+          return this._handleErrorWhileConnecting(err);
+        }
+        this._queryable = false;
+        this._errorAllQueries(err);
+        this.emit("error", err);
+      }
+      _handleErrorMessage(msg) {
+        if (this._connecting) {
+          return this._handleErrorWhileConnecting(msg);
+        }
+        const activeQuery = this.activeQuery;
+        if (!activeQuery) {
+          this._handleErrorEvent(msg);
+          return;
+        }
+        this.activeQuery = null;
+        activeQuery.handleError(msg, this.connection);
+      }
+      _handleRowDescription(msg) {
+        this.activeQuery.handleRowDescription(msg);
+      }
+      _handleDataRow(msg) {
+        this.activeQuery.handleDataRow(msg);
+      }
+      _handlePortalSuspended(msg) {
+        this.activeQuery.handlePortalSuspended(this.connection);
+      }
+      _handleEmptyQuery(msg) {
+        this.activeQuery.handleEmptyQuery(this.connection);
+      }
+      _handleCommandComplete(msg) {
+        this.activeQuery.handleCommandComplete(msg, this.connection);
+      }
+      _handleParseComplete(msg) {
+        if (this.activeQuery.name) {
+          this.connection.parsedStatements[this.activeQuery.name] = this.activeQuery.text;
+        }
+      }
+      _handleCopyInResponse(msg) {
+        this.activeQuery.handleCopyInResponse(this.connection);
+      }
+      _handleCopyData(msg) {
+        this.activeQuery.handleCopyData(msg, this.connection);
+      }
+      _handleNotification(msg) {
+        this.emit("notification", msg);
+      }
+      _handleNotice(msg) {
+        this.emit("notice", msg);
+      }
+      getStartupConf() {
+        var params = this.connectionParameters;
+        var data = {
+          user: params.user,
+          database: params.database
+        };
+        var appName = params.application_name || params.fallback_application_name;
+        if (appName) {
+          data.application_name = appName;
+        }
+        if (params.replication) {
+          data.replication = "" + params.replication;
+        }
+        if (params.statement_timeout) {
+          data.statement_timeout = String(parseInt(params.statement_timeout, 10));
+        }
+        if (params.idle_in_transaction_session_timeout) {
+          data.idle_in_transaction_session_timeout = String(parseInt(params.idle_in_transaction_session_timeout, 10));
+        }
+        if (params.options) {
+          data.options = params.options;
+        }
+        return data;
+      }
+      cancel(client, query) {
+        if (client.activeQuery === query) {
+          var con = this.connection;
+          if (this.host && this.host.indexOf("/") === 0) {
+            con.connect(this.host + "/.s.PGSQL." + this.port);
+          } else {
+            con.connect(this.port, this.host);
+          }
+          con.on("connect", function() {
+            con.cancel(client.processID, client.secretKey);
+          });
+        } else if (client.queryQueue.indexOf(query) !== -1) {
+          client.queryQueue.splice(client.queryQueue.indexOf(query), 1);
+        }
+      }
+      setTypeParser(oid, format, parseFn) {
+        return this._types.setTypeParser(oid, format, parseFn);
+      }
+      getTypeParser(oid, format) {
+        return this._types.getTypeParser(oid, format);
+      }
+      escapeIdentifier(str) {
+        return '"' + str.replace(/"/g, '""') + '"';
+      }
+      escapeLiteral(str) {
+        var hasBackslash = false;
+        var escaped = "'";
+        for (var i = 0; i < str.length; i++) {
+          var c = str[i];
+          if (c === "'") {
+            escaped += c + c;
+          } else if (c === "\\") {
+            escaped += c + c;
+            hasBackslash = true;
+          } else {
+            escaped += c;
+          }
+        }
+        escaped += "'";
+        if (hasBackslash === true) {
+          escaped = " E" + escaped;
+        }
+        return escaped;
+      }
+      _pulseQueryQueue() {
+        if (this.readyForQuery === true) {
+          this.activeQuery = this.queryQueue.shift();
+          if (this.activeQuery) {
+            this.readyForQuery = false;
+            this.hasExecuted = true;
+            const queryError = this.activeQuery.submit(this.connection);
+            if (queryError) {
+              process.nextTick(() => {
+                this.activeQuery.handleError(queryError, this.connection);
+                this.readyForQuery = true;
+                this._pulseQueryQueue();
+              });
+            }
+          } else if (this.hasExecuted) {
+            this.activeQuery = null;
+            this.emit("drain");
+          }
+        }
+      }
+      query(config, values, callback) {
+        var query;
+        var result;
+        var readTimeout;
+        var readTimeoutTimer;
+        var queryCallback;
+        if (config === null || config === void 0) {
+          throw new TypeError("Client was passed a null or undefined query");
+        } else if (typeof config.submit === "function") {
+          readTimeout = config.query_timeout || this.connectionParameters.query_timeout;
+          result = query = config;
+          if (typeof values === "function") {
+            query.callback = query.callback || values;
+          }
+        } else {
+          readTimeout = this.connectionParameters.query_timeout;
+          query = new Query(config, values, callback);
+          if (!query.callback) {
+            result = new this._Promise((resolve, reject) => {
+              query.callback = (err, res) => err ? reject(err) : resolve(res);
+            });
+          }
+        }
+        if (readTimeout) {
+          queryCallback = query.callback;
+          readTimeoutTimer = setTimeout(() => {
+            var error = new Error("Query read timeout");
+            process.nextTick(() => {
+              query.handleError(error, this.connection);
+            });
+            queryCallback(error);
+            query.callback = () => {
+            };
+            var index = this.queryQueue.indexOf(query);
+            if (index > -1) {
+              this.queryQueue.splice(index, 1);
+            }
+            this._pulseQueryQueue();
+          }, readTimeout);
+          query.callback = (err, res) => {
+            clearTimeout(readTimeoutTimer);
+            queryCallback(err, res);
+          };
+        }
+        if (this.binary && !query.binary) {
+          query.binary = true;
+        }
+        if (query._result && !query._result._types) {
+          query._result._types = this._types;
+        }
+        if (!this._queryable) {
+          process.nextTick(() => {
+            query.handleError(new Error("Client has encountered a connection error and is not queryable"), this.connection);
+          });
+          return result;
+        }
+        if (this._ending) {
+          process.nextTick(() => {
+            query.handleError(new Error("Client was closed and is not queryable"), this.connection);
+          });
+          return result;
+        }
+        this.queryQueue.push(query);
+        this._pulseQueryQueue();
+        return result;
+      }
+      ref() {
+        this.connection.ref();
+      }
+      unref() {
+        this.connection.unref();
+      }
+      end(cb) {
+        this._ending = true;
+        if (!this.connection._connecting) {
+          if (cb) {
+            cb();
+          } else {
+            return this._Promise.resolve();
+          }
+        }
+        if (this.activeQuery || !this._queryable) {
+          this.connection.stream.destroy();
+        } else {
+          this.connection.end();
+        }
+        if (cb) {
+          this.connection.once("end", cb);
+        } else {
+          return new this._Promise((resolve) => {
+            this.connection.once("end", resolve);
+          });
+        }
+      }
+    };
+    Client.Query = Query;
+    module2.exports = Client;
+  }
+});
+
+// node_modules/pg-pool/index.js
+var require_pg_pool = __commonJS({
+  "node_modules/pg-pool/index.js"(exports2, module2) {
+    "use strict";
+    var EventEmitter = require("events").EventEmitter;
+    var NOOP = function() {
+    };
+    var removeWhere = (list, predicate) => {
+      const i = list.findIndex(predicate);
+      return i === -1 ? void 0 : list.splice(i, 1)[0];
+    };
+    var IdleItem = class {
+      constructor(client, idleListener, timeoutId) {
+        this.client = client;
+        this.idleListener = idleListener;
+        this.timeoutId = timeoutId;
+      }
+    };
+    var PendingItem = class {
+      constructor(callback) {
+        this.callback = callback;
+      }
+    };
+    function throwOnDoubleRelease() {
+      throw new Error("Release called on client which has already been released to the pool.");
+    }
+    function promisify(Promise2, callback) {
+      if (callback) {
+        return { callback, result: void 0 };
+      }
+      let rej;
+      let res;
+      const cb = function(err, client) {
+        err ? rej(err) : res(client);
+      };
+      const result = new Promise2(function(resolve, reject) {
+        res = resolve;
+        rej = reject;
+      });
+      return { callback: cb, result };
+    }
+    function makeIdleListener(pool2, client) {
+      return function idleListener(err) {
+        err.client = client;
+        client.removeListener("error", idleListener);
+        client.on("error", () => {
+          pool2.log("additional client error after disconnection due to error", err);
+        });
+        pool2._remove(client);
+        pool2.emit("error", err, client);
+      };
+    }
+    var Pool = class extends EventEmitter {
+      constructor(options, Client) {
+        super();
+        this.options = Object.assign({}, options);
+        if (options != null && "password" in options) {
+          Object.defineProperty(this.options, "password", {
+            configurable: true,
+            enumerable: false,
+            writable: true,
+            value: options.password
+          });
+        }
+        if (options != null && options.ssl && options.ssl.key) {
+          Object.defineProperty(this.options.ssl, "key", {
+            enumerable: false
+          });
+        }
+        this.options.max = this.options.max || this.options.poolSize || 10;
+        this.options.maxUses = this.options.maxUses || Infinity;
+        this.options.allowExitOnIdle = this.options.allowExitOnIdle || false;
+        this.log = this.options.log || function() {
+        };
+        this.Client = this.options.Client || Client || require_lib6().Client;
+        this.Promise = this.options.Promise || global.Promise;
+        if (typeof this.options.idleTimeoutMillis === "undefined") {
+          this.options.idleTimeoutMillis = 1e4;
+        }
+        this._clients = [];
+        this._idle = [];
+        this._pendingQueue = [];
+        this._endCallback = void 0;
+        this.ending = false;
+        this.ended = false;
+      }
+      _isFull() {
+        return this._clients.length >= this.options.max;
+      }
+      _pulseQueue() {
+        this.log("pulse queue");
+        if (this.ended) {
+          this.log("pulse queue ended");
+          return;
+        }
+        if (this.ending) {
+          this.log("pulse queue on ending");
+          if (this._idle.length) {
+            this._idle.slice().map((item) => {
+              this._remove(item.client);
+            });
+          }
+          if (!this._clients.length) {
+            this.ended = true;
+            this._endCallback();
+          }
+          return;
+        }
+        if (!this._pendingQueue.length) {
+          this.log("no queued requests");
+          return;
+        }
+        if (!this._idle.length && this._isFull()) {
+          return;
+        }
+        const pendingItem = this._pendingQueue.shift();
+        if (this._idle.length) {
+          const idleItem = this._idle.pop();
+          clearTimeout(idleItem.timeoutId);
+          const client = idleItem.client;
+          client.ref && client.ref();
+          const idleListener = idleItem.idleListener;
+          return this._acquireClient(client, pendingItem, idleListener, false);
+        }
+        if (!this._isFull()) {
+          return this.newClient(pendingItem);
+        }
+        throw new Error("unexpected condition");
+      }
+      _remove(client) {
+        const removed = removeWhere(this._idle, (item) => item.client === client);
+        if (removed !== void 0) {
+          clearTimeout(removed.timeoutId);
+        }
+        this._clients = this._clients.filter((c) => c !== client);
+        client.end();
+        this.emit("remove", client);
+      }
+      connect(cb) {
+        if (this.ending) {
+          const err = new Error("Cannot use a pool after calling end on the pool");
+          return cb ? cb(err) : this.Promise.reject(err);
+        }
+        const response = promisify(this.Promise, cb);
+        const result = response.result;
+        if (this._isFull() || this._idle.length) {
+          if (this._idle.length) {
+            process.nextTick(() => this._pulseQueue());
+          }
+          if (!this.options.connectionTimeoutMillis) {
+            this._pendingQueue.push(new PendingItem(response.callback));
+            return result;
+          }
+          const queueCallback = (err, res, done) => {
+            clearTimeout(tid);
+            response.callback(err, res, done);
+          };
+          const pendingItem = new PendingItem(queueCallback);
+          const tid = setTimeout(() => {
+            removeWhere(this._pendingQueue, (i) => i.callback === queueCallback);
+            pendingItem.timedOut = true;
+            response.callback(new Error("timeout exceeded when trying to connect"));
+          }, this.options.connectionTimeoutMillis);
+          this._pendingQueue.push(pendingItem);
+          return result;
+        }
+        this.newClient(new PendingItem(response.callback));
+        return result;
+      }
+      newClient(pendingItem) {
+        const client = new this.Client(this.options);
+        this._clients.push(client);
+        const idleListener = makeIdleListener(this, client);
+        this.log("checking client timeout");
+        let tid;
+        let timeoutHit = false;
+        if (this.options.connectionTimeoutMillis) {
+          tid = setTimeout(() => {
+            this.log("ending client due to timeout");
+            timeoutHit = true;
+            client.connection ? client.connection.stream.destroy() : client.end();
+          }, this.options.connectionTimeoutMillis);
+        }
+        this.log("connecting new client");
+        client.connect((err) => {
+          if (tid) {
+            clearTimeout(tid);
+          }
+          client.on("error", idleListener);
+          if (err) {
+            this.log("client failed to connect", err);
+            this._clients = this._clients.filter((c) => c !== client);
+            if (timeoutHit) {
+              err.message = "Connection terminated due to connection timeout";
+            }
+            this._pulseQueue();
+            if (!pendingItem.timedOut) {
+              pendingItem.callback(err, void 0, NOOP);
+            }
+          } else {
+            this.log("new client connected");
+            return this._acquireClient(client, pendingItem, idleListener, true);
+          }
+        });
+      }
+      _acquireClient(client, pendingItem, idleListener, isNew) {
+        if (isNew) {
+          this.emit("connect", client);
+        }
+        this.emit("acquire", client);
+        client.release = this._releaseOnce(client, idleListener);
+        client.removeListener("error", idleListener);
+        if (!pendingItem.timedOut) {
+          if (isNew && this.options.verify) {
+            this.options.verify(client, (err) => {
+              if (err) {
+                client.release(err);
+                return pendingItem.callback(err, void 0, NOOP);
+              }
+              pendingItem.callback(void 0, client, client.release);
+            });
+          } else {
+            pendingItem.callback(void 0, client, client.release);
+          }
+        } else {
+          if (isNew && this.options.verify) {
+            this.options.verify(client, client.release);
+          } else {
+            client.release();
+          }
+        }
+      }
+      _releaseOnce(client, idleListener) {
+        let released = false;
+        return (err) => {
+          if (released) {
+            throwOnDoubleRelease();
+          }
+          released = true;
+          this._release(client, idleListener, err);
+        };
+      }
+      _release(client, idleListener, err) {
+        client.on("error", idleListener);
+        client._poolUseCount = (client._poolUseCount || 0) + 1;
+        if (err || this.ending || !client._queryable || client._ending || client._poolUseCount >= this.options.maxUses) {
+          if (client._poolUseCount >= this.options.maxUses) {
+            this.log("remove expended client");
+          }
+          this._remove(client);
+          this._pulseQueue();
+          return;
+        }
+        let tid;
+        if (this.options.idleTimeoutMillis) {
+          tid = setTimeout(() => {
+            this.log("remove idle client");
+            this._remove(client);
+          }, this.options.idleTimeoutMillis);
+          if (this.options.allowExitOnIdle) {
+            tid.unref();
+          }
+        }
+        if (this.options.allowExitOnIdle) {
+          client.unref();
+        }
+        this._idle.push(new IdleItem(client, idleListener, tid));
+        this._pulseQueue();
+      }
+      query(text, values, cb) {
+        if (typeof text === "function") {
+          const response2 = promisify(this.Promise, text);
+          setImmediate(function() {
+            return response2.callback(new Error("Passing a function as the first parameter to pool.query is not supported"));
+          });
+          return response2.result;
+        }
+        if (typeof values === "function") {
+          cb = values;
+          values = void 0;
+        }
+        const response = promisify(this.Promise, cb);
+        cb = response.callback;
+        this.connect((err, client) => {
+          if (err) {
+            return cb(err);
+          }
+          let clientReleased = false;
+          const onError = (err2) => {
+            if (clientReleased) {
+              return;
+            }
+            clientReleased = true;
+            client.release(err2);
+            cb(err2);
+          };
+          client.once("error", onError);
+          this.log("dispatching query");
+          client.query(text, values, (err2, res) => {
+            this.log("query dispatched");
+            client.removeListener("error", onError);
+            if (clientReleased) {
+              return;
+            }
+            clientReleased = true;
+            client.release(err2);
+            if (err2) {
+              return cb(err2);
+            } else {
+              return cb(void 0, res);
+            }
+          });
+        });
+        return response.result;
+      }
+      end(cb) {
+        this.log("ending");
+        if (this.ending) {
+          const err = new Error("Called end on pool more than once");
+          return cb ? cb(err) : this.Promise.reject(err);
+        }
+        this.ending = true;
+        const promised = promisify(this.Promise, cb);
+        this._endCallback = promised.callback;
+        this._pulseQueue();
+        return promised.result;
+      }
+      get waitingCount() {
+        return this._pendingQueue.length;
+      }
+      get idleCount() {
+        return this._idle.length;
+      }
+      get totalCount() {
+        return this._clients.length;
+      }
+    };
+    module2.exports = Pool;
+  }
+});
+
+// node_modules/file-uri-to-path/index.js
+var require_file_uri_to_path = __commonJS({
+  "node_modules/file-uri-to-path/index.js"(exports2, module2) {
+    var sep = require("path").sep || "/";
+    module2.exports = fileUriToPath;
+    function fileUriToPath(uri) {
+      if (typeof uri != "string" || uri.length <= 7 || uri.substring(0, 7) != "file://") {
+        throw new TypeError("must pass in a file:// URI to convert to a file path");
+      }
+      var rest = decodeURI(uri.substring(7));
+      var firstSlash = rest.indexOf("/");
+      var host = rest.substring(0, firstSlash);
+      var path = rest.substring(firstSlash + 1);
+      if (host == "localhost")
+        host = "";
+      if (host) {
+        host = sep + sep + host;
+      }
+      path = path.replace(/^(.+)\|/, "$1:");
+      if (sep == "\\") {
+        path = path.replace(/\//g, "\\");
+      }
+      if (/^.+\:/.test(path)) {
+      } else {
+        path = sep + path;
+      }
+      return host + path;
+    }
+  }
+});
+
+// node_modules/bindings/bindings.js
+var require_bindings = __commonJS({
+  "node_modules/bindings/bindings.js"(exports2, module2) {
+    var fs = require("fs");
+    var path = require("path");
+    var fileURLToPath = require_file_uri_to_path();
+    var join = path.join;
+    var dirname = path.dirname;
+    var exists = fs.accessSync && function(path2) {
+      try {
+        fs.accessSync(path2);
+      } catch (e) {
+        return false;
+      }
+      return true;
+    } || fs.existsSync || path.existsSync;
+    var defaults = {
+      arrow: process.env.NODE_BINDINGS_ARROW || " \u2192 ",
+      compiled: process.env.NODE_BINDINGS_COMPILED_DIR || "compiled",
+      platform: process.platform,
+      arch: process.arch,
+      nodePreGyp: "node-v" + process.versions.modules + "-" + process.platform + "-" + process.arch,
+      version: process.versions.node,
+      bindings: "bindings.node",
+      try: [
+        ["module_root", "build", "bindings"],
+        ["module_root", "build", "Debug", "bindings"],
+        ["module_root", "build", "Release", "bindings"],
+        ["module_root", "out", "Debug", "bindings"],
+        ["module_root", "Debug", "bindings"],
+        ["module_root", "out", "Release", "bindings"],
+        ["module_root", "Release", "bindings"],
+        ["module_root", "build", "default", "bindings"],
+        ["module_root", "compiled", "version", "platform", "arch", "bindings"],
+        ["module_root", "addon-build", "release", "install-root", "bindings"],
+        ["module_root", "addon-build", "debug", "install-root", "bindings"],
+        ["module_root", "addon-build", "default", "install-root", "bindings"],
+        ["module_root", "lib", "binding", "nodePreGyp", "bindings"]
+      ]
+    };
+    function bindings(opts) {
+      if (typeof opts == "string") {
+        opts = { bindings: opts };
+      } else if (!opts) {
+        opts = {};
+      }
+      Object.keys(defaults).map(function(i2) {
+        if (!(i2 in opts))
+          opts[i2] = defaults[i2];
+      });
+      if (!opts.module_root) {
+        opts.module_root = exports2.getRoot(exports2.getFileName());
+      }
+      if (path.extname(opts.bindings) != ".node") {
+        opts.bindings += ".node";
+      }
+      var requireFunc = typeof __webpack_require__ === "function" ? __non_webpack_require__ : require;
+      var tries = [], i = 0, l = opts.try.length, n, b, err;
+      for (; i < l; i++) {
+        n = join.apply(null, opts.try[i].map(function(p) {
+          return opts[p] || p;
+        }));
+        tries.push(n);
+        try {
+          b = opts.path ? requireFunc.resolve(n) : requireFunc(n);
+          if (!opts.path) {
+            b.path = n;
+          }
+          return b;
+        } catch (e) {
+          if (e.code !== "MODULE_NOT_FOUND" && e.code !== "QUALIFIED_PATH_RESOLUTION_FAILED" && !/not find/i.test(e.message)) {
+            throw e;
+          }
+        }
+      }
+      err = new Error("Could not locate the bindings file. Tried:\n" + tries.map(function(a) {
+        return opts.arrow + a;
+      }).join("\n"));
+      err.tries = tries;
+      throw err;
+    }
+    module2.exports = exports2 = bindings;
+    exports2.getFileName = function getFileName(calling_file) {
+      var origPST = Error.prepareStackTrace, origSTL = Error.stackTraceLimit, dummy = {}, fileName;
+      Error.stackTraceLimit = 10;
+      Error.prepareStackTrace = function(e, st) {
+        for (var i = 0, l = st.length; i < l; i++) {
+          fileName = st[i].getFileName();
+          if (fileName !== __filename) {
+            if (calling_file) {
+              if (fileName !== calling_file) {
+                return;
+              }
+            } else {
+              return;
+            }
+          }
+        }
+      };
+      Error.captureStackTrace(dummy);
+      dummy.stack;
+      Error.prepareStackTrace = origPST;
+      Error.stackTraceLimit = origSTL;
+      var fileSchema = "file://";
+      if (fileName.indexOf(fileSchema) === 0) {
+        fileName = fileURLToPath(fileName);
+      }
+      return fileName;
+    };
+    exports2.getRoot = function getRoot(file) {
+      var dir = dirname(file), prev;
+      while (true) {
+        if (dir === ".") {
+          dir = process.cwd();
+        }
+        if (exists(join(dir, "package.json")) || exists(join(dir, "node_modules"))) {
+          return dir;
+        }
+        if (prev === dir) {
+          throw new Error('Could not find module root given file: "' + file + '". Do you have a `package.json` file? ');
+        }
+        prev = dir;
+        dir = join(dir, "..");
+      }
+    };
+  }
+});
+
+// node_modules/libpq/index.js
+var require_libpq = __commonJS({
+  "node_modules/libpq/index.js"(exports2, module2) {
+    var PQ = module2.exports = require_bindings()("addon.node").PQ;
+    if (!module2.parent) {
+      path = require("path");
+      console.log(path.normalize(__dirname + "/src"));
+    }
+    var path;
+    var EventEmitter = require("events").EventEmitter;
+    var assert = require("assert");
+    for (key in EventEmitter.prototype) {
+      PQ.prototype[key] = EventEmitter.prototype[key];
+    }
+    var key;
+    PQ.prototype.connectSync = function(paramString) {
+      this.connected = true;
+      if (!paramString) {
+        paramString = "";
+      }
+      var connected = this.$connectSync(paramString);
+      if (!connected) {
+        var err = new Error(this.errorMessage());
+        this.finish();
+        throw err;
+      }
+    };
+    PQ.prototype.connect = function(paramString, cb) {
+      this.connected = true;
+      if (typeof paramString == "function") {
+        cb = paramString;
+        paramString = "";
+      }
+      if (!paramString) {
+        paramString = "";
+      }
+      assert(cb, "Must provide a connection callback");
+      if (process.domain) {
+        cb = process.domain.bind(cb);
+      }
+      this.$connect(paramString, cb);
+    };
+    PQ.prototype.errorMessage = function() {
+      return this.$getLastErrorMessage();
+    };
+    PQ.prototype.socket = function() {
+      return this.$socket();
+    };
+    PQ.prototype.serverVersion = function() {
+      return this.$serverVersion();
+    };
+    PQ.prototype.finish = function() {
+      this.connected = false;
+      this.$finish();
+    };
+    PQ.prototype.exec = function(commandText) {
+      if (!commandText) {
+        commandText = "";
+      }
+      this.$exec(commandText);
+    };
+    PQ.prototype.execParams = function(commandText, parameters) {
+      if (!commandText) {
+        commandText = "";
+      }
+      if (!parameters) {
+        parameters = [];
+      }
+      this.$execParams(commandText, parameters);
+    };
+    PQ.prototype.prepare = function(statementName, commandText, nParams) {
+      assert.equal(arguments.length, 3, "Must supply 3 arguments");
+      if (!statementName) {
+        statementName = "";
+      }
+      if (!commandText) {
+        commandText = "";
+      }
+      nParams = Number(nParams) || 0;
+      this.$prepare(statementName, commandText, nParams);
+    };
+    PQ.prototype.execPrepared = function(statementName, parameters) {
+      if (!statementName) {
+        statementName = "";
+      }
+      if (!parameters) {
+        parameters = [];
+      }
+      this.$execPrepared(statementName, parameters);
+    };
+    PQ.prototype.sendQuery = function(commandText) {
+      if (!commandText) {
+        commandText = "";
+      }
+      return this.$sendQuery(commandText);
+    };
+    PQ.prototype.sendQueryParams = function(commandText, parameters) {
+      if (!commandText) {
+        commandText = "";
+      }
+      if (!parameters) {
+        parameters = [];
+      }
+      return this.$sendQueryParams(commandText, parameters);
+    };
+    PQ.prototype.sendPrepare = function(statementName, commandText, nParams) {
+      assert.equal(arguments.length, 3, "Must supply 3 arguments");
+      if (!statementName) {
+        statementName = "";
+      }
+      if (!commandText) {
+        commandText = "";
+      }
+      nParams = Number(nParams) || 0;
+      return this.$sendPrepare(statementName, commandText, nParams);
+    };
+    PQ.prototype.sendQueryPrepared = function(statementName, parameters) {
+      if (!statementName) {
+        statementName = "";
+      }
+      if (!parameters) {
+        parameters = [];
+      }
+      return this.$sendQueryPrepared(statementName, parameters);
+    };
+    PQ.prototype.getResult = function() {
+      return this.$getResult();
+    };
+    PQ.prototype.resultStatus = function() {
+      return this.$resultStatus();
+    };
+    PQ.prototype.resultErrorMessage = function() {
+      return this.$resultErrorMessage();
+    };
+    PQ.prototype.resultErrorFields = function() {
+      return this.$resultErrorFields();
+    };
+    PQ.prototype.clear = function() {
+      this.$clear();
+    };
+    PQ.prototype.ntuples = function() {
+      return this.$ntuples();
+    };
+    PQ.prototype.nfields = function() {
+      return this.$nfields();
+    };
+    PQ.prototype.fname = function(offset) {
+      return this.$fname(offset);
+    };
+    PQ.prototype.ftype = function(offset) {
+      return this.$ftype(offset);
+    };
+    PQ.prototype.getvalue = function(row, col) {
+      return this.$getvalue(row, col);
+    };
+    PQ.prototype.getisnull = function(row, col) {
+      return this.$getisnull(row, col);
+    };
+    PQ.prototype.cmdStatus = function() {
+      return this.$cmdStatus();
+    };
+    PQ.prototype.cmdTuples = function() {
+      return this.$cmdTuples();
+    };
+    PQ.prototype.startReader = function() {
+      assert(this.connected, "Must be connected to start reader");
+      this.$startRead();
+    };
+    PQ.prototype.stopReader = function() {
+      this.$stopRead();
+    };
+    PQ.prototype.writable = function(cb) {
+      assert(this.connected, "Must be connected to start writer");
+      this.$startWrite();
+      return this.once("writable", cb);
+    };
+    PQ.prototype.consumeInput = function() {
+      return this.$consumeInput();
+    };
+    PQ.prototype.isBusy = function() {
+      return this.$isBusy();
+    };
+    PQ.prototype.setNonBlocking = function(truthy) {
+      return this.$setNonBlocking(truthy ? 1 : 0);
+    };
+    PQ.prototype.isNonBlocking = function() {
+      return this.$isNonBlocking();
+    };
+    PQ.prototype.flush = function() {
+      return this.$flush();
+    };
+    PQ.prototype.escapeLiteral = function(input) {
+      if (!input)
+        return input;
+      return this.$escapeLiteral(input);
+    };
+    PQ.prototype.escapeIdentifier = function(input) {
+      if (!input)
+        return input;
+      return this.$escapeIdentifier(input);
+    };
+    PQ.prototype.notifies = function() {
+      return this.$notifies();
+    };
+    PQ.prototype.putCopyData = function(buffer) {
+      assert(buffer instanceof Buffer);
+      return this.$putCopyData(buffer);
+    };
+    PQ.prototype.putCopyEnd = function(errorMessage) {
+      if (errorMessage) {
+        return this.$putCopyEnd(errorMessage);
+      }
+      return this.$putCopyEnd();
+    };
+    PQ.prototype.getCopyData = function(async) {
+      return this.$getCopyData(!!async);
+    };
+    PQ.prototype.cancel = function() {
+      return this.$cancel();
+    };
+  }
+});
+
+// node_modules/pg-native/node_modules/postgres-array/index.js
+var require_postgres_array2 = __commonJS({
+  "node_modules/pg-native/node_modules/postgres-array/index.js"(exports2) {
+    "use strict";
+    exports2.parse = function(source, transform) {
+      return new ArrayParser(source, transform).parse();
+    };
+    function ArrayParser(source, transform) {
+      this.source = source;
+      this.transform = transform || identity;
+      this.position = 0;
+      this.entries = [];
+      this.recorded = [];
+      this.dimension = 0;
+    }
+    ArrayParser.prototype.isEof = function() {
+      return this.position >= this.source.length;
+    };
+    ArrayParser.prototype.nextCharacter = function() {
+      var character = this.source[this.position++];
+      if (character === "\\") {
+        return {
+          value: this.source[this.position++],
+          escaped: true
+        };
+      }
+      return {
+        value: character,
+        escaped: false
+      };
+    };
+    ArrayParser.prototype.record = function(character) {
+      this.recorded.push(character);
+    };
+    ArrayParser.prototype.newEntry = function(includeEmpty) {
+      var entry;
+      if (this.recorded.length > 0 || includeEmpty) {
+        entry = this.recorded.join("");
+        if (entry === "NULL" && !includeEmpty) {
+          entry = null;
+        }
+        if (entry !== null)
+          entry = this.transform(entry);
+        this.entries.push(entry);
+        this.recorded = [];
+      }
+    };
+    ArrayParser.prototype.parse = function(nested) {
+      var character, parser, quote;
+      while (!this.isEof()) {
+        character = this.nextCharacter();
+        if (character.value === "{" && !quote) {
+          this.dimension++;
+          if (this.dimension > 1) {
+            parser = new ArrayParser(this.source.substr(this.position - 1), this.transform);
+            this.entries.push(parser.parse(true));
+            this.position += parser.position - 2;
+          }
+        } else if (character.value === "}" && !quote) {
+          this.dimension--;
+          if (!this.dimension) {
+            this.newEntry();
+            if (nested)
+              return this.entries;
+          }
+        } else if (character.value === '"' && !character.escaped) {
+          if (quote)
+            this.newEntry(true);
+          quote = !quote;
+        } else if (character.value === "," && !quote) {
+          this.newEntry();
+        } else {
+          this.record(character.value);
+        }
+      }
+      if (this.dimension !== 0) {
+        throw new Error("array dimension not balanced");
+      }
+      return this.entries;
+    };
+    function identity(value) {
+      return value;
+    }
+  }
+});
+
+// node_modules/pg-native/node_modules/pg-types/lib/arrayParser.js
+var require_arrayParser2 = __commonJS({
+  "node_modules/pg-native/node_modules/pg-types/lib/arrayParser.js"(exports2, module2) {
+    var array = require_postgres_array2();
+    module2.exports = {
+      create: function(source, transform) {
+        return {
+          parse: function() {
+            return array.parse(source, transform);
+          }
+        };
+      }
+    };
+  }
+});
+
+// node_modules/pg-native/node_modules/pg-types/lib/textParsers.js
+var require_textParsers2 = __commonJS({
+  "node_modules/pg-native/node_modules/pg-types/lib/textParsers.js"(exports2, module2) {
+    var array = require_postgres_array2();
+    var arrayParser = require_arrayParser2();
+    var parseDate = require_postgres_date();
+    var parseInterval = require_postgres_interval();
+    var parseByteA = require_postgres_bytea();
+    function allowNull(fn2) {
+      return function nullAllowed(value) {
+        if (value === null)
+          return value;
+        return fn2(value);
+      };
+    }
+    function parseBool(value) {
+      if (value === null)
+        return value;
+      return value === "TRUE" || value === "t" || value === "true" || value === "y" || value === "yes" || value === "on" || value === "1";
+    }
+    function parseBoolArray(value) {
+      if (!value)
+        return null;
+      return array.parse(value, parseBool);
+    }
+    function parseBaseTenInt(string) {
+      return parseInt(string, 10);
+    }
+    function parseIntegerArray(value) {
+      if (!value)
+        return null;
+      return array.parse(value, allowNull(parseBaseTenInt));
+    }
+    function parseBigIntegerArray(value) {
+      if (!value)
+        return null;
+      return array.parse(value, allowNull(function(entry) {
+        return parseBigInteger(entry).trim();
+      }));
+    }
+    var parsePointArray = function(value) {
+      if (!value) {
+        return null;
+      }
+      var p = arrayParser.create(value, function(entry) {
+        if (entry !== null) {
+          entry = parsePoint(entry);
+        }
+        return entry;
+      });
+      return p.parse();
+    };
+    var parseFloatArray = function(value) {
+      if (!value) {
+        return null;
+      }
+      var p = arrayParser.create(value, function(entry) {
+        if (entry !== null) {
+          entry = parseFloat(entry);
+        }
+        return entry;
+      });
+      return p.parse();
+    };
+    var parseStringArray = function(value) {
+      if (!value) {
+        return null;
+      }
+      var p = arrayParser.create(value);
+      return p.parse();
+    };
+    var parseDateArray = function(value) {
+      if (!value) {
+        return null;
+      }
+      var p = arrayParser.create(value, function(entry) {
+        if (entry !== null) {
+          entry = parseDate(entry);
+        }
+        return entry;
+      });
+      return p.parse();
+    };
+    var parseByteAArray = function(value) {
+      if (!value) {
+        return null;
+      }
+      return array.parse(value, allowNull(parseByteA));
+    };
+    var parseInteger = function(value) {
+      return parseInt(value, 10);
+    };
+    var parseBigInteger = function(value) {
+      var valStr = String(value);
+      if (/^\d+$/.test(valStr)) {
+        return valStr;
+      }
+      return value;
+    };
+    var parseJsonArray = function(value) {
+      var arr = parseStringArray(value);
+      if (!arr) {
+        return arr;
+      }
+      return arr.map(function(el) {
+        return JSON.parse(el);
+      });
+    };
+    var parsePoint = function(value) {
+      if (value[0] !== "(") {
+        return null;
+      }
+      value = value.substring(1, value.length - 1).split(",");
+      return {
+        x: parseFloat(value[0]),
+        y: parseFloat(value[1])
+      };
+    };
+    var parseCircle = function(value) {
+      if (value[0] !== "<" && value[1] !== "(") {
+        return null;
+      }
+      var point = "(";
+      var radius = "";
+      var pointParsed = false;
+      for (var i = 2; i < value.length - 1; i++) {
+        if (!pointParsed) {
+          point += value[i];
+        }
+        if (value[i] === ")") {
+          pointParsed = true;
+          continue;
+        } else if (!pointParsed) {
+          continue;
+        }
+        if (value[i] === ",") {
+          continue;
+        }
+        radius += value[i];
+      }
+      var result = parsePoint(point);
+      result.radius = parseFloat(radius);
+      return result;
+    };
+    var init = function(register) {
+      register(20, parseBigInteger);
+      register(21, parseInteger);
+      register(23, parseInteger);
+      register(26, parseInteger);
+      register(700, parseFloat);
+      register(701, parseFloat);
+      register(16, parseBool);
+      register(1082, parseDate);
+      register(1114, parseDate);
+      register(1184, parseDate);
+      register(600, parsePoint);
+      register(651, parseStringArray);
+      register(718, parseCircle);
+      register(1e3, parseBoolArray);
+      register(1001, parseByteAArray);
+      register(1005, parseIntegerArray);
+      register(1007, parseIntegerArray);
+      register(1028, parseIntegerArray);
+      register(1016, parseBigIntegerArray);
+      register(1017, parsePointArray);
+      register(1021, parseFloatArray);
+      register(1022, parseFloatArray);
+      register(1231, parseFloatArray);
+      register(1014, parseStringArray);
+      register(1015, parseStringArray);
+      register(1008, parseStringArray);
+      register(1009, parseStringArray);
+      register(1040, parseStringArray);
+      register(1041, parseStringArray);
+      register(1115, parseDateArray);
+      register(1182, parseDateArray);
+      register(1185, parseDateArray);
+      register(1186, parseInterval);
+      register(17, parseByteA);
+      register(114, JSON.parse.bind(JSON));
+      register(3802, JSON.parse.bind(JSON));
+      register(199, parseJsonArray);
+      register(3807, parseJsonArray);
+      register(3907, parseStringArray);
+      register(2951, parseStringArray);
+      register(791, parseStringArray);
+      register(1183, parseStringArray);
+      register(1270, parseStringArray);
+    };
+    module2.exports = {
+      init
+    };
+  }
+});
+
+// node_modules/pg-native/node_modules/pg-types/lib/binaryParsers.js
+var require_binaryParsers2 = __commonJS({
+  "node_modules/pg-native/node_modules/pg-types/lib/binaryParsers.js"(exports2, module2) {
+    var parseInt64 = require_pg_int8();
+    var parseBits = function(data, bits, offset, invert, callback) {
+      offset = offset || 0;
+      invert = invert || false;
+      callback = callback || function(lastValue, newValue, bits2) {
+        return lastValue * Math.pow(2, bits2) + newValue;
+      };
+      var offsetBytes = offset >> 3;
+      var inv = function(value) {
+        if (invert) {
+          return ~value & 255;
+        }
+        return value;
+      };
+      var mask = 255;
+      var firstBits = 8 - offset % 8;
+      if (bits < firstBits) {
+        mask = 255 << 8 - bits & 255;
+        firstBits = bits;
+      }
+      if (offset) {
+        mask = mask >> offset % 8;
+      }
+      var result = 0;
+      if (offset % 8 + bits >= 8) {
+        result = callback(0, inv(data[offsetBytes]) & mask, firstBits);
+      }
+      var bytes = bits + offset >> 3;
+      for (var i = offsetBytes + 1; i < bytes; i++) {
+        result = callback(result, inv(data[i]), 8);
+      }
+      var lastBits = (bits + offset) % 8;
+      if (lastBits > 0) {
+        result = callback(result, inv(data[bytes]) >> 8 - lastBits, lastBits);
+      }
+      return result;
+    };
+    var parseFloatFromBits = function(data, precisionBits, exponentBits) {
+      var bias = Math.pow(2, exponentBits - 1) - 1;
+      var sign = parseBits(data, 1);
+      var exponent = parseBits(data, exponentBits, 1);
+      if (exponent === 0) {
+        return 0;
+      }
+      var precisionBitsCounter = 1;
+      var parsePrecisionBits = function(lastValue, newValue, bits) {
+        if (lastValue === 0) {
+          lastValue = 1;
+        }
+        for (var i = 1; i <= bits; i++) {
+          precisionBitsCounter /= 2;
+          if ((newValue & 1 << bits - i) > 0) {
+            lastValue += precisionBitsCounter;
+          }
+        }
+        return lastValue;
+      };
+      var mantissa = parseBits(data, precisionBits, exponentBits + 1, false, parsePrecisionBits);
+      if (exponent == Math.pow(2, exponentBits + 1) - 1) {
+        if (mantissa === 0) {
+          return sign === 0 ? Infinity : -Infinity;
+        }
+        return NaN;
+      }
+      return (sign === 0 ? 1 : -1) * Math.pow(2, exponent - bias) * mantissa;
+    };
+    var parseInt16 = function(value) {
+      if (parseBits(value, 1) == 1) {
+        return -1 * (parseBits(value, 15, 1, true) + 1);
+      }
+      return parseBits(value, 15, 1);
+    };
+    var parseInt32 = function(value) {
+      if (parseBits(value, 1) == 1) {
+        return -1 * (parseBits(value, 31, 1, true) + 1);
+      }
+      return parseBits(value, 31, 1);
+    };
+    var parseFloat32 = function(value) {
+      return parseFloatFromBits(value, 23, 8);
+    };
+    var parseFloat64 = function(value) {
+      return parseFloatFromBits(value, 52, 11);
+    };
+    var parseNumeric = function(value) {
+      var sign = parseBits(value, 16, 32);
+      if (sign == 49152) {
+        return NaN;
+      }
+      var weight = Math.pow(1e4, parseBits(value, 16, 16));
+      var result = 0;
+      var digits = [];
+      var ndigits = parseBits(value, 16);
+      for (var i = 0; i < ndigits; i++) {
+        result += parseBits(value, 16, 64 + 16 * i) * weight;
+        weight /= 1e4;
+      }
+      var scale = Math.pow(10, parseBits(value, 16, 48));
+      return (sign === 0 ? 1 : -1) * Math.round(result * scale) / scale;
+    };
+    var parseDate = function(isUTC, value) {
+      var sign = parseBits(value, 1);
+      var rawValue = parseBits(value, 63, 1);
+      var result = new Date((sign === 0 ? 1 : -1) * rawValue / 1e3 + 9466848e5);
+      if (!isUTC) {
+        result.setTime(result.getTime() + result.getTimezoneOffset() * 6e4);
+      }
+      result.usec = rawValue % 1e3;
+      result.getMicroSeconds = function() {
+        return this.usec;
+      };
+      result.setMicroSeconds = function(value2) {
+        this.usec = value2;
+      };
+      result.getUTCMicroSeconds = function() {
+        return this.usec;
+      };
+      return result;
+    };
+    var parseArray = function(value) {
+      var dim = parseBits(value, 32);
+      var flags = parseBits(value, 32, 32);
+      var elementType = parseBits(value, 32, 64);
+      var offset = 96;
+      var dims = [];
+      for (var i = 0; i < dim; i++) {
+        dims[i] = parseBits(value, 32, offset);
+        offset += 32;
+        offset += 32;
+      }
+      var parseElement = function(elementType2) {
+        var length = parseBits(value, 32, offset);
+        offset += 32;
+        if (length == 4294967295) {
+          return null;
+        }
+        var result;
+        if (elementType2 == 23 || elementType2 == 20) {
+          result = parseBits(value, length * 8, offset);
+          offset += length * 8;
+          return result;
+        } else if (elementType2 == 25) {
+          result = value.toString(this.encoding, offset >> 3, (offset += length << 3) >> 3);
+          return result;
+        } else {
+          console.log("ERROR: ElementType not implemented: " + elementType2);
+        }
+      };
+      var parse = function(dimension, elementType2) {
+        var array = [];
+        var i2;
+        if (dimension.length > 1) {
+          var count = dimension.shift();
+          for (i2 = 0; i2 < count; i2++) {
+            array[i2] = parse(dimension, elementType2);
+          }
+          dimension.unshift(count);
+        } else {
+          for (i2 = 0; i2 < dimension[0]; i2++) {
+            array[i2] = parseElement(elementType2);
+          }
+        }
+        return array;
+      };
+      return parse(dims, elementType);
+    };
+    var parseText = function(value) {
+      return value.toString("utf8");
+    };
+    var parseBool = function(value) {
+      if (value === null)
+        return null;
+      return parseBits(value, 8) > 0;
+    };
+    var init = function(register) {
+      register(20, parseInt64);
+      register(21, parseInt16);
+      register(23, parseInt32);
+      register(26, parseInt32);
+      register(1700, parseNumeric);
+      register(700, parseFloat32);
+      register(701, parseFloat64);
+      register(16, parseBool);
+      register(1114, parseDate.bind(null, false));
+      register(1184, parseDate.bind(null, true));
+      register(1e3, parseArray);
+      register(1007, parseArray);
+      register(1016, parseArray);
+      register(1008, parseArray);
+      register(1009, parseArray);
+      register(25, parseText);
+    };
+    module2.exports = {
+      init
+    };
+  }
+});
+
+// node_modules/pg-native/node_modules/pg-types/index.js
+var require_pg_types2 = __commonJS({
+  "node_modules/pg-native/node_modules/pg-types/index.js"(exports2) {
+    var textParsers = require_textParsers2();
+    var binaryParsers = require_binaryParsers2();
+    var arrayParser = require_arrayParser2();
+    exports2.getTypeParser = getTypeParser;
+    exports2.setTypeParser = setTypeParser;
+    exports2.arrayParser = arrayParser;
+    var typeParsers = {
+      text: {},
+      binary: {}
+    };
+    function noParse(val) {
+      return String(val);
+    }
+    function getTypeParser(oid, format) {
+      format = format || "text";
+      if (!typeParsers[format]) {
+        return noParse;
+      }
+      return typeParsers[format][oid] || noParse;
+    }
+    function setTypeParser(oid, format, parseFn) {
+      if (typeof format == "function") {
+        parseFn = format;
+        format = "text";
+      }
+      typeParsers[format][oid] = parseFn;
+    }
+    textParsers.init(function(oid, converter) {
+      typeParsers.text[oid] = converter;
+    });
+    binaryParsers.init(function(oid, converter) {
+      typeParsers.binary[oid] = converter;
+    });
+  }
+});
+
+// node_modules/pg-native/lib/build-result.js
+var require_build_result = __commonJS({
+  "node_modules/pg-native/lib/build-result.js"(exports2, module2) {
+    "use strict";
+    var Result = class {
+      constructor(types, arrayMode) {
+        this._types = types;
+        this._arrayMode = arrayMode;
+        this.command = void 0;
+        this.rowCount = void 0;
+        this.fields = [];
+        this.rows = [];
+      }
+      consumeCommand(pq) {
+        this.command = pq.cmdStatus().split(" ")[0];
+        this.rowCount = parseInt(pq.cmdTuples(), 10);
+      }
+      consumeFields(pq) {
+        const nfields = pq.nfields();
+        for (var x = 0; x < nfields; x++) {
+          this.fields.push({
+            name: pq.fname(x),
+            dataTypeID: pq.ftype(x)
+          });
+        }
+      }
+      consumeRows(pq) {
+        const tupleCount = pq.ntuples();
+        for (var i = 0; i < tupleCount; i++) {
+          const row = this._arrayMode ? this.consumeRowAsArray(pq, i) : this.consumeRowAsObject(pq, i);
+          this.rows.push(row);
+        }
+      }
+      consumeRowAsObject(pq, rowIndex) {
+        const row = {};
+        for (var j = 0; j < this.fields.length; j++) {
+          const value = this.readValue(pq, rowIndex, j);
+          row[this.fields[j].name] = value;
+        }
+        return row;
+      }
+      consumeRowAsArray(pq, rowIndex) {
+        const row = [];
+        for (var j = 0; j < this.fields.length; j++) {
+          const value = this.readValue(pq, rowIndex, j);
+          row.push(value);
+        }
+        return row;
+      }
+      readValue(pq, rowIndex, colIndex) {
+        var rawValue = pq.getvalue(rowIndex, colIndex);
+        if (rawValue === "") {
+          if (pq.getisnull(rowIndex, colIndex)) {
+            return null;
+          }
+        }
+        const dataTypeId = this.fields[colIndex].dataTypeID;
+        return this._types.getTypeParser(dataTypeId)(rawValue);
+      }
+    };
+    function buildResult(pq, types, arrayMode) {
+      const result = new Result(types, arrayMode);
+      result.consumeCommand(pq);
+      result.consumeFields(pq);
+      result.consumeRows(pq);
+      return result;
+    }
+    module2.exports = buildResult;
+  }
+});
+
+// node_modules/pg-native/lib/copy-stream.js
+var require_copy_stream = __commonJS({
+  "node_modules/pg-native/lib/copy-stream.js"(exports2, module2) {
+    var Duplex = require("stream").Duplex;
+    var Writable = require("stream").Writable;
+    var util = require("util");
+    var CopyStream = module2.exports = function(pq, options) {
+      Duplex.call(this, options);
+      this.pq = pq;
+      this._reading = false;
+    };
+    util.inherits(CopyStream, Duplex);
+    CopyStream.prototype._write = function(chunk, encoding, cb) {
+      var result = this.pq.putCopyData(chunk);
+      if (result === 1)
+        return cb();
+      if (result === -1)
+        return cb(new Error(this.pq.errorMessage()));
+      var self2 = this;
+      this.pq.writable(function() {
+        self2._write(chunk, encoding, cb);
+      });
+    };
+    CopyStream.prototype.end = function() {
+      var args2 = Array.prototype.slice.call(arguments, 0);
+      var self2 = this;
+      var callback = args2.pop();
+      if (args2.length) {
+        this.write(args2[0]);
+      }
+      var result = this.pq.putCopyEnd();
+      if (result === 1) {
+        return consumeResults(this.pq, function(err2, res) {
+          Writable.prototype.end.call(self2);
+          if (callback) {
+            callback(err2);
+          }
+        });
+      }
+      if (result === -1) {
+        var err = new Error(this.pq.errorMessage());
+        return this.emit("error", err);
+      }
+      return this.pq.writable(function() {
+        return self2.end.apply(self2, callback);
+      });
+    };
+    CopyStream.prototype._consumeBuffer = function(cb) {
+      var result = this.pq.getCopyData(true);
+      if (result instanceof Buffer) {
+        return setImmediate(function() {
+          cb(null, result);
+        });
+      }
+      if (result === -1) {
+        return cb(null, null);
+      }
+      if (result === 0) {
+        var self2 = this;
+        this.pq.once("readable", function() {
+          self2.pq.stopReader();
+          self2.pq.consumeInput();
+          self2._consumeBuffer(cb);
+        });
+        return this.pq.startReader();
+      }
+      cb(new Error("Unrecognized read status: " + result));
+    };
+    CopyStream.prototype._read = function(size) {
+      if (this._reading)
+        return;
+      this._reading = true;
+      var self2 = this;
+      this._consumeBuffer(function(err, buffer) {
+        self2._reading = false;
+        if (err) {
+          return self2.emit("error", err);
+        }
+        if (buffer === false) {
+          return;
+        }
+        self2.push(buffer);
+      });
+    };
+    var consumeResults = function(pq, cb) {
+      var cleanup = function() {
+        pq.removeListener("readable", onReadable);
+        pq.stopReader();
+      };
+      var readError = function(message2) {
+        cleanup();
+        return cb(new Error(message2 || pq.errorMessage()));
+      };
+      var onReadable = function() {
+        if (!pq.consumeInput()) {
+          return readError();
+        }
+        if (pq.isBusy()) {
+          return;
+        }
+        pq.getResult();
+        if (pq.getResult() && pq.resultStatus() !== "PGRES_COPY_OUT") {
+          return readError("Only one result at a time is accepted");
+        }
+        if (pq.resultStatus() === "PGRES_FATAL_ERROR") {
+          return readError();
+        }
+        cleanup();
+        return cb(null);
+      };
+      pq.on("readable", onReadable);
+      pq.startReader();
+    };
+  }
+});
+
+// node_modules/pg-native/package.json
+var require_package2 = __commonJS({
+  "node_modules/pg-native/package.json"(exports2, module2) {
+    module2.exports = {
+      name: "pg-native",
+      version: "3.0.0",
+      description: "A slightly nicer interface to Postgres over node-libpq",
+      main: "index.js",
+      scripts: {
+        test: "mocha && eslint ."
+      },
+      repository: {
+        type: "git",
+        url: "git://github.com/brianc/node-pg-native.git"
+      },
+      keywords: [
+        "postgres",
+        "pg",
+        "libpq"
+      ],
+      author: "Brian M. Carlson",
+      license: "MIT",
+      bugs: {
+        url: "https://github.com/brianc/node-pg-native/issues"
+      },
+      homepage: "https://github.com/brianc/node-pg-native",
+      dependencies: {
+        libpq: "^1.7.0",
+        "pg-types": "^1.12.1",
+        "readable-stream": "1.0.31"
+      },
+      devDependencies: {
+        async: "^0.9.0",
+        "concat-stream": "^1.4.6",
+        eslint: "4.2.0",
+        "eslint-config-standard": "10.2.1",
+        "eslint-plugin-import": "2.7.0",
+        "eslint-plugin-node": "5.1.0",
+        "eslint-plugin-promise": "3.5.0",
+        "eslint-plugin-standard": "3.0.1",
+        "generic-pool": "^2.1.1",
+        lodash: "^2.4.1",
+        mocha: "3.4.2",
+        okay: "^0.3.0",
+        pg: "*",
+        semver: "^4.1.0"
+      }
+    };
+  }
+});
+
+// node_modules/pg-native/index.js
+var require_pg_native = __commonJS({
+  "node_modules/pg-native/index.js"(exports2, module2) {
+    var Libpq = require_libpq();
+    var EventEmitter = require("events").EventEmitter;
+    var util = require("util");
+    var assert = require("assert");
+    var types = require_pg_types2();
+    var buildResult = require_build_result();
+    var CopyStream = require_copy_stream();
+    var Client = module2.exports = function(config) {
+      if (!(this instanceof Client)) {
+        return new Client(config);
+      }
+      config = config || {};
+      EventEmitter.call(this);
+      this.pq = new Libpq();
+      this._reading = false;
+      this._read = this._read.bind(this);
+      this._types = config.types || types;
+      this.arrayMode = config.arrayMode || false;
+      this._resultCount = 0;
+      this._rows = void 0;
+      this._results = void 0;
+      this.on("newListener", (event) => {
+        if (event !== "notification")
+          return;
+        this._startReading();
+      });
+      this.on("result", this._onResult.bind(this));
+      this.on("readyForQuery", this._onReadyForQuery.bind(this));
+    };
+    util.inherits(Client, EventEmitter);
+    Client.prototype.connect = function(params, cb) {
+      this.pq.connect(params, cb);
+    };
+    Client.prototype.connectSync = function(params) {
+      this.pq.connectSync(params);
+    };
+    Client.prototype.query = function(text, values, cb) {
+      var queryFn;
+      if (typeof values === "function") {
+        cb = values;
+        queryFn = function() {
+          return self2.pq.sendQuery(text);
+        };
+      } else {
+        queryFn = function() {
+          return self2.pq.sendQueryParams(text, values);
+        };
+      }
+      var self2 = this;
+      self2._dispatchQuery(self2.pq, queryFn, function(err) {
+        if (err)
+          return cb(err);
+        self2._awaitResult(cb);
+      });
+    };
+    Client.prototype.prepare = function(statementName, text, nParams, cb) {
+      var self2 = this;
+      var fn2 = function() {
+        return self2.pq.sendPrepare(statementName, text, nParams);
+      };
+      self2._dispatchQuery(self2.pq, fn2, function(err) {
+        if (err)
+          return cb(err);
+        self2._awaitResult(cb);
+      });
+    };
+    Client.prototype.execute = function(statementName, parameters, cb) {
+      var self2 = this;
+      var fn2 = function() {
+        return self2.pq.sendQueryPrepared(statementName, parameters);
+      };
+      self2._dispatchQuery(self2.pq, fn2, function(err, rows) {
+        if (err)
+          return cb(err);
+        self2._awaitResult(cb);
+      });
+    };
+    Client.prototype.getCopyStream = function() {
+      this.pq.setNonBlocking(true);
+      this._stopReading();
+      return new CopyStream(this.pq);
+    };
+    Client.prototype.cancel = function(cb) {
+      assert(cb, "Callback is required");
+      var result = this.pq.cancel();
+      return setImmediate(function() {
+        cb(result === true ? void 0 : new Error(result));
+      });
+    };
+    Client.prototype.querySync = function(text, values) {
+      if (values) {
+        this.pq.execParams(text, values);
+      } else {
+        this.pq.exec(text);
+      }
+      throwIfError(this.pq);
+      const result = buildResult(this.pq, this._types, this.arrayMode);
+      return result.rows;
+    };
+    Client.prototype.prepareSync = function(statementName, text, nParams) {
+      this.pq.prepare(statementName, text, nParams);
+      throwIfError(this.pq);
+    };
+    Client.prototype.executeSync = function(statementName, parameters) {
+      this.pq.execPrepared(statementName, parameters);
+      throwIfError(this.pq);
+      return buildResult(this.pq, this._types, this.arrayMode).rows;
+    };
+    Client.prototype.escapeLiteral = function(value) {
+      return this.pq.escapeLiteral(value);
+    };
+    Client.prototype.escapeIdentifier = function(value) {
+      return this.pq.escapeIdentifier(value);
+    };
+    module2.exports.version = require_package2().version;
+    Client.prototype.end = function(cb) {
+      this._stopReading();
+      this.pq.finish();
+      if (cb)
+        setImmediate(cb);
+    };
+    Client.prototype._readError = function(message2) {
+      var err = new Error(message2 || this.pq.errorMessage());
+      this.emit("error", err);
+    };
+    Client.prototype._stopReading = function() {
+      if (!this._reading)
+        return;
+      this._reading = false;
+      this.pq.stopReader();
+      this.pq.removeListener("readable", this._read);
+    };
+    Client.prototype._consumeQueryResults = function(pq) {
+      return buildResult(pq, this._types, this.arrayMode);
+    };
+    Client.prototype._emitResult = function(pq) {
+      var status = pq.resultStatus();
+      switch (status) {
+        case "PGRES_FATAL_ERROR":
+          this._queryError = new Error(this.pq.resultErrorMessage());
+          break;
+        case "PGRES_TUPLES_OK":
+        case "PGRES_COMMAND_OK":
+        case "PGRES_EMPTY_QUERY":
+          const result = this._consumeQueryResults(this.pq);
+          this.emit("result", result);
+          break;
+        case "PGRES_COPY_OUT":
+        case "PGRES_COPY_BOTH": {
+          break;
+        }
+        default:
+          this._readError("unrecognized command status: " + status);
+          break;
+      }
+      return status;
+    };
+    Client.prototype._read = function() {
+      var pq = this.pq;
+      if (!pq.consumeInput()) {
+        return this._readError();
+      }
+      if (pq.isBusy()) {
+        return;
+      }
+      while (pq.getResult()) {
+        const resultStatus = this._emitResult(this.pq);
+        if (resultStatus === "PGRES_COPY_BOTH" || resultStatus === "PGRES_COPY_OUT") {
+          break;
+        }
+        if (pq.isBusy()) {
+          return;
+        }
+      }
+      this.emit("readyForQuery");
+      var notice = this.pq.notifies();
+      while (notice) {
+        this.emit("notification", notice);
+        notice = this.pq.notifies();
+      }
+    };
+    Client.prototype._startReading = function() {
+      if (this._reading)
+        return;
+      this._reading = true;
+      this.pq.on("readable", this._read);
+      this.pq.startReader();
+    };
+    var throwIfError = function(pq) {
+      var err = pq.resultErrorMessage() || pq.errorMessage();
+      if (err) {
+        throw new Error(err);
+      }
+    };
+    Client.prototype._awaitResult = function(cb) {
+      this._queryCallback = cb;
+      return this._startReading();
+    };
+    Client.prototype._waitForDrain = function(pq, cb) {
+      var res = pq.flush();
+      if (res === 0)
+        return cb();
+      if (res === -1)
+        return cb(pq.errorMessage());
+      var self2 = this;
+      return pq.writable(function() {
+        self2._waitForDrain(pq, cb);
+      });
+    };
+    Client.prototype._dispatchQuery = function(pq, fn2, cb) {
+      this._stopReading();
+      var success = pq.setNonBlocking(true);
+      if (!success)
+        return cb(new Error("Unable to set non-blocking to true"));
+      var sent = fn2();
+      if (!sent)
+        return cb(new Error(pq.errorMessage() || "Something went wrong dispatching the query"));
+      this._waitForDrain(pq, cb);
+    };
+    Client.prototype._onResult = function(result) {
+      if (this._resultCount === 0) {
+        this._results = result;
+        this._rows = result.rows;
+      } else if (this._resultCount === 1) {
+        this._results = [this._results, result];
+        this._rows = [this._rows, result.rows];
+      } else {
+        this._results.push(result);
+        this._rows.push(result.rows);
+      }
+      this._resultCount++;
+    };
+    Client.prototype._onReadyForQuery = function() {
+      const cb = this._queryCallback;
+      this._queryCallback = void 0;
+      const err = this._queryError;
+      this._queryError = void 0;
+      const rows = this._rows;
+      this._rows = void 0;
+      const results = this._results;
+      this._results = void 0;
+      this._resultCount = 0;
+      if (cb) {
+        cb(err, rows || [], results);
+      }
+    };
+  }
+});
+
+// node_modules/pg/package.json
+var require_package3 = __commonJS({
+  "node_modules/pg/package.json"(exports2, module2) {
+    module2.exports = {
+      name: "pg",
+      version: "8.7.1",
+      description: "PostgreSQL client - pure javascript & libpq with the same API",
+      keywords: [
+        "database",
+        "libpq",
+        "pg",
+        "postgre",
+        "postgres",
+        "postgresql",
+        "rdbms"
+      ],
+      homepage: "https://github.com/brianc/node-postgres",
+      repository: {
+        type: "git",
+        url: "git://github.com/brianc/node-postgres.git",
+        directory: "packages/pg"
+      },
+      author: "Brian Carlson <brian.m.carlson@gmail.com>",
+      main: "./lib",
+      dependencies: {
+        "buffer-writer": "2.0.0",
+        "packet-reader": "1.0.0",
+        "pg-connection-string": "^2.5.0",
+        "pg-pool": "^3.4.1",
+        "pg-protocol": "^1.5.0",
+        "pg-types": "^2.1.0",
+        pgpass: "1.x"
+      },
+      devDependencies: {
+        async: "0.9.0",
+        bluebird: "3.5.2",
+        co: "4.6.0",
+        "pg-copy-streams": "0.3.0"
+      },
+      peerDependencies: {
+        "pg-native": ">=2.0.0"
+      },
+      peerDependenciesMeta: {
+        "pg-native": {
+          optional: true
+        }
+      },
+      scripts: {
+        test: "make test-all"
+      },
+      files: [
+        "lib",
+        "SPONSORS.md"
+      ],
+      license: "MIT",
+      engines: {
+        node: ">= 8.0.0"
+      },
+      gitHead: "92b4d37926c276d343bfe56447ff6f526af757cf"
+    };
+  }
+});
+
+// node_modules/pg/lib/native/query.js
+var require_query3 = __commonJS({
+  "node_modules/pg/lib/native/query.js"(exports2, module2) {
+    "use strict";
+    var EventEmitter = require("events").EventEmitter;
+    var util = require("util");
+    var utils = require_utils4();
+    var NativeQuery = module2.exports = function(config, values, callback) {
+      EventEmitter.call(this);
+      config = utils.normalizeQueryConfig(config, values, callback);
+      this.text = config.text;
+      this.values = config.values;
+      this.name = config.name;
+      this.callback = config.callback;
+      this.state = "new";
+      this._arrayMode = config.rowMode === "array";
+      this._emitRowEvents = false;
+      this.on("newListener", function(event) {
+        if (event === "row")
+          this._emitRowEvents = true;
+      }.bind(this));
+    };
+    util.inherits(NativeQuery, EventEmitter);
+    var errorFieldMap = {
+      sqlState: "code",
+      statementPosition: "position",
+      messagePrimary: "message",
+      context: "where",
+      schemaName: "schema",
+      tableName: "table",
+      columnName: "column",
+      dataTypeName: "dataType",
+      constraintName: "constraint",
+      sourceFile: "file",
+      sourceLine: "line",
+      sourceFunction: "routine"
+    };
+    NativeQuery.prototype.handleError = function(err) {
+      var fields = this.native.pq.resultErrorFields();
+      if (fields) {
+        for (var key in fields) {
+          var normalizedFieldName = errorFieldMap[key] || key;
+          err[normalizedFieldName] = fields[key];
+        }
+      }
+      if (this.callback) {
+        this.callback(err);
+      } else {
+        this.emit("error", err);
+      }
+      this.state = "error";
+    };
+    NativeQuery.prototype.then = function(onSuccess, onFailure) {
+      return this._getPromise().then(onSuccess, onFailure);
+    };
+    NativeQuery.prototype.catch = function(callback) {
+      return this._getPromise().catch(callback);
+    };
+    NativeQuery.prototype._getPromise = function() {
+      if (this._promise)
+        return this._promise;
+      this._promise = new Promise(function(resolve, reject) {
+        this._once("end", resolve);
+        this._once("error", reject);
+      }.bind(this));
+      return this._promise;
+    };
+    NativeQuery.prototype.submit = function(client) {
+      this.state = "running";
+      var self2 = this;
+      this.native = client.native;
+      client.native.arrayMode = this._arrayMode;
+      var after = function(err, rows, results) {
+        client.native.arrayMode = false;
+        setImmediate(function() {
+          self2.emit("_done");
+        });
+        if (err) {
+          return self2.handleError(err);
+        }
+        if (self2._emitRowEvents) {
+          if (results.length > 1) {
+            rows.forEach((rowOfRows, i) => {
+              rowOfRows.forEach((row) => {
+                self2.emit("row", row, results[i]);
+              });
+            });
+          } else {
+            rows.forEach(function(row) {
+              self2.emit("row", row, results);
+            });
+          }
+        }
+        self2.state = "end";
+        self2.emit("end", results);
+        if (self2.callback) {
+          self2.callback(null, results);
+        }
+      };
+      if (process.domain) {
+        after = process.domain.bind(after);
+      }
+      if (this.name) {
+        if (this.name.length > 63) {
+          console.error("Warning! Postgres only supports 63 characters for query names.");
+          console.error("You supplied %s (%s)", this.name, this.name.length);
+          console.error("This can cause conflicts and silent errors executing queries");
+        }
+        var values = (this.values || []).map(utils.prepareValue);
+        if (client.namedQueries[this.name]) {
+          if (this.text && client.namedQueries[this.name] !== this.text) {
+            const err = new Error(`Prepared statements must be unique - '${this.name}' was used for a different statement`);
+            return after(err);
+          }
+          return client.native.execute(this.name, values, after);
+        }
+        return client.native.prepare(this.name, this.text, values.length, function(err) {
+          if (err)
+            return after(err);
+          client.namedQueries[self2.name] = self2.text;
+          return self2.native.execute(self2.name, values, after);
+        });
+      } else if (this.values) {
+        if (!Array.isArray(this.values)) {
+          const err = new Error("Query values must be an array");
+          return after(err);
+        }
+        var vals = this.values.map(utils.prepareValue);
+        client.native.query(this.text, vals, after);
+      } else {
+        client.native.query(this.text, after);
+      }
+    };
+  }
+});
+
+// node_modules/pg/lib/native/client.js
+var require_client4 = __commonJS({
+  "node_modules/pg/lib/native/client.js"(exports2, module2) {
+    "use strict";
+    var Native = require_pg_native();
+    var TypeOverrides = require_type_overrides();
+    var pkg = require_package3();
+    var EventEmitter = require("events").EventEmitter;
+    var util = require("util");
+    var ConnectionParameters = require_connection_parameters();
+    var NativeQuery = require_query3();
+    var Client = module2.exports = function(config) {
+      EventEmitter.call(this);
+      config = config || {};
+      this._Promise = config.Promise || global.Promise;
+      this._types = new TypeOverrides(config.types);
+      this.native = new Native({
+        types: this._types
+      });
+      this._queryQueue = [];
+      this._ending = false;
+      this._connecting = false;
+      this._connected = false;
+      this._queryable = true;
+      var cp = this.connectionParameters = new ConnectionParameters(config);
+      this.user = cp.user;
+      Object.defineProperty(this, "password", {
+        configurable: true,
+        enumerable: false,
+        writable: true,
+        value: cp.password
+      });
+      this.database = cp.database;
+      this.host = cp.host;
+      this.port = cp.port;
+      this.namedQueries = {};
+    };
+    Client.Query = NativeQuery;
+    util.inherits(Client, EventEmitter);
+    Client.prototype._errorAllQueries = function(err) {
+      const enqueueError = (query) => {
+        process.nextTick(() => {
+          query.native = this.native;
+          query.handleError(err);
+        });
+      };
+      if (this._hasActiveQuery()) {
+        enqueueError(this._activeQuery);
+        this._activeQuery = null;
+      }
+      this._queryQueue.forEach(enqueueError);
+      this._queryQueue.length = 0;
+    };
+    Client.prototype._connect = function(cb) {
+      var self2 = this;
+      if (this._connecting) {
+        process.nextTick(() => cb(new Error("Client has already been connected. You cannot reuse a client.")));
+        return;
+      }
+      this._connecting = true;
+      this.connectionParameters.getLibpqConnectionString(function(err, conString) {
+        if (err)
+          return cb(err);
+        self2.native.connect(conString, function(err2) {
+          if (err2) {
+            self2.native.end();
+            return cb(err2);
+          }
+          self2._connected = true;
+          self2.native.on("error", function(err3) {
+            self2._queryable = false;
+            self2._errorAllQueries(err3);
+            self2.emit("error", err3);
+          });
+          self2.native.on("notification", function(msg) {
+            self2.emit("notification", {
+              channel: msg.relname,
+              payload: msg.extra
+            });
+          });
+          self2.emit("connect");
+          self2._pulseQueryQueue(true);
+          cb();
+        });
+      });
+    };
+    Client.prototype.connect = function(callback) {
+      if (callback) {
+        this._connect(callback);
+        return;
+      }
+      return new this._Promise((resolve, reject) => {
+        this._connect((error) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve();
+          }
+        });
+      });
+    };
+    Client.prototype.query = function(config, values, callback) {
+      var query;
+      var result;
+      var readTimeout;
+      var readTimeoutTimer;
+      var queryCallback;
+      if (config === null || config === void 0) {
+        throw new TypeError("Client was passed a null or undefined query");
+      } else if (typeof config.submit === "function") {
+        readTimeout = config.query_timeout || this.connectionParameters.query_timeout;
+        result = query = config;
+        if (typeof values === "function") {
+          config.callback = values;
+        }
+      } else {
+        readTimeout = this.connectionParameters.query_timeout;
+        query = new NativeQuery(config, values, callback);
+        if (!query.callback) {
+          let resolveOut, rejectOut;
+          result = new this._Promise((resolve, reject) => {
+            resolveOut = resolve;
+            rejectOut = reject;
+          });
+          query.callback = (err, res) => err ? rejectOut(err) : resolveOut(res);
+        }
+      }
+      if (readTimeout) {
+        queryCallback = query.callback;
+        readTimeoutTimer = setTimeout(() => {
+          var error = new Error("Query read timeout");
+          process.nextTick(() => {
+            query.handleError(error, this.connection);
+          });
+          queryCallback(error);
+          query.callback = () => {
+          };
+          var index = this._queryQueue.indexOf(query);
+          if (index > -1) {
+            this._queryQueue.splice(index, 1);
+          }
+          this._pulseQueryQueue();
+        }, readTimeout);
+        query.callback = (err, res) => {
+          clearTimeout(readTimeoutTimer);
+          queryCallback(err, res);
+        };
+      }
+      if (!this._queryable) {
+        query.native = this.native;
+        process.nextTick(() => {
+          query.handleError(new Error("Client has encountered a connection error and is not queryable"));
+        });
+        return result;
+      }
+      if (this._ending) {
+        query.native = this.native;
+        process.nextTick(() => {
+          query.handleError(new Error("Client was closed and is not queryable"));
+        });
+        return result;
+      }
+      this._queryQueue.push(query);
+      this._pulseQueryQueue();
+      return result;
+    };
+    Client.prototype.end = function(cb) {
+      var self2 = this;
+      this._ending = true;
+      if (!this._connected) {
+        this.once("connect", this.end.bind(this, cb));
+      }
+      var result;
+      if (!cb) {
+        result = new this._Promise(function(resolve, reject) {
+          cb = (err) => err ? reject(err) : resolve();
+        });
+      }
+      this.native.end(function() {
+        self2._errorAllQueries(new Error("Connection terminated"));
+        process.nextTick(() => {
+          self2.emit("end");
+          if (cb)
+            cb();
+        });
+      });
+      return result;
+    };
+    Client.prototype._hasActiveQuery = function() {
+      return this._activeQuery && this._activeQuery.state !== "error" && this._activeQuery.state !== "end";
+    };
+    Client.prototype._pulseQueryQueue = function(initialConnection) {
+      if (!this._connected) {
+        return;
+      }
+      if (this._hasActiveQuery()) {
+        return;
+      }
+      var query = this._queryQueue.shift();
+      if (!query) {
+        if (!initialConnection) {
+          this.emit("drain");
+        }
+        return;
+      }
+      this._activeQuery = query;
+      query.submit(this);
+      var self2 = this;
+      query.once("_done", function() {
+        self2._pulseQueryQueue();
+      });
+    };
+    Client.prototype.cancel = function(query) {
+      if (this._activeQuery === query) {
+        this.native.cancel(function() {
+        });
+      } else if (this._queryQueue.indexOf(query) !== -1) {
+        this._queryQueue.splice(this._queryQueue.indexOf(query), 1);
+      }
+    };
+    Client.prototype.ref = function() {
+    };
+    Client.prototype.unref = function() {
+    };
+    Client.prototype.setTypeParser = function(oid, format, parseFn) {
+      return this._types.setTypeParser(oid, format, parseFn);
+    };
+    Client.prototype.getTypeParser = function(oid, format) {
+      return this._types.getTypeParser(oid, format);
+    };
+  }
+});
+
+// node_modules/pg/lib/native/index.js
+var require_native = __commonJS({
+  "node_modules/pg/lib/native/index.js"(exports2, module2) {
+    "use strict";
+    module2.exports = require_client4();
+  }
+});
+
+// node_modules/pg/lib/index.js
+var require_lib6 = __commonJS({
+  "node_modules/pg/lib/index.js"(exports2, module2) {
+    "use strict";
+    var Client = require_client3();
+    var defaults = require_defaults2();
+    var Connection = require_connection();
+    var Pool = require_pg_pool();
+    var { DatabaseError } = require_dist4();
+    var poolFactory = (Client2) => {
+      return class BoundPool extends Pool {
+        constructor(options) {
+          super(options, Client2);
+        }
+      };
+    };
+    var PG = function(clientConstructor) {
+      this.defaults = defaults;
+      this.Client = clientConstructor;
+      this.Query = this.Client.Query;
+      this.Pool = poolFactory(this.Client);
+      this._pools = [];
+      this.Connection = Connection;
+      this.types = require_pg_types();
+      this.DatabaseError = DatabaseError;
+    };
+    if (typeof process.env.NODE_PG_FORCE_NATIVE !== "undefined") {
+      module2.exports = new PG(require_native());
+    } else {
+      module2.exports = new PG(Client);
+      Object.defineProperty(module2.exports, "native", {
+        configurable: true,
+        enumerable: false,
+        get() {
+          var native = null;
+          try {
+            native = new PG(require_native());
+          } catch (err) {
+            if (err.code !== "MODULE_NOT_FOUND") {
+              throw err;
+            }
+          }
+          Object.defineProperty(module2.exports, "native", {
+            value: native
+          });
+          return native;
+        }
+      });
+    }
+  }
+});
+
+// node_modules/pg-cursor/index.js
+var require_pg_cursor = __commonJS({
+  "node_modules/pg-cursor/index.js"(exports2, module2) {
+    "use strict";
+    var Result = require_result();
+    var prepare = require_utils4().prepareValue;
+    var EventEmitter = require("events").EventEmitter;
+    var util = require("util");
+    var nextUniqueID = 1;
+    var Cursor = class extends EventEmitter {
+      constructor(text, values, config) {
+        super();
+        this._conf = config || {};
+        this.text = text;
+        this.values = values ? values.map(prepare) : null;
+        this.connection = null;
+        this._queue = [];
+        this.state = "initialized";
+        this._result = new Result(this._conf.rowMode, this._conf.types);
+        this._Promise = this._conf.Promise || global.Promise;
+        this._cb = null;
+        this._rows = null;
+        this._portal = null;
+        this._ifNoData = this._ifNoData.bind(this);
+        this._rowDescription = this._rowDescription.bind(this);
+      }
+      _ifNoData() {
+        this.state = "idle";
+        this._shiftQueue();
+        if (this.connection) {
+          this.connection.removeListener("rowDescription", this._rowDescription);
+        }
+      }
+      _rowDescription() {
+        if (this.connection) {
+          this.connection.removeListener("noData", this._ifNoData);
+        }
+      }
+      submit(connection) {
+        this.state = "submitted";
+        this.connection = connection;
+        this._portal = "C_" + nextUniqueID++;
+        const con = connection;
+        con.parse({
+          text: this.text
+        }, true);
+        con.bind({
+          portal: this._portal,
+          values: this.values
+        }, true);
+        con.describe({
+          type: "P",
+          name: this._portal
+        }, true);
+        con.flush();
+        if (this._conf.types) {
+          this._result._getTypeParser = this._conf.types.getTypeParser;
+        }
+        con.once("noData", this._ifNoData);
+        con.once("rowDescription", this._rowDescription);
+      }
+      _shiftQueue() {
+        if (this._queue.length) {
+          this._getRows.apply(this, this._queue.shift());
+        }
+      }
+      _closePortal() {
+        this.connection.close({ type: "P", name: this._portal });
+        if (this.state !== "error") {
+          this.connection.sync();
+        }
+      }
+      handleRowDescription(msg) {
+        this._result.addFields(msg.fields);
+        this.state = "idle";
+        this._shiftQueue();
+      }
+      handleDataRow(msg) {
+        const row = this._result.parseRow(msg.fields);
+        this.emit("row", row, this._result);
+        this._rows.push(row);
+      }
+      _sendRows() {
+        this.state = "idle";
+        setImmediate(() => {
+          const cb = this._cb;
+          this._cb = null;
+          if (cb) {
+            this._result.rows = this._rows;
+            cb(null, this._rows, this._result);
+          }
+          this._rows = [];
+        });
+      }
+      handleCommandComplete(msg) {
+        this._result.addCommandComplete(msg);
+        this._closePortal();
+      }
+      handlePortalSuspended() {
+        this._sendRows();
+      }
+      handleReadyForQuery() {
+        this._sendRows();
+        this.state = "done";
+        this.emit("end", this._result);
+      }
+      handleEmptyQuery() {
+        this.connection.sync();
+      }
+      handleError(msg) {
+        if (this.state !== "initialized") {
+          this.connection.removeListener("noData", this._ifNoData);
+          this.connection.removeListener("rowDescription", this._rowDescription);
+          this.connection.sync();
+        }
+        this.state = "error";
+        this._error = msg;
+        if (this._cb) {
+          this._cb(msg);
+        }
+        for (let i = 0; i < this._queue.length; i++) {
+          this._queue.pop()[1](msg);
+        }
+        if (this.listenerCount("error") > 0) {
+          this.emit("error", msg);
+        }
+      }
+      _getRows(rows, cb) {
+        this.state = "busy";
+        this._cb = cb;
+        this._rows = [];
+        const msg = {
+          portal: this._portal,
+          rows
+        };
+        this.connection.execute(msg, true);
+        this.connection.flush();
+      }
+      end(cb) {
+        if (this.state !== "initialized") {
+          this.connection.sync();
+        }
+        this.connection.once("end", cb);
+        this.connection.end();
+      }
+      close(cb) {
+        let promise;
+        if (!cb) {
+          promise = new this._Promise((resolve, reject) => {
+            cb = (err) => err ? reject(err) : resolve();
+          });
+        }
+        if (!this.connection || this.state === "done") {
+          if (cb) {
+            return setImmediate(cb);
+          } else {
+            return;
+          }
+        }
+        this._closePortal();
+        this.state = "done";
+        if (cb) {
+          this.connection.once("readyForQuery", function() {
+            cb();
+          });
+        }
+        return promise;
+      }
+      read(rows, cb) {
+        let promise;
+        if (!cb) {
+          promise = new this._Promise((resolve, reject) => {
+            cb = (err, rows2) => err ? reject(err) : resolve(rows2);
+          });
+        }
+        if (this.state === "idle" || this.state === "submitted") {
+          this._getRows(rows, cb);
+        } else if (this.state === "busy" || this.state === "initialized") {
+          this._queue.push([rows, cb]);
+        } else if (this.state === "error") {
+          setImmediate(() => cb(this._error));
+        } else if (this.state === "done") {
+          setImmediate(() => cb(null, []));
+        } else {
+          throw new Error("Unknown state: " + this.state);
+        }
+        return promise;
+      }
+    };
+    Cursor.prototype.end = util.deprecate(Cursor.prototype.end, "Cursor.end is deprecated. Call end on the client itself to end a connection to the database.");
+    module2.exports = Cursor;
+  }
+});
+
+// node_modules/pg-query-stream/dist/index.js
+var require_dist5 = __commonJS({
+  "node_modules/pg-query-stream/dist/index.js"(exports2, module2) {
+    "use strict";
+    var __importDefault = exports2 && exports2.__importDefault || function(mod) {
+      return mod && mod.__esModule ? mod : { "default": mod };
+    };
+    var stream_1 = require("stream");
+    var pg_cursor_1 = __importDefault(require_pg_cursor());
+    var QueryStream = class extends stream_1.Readable {
+      constructor(text, values, config = {}) {
+        const { batchSize, highWaterMark = 100 } = config;
+        super({ objectMode: true, autoDestroy: true, highWaterMark: batchSize || highWaterMark });
+        this.cursor = new pg_cursor_1.default(text, values, config);
+        this.handleRowDescription = this.cursor.handleRowDescription.bind(this.cursor);
+        this.handleDataRow = this.cursor.handleDataRow.bind(this.cursor);
+        this.handlePortalSuspended = this.cursor.handlePortalSuspended.bind(this.cursor);
+        this.handleCommandComplete = this.cursor.handleCommandComplete.bind(this.cursor);
+        this.handleReadyForQuery = this.cursor.handleReadyForQuery.bind(this.cursor);
+        this.handleError = this.cursor.handleError.bind(this.cursor);
+        this.handleEmptyQuery = this.cursor.handleEmptyQuery.bind(this.cursor);
+        this._result = this.cursor._result;
+      }
+      submit(connection) {
+        this.cursor.submit(connection);
+      }
+      _destroy(_err, cb) {
+        this.cursor.close((err) => {
+          cb(err || _err);
+        });
+      }
+      _read(size) {
+        this.cursor.read(size, (err, rows) => {
+          if (err) {
+            this.destroy(err);
+          } else {
+            for (const row of rows)
+              this.push(row);
+            if (rows.length < size)
+              this.push(null);
+          }
+        });
+      }
+    };
+    module2.exports = QueryStream;
+  }
+});
+
+// node_modules/knex/lib/dialects/postgres/index.js
+var require_postgres = __commonJS({
+  "node_modules/knex/lib/dialects/postgres/index.js"(exports2, module2) {
+    var extend = require_extend();
+    var map = require_map();
+    var { promisify } = require("util");
+    var Client = require_client2();
+    var Transaction = require_pg_transaction();
+    var QueryCompiler = require_pg_querycompiler();
+    var ColumnCompiler = require_pg_columncompiler();
+    var TableCompiler = require_pg_tablecompiler();
+    var ViewCompiler = require_pg_viewcompiler();
+    var ViewBuilder = require_pg_viewbuilder();
+    var SchemaCompiler = require_pg_compiler();
+    var { makeEscape } = require_string();
+    var { isString } = require_is();
+    var Client_PG = class extends Client {
+      constructor(config) {
+        super(config);
+        if (config.returning) {
+          this.defaultReturning = config.returning;
+        }
+        if (config.searchPath) {
+          this.searchPath = config.searchPath;
+        }
+      }
+      transaction() {
+        return new Transaction(this, ...arguments);
+      }
+      queryCompiler(builder, formatter) {
+        return new QueryCompiler(this, builder, formatter);
+      }
+      columnCompiler() {
+        return new ColumnCompiler(this, ...arguments);
+      }
+      schemaCompiler() {
+        return new SchemaCompiler(this, ...arguments);
+      }
+      tableCompiler() {
+        return new TableCompiler(this, ...arguments);
+      }
+      viewCompiler() {
+        return new ViewCompiler(this, ...arguments);
+      }
+      viewBuilder() {
+        return new ViewBuilder(this, ...arguments);
+      }
+      _driver() {
+        return require_lib6();
+      }
+      wrapIdentifierImpl(value) {
+        if (value === "*")
+          return value;
+        let arrayAccessor = "";
+        const arrayAccessorMatch = value.match(/(.*?)(\[[0-9]+\])/);
+        if (arrayAccessorMatch) {
+          value = arrayAccessorMatch[1];
+          arrayAccessor = arrayAccessorMatch[2];
+        }
+        return `"${value.replace(/"/g, '""')}"${arrayAccessor}`;
+      }
+      _acquireOnlyConnection() {
+        const connection = new this.driver.Client(this.connectionSettings);
+        return connection.connect().then(() => connection);
+      }
+      acquireRawConnection() {
+        const client = this;
+        return this._acquireOnlyConnection().then(function(connection) {
+          connection.on("error", (err) => {
+            connection.__knex__disposed = err;
+          });
+          connection.on("end", (err) => {
+            connection.__knex__disposed = err || "Connection ended unexpectedly";
+          });
+          if (!client.version) {
+            return client.checkVersion(connection).then(function(version) {
+              client.version = version;
+              return connection;
+            });
+          }
+          return connection;
+        }).then(function setSearchPath(connection) {
+          client.setSchemaSearchPath(connection);
+          return connection;
+        });
+      }
+      async destroyRawConnection(connection) {
+        const end = promisify((cb) => connection.end(cb));
+        return end();
+      }
+      checkVersion(connection) {
+        return new Promise((resolve, reject) => {
+          connection.query("select version();", (err, resp) => {
+            if (err)
+              return reject(err);
+            resolve(this._parseVersion(resp.rows[0].version));
+          });
+        });
+      }
+      _parseVersion(versionString) {
+        return /^PostgreSQL (.*?)( |$)/.exec(versionString)[1];
+      }
+      positionBindings(sql) {
+        let questionCount = 0;
+        return sql.replace(/(\\*)(\?)/g, function(match, escapes) {
+          if (escapes.length % 2) {
+            return "?";
+          } else {
+            questionCount++;
+            return `$${questionCount}`;
+          }
+        });
+      }
+      setSchemaSearchPath(connection, searchPath) {
+        let path = searchPath || this.searchPath;
+        if (!path)
+          return Promise.resolve(true);
+        if (!Array.isArray(path) && !isString(path)) {
+          throw new TypeError(`knex: Expected searchPath to be Array/String, got: ${typeof path}`);
+        }
+        if (isString(path)) {
+          if (path.includes(",")) {
+            const parts = path.split(",");
+            const arraySyntax = `[${parts.map((searchPath2) => `'${searchPath2}'`).join(", ")}]`;
+            this.logger.warn(`Detected comma in searchPath "${path}".If you are trying to specify multiple schemas, use Array syntax: ${arraySyntax}`);
+          }
+          path = [path];
+        }
+        path = path.map((schemaName) => `"${schemaName}"`).join(",");
+        return new Promise(function(resolver, rejecter) {
+          connection.query(`set search_path to ${path}`, function(err) {
+            if (err)
+              return rejecter(err);
+            resolver(true);
+          });
+        });
+      }
+      _stream(connection, obj, stream, options) {
+        if (!obj.sql)
+          throw new Error("The query is empty");
+        const PGQueryStream = process.browser ? void 0 : require_dist5();
+        const sql = obj.sql;
+        return new Promise(function(resolver, rejecter) {
+          const queryStream = connection.query(new PGQueryStream(sql, obj.bindings, options));
+          queryStream.on("error", function(error) {
+            rejecter(error);
+            stream.emit("error", error);
+          });
+          stream.on("end", resolver);
+          queryStream.pipe(stream);
+        });
+      }
+      _query(connection, obj) {
+        if (!obj.sql)
+          throw new Error("The query is empty");
+        let queryConfig = {
+          text: obj.sql,
+          values: obj.bindings || []
+        };
+        if (obj.options) {
+          queryConfig = extend(queryConfig, obj.options);
+        }
+        return new Promise(function(resolver, rejecter) {
+          connection.query(queryConfig, function(err, response) {
+            if (err)
+              return rejecter(err);
+            obj.response = response;
+            resolver(obj);
+          });
+        });
+      }
+      processResponse(obj, runner) {
+        const resp = obj.response;
+        if (obj.output)
+          return obj.output.call(runner, resp);
+        if (obj.method === "raw")
+          return resp;
+        const { returning } = obj;
+        if (resp.command === "SELECT") {
+          if (obj.method === "first")
+            return resp.rows[0];
+          if (obj.method === "pluck")
+            return map(resp.rows, obj.pluck);
+          return resp.rows;
+        }
+        if (returning) {
+          const returns = [];
+          for (let i = 0, l = resp.rows.length; i < l; i++) {
+            const row = resp.rows[i];
+            if (returning === "*" || Array.isArray(returning)) {
+              returns[i] = row;
+            } else {
+              returns[i] = row[Object.keys(row)[0]];
+            }
+          }
+          return returns;
+        }
+        if (resp.command === "UPDATE" || resp.command === "DELETE") {
+          return resp.rowCount;
+        }
+        return resp;
+      }
+      async cancelQuery(connectionToKill) {
+        const conn = await this.acquireRawConnection();
+        try {
+          return await this._wrappedCancelQueryCall(conn, connectionToKill);
+        } finally {
+          await this.destroyRawConnection(conn).catch((err) => {
+            this.logger.warn(`Connection Error: ${err}`);
+          });
+        }
+      }
+      _wrappedCancelQueryCall(conn, connectionToKill) {
+        return this._query(conn, {
+          sql: "SELECT pg_cancel_backend($1);",
+          bindings: [connectionToKill.processID],
+          options: {}
+        });
+      }
+    };
+    Object.assign(Client_PG.prototype, {
+      dialect: "postgresql",
+      driverName: "pg",
+      canCancelQuery: true,
+      _escapeBinding: makeEscape({
+        escapeArray(val, esc) {
+          return esc(arrayString(val, esc));
+        },
+        escapeString(str) {
+          let hasBackslash = false;
+          let escaped = "'";
+          for (let i = 0; i < str.length; i++) {
+            const c = str[i];
+            if (c === "'") {
+              escaped += c + c;
+            } else if (c === "\\") {
+              escaped += c + c;
+              hasBackslash = true;
+            } else {
+              escaped += c;
+            }
+          }
+          escaped += "'";
+          if (hasBackslash === true) {
+            escaped = "E" + escaped;
+          }
+          return escaped;
+        },
+        escapeObject(val, prepareValue, timezone, seen = []) {
+          if (val && typeof val.toPostgres === "function") {
+            seen = seen || [];
+            if (seen.indexOf(val) !== -1) {
+              throw new Error(`circular reference detected while preparing "${val}" for query`);
+            }
+            seen.push(val);
+            return prepareValue(val.toPostgres(prepareValue), seen);
+          }
+          return JSON.stringify(val);
+        }
+      })
+    });
+    function arrayString(arr, esc) {
+      let result = "{";
+      for (let i = 0; i < arr.length; i++) {
+        if (i > 0)
+          result += ",";
+        const val = arr[i];
+        if (val === null || typeof val === "undefined") {
+          result += "NULL";
+        } else if (Array.isArray(val)) {
+          result += arrayString(val, esc);
+        } else if (typeof val === "number") {
+          result += val;
+        } else {
+          result += JSON.stringify(typeof val === "string" ? val : esc(val));
+        }
+      }
+      return result + "}";
+    }
+    module2.exports = Client_PG;
+  }
+});
+
+// node_modules/random-word-slugs/dist/words.js
+var require_words = __commonJS({
+  "node_modules/random-word-slugs/dist/words.js"(exports2) {
+    "use strict";
+    var __values = exports2 && exports2.__values || function(o) {
+      var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+      if (m)
+        return m.call(o);
+      if (o && typeof o.length === "number")
+        return {
+          next: function() {
+            if (o && i >= o.length)
+              o = void 0;
+            return { value: o && o[i++], done: !o };
+          }
+        };
+      throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+    };
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.getWordsByCategory = exports2.wordList = void 0;
+    exports2.wordList = {
+      noun: [
+        { word: "accountant", categories: ["profession"] },
+        { word: "ability", categories: ["thing"] },
+        { word: "accident", categories: ["thing"] },
+        { word: "account", categories: ["thing"] },
+        { word: "action", categories: ["thing"] },
+        { word: "activity", categories: ["thing"] },
+        { word: "actor", categories: ["profession"] },
+        { word: "ad", categories: ["media"] },
+        { word: "addition", categories: ["thing"] },
+        { word: "address", categories: ["thing"] },
+        { word: "adult", categories: ["people"] },
+        { word: "advantage", categories: ["thing"] },
+        { word: "advertisement", categories: ["media"] },
+        { word: "afternoon", categories: ["time"] },
+        { word: "agency", categories: ["thing"] },
+        { word: "agent", categories: ["people"] },
+        { word: "air", categories: ["thing"] },
+        { word: "airline", categories: ["transportation"] },
+        { word: "airplane", categories: ["transportation"] },
+        { word: "airport", categories: ["transportation", "place"] },
+        { word: "alarm", categories: ["thing"] },
+        { word: "alligator", categories: ["animals"] },
+        { word: "ambulance", categories: ["health"] },
+        { word: "analyst", categories: ["profession"] },
+        { word: "angle", categories: ["thing"] },
+        { word: "animal", categories: ["animals"] },
+        { word: "answer", categories: ["thing"] },
+        { word: "apartment", categories: ["place"] },
+        { word: "apple", categories: ["food"] },
+        { word: "application", categories: ["thing"] },
+        { word: "appointment", categories: ["thing"] },
+        { word: "architect", categories: ["profession"] },
+        { word: "argument", categories: ["thing"] },
+        { word: "area", categories: ["thing"] },
+        { word: "arm", categories: ["thing"] },
+        { word: "army", categories: ["thing"] },
+        { word: "art", categories: ["thing"] },
+        { word: "article", categories: ["thing"] },
+        { word: "artist", categories: ["profession"] },
+        { word: "australia", categories: ["place"] },
+        { word: "author", categories: ["profession"] },
+        { word: "autumn", categories: ["time"] },
+        { word: "baby", categories: ["people", "family"] },
+        { word: "baker", categories: ["profession"] },
+        { word: "balloon", categories: ["thing"] },
+        { word: "banana", categories: ["food"] },
+        { word: "barista", categories: ["profession"] },
+        { word: "battery", categories: ["thing"] },
+        { word: "beach", categories: ["place"] },
+        { word: "bear", categories: ["animals"] },
+        { word: "beard", categories: ["thing"] },
+        { word: "bed", categories: ["thing"] },
+        { word: "belgium", categories: ["place"] },
+        { word: "bird", categories: ["animals"] },
+        { word: "bit", categories: ["thing", "technology"] },
+        { word: "book", categories: ["thing", "education"] },
+        { word: "boots", categories: ["thing"] },
+        { word: "boy", categories: ["people"] },
+        { word: "branch", categories: ["thing"] },
+        { word: "breakfast", categories: ["thing"] },
+        { word: "brother", categories: ["family"] },
+        { word: "businessperson", categories: ["people", "business"] },
+        { word: "butcher", categories: ["profession"] },
+        { word: "byte", categories: ["thing", "technology"] },
+        { word: "camera", categories: ["thing"] },
+        { word: "candle", categories: ["thing"] },
+        { word: "car", categories: ["transportation"] },
+        { word: "caravan", categories: ["transportation"] },
+        { word: "carpenter", categories: ["profession"] },
+        { word: "carpet", categories: ["thing"] },
+        { word: "cartoon", categories: ["media"] },
+        { word: "cat", categories: ["animals"] },
+        { word: "chef", categories: ["profession"] },
+        { word: "child", categories: ["people", "family"] },
+        { word: "china", categories: ["place"] },
+        { word: "church", categories: ["religion"] },
+        { word: "city", categories: ["place"] },
+        { word: "coat", categories: ["thing"] },
+        { word: "coffeeshop", categories: ["place"] },
+        { word: "computer", categories: ["thing", "technology"] },
+        { word: "continent", categories: ["place"] },
+        { word: "controller", categories: ["thing", "technology"] },
+        { word: "country", categories: ["place"] },
+        { word: "cpu", categories: ["thing", "technology"] },
+        { word: "crayon", categories: ["thing"] },
+        { word: "cricket", categories: ["animals"] },
+        { word: "crowd", categories: ["people"] },
+        { word: "daughter", categories: ["family"] },
+        { word: "dawn", categories: ["time"] },
+        { word: "daybreak", categories: ["time"] },
+        { word: "death", categories: ["thing"] },
+        { word: "denmark", categories: ["place"] },
+        { word: "dentist", categories: ["profession"] },
+        { word: "diamond", categories: ["thing"] },
+        { word: "dinner", categories: ["food"] },
+        { word: "disease", categories: ["thing"] },
+        { word: "doctor", categories: ["profession"] },
+        { word: "dog", categories: ["animals"] },
+        { word: "dream", categories: ["thing"] },
+        { word: "dress", categories: ["thing"] },
+        { word: "dusk", categories: ["time"] },
+        { word: "easter", categories: ["religion"] },
+        { word: "egg", categories: ["food"] },
+        { word: "eggplant", categories: ["food"] },
+        { word: "egypt", categories: ["place"] },
+        { word: "electrician", categories: ["profession"] },
+        { word: "elephant", categories: ["animals"] },
+        { word: "energy", categories: ["thing"] },
+        { word: "engine", categories: ["transportation"] },
+        { word: "engineer", categories: ["profession"] },
+        { word: "england", categories: ["place"] },
+        { word: "eve", categories: ["time"] },
+        { word: "evening", categories: ["time"] },
+        { word: "eventide", categories: ["time"] },
+        { word: "exabyte", categories: ["thing", "technology"] },
+        { word: "eye", categories: ["thing"] },
+        { word: "fall", categories: ["time"] },
+        { word: "family", categories: ["family"] },
+        { word: "farmer", categories: ["profession"] },
+        { word: "father", categories: ["people", "family"] },
+        { word: "finland", categories: ["place"] },
+        { word: "fireman", categories: ["profession"] },
+        { word: "fish", categories: ["animals"] },
+        { word: "flag", categories: ["thing"] },
+        { word: "florist", categories: ["profession"] },
+        { word: "flower", categories: ["thing"] },
+        { word: "football", categories: ["sports"] },
+        { word: "forest", categories: ["place"] },
+        { word: "fountain", categories: ["thing"] },
+        { word: "france", categories: ["place"] },
+        { word: "furniture", categories: ["thing"] },
+        { word: "garage", categories: ["place"] },
+        { word: "garden", categories: ["food"] },
+        { word: "gas", categories: ["transportation"] },
+        { word: "ghost", categories: ["thing"] },
+        { word: "gigabyte", categories: ["thing", "technology"] },
+        { word: "girl", categories: ["people"] },
+        { word: "glass", categories: ["thing"] },
+        { word: "gold", categories: ["thing"] },
+        { word: "gpu", categories: ["thing", "technology"] },
+        { word: "grandmother", categories: ["people", "family"] },
+        { word: "grass", categories: ["thing"] },
+        { word: "greece", categories: ["place"] },
+        { word: "guitar", categories: ["thing"] },
+        { word: "hair", categories: ["thing"] },
+        { word: "hairdresser", categories: ["profession"] },
+        { word: "hamburger", categories: ["food"] },
+        { word: "helicopter", categories: ["transportation"] },
+        { word: "helmet", categories: ["thing"] },
+        { word: "holiday", categories: ["thing"] },
+        { word: "honey", categories: ["food"] },
+        { word: "horse", categories: ["animals"] },
+        { word: "hospital", categories: ["place"] },
+        { word: "house", categories: ["place"] },
+        { word: "hydrogen", categories: ["science"] },
+        { word: "ice", categories: ["science"] },
+        { word: "insect", categories: ["animals"] },
+        { word: "insurance", categories: ["thing"] },
+        { word: "intern", categories: ["profession"] },
+        { word: "iron", categories: ["science"] },
+        { word: "island", categories: ["place"] },
+        { word: "jackal", categories: ["animals"] },
+        { word: "jelly", categories: ["food"] },
+        { word: "jewellery", categories: ["thing"] },
+        { word: "jordan", categories: ["place"] },
+        { word: "journalist", categories: ["profession"] },
+        { word: "joystick", categories: ["thing", "technology"] },
+        { word: "judge", categories: ["profession"] },
+        { word: "juice", categories: ["food"] },
+        { word: "kangaroo", categories: ["animals"] },
+        { word: "keyboard", categories: ["thing", "technology"] },
+        { word: "kilobyte", categories: ["thing", "technology"] },
+        { word: "king", categories: ["people"] },
+        { word: "kitchen", categories: ["place"] },
+        { word: "kite", categories: ["thing"] },
+        { word: "knife", categories: ["thing"] },
+        { word: "lamp", categories: ["thing"] },
+        { word: "laptop", categories: ["thing", "technology"] },
+        { word: "lawyer", categories: ["profession"] },
+        { word: "leather", categories: ["thing"] },
+        { word: "librarian", categories: ["profession"] },
+        { word: "library", categories: ["place"] },
+        { word: "lifeguard", categories: ["profession"] },
+        { word: "lighter", categories: ["thing"] },
+        { word: "lion", categories: ["animals"] },
+        { word: "lizard", categories: ["animals"] },
+        { word: "lock", categories: ["thing"] },
+        { word: "london", categories: ["place"] },
+        { word: "lunch", categories: ["food"] },
+        { word: "machine", categories: ["science"] },
+        { word: "magazine", categories: ["media"] },
+        { word: "magician", categories: ["people"] },
+        { word: "man", categories: ["people"] },
+        { word: "manchester", categories: ["place"] },
+        { word: "market", categories: ["place"] },
+        { word: "match", categories: ["thing"] },
+        { word: "mechanic", categories: ["profession"] },
+        { word: "megabyte", categories: ["thing", "technology"] },
+        { word: "memory", categories: ["thing", "technology"] },
+        { word: "microphone", categories: ["thing"] },
+        { word: "midnight", categories: ["time"] },
+        { word: "minister", categories: ["people", "religion"] },
+        { word: "monitor", categories: ["thing", "technology"] },
+        { word: "monkey", categories: ["animals"] },
+        { word: "morn", categories: ["time"] },
+        { word: "morning", categories: ["time"] },
+        { word: "mother", categories: ["people", "family"] },
+        { word: "motherboard", categories: ["thing", "technology"] },
+        { word: "motorcycle", categories: ["transportation"] },
+        { word: "mouse", categories: ["thing", "technology", "animals"] },
+        { word: "musician", categories: ["profession"] },
+        { word: "nail", categories: ["thing"] },
+        { word: "napkin", categories: ["thing"] },
+        { word: "needle", categories: ["thing"] },
+        { word: "nest", categories: ["thing"] },
+        { word: "nigeria", categories: ["place"] },
+        { word: "night", categories: ["time"] },
+        { word: "nightfall", categories: ["time"] },
+        { word: "noon", categories: ["time"] },
+        { word: "notebook", categories: ["thing"] },
+        { word: "nurse", categories: ["profession"] },
+        { word: "ocean", categories: ["place"] },
+        { word: "oil", categories: ["thing"] },
+        { word: "optician", categories: ["profession"] },
+        { word: "orange", categories: ["food"] },
+        { word: "oxygen", categories: ["science"] },
+        { word: "oyster", categories: ["animals"] },
+        { word: "pager", categories: ["thing", "technology"] },
+        { word: "painter", categories: ["profession"] },
+        { word: "painting", categories: ["media"] },
+        { word: "park", categories: ["place"] },
+        { word: "parrot", categories: ["animals"] },
+        { word: "pencil", categories: ["thing", "education"] },
+        { word: "petabyte", categories: ["thing", "technology"] },
+        { word: "pharmacist", categories: ["profession"] },
+        { word: "photographer", categories: ["profession"] },
+        { word: "piano", categories: ["thing"] },
+        { word: "pillow", categories: ["thing"] },
+        { word: "pilot", categories: ["profession"] },
+        { word: "pizza", categories: ["food"] },
+        { word: "planet", categories: ["science"] },
+        { word: "plastic", categories: ["thing"] },
+        { word: "plumber", categories: ["profession"] },
+        { word: "policeman", categories: ["profession"] },
+        { word: "portugal", categories: ["place"] },
+        { word: "postman", categories: ["profession"] },
+        { word: "potato", categories: ["food"] },
+        { word: "printer", categories: ["thing", "technology"] },
+        { word: "processor", categories: ["thing", "technology"] },
+        { word: "psychiatrist", categories: ["profession"] },
+        { word: "queen", categories: ["people"] },
+        { word: "quill", categories: ["thing"] },
+        { word: "rain", categories: ["thing"] },
+        { word: "rainbow", categories: ["science"] },
+        { word: "raincoat", categories: ["thing"] },
+        { word: "ram", categories: ["thing", "technology"] },
+        { word: "receptionist", categories: ["profession"] },
+        { word: "refrigerator", categories: ["food"] },
+        { word: "restaurant", categories: ["place"] },
+        { word: "river", categories: ["thing"] },
+        { word: "rocket", categories: ["science"] },
+        { word: "room", categories: ["place"] },
+        { word: "rose", categories: ["thing"] },
+        { word: "russia", categories: ["place"] },
+        { word: "salesclerk", categories: ["people", "business"] },
+        { word: "salesmen", categories: ["profession"] },
+        { word: "sandwich", categories: ["food"] },
+        { word: "school", categories: ["education"] },
+        { word: "scientist", categories: ["profession"] },
+        { word: "scooter", categories: ["transportation"] },
+        { word: "secretary", categories: ["profession"] },
+        { word: "shampoo", categories: ["thing"] },
+        { word: "shoe", categories: ["thing"] },
+        { word: "smartphone", categories: ["thing", "technology"] },
+        { word: "soccer", categories: ["sports"] },
+        { word: "solstice", categories: ["time"] },
+        { word: "spoon", categories: ["thing"] },
+        { word: "spring", categories: ["time"] },
+        { word: "state", categories: ["place"] },
+        { word: "stone", categories: ["thing"] },
+        { word: "student", categories: ["people", "education"] },
+        { word: "sugar", categories: ["food"] },
+        { word: "summer", categories: ["time"] },
+        { word: "sundown", categories: ["time"] },
+        { word: "sunset", categories: ["time"] },
+        { word: "sweden", categories: ["place"] },
+        { word: "table", categories: ["thing"] },
+        { word: "tailor", categories: ["profession"] },
+        { word: "teacher", categories: ["people", "education", "profession"] },
+        { word: "teenager", categories: ["people", "family"] },
+        { word: "telephone", categories: ["thing"] },
+        { word: "television", categories: ["media"] },
+        { word: "tent", categories: ["thing"] },
+        { word: "terabyte", categories: ["thing", "technology"] },
+        { word: "thailand", categories: ["place"] },
+        { word: "tiger", categories: ["animals"] },
+        { word: "toddler", categories: ["people", "family"] },
+        { word: "tomato", categories: ["food"] },
+        { word: "toothbrush", categories: ["thing"] },
+        { word: "traffic", categories: ["thing"] },
+        { word: "train", categories: ["transportation"] },
+        { word: "translator", categories: ["profession"] },
+        { word: "truck", categories: ["thing", "transportation"] },
+        { word: "twilight", categories: ["time"] },
+        { word: "uganda", categories: ["place"] },
+        { word: "umbrella", categories: ["thing"] },
+        { word: "van", categories: ["transportation"] },
+        { word: "vase", categories: ["thing"] },
+        { word: "vegetable", categories: ["food"] },
+        { word: "vr", categories: ["thing", "technology"] },
+        { word: "vulture", categories: ["animals"] },
+        { word: "waiter", categories: ["profession"] },
+        { word: "waitress", categories: ["profession"] },
+        { word: "wall", categories: ["thing"] },
+        { word: "whale", categories: ["animals"] },
+        { word: "window", categories: ["thing"] },
+        { word: "winter", categories: ["time"] },
+        { word: "wire", categories: ["thing"] },
+        { word: "wolf", categories: ["animals"] },
+        { word: "woman", categories: ["people"] },
+        { word: "xylophone", categories: ["thing"] },
+        { word: "yacht", categories: ["transportation"] },
+        { word: "yak", categories: ["animals"] },
+        { word: "yottabyte", categories: ["thing", "technology"] },
+        { word: "zebra", categories: ["animals"] },
+        { word: "zettabyte", categories: ["thing", "technology"] },
+        { word: "zoo", categories: ["animals"] }
+      ],
+      adjective: [
+        { word: "abandoned", categories: ["condition"] },
+        { word: "abiding", categories: ["personality"] },
+        { word: "able", categories: ["condition"] },
+        { word: "abrasive", categories: ["condition", "personality"] },
+        { word: "abnormal", categories: ["condition"] },
+        { word: "absurd", categories: ["condition"] },
+        { word: "abundant", categories: ["quantity"] },
+        { word: "acceptable", categories: ["condition"] },
+        { word: "acidic", categories: ["taste"] },
+        { word: "acoustic", categories: ["sounds"] },
+        { word: "acrid", categories: ["condition"] },
+        { word: "adamant", categories: ["personality"] },
+        { word: "adorable", categories: ["personality"] },
+        { word: "adventurous", categories: ["personality"] },
+        { word: "aggressive", categories: ["personality"] },
+        { word: "agitated", categories: ["personality"] },
+        { word: "agreeable", categories: ["personality"] },
+        { word: "alert", categories: ["condition"] },
+        { word: "alive", categories: ["condition"] },
+        { word: "aloof", categories: ["personality"] },
+        { word: "ambitious", categories: ["personality"] },
+        { word: "ancient", categories: ["time"] },
+        { word: "angry", categories: ["personality"] },
+        { word: "annoyed", categories: ["personality"] },
+        { word: "antsy", categories: ["personality"] },
+        { word: "anxious", categories: ["personality"] },
+        { word: "appalling", categories: ["personality"] },
+        { word: "appetizing", categories: ["taste"] },
+        { word: "apprehensive", categories: ["personality"] },
+        { word: "arrogant", categories: ["personality"] },
+        { word: "ashamed", categories: ["personality"] },
+        { word: "astonishing", categories: ["personality"] },
+        { word: "attractive", categories: ["appearance"] },
+        { word: "average", categories: ["appearance"] },
+        { word: "bad", categories: ["condition"] },
+        { word: "bald", categories: ["appearance"] },
+        { word: "bashful", categories: ["personality"] },
+        { word: "beautiful", categories: ["appearance"] },
+        { word: "beefy", categories: ["appearance"] },
+        { word: "belligerent", categories: ["personality"] },
+        { word: "bent", categories: ["condition"] },
+        { word: "better", categories: ["condition"] },
+        { word: "best", categories: ["condition"] },
+        { word: "better", categories: ["condition"] },
+        { word: "bewildered", categories: ["personality"] },
+        { word: "big", categories: ["size"] },
+        { word: "billions", categories: ["quantity"] },
+        { word: "billowy", categories: ["appearance"] },
+        { word: "bitter", categories: ["taste"] },
+        { word: "black", categories: ["color"] },
+        { word: "bland", categories: ["taste"] },
+        { word: "blue", categories: ["color"] },
+        { word: "blushing", categories: ["appearance"] },
+        { word: "bored", categories: ["personality"] },
+        { word: "boring", categories: ["personality"] },
+        { word: "boundless", categories: ["personality"] },
+        { word: "brainy", categories: ["personality"] },
+        { word: "brash", categories: ["personality"] },
+        { word: "brave", categories: ["personality"] },
+        { word: "breezy", categories: ["touch"] },
+        { word: "brief", categories: ["time"] },
+        { word: "bright", categories: ["appearance"] },
+        { word: "broad", categories: ["shapes"] },
+        { word: "broken", categories: ["condition"] },
+        { word: "brown", categories: ["color"] },
+        { word: "bulky", categories: ["appearance"] },
+        { word: "bumpy", categories: ["touch"] },
+        { word: "burly", categories: ["appearance"] },
+        { word: "busy", categories: ["personality"] },
+        { word: "cagey", categories: ["personality"] },
+        { word: "calm", categories: ["personality"] },
+        { word: "callous", categories: ["personality"] },
+        { word: "careful", categories: ["condition"] },
+        { word: "chilly", categories: ["touch"] },
+        { word: "chubby", categories: ["appearance"] },
+        { word: "clean", categories: ["appearance"] },
+        { word: "clever", categories: ["condition"] },
+        { word: "clumsy", categories: ["personality"] },
+        { word: "cold", categories: ["touch"] },
+        { word: "colossal", categories: ["size"] },
+        { word: "cool", categories: ["touch"] },
+        { word: "crashing", categories: ["sounds"] },
+        { word: "creamy", categories: ["taste"] },
+        { word: "crooked", categories: ["shapes"] },
+        { word: "cuddly", categories: ["touch"] },
+        { word: "curved", categories: ["shapes"] },
+        { word: "damaged", categories: ["touch"] },
+        { word: "damp", categories: ["touch"] },
+        { word: "dazzling", categories: ["appearance"] },
+        { word: "dead", categories: ["condition"] },
+        { word: "deafening", categories: ["sounds"] },
+        { word: "deep", categories: ["shapes"] },
+        { word: "defeated", categories: ["personality"] },
+        { word: "delicious", categories: ["taste"] },
+        { word: "delightful", categories: ["personality"] },
+        { word: "dirty", categories: ["touch"] },
+        { word: "disgusting", categories: ["taste"] },
+        { word: "drab", categories: ["appearance"] },
+        { word: "dry", categories: ["touch"] },
+        { word: "eager", categories: ["personality"] },
+        { word: "early", categories: ["time"] },
+        { word: "easy", categories: ["condition"] },
+        { word: "echoing", categories: ["sounds"] },
+        { word: "elegant", categories: ["appearance"] },
+        { word: "embarrassed", categories: ["personality"] },
+        { word: "enough", categories: ["quantity"] },
+        { word: "faint", categories: ["sounds"] },
+        { word: "faithful", categories: ["personality"] },
+        { word: "famous", categories: ["condition"] },
+        { word: "fancy", categories: ["appearance"] },
+        { word: "fast", categories: ["time"] },
+        { word: "fat", categories: ["size"] },
+        { word: "few", categories: ["quantity"] },
+        { word: "fierce", categories: ["personality"] },
+        { word: "fit", categories: ["appearance"] },
+        { word: "flabby", categories: ["appearance"] },
+        { word: "flaky", categories: ["touch"] },
+        { word: "flat", categories: ["shapes"] },
+        { word: "fluffy", categories: ["touch"] },
+        { word: "freezing", categories: ["touch"] },
+        { word: "fresh", categories: ["taste"] },
+        { word: "full", categories: ["quantity"] },
+        { word: "future", categories: ["time"] },
+        { word: "gentle", categories: ["personality"] },
+        { word: "gifted", categories: ["condition"] },
+        { word: "gigantic", categories: ["size"] },
+        { word: "glamorous", categories: ["appearance"] },
+        { word: "gorgeous", categories: ["appearance"] },
+        { word: "gray", categories: ["color"] },
+        { word: "greasy", categories: ["touch", "taste"] },
+        { word: "great", categories: ["size"] },
+        { word: "green", categories: ["color"] },
+        { word: "grumpy", categories: ["personality"] },
+        { word: "hallowed", categories: ["condition"] },
+        { word: "handsome", categories: ["appearance"] },
+        { word: "happy", categories: ["personality"] },
+        { word: "harsh", categories: ["sounds"] },
+        { word: "helpful", categories: ["condition"] },
+        { word: "helpless", categories: ["personality"] },
+        { word: "high", categories: ["shapes"] },
+        { word: "hissing", categories: ["sounds"] },
+        { word: "hollow", categories: ["shapes"] },
+        { word: "hot", categories: ["touch", "taste"] },
+        { word: "howling", categories: ["sounds"] },
+        { word: "huge", categories: ["size"] },
+        { word: "hundreds", categories: ["quantity"] },
+        { word: "icy", categories: ["touch"] },
+        { word: "immense", categories: ["size"] },
+        { word: "important", categories: ["condition"] },
+        { word: "incalculable", categories: ["quantity"] },
+        { word: "inexpensive", categories: ["condition"] },
+        { word: "itchy", categories: ["personality"] },
+        { word: "jealous", categories: ["personality"] },
+        { word: "jolly", categories: ["personality"] },
+        { word: "juicy", categories: ["taste"] },
+        { word: "kind", categories: ["personality"] },
+        { word: "large", categories: ["size"] },
+        { word: "late", categories: ["time"] },
+        { word: "lazy", categories: ["personality"] },
+        { word: "lemon", categories: ["color"] },
+        { word: "limited", categories: ["quantity"] },
+        { word: "little", categories: ["size", "quantity"] },
+        { word: "lively", categories: ["personality"] },
+        { word: "long", categories: ["time", "appearance"] },
+        { word: "loose", categories: ["touch"] },
+        { word: "loud", categories: ["sounds"] },
+        { word: "low", categories: ["shapes"] },
+        { word: "magnificent", categories: ["appearance"] },
+        { word: "mammoth", categories: ["size"] },
+        { word: "mango", categories: ["color"] },
+        { word: "many", categories: ["quantity"] },
+        { word: "massive", categories: ["size"] },
+        { word: "mealy", categories: ["condition"] },
+        { word: "melodic", categories: ["sounds"] },
+        { word: "melted", categories: ["touch"] },
+        { word: "microscopic", categories: ["size"] },
+        { word: "millions", categories: ["quantity"] },
+        { word: "miniature", categories: ["size"] },
+        { word: "modern", categories: ["time"] },
+        { word: "moldy", categories: ["taste"] },
+        { word: "most", categories: ["quantity"] },
+        { word: "muscular", categories: ["appearance"] },
+        { word: "mushy", categories: ["condition"] },
+        { word: "mysterious", categories: ["personality"] },
+        { word: "narrow", categories: ["shapes"] },
+        { word: "nervous", categories: ["personality"] },
+        { word: "nice", categories: ["personality"] },
+        { word: "noisy", categories: ["sounds"] },
+        { word: "numerous", categories: ["quantity"] },
+        { word: "nutritious", categories: ["taste"] },
+        { word: "nutty", categories: ["taste"] },
+        { word: "obedient", categories: ["personality"] },
+        { word: "obnoxious", categories: ["personality"] },
+        { word: "odd", categories: ["condition"] },
+        { word: "old", categories: ["time"] },
+        { word: "orange", categories: ["color"] },
+        { word: "panicky", categories: ["personality"] },
+        { word: "petite", categories: ["size"] },
+        { word: "pitiful", categories: ["personality"] },
+        { word: "plain", categories: ["appearance"] },
+        { word: "plump", categories: ["appearance"] },
+        { word: "polite", categories: ["personality"] },
+        { word: "poor", categories: ["condition"] },
+        { word: "powerful", categories: ["condition"] },
+        { word: "prehistoric", categories: ["time"] },
+        { word: "prickly", categories: ["touch"] },
+        { word: "proud", categories: ["personality"] },
+        { word: "puny", categories: ["size"] },
+        { word: "purple", categories: ["color"] },
+        { word: "purring", categories: ["sounds"] },
+        { word: "putrid", categories: ["taste"] },
+        { word: "quaint", categories: ["appearance"] },
+        { word: "quick", categories: ["time"] },
+        { word: "quiet", categories: ["sounds"] },
+        { word: "rancid", categories: ["taste"] },
+        { word: "rapid", categories: ["time"] },
+        { word: "rapping", categories: ["sounds"] },
+        { word: "raspy", categories: ["sounds"] },
+        { word: "red", categories: ["color"] },
+        { word: "refined", categories: ["shapes"] },
+        { word: "repulsive", categories: ["personality"] },
+        { word: "rhythmic", categories: ["sounds"] },
+        { word: "rich", categories: ["condition"] },
+        { word: "ripe", categories: ["taste"] },
+        { word: "rotten", categories: ["taste"] },
+        { word: "rough", categories: ["touch"] },
+        { word: "round", categories: ["shapes"] },
+        { word: "salmon", categories: ["color"] },
+        { word: "salty", categories: ["taste"] },
+        { word: "savory", categories: ["taste"] },
+        { word: "scarce", categories: ["quantity"] },
+        { word: "scary", categories: ["personality"] },
+        { word: "scrawny", categories: ["size"] },
+        { word: "screeching", categories: ["sounds"] },
+        { word: "scruffy", categories: ["appearance"] },
+        { word: "shaggy", categories: ["touch"] },
+        { word: "shallow", categories: ["shapes"] },
+        { word: "shapely", categories: ["appearance"] },
+        { word: "sharp", categories: ["touch"] },
+        { word: "short", categories: ["size", "appearance", "time"] },
+        { word: "shrilling", categories: ["sounds"] },
+        { word: "shy", categories: ["condition"] },
+        { word: "silly", categories: ["personality"] },
+        { word: "skinny", categories: ["appearance", "shapes"] },
+        { word: "slimy", categories: ["touch"] },
+        { word: "slow", categories: ["time"] },
+        { word: "small", categories: ["size"] },
+        { word: "some", categories: ["quantity"] },
+        { word: "sour", categories: ["taste"] },
+        { word: "sparse", categories: ["quantity"] },
+        { word: "spicy", categories: ["taste"] },
+        { word: "spoiled", categories: ["taste"] },
+        { word: "square", categories: ["shapes"] },
+        { word: "squeaking", categories: ["sounds"] },
+        { word: "stale", categories: ["taste"] },
+        { word: "steep", categories: ["shapes"] },
+        { word: "sticky", categories: ["touch"] },
+        { word: "stocky", categories: ["appearance"] },
+        { word: "straight", categories: ["shapes"] },
+        { word: "strong", categories: ["touch"] },
+        { word: "substantial", categories: ["quantity"] },
+        { word: "sweet", categories: ["taste"] },
+        { word: "swift", categories: ["time"] },
+        { word: "tall", categories: ["size"] },
+        { word: "tangy", categories: ["taste"] },
+        { word: "tart", categories: ["taste"] },
+        { word: "tasteless", categories: ["taste"] },
+        { word: "tasty", categories: ["taste"] },
+        { word: "teeny", categories: ["size"] },
+        { word: "tender", categories: ["condition"] },
+        { word: "thankful", categories: ["personality"] },
+        { word: "thoughtless", categories: ["personality"] },
+        { word: "thousands", categories: ["quantity"] },
+        { word: "thundering", categories: ["sounds"] },
+        { word: "tight", categories: ["touch"] },
+        { word: "tinkling", categories: ["sounds"] },
+        { word: "tiny", categories: ["size"] },
+        { word: "ugly", categories: ["appearance"] },
+        { word: "uneven", categories: ["touch"] },
+        { word: "unimportant", categories: ["condition"] },
+        { word: "uninterested", categories: ["condition"] },
+        { word: "unkempt", categories: ["appearance"] },
+        { word: "unsightly", categories: ["appearance"] },
+        { word: "uptight", categories: ["personality"] },
+        { word: "vast", categories: ["condition"] },
+        { word: "victorious", categories: ["personality"] },
+        { word: "wailing", categories: ["sounds"] },
+        { word: "warm", categories: ["touch"] },
+        { word: "weak", categories: ["touch"] },
+        { word: "wet", categories: ["touch"] },
+        { word: "whining", categories: ["sounds"] },
+        { word: "whispering", categories: ["sounds"] },
+        { word: "white", categories: ["color"] },
+        { word: "wide", categories: ["shapes"] },
+        { word: "witty", categories: ["personality"] },
+        { word: "wonderful", categories: ["personality"] },
+        { word: "wooden", categories: ["touch"] },
+        { word: "worried", categories: ["personality"] },
+        { word: "wrong", categories: ["condition"] },
+        { word: "yellow", categories: ["color"] },
+        { word: "young", categories: ["time"] },
+        { word: "yummy", categories: ["taste"] },
+        { word: "zealous", categories: ["personality"] }
+      ]
+    };
+    function getWordsByCategory(partOfSpeech, categories) {
+      var e_1, _a;
+      if (categories === void 0) {
+        categories = [];
+      }
+      var selectedCategoried = new Set(categories);
+      var selectedWords = [];
+      try {
+        for (var _b = __values(exports2.wordList[partOfSpeech]), _c = _b.next(); !_c.done; _c = _b.next()) {
+          var word = _c.value;
+          if (categories.length === 0 || word.categories.some(function(cat) {
+            return selectedCategoried.has(cat);
+          })) {
+            selectedWords.push(word.word);
+          }
+        }
+      } catch (e_1_1) {
+        e_1 = { error: e_1_1 };
+      } finally {
+        try {
+          if (_c && !_c.done && (_a = _b.return))
+            _a.call(_b);
+        } finally {
+          if (e_1)
+            throw e_1.error;
+        }
+      }
+      return selectedWords;
+    }
+    exports2.getWordsByCategory = getWordsByCategory;
+  }
+});
+
+// node_modules/random-word-slugs/dist/index.js
+var require_dist6 = __commonJS({
+  "node_modules/random-word-slugs/dist/index.js"(exports2) {
+    "use strict";
+    var __assign = exports2 && exports2.__assign || function() {
+      __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+          s = arguments[i];
+          for (var p in s)
+            if (Object.prototype.hasOwnProperty.call(s, p))
+              t[p] = s[p];
+        }
+        return t;
+      };
+      return __assign.apply(this, arguments);
+    };
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.totalUniqueSlugs = exports2.generateSlug = void 0;
+    var words_1 = require_words();
+    var DEFAULT_NUMBER_OF_WORDS = 3;
+    function generateSlug2(numberOfWords, options) {
+      var numWords = numberOfWords || DEFAULT_NUMBER_OF_WORDS;
+      var defaultOptions = {
+        partsOfSpeech: getDefaultPartsOfSpeech(numWords),
+        categories: {},
+        format: "kebab"
+      };
+      var opts = __assign(__assign({}, defaultOptions), options);
+      var words = [];
+      for (var i = 0; i < numWords; i++) {
+        var partOfSpeech = opts.partsOfSpeech[i];
+        var candidates = words_1.getWordsByCategory(opts.partsOfSpeech[i], opts.categories[partOfSpeech]);
+        var rand = candidates[Math.floor(Math.random() * candidates.length)];
+        words.push(rand);
+      }
+      return formatter(words, opts.format);
+    }
+    exports2.generateSlug = generateSlug2;
+    function getDefaultPartsOfSpeech(length) {
+      var partsOfSpeech = [];
+      for (var i = 0; i < length - 1; i++) {
+        partsOfSpeech.push("adjective");
+      }
+      partsOfSpeech.push("noun");
+      return partsOfSpeech;
+    }
+    function formatter(arr, format) {
+      if (format === "kebab") {
+        return arr.join("-").toLowerCase();
+      }
+      if (format === "camel") {
+        return arr.map(function(el, i) {
+          if (i === 0)
+            return el.toLowerCase();
+          return el[0].toUpperCase() + el.slice(1).toLowerCase();
+        }).join("");
+      }
+      if (format === "lower") {
+        return arr.join(" ").toLowerCase();
+      }
+      if (format === "sentence") {
+        return arr.map(function(el, i) {
+          if (i === 0) {
+            return el[0].toUpperCase() + el.slice(1).toLowerCase();
+          }
+          return el;
+        }).join(" ");
+      }
+      return arr.map(function(el) {
+        return el[0].toUpperCase() + el.slice(1).toLowerCase();
+      }).join(" ");
+    }
+    function totalUniqueSlugs(numberOfWords, options) {
+      var _a, _b;
+      var numAdjectives = words_1.getWordsByCategory("adjective", (_a = options === null || options === void 0 ? void 0 : options.categories) === null || _a === void 0 ? void 0 : _a.adjective).length;
+      var numNouns = words_1.getWordsByCategory("noun", (_b = options === null || options === void 0 ? void 0 : options.categories) === null || _b === void 0 ? void 0 : _b.noun).length;
+      var nums = {
+        adjective: numAdjectives,
+        noun: numNouns
+      };
+      var numWords = numberOfWords || DEFAULT_NUMBER_OF_WORDS;
+      var partsOfSpeech = (options === null || options === void 0 ? void 0 : options.partsOfSpeech) || getDefaultPartsOfSpeech(numWords);
+      var combos = 1;
+      for (var i = 0; i < numWords; i++) {
+        combos *= nums[partsOfSpeech[i]];
+      }
+      return combos;
+    }
+    exports2.totalUniqueSlugs = totalUniqueSlugs;
+  }
+});
 
 // index.ts
+var socket_server_exports = {};
 var import_express = __toESM(require_express2());
 var import_http = __toESM(require("http"));
 
@@ -30059,6 +50338,117 @@ var { Server, Namespace, Socket } = import_dist.default;
 // index.ts
 var import_body_parser = __toESM(require_body_parser());
 var import_cors = __toESM(require_lib3());
+var import_knex = __toESM(require_knex());
+var import_postgres = __toESM(require_postgres());
+
+// ../node_modules/nanoid/index.js
+var import_crypto = __toESM(require("crypto"), 1);
+
+// ../node_modules/nanoid/url-alphabet/index.js
+var urlAlphabet = "useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZbfghjklqvwyzrict";
+
+// ../node_modules/nanoid/index.js
+var POOL_SIZE_MULTIPLIER = 128;
+var pool;
+var poolOffset;
+var fillPool = (bytes) => {
+  if (!pool || pool.length < bytes) {
+    pool = Buffer.allocUnsafe(bytes * POOL_SIZE_MULTIPLIER);
+    import_crypto.default.randomFillSync(pool);
+    poolOffset = 0;
+  } else if (poolOffset + bytes > pool.length) {
+    import_crypto.default.randomFillSync(pool);
+    poolOffset = 0;
+  }
+  poolOffset += bytes;
+};
+var nanoid = (size = 21) => {
+  fillPool(size);
+  let id = "";
+  for (let i = poolOffset - size; i < poolOffset; i++) {
+    id += urlAlphabet[pool[i] & 63];
+  }
+  return id;
+};
+
+// ../components/editable-canvas/helpers/index.ts
+var getCurrentIndex = (targetId, data) => {
+  return targetId === "terminator" ? data.cells.length : data.cells.findIndex(({ id }) => id === targetId);
+};
+var createNewCell = (char) => ({
+  id: nanoid(),
+  value: char === "Enter" ? "\n" : char
+});
+var processInsert = ({
+  data,
+  targetId,
+  char
+}) => {
+  const currIndex = getCurrentIndex(targetId, data);
+  const newCells = typeof char === "string" ? [createNewCell(char)] : char.map((c) => typeof c === "string" ? createNewCell(c) : c);
+  const result = __spreadValues({}, data);
+  if (currIndex <= 0) {
+    result.cells = [...newCells, ...data.cells];
+  } else {
+    result.cells.splice(currIndex, 0, ...newCells);
+  }
+  return { result, newCells };
+};
+function processDelete({
+  data,
+  cells,
+  targetId,
+  count
+}) {
+  if (cells) {
+    const deletedIds = cells == null ? void 0 : cells.map(({ id }) => id);
+    const deletedCells = data.cells.filter(({ id }) => deletedIds.includes(id));
+    const retainedCells = data.cells.filter(({ id }) => !deletedIds.includes(id));
+    return {
+      result: __spreadProps(__spreadValues({}, data), {
+        cells: retainedCells
+      }),
+      deletedCells
+    };
+  } else if (targetId && count) {
+    const dataCopy = __spreadValues({}, data);
+    const currIndex = Math.max(getCurrentIndex(targetId, dataCopy) - 1, 0);
+    const deletedCells = dataCopy.cells.splice(currIndex, count);
+    return {
+      result: dataCopy,
+      deletedCells
+    };
+  } else {
+    return {
+      result: data,
+      deletedCells: []
+    };
+  }
+}
+var processChangeEvent = (data, event) => {
+  var _a;
+  const action = (_a = event == null ? void 0 : event.change) == null ? void 0 : _a.up;
+  if (action.type === "insert") {
+    return processInsert({
+      data,
+      targetId: action.insert_before,
+      char: action.cells
+    }).result;
+  } else if (action.type === "delete") {
+    return processDelete({ data, cells: action.cells }).result;
+  }
+  return data;
+};
+var processAllChanges = (sortedChanges, initial) => {
+  return sortedChanges.filter(({ applied_to_note }) => !applied_to_note).reduce((acc, changeData) => {
+    return changeData.changes.reduce((acc_2, change) => {
+      return processChangeEvent(acc_2, change.data);
+    }, acc);
+  }, initial);
+};
+
+// index.ts
+var import_random_word_slugs = __toESM(require_dist6());
 var corsSettings = {
   origin: ["http://localhost:3000", "https://www.chriskerr.com.au"],
   credentials: true
@@ -30070,13 +50460,65 @@ var io2 = new Server(server, {
 });
 app.use(import_body_parser.default.json());
 app.use((0, import_cors.default)(corsSettings));
-app.post("/editor", (req, res) => {
-  if (req.headers.token !== apiToken)
+var knex = (0, import_knex.default)({
+  client: import_postgres.default,
+  connection: process.env.DATABASE_URL || "postgres://127.0.0.1:5432/postgres"
+});
+var idLength = 3;
+var idOptions = {
+  format: "kebab",
+  partsOfSpeech: ["adjective", "adjective", "noun"],
+  categories: {
+    noun: ["animals", "food", "place", "science", "technology"]
+  }
+};
+var getId = () => (0, import_random_word_slugs.generateSlug)(idLength, idOptions);
+var createNewId = () => __async(void 0, null, function* () {
+  try {
+    const id = getId();
+    const insertData = { id, data: { cells: [] } };
+    const newNote = yield knex("notes" /* NOTES */).insert(insertData).returning("id");
+    console.log(newNote);
+    if (newNote && newNote[0] === id)
+      return id;
+    throw new Error();
+  } catch (e) {
+    console.log(e);
+    return createNewId();
+  }
+});
+app.post("/editor/:id", (req, res) => __async(void 0, null, function* () {
+  let noteId = req.params.id;
+  if (!noteId)
     return res.status(500).end();
   const body = req.body;
-  io2.to(body.note_id).emit("change", body);
-  return res.status(200).end();
-});
+  if (noteId === "n") {
+    noteId = yield createNewId();
+  }
+  io2.to(noteId).emit("change", body);
+  const responseData = { noteId };
+  res.status(200).json(responseData);
+  knex.transaction((trx) => __async(void 0, null, function* () {
+    const [currentData] = yield knex("notes" /* NOTES */).transacting(trx).where({ id: noteId }).select("*").limit(1).forUpdate();
+    if (!currentData)
+      return;
+    const updatedData = processAllChanges([body], {
+      id: noteId,
+      cells: currentData.data.cells
+    });
+    const updateData = {
+      data: updatedData
+    };
+    yield knex("notes" /* NOTES */).transacting(trx).where({ id: noteId }).update(updateData);
+  }));
+}));
+app.get("/editor/:id", (req, res) => __async(void 0, null, function* () {
+  const noteId = req.params.id;
+  if (!noteId)
+    return res.status(500).end();
+  const [noteData] = yield knex("notes" /* NOTES */).where({ id: noteId }).select("id", "data").limit(1);
+  return res.status(200).json(noteData == null ? void 0 : noteData.data);
+}));
 io2.on("connection", (socket) => {
   socket.on("join", (room) => {
     socket.join(room);
@@ -30086,6 +50528,16 @@ var port = process.env.PORT || 8080;
 server.listen(port, () => {
   console.log(`listening on *:${port}`);
 });
+(() => __async(void 0, null, function* () {
+  const hasNotesTable = yield knex.schema.hasTable("notes" /* NOTES */);
+  if (!hasNotesTable) {
+    yield knex.schema.createTable("notes" /* NOTES */, (table) => {
+      table.text("id").unique().index();
+      table.jsonb("data").notNullable();
+    });
+  }
+}))();
+module.exports = __toCommonJS(socket_server_exports);
 /*
 object-assign
 (c) Sindre Sorhus

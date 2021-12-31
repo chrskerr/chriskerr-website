@@ -9,7 +9,7 @@ So it turns out that I am way less versed in Javascript packages than I thought 
 
 So instead of using their queue function I created my own.
 
-I needed to create a helper which would ensure that a function would only execute one-at-a-time to assist with time ordering of changes emitted by the my [editor](/editor/new). Changes are sorted server-side when saved to the database but this can only help live-subscribers if delivery is queued so that there is actually something to sort.
+I needed to create a helper which would ensure that a function would only execute one-at-a-time to assist with time ordering of changes emitted by the my [editor](/editor/n). Changes are sorted server-side when saved to the database but this can only help live-subscribers if delivery is queued so that there is actually something to sort.
 
 After all that, I published a wrapper which serialised my function (plus a bunch of other stuff, like data transforms), and wanted to share it with anyone who might benefit 🙂
 
