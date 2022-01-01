@@ -418,6 +418,8 @@ const useEditableCanvas = ({
 			canvas.addEventListener('mouseup', onMouseUp, { passive: true });
 			canvas.addEventListener('mouseout', onMouseUp, { passive: true });
 			window.addEventListener('resize', onResize, { passive: true });
+
+			canvas.focus();
 		})();
 
 		return () => {

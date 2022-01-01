@@ -17,6 +17,8 @@ import KnexPostgres from 'knex/lib/dialects/postgres';
 import { processAllChanges } from '../components/editable-canvas/helpers';
 import { generateSlug, RandomWordOptions } from 'random-word-slugs';
 
+import { unsavedNoteId } from '../lib/constants';
+
 const corsSettings: CorsOptions = {
 	origin: ['http://localhost:3000', 'https://www.chriskerr.com.au'],
 	credentials: true,
@@ -86,7 +88,7 @@ app.post('/editor/:id', async (req, res) => {
 	if (!noteId) return res.status(500).end();
 	const body = req.body as UpdateNoteAPIBody;
 
-	if (noteId === 'n') {
+	if (noteId === unsavedNoteId) {
 		noteId = await createNewId();
 	}
 

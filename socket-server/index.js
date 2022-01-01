@@ -50443,6 +50443,11 @@ var processAllChanges = (sortedChanges, initial) => {
 
 // index.ts
 var import_random_word_slugs = __toESM(require_dist6());
+
+// ../lib/constants.ts
+var unsavedNoteId = "n";
+
+// index.ts
 var corsSettings = {
   origin: ["http://localhost:3000", "https://www.chriskerr.com.au"],
   credentials: true
@@ -50490,7 +50495,7 @@ app.post("/editor/:id", (req, res) => __async(exports, null, function* () {
   if (!noteId)
     return res.status(500).end();
   const body = req.body;
-  if (noteId === "n") {
+  if (noteId === unsavedNoteId) {
     noteId = yield createNewId();
   }
   io2.to(noteId).emit("change", body);

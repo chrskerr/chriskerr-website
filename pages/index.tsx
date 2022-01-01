@@ -44,7 +44,7 @@ export default function Landing(): ReactElement {
 			<section className="w-full">
 				<div className="grid grid-cols-1 gap-16 md:grid-cols-2 grid-rows-auto display-width divider-before">
 					<Tile
-						url="/editor/n"
+						url="/editor"
 						title="Collaborative Markdown Editor"
 						image="/images/tiles/stacked-waves.png"
 					/>

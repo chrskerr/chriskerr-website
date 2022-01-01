@@ -3,14 +3,11 @@ import {
 	DataChangeHandler,
 	EditableCanvasData,
 	ChangeEventHandler,
-	StoredNote,
 	StoredChanges,
 	UpdateNoteAPIResponse,
 	UpdateNoteAPIBody,
 } from 'types/editor';
-import { socketServerUrl } from 'lib/constants';
-
-import type { GetServerSideProps } from 'next';
+import { socketServerUrl, unsavedNoteId } from 'lib/constants';
 
 import useEditableCanvas from 'components/editable-canvas/use-editable-canvas';
 import { useEffect, useState, useRef, useCallback } from 'react';
@@ -51,7 +48,11 @@ const title = 'Collaborative Markdown Editor';
 export default function Editor({ id: propsId, initialData }: EditorProps) {
 	const router = useRouter();
 
-	const id = (router.query.id as string) || propsId;
+	const [id, setId] = useState((router.query.id as string) || propsId);
+
+	useEffect(() => {
+		setId((router.query.id as string) || propsId);
+	}, [router.query.id, propsId]);
 
 	const $_ref = useRef<HTMLCanvasElement>(null);
 
@@ -73,10 +74,12 @@ export default function Editor({ id: propsId, initialData }: EditorProps) {
 		serialize(uploadChangeEvent, {
 			inputTransformer: async (data, previousResult) => {
 				if (previousResult) data.noteId = previousResult;
-				if (data.noteId !== $_idRef.current)
+				if (data.noteId !== $_idRef.current) {
+					setId(data.noteId);
 					await router.push(`/editor/${data.noteId}`, undefined, {
 						shallow: true,
 					});
+				}
 				return data;
 			},
 			batch: {
@@ -149,8 +152,9 @@ export default function Editor({ id: propsId, initialData }: EditorProps) {
 		<>
 			<NextSeo
 				title={title}
+				noindex={id !== unsavedNoteId}
 				description="Collaborative, realtime, Markdown editing"
-				canonical="https://www.chriskerr.com.au/editor/n"
+				canonical="https://www.chriskerr.com.au/editor"
 			/>
 			<div className="display-width">
 				<h2 className="mb-12 text-3xl">{title}</h2>
@@ -170,23 +174,25 @@ export default function Editor({ id: propsId, initialData }: EditorProps) {
 				</p>
 			</div>
 			<div className="w-full text-center display-width divider-before">
-				<div className="mb-16">
+				<div>
 					<h3 className="mb-4 text-xl">
-						ID: {id === 'n' ? 'unsaved' : id}
+						ID: {id === unsavedNoteId ? 'unsaved' : id}
 					</h3>
-					{id !== 'n' && (
-						<p>
-							Permament link:{' '}
+					<p>
+						Permament link:
+						{id === unsavedNoteId ? (
+							<span className="ml-4">tba</span>
+						) : (
 							<a
 								href={href}
 								target="_blank"
 								rel="noreferrer"
-								className="hover:underline text-brand"
+								className="ml-4 hover:underline text-brand"
 							>
 								{href}
 							</a>
-						</p>
-					)}
+						)}
+					</p>
 				</div>
 			</div>
 			<div className="flex flex-col items-center justify-center display-width divider-before">
@@ -235,37 +241,3 @@ export default function Editor({ id: propsId, initialData }: EditorProps) {
 		</>
 	);
 }
-
-export const getServerSideProps: GetServerSideProps = async context => {
-	const id = Array.isArray(context.query.id)
-		? context.query.id[0]
-		: context.query.id;
-
-	if (id === 'n')
-		return {
-			props: {
-				id,
-				initialData: { id, cells: [] },
-			},
-		};
-
-	const res = await fetch(`${socketServerUrl}/editor/${id}`);
-	if (!res.ok || !id)
-		return {
-			redirect: {
-				permanent: false,
-				destination: '/editor/n',
-			},
-		};
-
-	const data = (await res.json()) as StoredNote;
-
-	const props: EditorProps = {
-		initialData: { id, cells: data.cells },
-		id,
-	};
-
-	return {
-		props,
-	};
-};
