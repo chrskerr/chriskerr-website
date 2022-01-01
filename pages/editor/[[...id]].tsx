@@ -15,7 +15,11 @@ export default function EditorRoute(props: EditorProps) {
 }
 
 export const getServerSideProps: GetServerSideProps = async context => {
-	if (Array.isArray(context.query.id)) {
+	const id = Array.isArray(context.query.id)
+		? context.query.id[0]
+		: context.query.id;
+
+	if (Array.isArray(context.query.id) && context.query.id.length > 1) {
 		return {
 			redirect: {
 				destination: context.query.id[0],
@@ -23,8 +27,6 @@ export const getServerSideProps: GetServerSideProps = async context => {
 			},
 		};
 	}
-
-	const id = context.query.id;
 
 	if (!id) {
 		const props: EditorProps = {
@@ -38,7 +40,7 @@ export const getServerSideProps: GetServerSideProps = async context => {
 	}
 
 	const res = await fetch(`${socketServerUrl}/editor/${id}`);
-	if (!res.ok || !id)
+	if (!res.ok)
 		return {
 			redirect: {
 				permanent: false,

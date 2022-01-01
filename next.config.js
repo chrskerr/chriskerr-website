@@ -9,4 +9,5 @@ module.exports = {
 		concurrentFeatures: false,
 		serverComponents: false,
 	},
+	reactStrictMode: true,
 };

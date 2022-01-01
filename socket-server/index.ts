@@ -101,7 +101,7 @@ app.post('/editor/:id', async (req, res) => {
 		const [currentData]: INote[] = await knex(TableNames.NOTES)
 			.transacting(trx)
 			.where({ id: noteId })
-			.select('*')
+			.select('data')
 			.limit(1)
 			.forUpdate();
 
@@ -133,7 +133,7 @@ app.get('/editor/:id', async (req, res) => {
 
 	const [noteData]: INote[] = await knex(TableNames.NOTES)
 		.where({ id: noteId })
-		.select('id', 'data')
+		.select('data')
 		.limit(1);
 
 	return res.status(200).json(noteData?.data);

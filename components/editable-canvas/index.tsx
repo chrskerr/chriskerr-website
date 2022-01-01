@@ -84,7 +84,7 @@ export default function Editor({ id: propsId, initialData }: EditorProps) {
 			},
 			batch: {
 				debounceInterval: 500,
-				maxDebounceInterval: 2500,
+				maxDebounceInterval: 1500,
 				batchTransformer: (batch, newChange) => {
 					if (!batch) return newChange;
 					newChange.changes = [

@@ -50502,7 +50502,7 @@ app.post("/editor/:id", (req, res) => __async(exports, null, function* () {
   const responseData = { noteId };
   res.status(200).json(responseData);
   knex.transaction((trx) => __async(exports, null, function* () {
-    const [currentData] = yield knex("notes" /* NOTES */).transacting(trx).where({ id: noteId }).select("*").limit(1).forUpdate();
+    const [currentData] = yield knex("notes" /* NOTES */).transacting(trx).where({ id: noteId }).select("data").limit(1).forUpdate();
     if (!currentData)
       return;
     const updatedData = processAllChanges([__spreadProps(__spreadValues({}, body), { applied_to_note: false, note_id: noteId })], {
@@ -50519,7 +50519,7 @@ app.get("/editor/:id", (req, res) => __async(exports, null, function* () {
   const noteId = req.params.id;
   if (!noteId)
     return res.status(500).end();
-  const [noteData] = yield knex("notes" /* NOTES */).where({ id: noteId }).select("id", "data").limit(1);
+  const [noteData] = yield knex("notes" /* NOTES */).where({ id: noteId }).select("data").limit(1);
   return res.status(200).json(noteData == null ? void 0 : noteData.data);
 }));
 io2.on("connection", (socket) => {
