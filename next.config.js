@@ -6,7 +6,7 @@ module.exports = {
 	},
 	swcMinify: true,
 	experimental: {
-		concurrentFeatures: false,
+		concurrentFeatures: true,
 		serverComponents: false,
 	},
 	reactStrictMode: true,
