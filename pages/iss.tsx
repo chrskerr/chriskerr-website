@@ -1,12 +1,8 @@
 import { ReactElement, useState } from 'react';
 
 import { NextSeo } from 'next-seo';
+import ISSRender from 'components/iss';
 
-import dynamic from 'next/dynamic';
-const ISSRender = dynamic(() => import('components/iss'), {
-	ssr: false,
-	loading: () => <p className="font-mono text-2xl text-center">Loading</p>,
-});
 const title = "Where's the ISS?";
 
 export default function ISS(): ReactElement {
