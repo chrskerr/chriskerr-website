@@ -1,4 +1,4 @@
-import { ChangeEvent, ReactElement, useState } from 'react';
+import { ChangeEvent, ReactElement, Suspense, useState } from 'react';
 
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
@@ -61,8 +61,10 @@ export default function ISSRender(): ReactElement {
 					displayedSatellites={context.displayedSatellites}
 				/>
 
-				<Earth />
-				<ISS />
+				<Suspense fallback={null}>
+					<Earth />
+					<ISS />
+				</Suspense>
 			</Canvas>
 		</>
 	);
