@@ -38,7 +38,7 @@ export default function Landing(): ReactElement {
 			/>
 			<section className="w-full">
 				<div className="text-center display-width">
-					<p className="mb-6 text-2xl">{description}</p>
+					<p className="mx-6 text-2xl">{description}</p>
 				</div>
 			</section>
 			<section className="w-full">
@@ -106,7 +106,7 @@ function Tile({
 						sizes="(max-width: 768px) 100vw, 440px"
 						className="transition-all duration-700 group-hover:scale-[1.15]"
 					/>
-					<p className="absolute flex items-center justify-center px-5 py-3 text-2xl text-center -translate-x-1/2 -translate-y-1/2 bg-white rounded sm:text-lg top-1/2 left-1/2">
+					<p className="absolute flex items-center justify-center px-5 py-3 text-lg text-center -translate-x-1/2 -translate-y-1/2 bg-white rounded top-1/2 left-1/2">
 						{title}
 					</p>
 				</div>
