@@ -1,6 +1,7 @@
 import { ReactElement, Suspense } from 'react';
 
 import Satellite from './satellite';
+import useNasaData from './use-nasa-data';
 import useSpaceXData from './use-spacex-data';
 
 type Props = {
@@ -9,7 +10,10 @@ type Props = {
 };
 
 export default function Satellites(props: Props): ReactElement {
-	const data = useSpaceXData(props);
+	const spaceXData = useSpaceXData(props);
+	const nasaData = useNasaData();
+
+	const data = [...(spaceXData || []), ...(nasaData || [])];
 
 	return (
 		<Suspense fallback={null}>

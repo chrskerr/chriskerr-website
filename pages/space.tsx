@@ -7,7 +7,7 @@ const ISSRender = dynamic(() => import('components/iss'), {
 	ssr: false,
 	loading: () => <p className="font-mono text-2xl text-center">Loading</p>,
 });
-const title = "Where's the ISS?";
+const title = 'Just how busy is space';
 
 export default function ISS(): ReactElement {
 	const [isGrabbing, setIsGrabbing] = useState(false);
@@ -16,14 +16,15 @@ export default function ISS(): ReactElement {
 		<>
 			<NextSeo
 				title={title}
-				description="The ISS orbiting the Earth"
-				canonical="https://www.chriskerr.com.au/iss"
+				description="Just how busy is space"
+				canonical="https://www.chriskerr.com.au/space"
 			/>
 			<div className="display-width">
 				<h2 className="mb-4 text-3xl">{title}</h2>
 				<p className="mb-4">
-					The International Space station, plotted in near-realtime
-					above the earth.
+					The International Space station, available NASA satellites,
+					and as many as possible of SpaceX&apos;s satellites plotted
+					in near-realtime above the Earth.
 				</p>
 				<p className="mb-4">
 					It&apos;s not amazingly accurate... because the model of the
@@ -35,10 +36,8 @@ export default function ISS(): ReactElement {
 					Still, it live updates with the latest location 😃
 				</p>
 				<p className="mb-4">
-					A random sample of SpaceX&apos;s Starlink satellites load in
-					as well, many more and things tend to grind to a halt! These
-					may not be particularly well mapped to this model of Earth,
-					but they add some nice extra detail!
+					There are many many more unacccounted for satellites, but
+					the browser can only handle so much.
 				</p>
 			</div>
 			<div
