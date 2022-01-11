@@ -29,7 +29,7 @@ export default function App({ Component, pageProps }: AppProps): ReactElement {
 				}}
 			/>
 			<div className="relative flex flex-col w-full min-h-screen">
-				<div className="sticky top-0 z-[51] w-full pb-0 before:absolute before:inset-0 before:bg-gradient-to-r before:from-brand before:via-[#89ffea] before:to-brand-secondary before:blur mb-16 sm:mb-24">
+				<div className="sticky top-0 z-[51] w-full pb-0 before:absolute before:inset-0 nav-gradient before:blur mb-16 sm:mb-24">
 					<nav className="flex justify-center w-full bg-white blur-0">
 						<div className="flex items-center w-full p-3 px-10 lg:px-24 sm:p-6">
 							<Link href="/" passHref>
