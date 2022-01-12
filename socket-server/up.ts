@@ -1,5 +1,6 @@
 import { Express } from 'express';
 
+import rateLimit from 'express-rate-limit';
 import axios from 'axios';
 
 import dotenv from 'dotenv';
@@ -21,6 +22,13 @@ const upApiKey = process.env.UP_API_KEY;
 const urlBase = 'https://api.up.com.au/api/v1';
 
 axios.defaults.headers.common['Authorization'] = `Bearer ${upApiKey}`;
+
+const limiter = rateLimit({
+	windowMs: 1000,
+	max: 1,
+	standardHeaders: true,
+	legacyHeaders: false,
+});
 
 export default function createUpRoutes(app: Express, knex: Knex): void {
 	async function createOrUpdateAccount(id: string, name = 'unnamed') {
@@ -61,7 +69,9 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 			.returning('*');
 	}
 
-	// app.get('/up/ping/:id', async (req, res, next) => {
+	app.set('trust proxy', 1);
+
+	// app.get('/up/ping/:id', limiter, async (req, res, next) => {
 	// 	try {
 	// 		if (apiKey) {
 	// 			const id = req.params.id;
@@ -73,7 +83,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 	// 	}
 	// });
 
-	// app.get('/up/list', async (req, res, next) => {
+	// app.get('/up/list', limiter, async (req, res, next) => {
 	// 	try {
 	// 		if (apiKey) {
 	// 			const fetchRes = await axios.get(urlBase + '/webhooks');
@@ -85,7 +95,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 	// 	}
 	// });
 
-	// app.get('/up/create/:url', async (req, res, next) => {
+	// app.get('/up/create/:url', limiter, async (req, res, next) => {
 	// 	const url = req.params.url;
 	// 	console.log(url);
 	// 	try {
@@ -107,7 +117,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 	// 	}
 	// });
 
-	// app.get('/up/delete/:id', async (req, res, next) => {
+	// app.get('/up/delete/:id', limiter, async (req, res, next) => {
 	// 	const id = req.params.id;
 	// 	try {
 	// 		if (apiKey) {
@@ -124,7 +134,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 	// 	}
 	// });
 
-	// app.get('/up/txns', async (req, res, next) => {
+	// app.get('/up/txns', limiter, async (req, res, next) => {
 	// 	try {
 	// 		if (apiKey) {
 	// 			const fetchRes = await axios.get(urlBase + '/transactions');
@@ -138,7 +148,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 	// 	}
 	// });
 
-	app.get('/up/balances/:key', async (req, res, next) => {
+	app.get('/up/balances/:key', limiter, async (req, res, next) => {
 		try {
 			if (upApiKey && req.params.key === apiKey) {
 				const fetchRes = await axios.get(urlBase + '/accounts');
@@ -163,7 +173,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 		}
 	});
 
-	app.post('/up/:key', async (req, res, next) => {
+	app.post('/up/:key', limiter, async (req, res, next) => {
 		try {
 			const body = req.body as UpWebhook;
 			const txnUrl = body.relationships?.transction?.links?.related;
@@ -197,7 +207,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 		}
 	});
 
-	app.get('/up/:key/:period', async (req, res, next) => {
+	app.get('/up/:key/:period', limiter, async (req, res, next) => {
 		try {
 			if (req.params.key === apiKey) {
 				const accounts = await knex

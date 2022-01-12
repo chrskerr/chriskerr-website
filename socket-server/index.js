@@ -64487,6 +64487,197 @@ var import_random_word_slugs = __toESM(require_dist6());
 // ../lib/constants.ts
 var unsavedNoteId = "n";
 
+// node_modules/express-rate-limit/dist/index.mjs
+var calculateNextResetTime = (windowMs) => {
+  const resetTime = new Date();
+  resetTime.setMilliseconds(resetTime.getMilliseconds() + windowMs);
+  return resetTime;
+};
+var MemoryStore = class {
+  init(options) {
+    this.windowMs = options.windowMs;
+    this.resetTime = calculateNextResetTime(this.windowMs);
+    this.hits = {};
+    const interval = setInterval(async () => {
+      await this.resetAll();
+    }, this.windowMs);
+    if (interval.unref) {
+      interval.unref();
+    }
+  }
+  async increment(key) {
+    const totalHits = (this.hits[key] ?? 0) + 1;
+    this.hits[key] = totalHits;
+    return {
+      totalHits,
+      resetTime: this.resetTime
+    };
+  }
+  async decrement(key) {
+    const current = this.hits[key];
+    if (current) {
+      this.hits[key] = current - 1;
+    }
+  }
+  async resetKey(key) {
+    delete this.hits[key];
+  }
+  async resetAll() {
+    this.hits = {};
+    this.resetTime = calculateNextResetTime(this.windowMs);
+  }
+};
+var isLegacyStore = (store) => typeof store.incr === "function" && typeof store.increment !== "function";
+var promisifyStore = (passedStore) => {
+  if (!isLegacyStore(passedStore)) {
+    return passedStore;
+  }
+  const legacyStore = passedStore;
+  class PromisifiedStore {
+    async increment(key) {
+      return new Promise((resolve, reject2) => {
+        legacyStore.incr(key, (error, totalHits, resetTime) => {
+          if (error)
+            reject2(error);
+          resolve({ totalHits, resetTime });
+        });
+      });
+    }
+    async decrement(key) {
+      return Promise.resolve(legacyStore.decrement(key));
+    }
+    async resetKey(key) {
+      return Promise.resolve(legacyStore.resetKey(key));
+    }
+    async resetAll() {
+      if (typeof legacyStore.resetAll === "function")
+        return Promise.resolve(legacyStore.resetAll());
+    }
+  }
+  return new PromisifiedStore();
+};
+var parseOptions = (passedOptions) => {
+  const options = {
+    windowMs: 60 * 1e3,
+    store: new MemoryStore(),
+    max: 5,
+    message: "Too many requests, please try again later.",
+    statusCode: 429,
+    legacyHeaders: passedOptions.headers ?? true,
+    standardHeaders: passedOptions.draft_polli_ratelimit_headers ?? false,
+    requestPropertyName: "rateLimit",
+    skipFailedRequests: false,
+    skipSuccessfulRequests: false,
+    requestWasSuccessful: (_request, response) => response.statusCode < 400,
+    skip: (_request, _response) => false,
+    keyGenerator: (request, _response) => {
+      if (!request.ip) {
+        console.error("WARN | `express-rate-limit` | `request.ip` is undefined. You can avoid this by providing a custom `keyGenerator` function, but it may be indicative of a larger issue.");
+      }
+      return request.ip;
+    },
+    handler: (_request, response, _next, _optionsUsed) => {
+      response.status(options.statusCode).send(options.message);
+    },
+    onLimitReached: (_request, _response, _optionsUsed) => {
+    },
+    ...passedOptions
+  };
+  if (typeof options.store.incr !== "function" && typeof options.store.increment !== "function" || typeof options.store.decrement !== "function" || typeof options.store.resetKey !== "function" || typeof options.store.resetAll !== "undefined" && typeof options.store.resetAll !== "function" || typeof options.store.init !== "undefined" && typeof options.store.init !== "function") {
+    throw new TypeError("An invalid store was passed. Please ensure that the store is a class that implements the `Store` interface.");
+  }
+  options.store = promisifyStore(options.store);
+  return options;
+};
+var handleAsyncErrors = (fn2) => async (request, response, next) => {
+  try {
+    await Promise.resolve(fn2(request, response, next)).catch(next);
+  } catch (error) {
+    next(error);
+  }
+};
+var rateLimit = (passedOptions) => {
+  const options = parseOptions(passedOptions ?? {});
+  if (typeof options.store.init === "function")
+    options.store.init(options);
+  const middleware = handleAsyncErrors(async (request, response, next) => {
+    const skip = await options.skip(request, response);
+    if (skip) {
+      next();
+      return;
+    }
+    const augmentedRequest = request;
+    const key = await options.keyGenerator(request, response);
+    const { totalHits, resetTime } = await options.store.increment(key);
+    const retrieveQuota = typeof options.max === "function" ? options.max(request, response) : options.max;
+    const maxHits = await retrieveQuota;
+    augmentedRequest[options.requestPropertyName] = {
+      limit: maxHits,
+      current: totalHits,
+      remaining: Math.max(maxHits - totalHits, 0),
+      resetTime
+    };
+    if (options.legacyHeaders && !response.headersSent) {
+      response.setHeader("X-RateLimit-Limit", maxHits);
+      response.setHeader("X-RateLimit-Remaining", augmentedRequest[options.requestPropertyName].remaining);
+      if (resetTime instanceof Date) {
+        response.setHeader("Date", new Date().toUTCString());
+        response.setHeader("X-RateLimit-Reset", Math.ceil(resetTime.getTime() / 1e3));
+      }
+    }
+    if (options.standardHeaders && !response.headersSent) {
+      response.setHeader("RateLimit-Limit", maxHits);
+      response.setHeader("RateLimit-Remaining", augmentedRequest[options.requestPropertyName].remaining);
+      if (resetTime) {
+        const deltaSeconds = Math.ceil((resetTime.getTime() - Date.now()) / 1e3);
+        response.setHeader("RateLimit-Reset", Math.max(0, deltaSeconds));
+      }
+    }
+    if (options.skipFailedRequests || options.skipSuccessfulRequests) {
+      let decremented = false;
+      const decrementKey = async () => {
+        if (!decremented) {
+          await options.store.decrement(key);
+          decremented = true;
+        }
+      };
+      if (options.skipFailedRequests) {
+        response.on("finish", async () => {
+          if (!options.requestWasSuccessful(request, response))
+            await decrementKey();
+        });
+        response.on("close", async () => {
+          if (!response.writableEnded)
+            await decrementKey();
+        });
+        response.on("error", async () => {
+          await decrementKey();
+        });
+      }
+      if (options.skipSuccessfulRequests) {
+        response.on("finish", async () => {
+          if (options.requestWasSuccessful(request, response))
+            await decrementKey();
+        });
+      }
+    }
+    if (maxHits && totalHits === maxHits + 1) {
+      options.onLimitReached(request, response, options);
+    }
+    if (maxHits && totalHits > maxHits) {
+      if ((options.legacyHeaders || options.standardHeaders) && !response.headersSent) {
+        response.setHeader("Retry-After", Math.ceil(options.windowMs / 1e3));
+      }
+      options.handler(request, response, next, options);
+      return;
+    }
+    next();
+  });
+  middleware.resetKey = options.store.resetKey.bind(options.store);
+  return middleware;
+};
+var lib_default = rateLimit;
+
 // up.ts
 var import_axios = __toESM(require_axios2());
 var import_dotenv = __toESM(require_main());
@@ -64497,6 +64688,12 @@ var apiKey = process.env.API_KEY || "";
 var upApiKey = process.env.UP_API_KEY;
 var urlBase = "https://api.up.com.au/api/v1";
 import_axios.default.defaults.headers.common["Authorization"] = `Bearer ${upApiKey}`;
+var limiter = lib_default({
+  windowMs: 1e3,
+  max: 1,
+  standardHeaders: true,
+  legacyHeaders: false
+});
 function createUpRoutes(app2, knex2) {
   function createOrUpdateAccount(id, name = "unnamed") {
     return __async(this, null, function* () {
@@ -64525,7 +64722,8 @@ function createUpRoutes(app2, knex2) {
       }).returning("*");
     });
   }
-  app2.get("/up/balances/:key", (req, res, next) => __async(this, null, function* () {
+  app2.set("trust proxy", 1);
+  app2.get("/up/balances/:key", limiter, (req, res, next) => __async(this, null, function* () {
     try {
       if (upApiKey && req.params.key === apiKey) {
         const fetchRes = yield import_axios.default.get(urlBase + "/accounts");
@@ -64540,7 +64738,7 @@ function createUpRoutes(app2, knex2) {
       next(e);
     }
   }));
-  app2.post("/up/:key", (req, res, next) => __async(this, null, function* () {
+  app2.post("/up/:key", limiter, (req, res, next) => __async(this, null, function* () {
     var _a, _b, _c;
     try {
       const body = req.body;
@@ -64560,7 +64758,7 @@ function createUpRoutes(app2, knex2) {
       next(e);
     }
   }));
-  app2.get("/up/:key/:period", (req, res, next) => __async(this, null, function* () {
+  app2.get("/up/:key/:period", limiter, (req, res, next) => __async(this, null, function* () {
     try {
       if (req.params.key === apiKey) {
         const accounts = yield knex2.table("accounts" /* ACCOUNTS */).select();
