@@ -48,8 +48,8 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 			.insert({
 				accountId,
 				amount: txn.data.attributes.amount.valueInBaseUnits,
-				category: txn.data.relationships.category.data,
-				parentCategory: txn.data.relationships.parentCategory.data,
+				category: txn.data.relationships.category.data?.id,
+				parentCategory: txn.data.relationships.parentCategory.data?.id,
 				description: txn.data.attributes.description,
 				createdAt: txn.data.attributes.createdAt,
 			})
@@ -232,10 +232,10 @@ type UpTransaction = {
 				};
 			};
 			category: {
-				data: null | string;
+				data: null | { id: string };
 			};
 			parentCategory: {
-				data: null | string;
+				data: null | { id: string };
 			};
 		};
 	};

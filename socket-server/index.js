@@ -52464,11 +52464,12 @@ function createUpRoutes(app2, knex2) {
   }
   function createTransaction(accountId, txn) {
     return __async(this, null, function* () {
+      var _a, _b;
       return yield knex2.table("account_transactions" /* TRANSACTIONS */).insert({
         accountId,
         amount: txn.data.attributes.amount.valueInBaseUnits,
-        category: txn.data.relationships.category.data,
-        parentCategory: txn.data.relationships.parentCategory.data,
+        category: (_a = txn.data.relationships.category.data) == null ? void 0 : _a.id,
+        parentCategory: (_b = txn.data.relationships.parentCategory.data) == null ? void 0 : _b.id,
         description: txn.data.attributes.description,
         createdAt: txn.data.attributes.createdAt
       }).returning("*");
