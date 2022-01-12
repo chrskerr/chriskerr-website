@@ -135,9 +135,13 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 
 	app.get('/up/balances/:key', async (req, res, next) => {
 		try {
+			console.log(apiKey, req.query.key);
+			console.log(upApiKey);
 			if (upApiKey && req.query.key === apiKey) {
 				const fetchRes = await axios.get(urlBase + '/accounts');
 				const accounts = fetchRes.data as UpAccounts;
+
+				console.log(fetchRes);
 
 				await Promise.all(
 					accounts.data.map(async account => {
@@ -154,12 +158,47 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 					}),
 				);
 			}
+			res.status(200).end();
 		} catch (e) {
 			next(e);
 		}
 	});
 
 	app.post('/up/:key', async (req, res, next) => {
+		try {
+			const body = req.body as UpWebhook;
+			const txnUrl = body.relationships?.transction?.links?.related;
+			if (
+				body.attributes.eventType === 'TRANSACTION_CREATED' &&
+				txnUrl &&
+				req.query.key === apiKey
+			) {
+				const txnData = await axios.get(txnUrl);
+				const txn = txnData.data as UpTransaction;
+
+				const accountId = txn.data.relationships.account.data.id;
+
+				const accountRes = await axios.get(
+					urlBase + '/accounts/' + accountId,
+				);
+				const account = accountRes.data.data as UpAccount | undefined;
+
+				await createOrUpdateAccount(
+					accountId,
+					account?.attributes.displayName,
+				);
+
+				const newTransaction = await createTransaction(accountId, txn);
+				console.log(newTransaction);
+			}
+
+			res.status(200).end();
+		} catch (e) {
+			next(e);
+		}
+	});
+
+	app.get('/up/:key', async (req, res, next) => {
 		try {
 			const body = req.body as UpWebhook;
 			const txnUrl = body.relationships?.transction?.links?.related;

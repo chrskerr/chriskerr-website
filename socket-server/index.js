@@ -52477,9 +52477,12 @@ function createUpRoutes(app2, knex2) {
   }
   app2.get("/up/balances/:key", (req, res, next) => __async(this, null, function* () {
     try {
+      console.log(apiKey, req.query.key);
+      console.log(upApiKey);
       if (upApiKey && req.query.key === apiKey) {
         const fetchRes = yield import_axios.default.get(urlBase + "/accounts");
         const accounts = fetchRes.data;
+        console.log(fetchRes);
         yield Promise.all(accounts.data.map((account) => __async(this, null, function* () {
           console.log(account.id);
           console.log(account.attributes);
@@ -52487,11 +52490,32 @@ function createUpRoutes(app2, knex2) {
           yield insertAccountBalance(account.id, account.attributes.balance.valueInBaseUnits);
         })));
       }
+      res.status(200).end();
     } catch (e) {
       next(e);
     }
   }));
   app2.post("/up/:key", (req, res, next) => __async(this, null, function* () {
+    var _a, _b, _c;
+    try {
+      const body = req.body;
+      const txnUrl = (_c = (_b = (_a = body.relationships) == null ? void 0 : _a.transction) == null ? void 0 : _b.links) == null ? void 0 : _c.related;
+      if (body.attributes.eventType === "TRANSACTION_CREATED" && txnUrl && req.query.key === apiKey) {
+        const txnData = yield import_axios.default.get(txnUrl);
+        const txn = txnData.data;
+        const accountId = txn.data.relationships.account.data.id;
+        const accountRes = yield import_axios.default.get(urlBase + "/accounts/" + accountId);
+        const account = accountRes.data.data;
+        yield createOrUpdateAccount(accountId, account == null ? void 0 : account.attributes.displayName);
+        const newTransaction = yield createTransaction(accountId, txn);
+        console.log(newTransaction);
+      }
+      res.status(200).end();
+    } catch (e) {
+      next(e);
+    }
+  }));
+  app2.get("/up/:key", (req, res, next) => __async(this, null, function* () {
     var _a, _b, _c;
     try {
       const body = req.body;
