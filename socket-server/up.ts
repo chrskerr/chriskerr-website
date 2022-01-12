@@ -1,6 +1,5 @@
-import e, { Express } from 'express';
+import { Express } from 'express';
 
-// import fetch from 'node-fetch';
 import axios from 'axios';
 
 import dotenv from 'dotenv';
@@ -14,10 +13,11 @@ export enum TableNames {
 	TRANSACTIONS = 'account_transactions',
 }
 
-const apiKey = process.env.UP_API_KEY;
+const apiKey = process.env.API_KEY || '';
+const upApiKey = process.env.UP_API_KEY;
 const urlBase = 'https://api.up.com.au/api/v1';
 
-axios.defaults.headers.common['Authorization'] = `Bearer ${apiKey}`;
+axios.defaults.headers.common['Authorization'] = `Bearer ${upApiKey}`;
 
 export default function createUpRoutes(app: Express, knex: Knex): void {
 	async function createOrUpdateAccount(id: string, name = 'unnamed') {
@@ -51,6 +51,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 				category: txn.data.relationships.category.data,
 				parentCategory: txn.data.relationships.parentCategory.data,
 				description: txn.data.attributes.description,
+				createdAt: txn.data.attributes.createdAt,
 			})
 			.returning('*');
 	}
@@ -134,7 +135,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 
 	app.get('/up/balances/:key', async (req, res, next) => {
 		try {
-			if (apiKey && req.query.key === (process.env.API_KEY || '')) {
+			if (upApiKey && req.query.key === apiKey) {
 				const fetchRes = await axios.get(urlBase + '/accounts');
 				const accounts = fetchRes.data as UpAccounts;
 
@@ -165,7 +166,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 			if (
 				body.attributes.eventType === 'TRANSACTION_CREATED' &&
 				txnUrl &&
-				req.query.key === (process.env.API_KEY || '')
+				apiKey
 			) {
 				const txnData = await axios.get(txnUrl);
 				const txn = txnData.data as UpTransaction;

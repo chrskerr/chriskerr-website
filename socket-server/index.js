@@ -52443,9 +52443,10 @@ var unsavedNoteId = "n";
 var import_axios = __toESM(require_axios2());
 var import_dotenv = __toESM(require_main());
 import_dotenv.default.config({ path: ".env.local" });
-var apiKey = process.env.UP_API_KEY;
+var apiKey = process.env.API_KEY || "";
+var upApiKey = process.env.UP_API_KEY;
 var urlBase = "https://api.up.com.au/api/v1";
-import_axios.default.defaults.headers.common["Authorization"] = `Bearer ${apiKey}`;
+import_axios.default.defaults.headers.common["Authorization"] = `Bearer ${upApiKey}`;
 function createUpRoutes(app2, knex2) {
   function createOrUpdateAccount(id, name = "unnamed") {
     return __async(this, null, function* () {
@@ -52468,13 +52469,14 @@ function createUpRoutes(app2, knex2) {
         amount: txn.data.attributes.amount.valueInBaseUnits,
         category: txn.data.relationships.category.data,
         parentCategory: txn.data.relationships.parentCategory.data,
-        description: txn.data.attributes.description
+        description: txn.data.attributes.description,
+        createdAt: txn.data.attributes.createdAt
       }).returning("*");
     });
   }
   app2.get("/up/balances/:key", (req, res, next) => __async(this, null, function* () {
     try {
-      if (apiKey && req.query.key === (process.env.API_KEY || "")) {
+      if (upApiKey && req.query.key === apiKey) {
         const fetchRes = yield import_axios.default.get(urlBase + "/accounts");
         const accounts = fetchRes.data;
         yield Promise.all(accounts.data.map((account) => __async(this, null, function* () {
@@ -52493,7 +52495,7 @@ function createUpRoutes(app2, knex2) {
     try {
       const body = req.body;
       const txnUrl = (_c = (_b = (_a = body.relationships) == null ? void 0 : _a.transction) == null ? void 0 : _b.links) == null ? void 0 : _c.related;
-      if (body.attributes.eventType === "TRANSACTION_CREATED" && txnUrl && req.query.key === (process.env.API_KEY || "")) {
+      if (body.attributes.eventType === "TRANSACTION_CREATED" && txnUrl && apiKey) {
         const txnData = yield import_axios.default.get(txnUrl);
         const txn = txnData.data;
         const accountId = txn.data.relationships.account.data.id;
