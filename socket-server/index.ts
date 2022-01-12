@@ -46,9 +46,11 @@ const knex = Knex({
 	connection: {
 		connectionString:
 			process.env.DATABASE_URL || 'postgres://127.0.0.1:5432/postgres',
-		// ssl: {
-		// 	rejectUnauthorized: false,
-		// },
+		...(process.env.DATABASE_URL && {
+			ssl: {
+				rejectUnauthorized: false,
+			},
+		}),
 	},
 });
 

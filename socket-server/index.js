@@ -52516,19 +52516,14 @@ function createUpRoutes(app2, knex2) {
     }
   }));
   app2.get("/up/:key", (req, res, next) => __async(this, null, function* () {
-    var _a, _b, _c;
     try {
-      const body = req.body;
-      const txnUrl = (_c = (_b = (_a = body.relationships) == null ? void 0 : _a.transction) == null ? void 0 : _b.links) == null ? void 0 : _c.related;
-      if (body.attributes.eventType === "TRANSACTION_CREATED" && txnUrl && apiKey) {
-        const txnData = yield import_axios.default.get(txnUrl);
-        const txn = txnData.data;
-        const accountId = txn.data.relationships.account.data.id;
-        const accountRes = yield import_axios.default.get(urlBase + "/accounts/" + accountId);
-        const account = accountRes.data.data;
-        yield createOrUpdateAccount(accountId, account == null ? void 0 : account.attributes.displayName);
-        const newTransaction = yield createTransaction(accountId, txn);
-        console.log(newTransaction);
+      if (apiKey) {
+        const accounts = knex2.table("accounts" /* ACCOUNTS */).select("*");
+        const balances = knex2.table("account_balances" /* BALANCES */).select("*");
+        const transactions = knex2.table("account_transactions" /* TRANSACTIONS */).select("*");
+        console.log(accounts);
+        console.log(balances);
+        console.log(transactions);
       }
       res.status(200).end();
     } catch (e) {
@@ -52551,9 +52546,13 @@ app.use(import_body_parser.default.json());
 app.use((0, import_cors.default)(corsSettings));
 var knex = (0, import_knex.default)({
   client: import_postgres.default,
-  connection: {
+  connection: __spreadValues({
     connectionString: process.env.DATABASE_URL || "postgres://127.0.0.1:5432/postgres"
-  }
+  }, process.env.DATABASE_URL && {
+    ssl: {
+      rejectUnauthorized: false
+    }
+  })
 });
 var idLength = 3;
 var idOptions = {

@@ -200,30 +200,16 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 
 	app.get('/up/:key', async (req, res, next) => {
 		try {
-			const body = req.body as UpWebhook;
-			const txnUrl = body.relationships?.transction?.links?.related;
-			if (
-				body.attributes.eventType === 'TRANSACTION_CREATED' &&
-				txnUrl &&
-				apiKey
-			) {
-				const txnData = await axios.get(txnUrl);
-				const txn = txnData.data as UpTransaction;
+			if (apiKey) {
+				const accounts = knex.table(TableNames.ACCOUNTS).select('*');
+				const balances = knex.table(TableNames.BALANCES).select('*');
+				const transactions = knex
+					.table(TableNames.TRANSACTIONS)
+					.select('*');
 
-				const accountId = txn.data.relationships.account.data.id;
-
-				const accountRes = await axios.get(
-					urlBase + '/accounts/' + accountId,
-				);
-				const account = accountRes.data.data as UpAccount | undefined;
-
-				await createOrUpdateAccount(
-					accountId,
-					account?.attributes.displayName,
-				);
-
-				const newTransaction = await createTransaction(accountId, txn);
-				console.log(newTransaction);
+				console.log(accounts);
+				console.log(balances);
+				console.log(transactions);
 			}
 
 			res.status(200).end();
