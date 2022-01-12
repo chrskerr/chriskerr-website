@@ -1,4 +1,6 @@
-import { Express } from 'express';
+import { Express, Request } from 'express';
+
+import crypto from 'crypto';
 
 import rateLimit from 'express-rate-limit';
 import axios from 'axios';
@@ -22,6 +24,9 @@ const upApiKey = process.env.UP_API_KEY;
 const urlBase = 'https://api.up.com.au/api/v1';
 
 axios.defaults.headers.common['Authorization'] = `Bearer ${upApiKey}`;
+
+const getHasAuthHeaders = (req: Request): boolean =>
+	req.headers['api_key'] === apiKey;
 
 const limiter = rateLimit({
 	windowMs: 1000,
@@ -87,7 +92,9 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 	// 	try {
 	// 		if (apiKey) {
 	// 			const fetchRes = await axios.get(urlBase + '/webhooks');
-	// 			console.log(fetchRes.data);
+	// 			fetchRes.data?.data?.forEach(row => {
+	// 				console.log(row.id, row.attributes);
+	// 			});
 	// 		}
 	// 		res.status(200).end();
 	// 	} catch (e) {
@@ -148,9 +155,11 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 	// 	}
 	// });
 
-	app.get('/up/balances/:key', limiter, async (req, res, next) => {
+	app.get('/up/balances', limiter, async (req, res, next) => {
 		try {
-			if (upApiKey && req.params.key === apiKey) {
+			const hasAuthHeaders = getHasAuthHeaders(req);
+
+			if (upApiKey && hasAuthHeaders) {
 				const fetchRes = await axios.get(urlBase + '/accounts');
 				const accounts = fetchRes.data as UpAccounts;
 
@@ -173,16 +182,29 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 		}
 	});
 
-	app.post('/up/:key', limiter, async (req, res, next) => {
+	app.post('/up', limiter, async (req, res, next) => {
 		try {
-			const body = req.body as UpWebhook;
-			const txnUrl = body.relationships?.transction?.links?.related;
+			const body = req.body.data as UpWebhook;
+			const upSigningSecret = process.env.UP_SIGNING_SECRET;
+
+			if (!body || !upSigningSecret) return res.status(200).end();
+
+			const txnId = body.relationships?.transaction?.data?.id;
+
+			const hmac = crypto.createHmac('sha256', upSigningSecret);
+			hmac.update(req.rawBody);
+
+			const hash = hmac.digest('hex');
+			const upSignature = req.headers['x-up-authenticity-signature'];
+
 			if (
 				body.attributes.eventType === 'TRANSACTION_CREATED' &&
-				txnUrl &&
-				req.params.key === apiKey
+				txnId &&
+				hash === upSignature
 			) {
-				const txnData = await axios.get(txnUrl);
+				const txnData = await axios.get(
+					urlBase + '/transactions/' + txnId,
+				);
 				const txn = txnData.data as UpTransaction;
 
 				const accountId = txn.data.relationships.account.data.id;
@@ -199,6 +221,9 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 
 				const newTransaction = await createTransaction(accountId, txn);
 				console.log(newTransaction);
+			} else {
+				console.log(body);
+				console.log('signature matched?', hash === upSignature);
 			}
 
 			res.status(200).end();
@@ -207,9 +232,12 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 		}
 	});
 
-	app.get('/up/:key/:period', limiter, async (req, res, next) => {
+	app.get('/up/:period', limiter, async (req, res, next) => {
 		try {
-			if (req.params.key === apiKey) {
+			const hasAuthHeaders = getHasAuthHeaders(req);
+			const period = req.params.period;
+
+			if (hasAuthHeaders) {
 				const accounts = await knex
 					.table<Account>(TableNames.ACCOUNTS)
 					.select();
@@ -220,7 +248,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 					.table<Transaction>(TableNames.TRANSACTIONS)
 					.select();
 
-				if (req.params.period === 'week') {
+				if (period === 'week') {
 					const transactionSummaries = transactions.reduce<{
 						allTransactions: TransactionsSummary[];
 						transactionsByParentCategory: TransactionsSummary[];
@@ -452,9 +480,9 @@ type UpWebhook = {
 		eventType: string;
 	};
 	relationships: {
-		transction: {
-			links: {
-				related: string;
+		transaction?: {
+			data?: {
+				id?: string;
 			};
 		};
 	};

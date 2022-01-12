@@ -16616,14 +16616,14 @@ var require_etag = __commonJS({
   "node_modules/etag/index.js"(exports2, module2) {
     "use strict";
     module2.exports = etag;
-    var crypto2 = require("crypto");
+    var crypto3 = require("crypto");
     var Stats = require("fs").Stats;
     var toString = Object.prototype.toString;
     function entitytag(entity) {
       if (entity.length === 0) {
         return '"0-2jmj7l5rSw0yVb/vlWAYkK/YBwk"';
       }
-      var hash = crypto2.createHash("sha1").update(entity, "utf8").digest("base64").substring(0, 27);
+      var hash = crypto3.createHash("sha1").update(entity, "utf8").digest("base64").substring(0, 27);
       var len = typeof entity === "string" ? Buffer.byteLength(entity, "utf8") : entity.length;
       return '"' + len.toString(16) + "-" + hash + '"';
     }
@@ -19536,13 +19536,13 @@ var require_request = __commonJS({
 // node_modules/cookie-signature/index.js
 var require_cookie_signature = __commonJS({
   "node_modules/cookie-signature/index.js"(exports2) {
-    var crypto2 = require("crypto");
+    var crypto3 = require("crypto");
     exports2.sign = function(val, secret) {
       if (typeof val != "string")
         throw new TypeError("Cookie value must be provided as a string.");
       if (typeof secret != "string")
         throw new TypeError("Secret string must be provided.");
-      return val + "." + crypto2.createHmac("sha256", secret).update(val).digest("base64").replace(/\=+$/, "");
+      return val + "." + crypto3.createHmac("sha256", secret).update(val).digest("base64").replace(/\=+$/, "");
     };
     exports2.unsign = function(val, secret) {
       if (typeof val != "string")
@@ -19553,7 +19553,7 @@ var require_cookie_signature = __commonJS({
       return sha1(mac) == sha1(val) ? str : false;
     };
     function sha1(str) {
-      return crypto2.createHash("sha1").update(str).digest("hex");
+      return crypto3.createHash("sha1").update(str).digest("hex");
     }
   }
 });
@@ -20450,7 +20450,7 @@ var require_express2 = __commonJS({
 // node_modules/base64id/lib/base64id.js
 var require_base64id = __commonJS({
   "node_modules/base64id/lib/base64id.js"(exports2, module2) {
-    var crypto2 = require("crypto");
+    var crypto3 = require("crypto");
     var Base64Id = function() {
     };
     Base64Id.prototype.getRandomBytes = function(bytes) {
@@ -20458,12 +20458,12 @@ var require_base64id = __commonJS({
       var self2 = this;
       bytes = bytes || 12;
       if (bytes > BUFFER_SIZE) {
-        return crypto2.randomBytes(bytes);
+        return crypto3.randomBytes(bytes);
       }
       var bytesInBuffer = parseInt(BUFFER_SIZE / bytes);
       var threshold = parseInt(bytesInBuffer * 0.85);
       if (!threshold) {
-        return crypto2.randomBytes(bytes);
+        return crypto3.randomBytes(bytes);
       }
       if (this.bytesBufferIndex == null) {
         this.bytesBufferIndex = -1;
@@ -20475,14 +20475,14 @@ var require_base64id = __commonJS({
       if (this.bytesBufferIndex == -1 || this.bytesBufferIndex > threshold) {
         if (!this.isGeneratingBytes) {
           this.isGeneratingBytes = true;
-          crypto2.randomBytes(BUFFER_SIZE, function(err, bytes2) {
+          crypto3.randomBytes(BUFFER_SIZE, function(err, bytes2) {
             self2.bytesBuffer = bytes2;
             self2.bytesBufferIndex = 0;
             self2.isGeneratingBytes = false;
           });
         }
         if (this.bytesBufferIndex == -1) {
-          return crypto2.randomBytes(bytes);
+          return crypto3.randomBytes(bytes);
         }
       }
       var result = this.bytesBuffer.slice(bytes * this.bytesBufferIndex, bytes * (this.bytesBufferIndex + 1));
@@ -20496,7 +20496,7 @@ var require_base64id = __commonJS({
       }
       this.sequenceNumber = this.sequenceNumber + 1 | 0;
       rand.writeInt32BE(this.sequenceNumber, 11);
-      if (crypto2.randomBytes) {
+      if (crypto3.randomBytes) {
         this.getRandomBytes(12).copy(rand);
       } else {
         [0, 4, 8].forEach(function(i) {
@@ -44294,7 +44294,7 @@ var require_defaults2 = __commonJS({
 var require_utils4 = __commonJS({
   "node_modules/pg/lib/utils.js"(exports2, module2) {
     "use strict";
-    var crypto2 = require("crypto");
+    var crypto3 = require("crypto");
     var defaults = require_defaults2();
     function escapeElement(elementRepresentation) {
       var escaped = elementRepresentation.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
@@ -44410,7 +44410,7 @@ var require_utils4 = __commonJS({
       return config;
     }
     var md5 = function(string) {
-      return crypto2.createHash("md5").update(string, "utf-8").digest("hex");
+      return crypto3.createHash("md5").update(string, "utf-8").digest("hex");
     };
     var postgresMd5PasswordHash = function(user, password, salt) {
       var inner = md5(password + user);
@@ -44432,12 +44432,12 @@ var require_utils4 = __commonJS({
 var require_sasl = __commonJS({
   "node_modules/pg/lib/sasl.js"(exports2, module2) {
     "use strict";
-    var crypto2 = require("crypto");
+    var crypto3 = require("crypto");
     function startSession(mechanisms) {
       if (mechanisms.indexOf("SCRAM-SHA-256") === -1) {
         throw new Error("SASL: Only mechanism SCRAM-SHA-256 is currently supported");
       }
-      const clientNonce = crypto2.randomBytes(18).toString("base64");
+      const clientNonce = crypto3.randomBytes(18).toString("base64");
       return {
         mechanism: "SCRAM-SHA-256",
         clientNonce,
@@ -44567,10 +44567,10 @@ var require_sasl = __commonJS({
       return Buffer.from(a.map((_, i) => a[i] ^ b[i]));
     }
     function sha256(text) {
-      return crypto2.createHash("sha256").update(text).digest();
+      return crypto3.createHash("sha256").update(text).digest();
     }
     function hmacSha256(key, msg) {
-      return crypto2.createHmac("sha256", key).update(msg).digest();
+      return crypto3.createHmac("sha256", key).update(msg).digest();
     }
     function Hi(password, saltBytes, iterations) {
       var ui1 = hmacSha256(password, Buffer.concat([saltBytes, Buffer.from([0, 0, 0, 1])]));
@@ -64487,6 +64487,9 @@ var import_random_word_slugs = __toESM(require_dist6());
 // ../lib/constants.ts
 var unsavedNoteId = "n";
 
+// up.ts
+var import_crypto2 = __toESM(require("crypto"));
+
 // node_modules/express-rate-limit/dist/index.mjs
 var calculateNextResetTime = (windowMs) => {
   const resetTime = new Date();
@@ -64688,6 +64691,7 @@ var apiKey = process.env.API_KEY || "";
 var upApiKey = process.env.UP_API_KEY;
 var urlBase = "https://api.up.com.au/api/v1";
 import_axios.default.defaults.headers.common["Authorization"] = `Bearer ${upApiKey}`;
+var getHasAuthHeaders = (req) => req.headers["api_key"] === apiKey;
 var limiter = lib_default({
   windowMs: 1e3,
   max: 1,
@@ -64723,9 +64727,10 @@ function createUpRoutes(app2, knex2) {
     });
   }
   app2.set("trust proxy", 1);
-  app2.get("/up/balances/:key", limiter, (req, res, next) => __async(this, null, function* () {
+  app2.get("/up/balances", limiter, (req, res, next) => __async(this, null, function* () {
     try {
-      if (upApiKey && req.params.key === apiKey) {
+      const hasAuthHeaders = getHasAuthHeaders(req);
+      if (upApiKey && hasAuthHeaders) {
         const fetchRes = yield import_axios.default.get(urlBase + "/accounts");
         const accounts = fetchRes.data;
         yield Promise.all(accounts.data.map((account) => __async(this, null, function* () {
@@ -64738,13 +64743,20 @@ function createUpRoutes(app2, knex2) {
       next(e);
     }
   }));
-  app2.post("/up/:key", limiter, (req, res, next) => __async(this, null, function* () {
+  app2.post("/up", limiter, (req, res, next) => __async(this, null, function* () {
     var _a, _b, _c;
     try {
-      const body = req.body;
-      const txnUrl = (_c = (_b = (_a = body.relationships) == null ? void 0 : _a.transction) == null ? void 0 : _b.links) == null ? void 0 : _c.related;
-      if (body.attributes.eventType === "TRANSACTION_CREATED" && txnUrl && req.params.key === apiKey) {
-        const txnData = yield import_axios.default.get(txnUrl);
+      const body = req.body.data;
+      const upSigningSecret = process.env.UP_SIGNING_SECRET;
+      if (!body || !upSigningSecret)
+        return res.status(200).end();
+      const txnId = (_c = (_b = (_a = body.relationships) == null ? void 0 : _a.transaction) == null ? void 0 : _b.data) == null ? void 0 : _c.id;
+      const hmac = import_crypto2.default.createHmac("sha256", upSigningSecret);
+      hmac.update(req.rawBody);
+      const hash = hmac.digest("hex");
+      const upSignature = req.headers["x-up-authenticity-signature"];
+      if (body.attributes.eventType === "TRANSACTION_CREATED" && txnId && hash === upSignature) {
+        const txnData = yield import_axios.default.get(urlBase + "/transactions/" + txnId);
         const txn = txnData.data;
         const accountId = txn.data.relationships.account.data.id;
         const accountRes = yield import_axios.default.get(urlBase + "/accounts/" + accountId);
@@ -64752,19 +64764,24 @@ function createUpRoutes(app2, knex2) {
         yield createOrUpdateAccount(accountId, account == null ? void 0 : account.attributes.displayName);
         const newTransaction = yield createTransaction(accountId, txn);
         console.log(newTransaction);
+      } else {
+        console.log(body);
+        console.log("signature matched?", hash === upSignature);
       }
       res.status(200).end();
     } catch (e) {
       next(e);
     }
   }));
-  app2.get("/up/:key/:period", limiter, (req, res, next) => __async(this, null, function* () {
+  app2.get("/up/:period", limiter, (req, res, next) => __async(this, null, function* () {
     try {
-      if (req.params.key === apiKey) {
+      const hasAuthHeaders = getHasAuthHeaders(req);
+      const period = req.params.period;
+      if (hasAuthHeaders) {
         const accounts = yield knex2.table("accounts" /* ACCOUNTS */).select();
         const balances = yield knex2.table("account_balances" /* BALANCES */).select("*");
         const transactions = yield knex2.table("account_transactions" /* TRANSACTIONS */).select();
-        if (req.params.period === "week") {
+        if (period === "week") {
           const transactionSummaries = transactions.reduce((acc, transaction) => {
             const {
               amount,
@@ -64867,7 +64884,11 @@ var server = import_http.default.createServer(app);
 var io2 = new Server(server, {
   cors: corsSettings
 });
-app.use(import_body_parser.default.json());
+app.use(import_body_parser.default.json({
+  verify: (req, res, buf) => {
+    req.rawBody = buf;
+  }
+}));
 app.use((0, import_cors.default)(corsSettings));
 var knex = (0, import_knex.default)({
   client: import_postgres.default,
