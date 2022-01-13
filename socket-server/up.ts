@@ -12,6 +12,19 @@ dotenv.config({ path: '.env.local' });
 import { differenceInSeconds, startOfWeek } from 'date-fns';
 import reject from 'lodash/reject';
 
+import type {
+	Balance,
+	Transaction,
+	Account,
+	UpApiReturn,
+	UpTransaction,
+	UpAccounts,
+	UpWebhook,
+	UpAccount,
+	TransactionsSummary,
+	BalanceWithStart,
+} from '../types/finance';
+
 export enum TableNames {
 	NOTES = 'notes',
 	ACCOUNTS = 'accounts',
@@ -430,108 +443,3 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 		}
 	});
 }
-
-type Account = {
-	id: string;
-	name: string;
-};
-
-type Balance = {
-	id: number;
-	/** balances in cents */
-	balance: number;
-	createdAt: Date;
-	accountId: string;
-};
-
-type BalanceWithStart = Balance & { weekStartOn: Date };
-
-type Transaction = {
-	id: number;
-	/** transaction value in cents */
-	amount: number;
-	category: string | undefined;
-	parentCategory: string | undefined;
-	description: string;
-	accountId: string;
-	createdAt: string;
-};
-
-type TransactionsSummary = {
-	weekStartOn: Date;
-	accountId: string;
-	/** transaction value in cents */
-	amount: number;
-	category?: string;
-	parentCategory?: string;
-};
-
-export type UpApiReturn = {
-	balances: BalanceWithStart[];
-	accounts: Account[];
-	allTransactions: TransactionsSummary[];
-	transactionsByParentCategory: TransactionsSummary[];
-	transactionsByCategory: TransactionsSummary[];
-};
-
-type UpWebhook = {
-	id: string;
-	attributes: {
-		eventType: string;
-	};
-	relationships: {
-		transaction?: {
-			data?: {
-				id?: string;
-			};
-		};
-	};
-};
-
-type UpTransaction = {
-	data: {
-		type: 'transactions';
-		id: string;
-		attributes: {
-			description: string;
-			message: null;
-			amount: {
-				currencyCode: string;
-				valueInBaseUnits: number;
-			};
-			/** ISO8601 date string */
-			settledAt: string;
-			/** ISO8601 date string */
-			createdAt: string;
-		};
-		relationships: {
-			account: {
-				data: {
-					type: 'accounts';
-					id: string;
-				};
-			};
-			category: {
-				data: null | { id: string };
-			};
-			parentCategory: {
-				data: null | { id: string };
-			};
-		};
-	};
-};
-
-type UpAccounts = {
-	data: UpAccount[];
-};
-
-type UpAccount = {
-	type: 'accounts';
-	id: string;
-	attributes: {
-		displayName: string;
-		balance: {
-			valueInBaseUnits: number;
-		};
-	};
-};

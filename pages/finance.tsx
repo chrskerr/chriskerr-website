@@ -1,21 +1,11 @@
-import { GetStaticPaths, GetStaticProps } from 'next';
-import type { Blog } from 'types/writing';
-
 import { ReactElement, useState } from 'react';
-import Head from 'next/head';
-import { NextSeo, BlogJsonLd } from 'next-seo';
-import { marked } from 'marked';
-import hljs from 'highlight.js';
+import { NextSeo } from 'next-seo';
 
-import { defaultTitle } from 'pages/_app';
-import allWriting from 'writing';
-
-import { UpApiReturn } from 'socket-server/up';
+import { UpApiReturn } from 'types/finance';
 import { socketServerUrl } from 'lib/constants';
+import Finance from 'components/finance';
 
-import 'highlight.js/styles/github.css';
-
-export default function Finances(): ReactElement {
+export default function FinancesPage(): ReactElement {
 	const [password, setPassword] = useState('');
 	const [data, setData] = useState<UpApiReturn>();
 	const [loading, setLoading] = useState(false);
@@ -28,8 +18,7 @@ export default function Finances(): ReactElement {
 				headers: new Headers({ api_key: password }),
 			});
 			if (res.ok) {
-				// const resBody = await res.json();
-				console.log(res);
+				setData(await res.json());
 			}
 		} catch (e) {
 			console.error(e);
@@ -44,19 +33,22 @@ export default function Finances(): ReactElement {
 				<h2 className="mb-4 text-3xl">Our Finances</h2>
 			</div>
 			<div className="display-width divider-before">
-				{data ? (
-					<></>
+				{loading ? (
+					<p>Loading</p>
+				) : data ? (
+					<Finance data={data} />
 				) : (
 					<>
 						<input
 							type="password"
+							placeholder="Please enter password"
 							autoComplete="current-password"
 							value={password}
 							onChange={e => setPassword(e.target.value)}
 							disabled={loading}
 						/>
 						<button
-							className="button"
+							className="ml-4 button"
 							onClick={handleLogin}
 							disabled={loading}
 						>
