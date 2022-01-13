@@ -64867,7 +64867,7 @@ function createUpRoutes(app2, knex2) {
           res.status(200).json(result);
         }
       }
-      res.status(200).end();
+      res.status(500).end();
     } catch (e) {
       next(e);
     }

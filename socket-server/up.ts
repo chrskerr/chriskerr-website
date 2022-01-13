@@ -424,7 +424,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 				}
 			}
 
-			res.status(200).end();
+			res.status(500).end();
 		} catch (e) {
 			next(e);
 		}
