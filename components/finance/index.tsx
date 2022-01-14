@@ -6,7 +6,7 @@ type TransactionCategories = 'all' | 'category' | 'parent-category';
 
 export default function Finance({ data }: { data: UpApiReturn }): ReactElement {
 	const [summariseTransactionsBy, setSummariseTransactionsBy] =
-		useState<TransactionCategories>('all');
+		useState<TransactionCategories>('parent-category');
 
 	const {
 		allTransactions,
@@ -23,7 +23,7 @@ export default function Finance({ data }: { data: UpApiReturn }): ReactElement {
 		<>
 			<div>
 				<div className="flex items-center justify-between pb-6">
-					<h2 className="text-xl">Transactions per week</h2>
+					<h2 className="text-xl">Weekly cash flow</h2>
 					<label>
 						Summarise by:
 						<select
