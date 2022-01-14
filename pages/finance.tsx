@@ -2,20 +2,26 @@ import { ReactElement, useState } from 'react';
 import { NextSeo } from 'next-seo';
 
 import { UpApiReturn } from 'types/finance';
-import { socketServerUrl } from 'lib/constants';
 import Finance from 'components/finance';
+import { GetServerSideProps } from 'next';
+import { fetchTransactionsHelper } from './api/finance/fetch';
 
-export default function FinancesPage(): ReactElement {
+interface Props {
+	initialData: UpApiReturn | null;
+}
+
+export default function FinancesPage({ initialData }: Props): ReactElement {
 	const [password, setPassword] = useState('');
-	const [data, setData] = useState<UpApiReturn>();
+	const [data, setData] = useState<UpApiReturn | null>(initialData);
 	const [loading, setLoading] = useState(false);
 
 	const handleLogin = async () => {
 		if (!password) return;
 		setLoading(true);
 		try {
-			const res = await fetch(socketServerUrl + '/up/week', {
+			const res = await fetch('/api/finance/fetch', {
 				headers: new Headers({ api_key: password }),
+				credentials: 'include',
 			});
 			if (res.ok) {
 				setData(await res.json());
@@ -60,3 +66,15 @@ export default function FinancesPage(): ReactElement {
 		</>
 	);
 }
+
+export const getServerSideProps: GetServerSideProps = async context => {
+	const initialData = await fetchTransactionsHelper(context.req, context.res);
+
+	const props: Props = {
+		initialData,
+	};
+
+	return {
+		props,
+	};
+};

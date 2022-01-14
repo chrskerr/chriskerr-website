@@ -1,7 +1,6 @@
 import { Express, Request } from 'express';
 
 import crypto from 'crypto';
-import Cookies from 'cookies';
 
 import rateLimit from 'express-rate-limit';
 import axios from 'axios';
@@ -248,27 +247,10 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 
 	app.get('/up/:period', limiter, async (req, res, next) => {
 		try {
-			const cookieName = 'hasAccess';
-			const cookieKey = process.env.COOKIE_KEY;
-			const cookieSetSettings: Cookies.SetOption = {
-				signed: true,
-				maxAge: 14 * 24 * 60 * 60 * 1000,
-				httpOnly: true,
-				overwrite: true,
-			};
-			const cookies =
-				cookieKey && new Cookies(req, res, { keys: [cookieKey] });
-
-			const authCookie =
-				!!cookies &&
-				cookies.get(cookieName, { signed: true }) === 'true';
-
-			const hasAuth = authCookie || getHasAuthHeaders(req);
+			const hasAuth = getHasAuthHeaders(req);
 			const period = req.params.period;
 
 			if (hasAuth) {
-				cookies && cookies.set(cookieName, 'true', cookieSetSettings);
-
 				const accounts = await knex
 					.table<Account>(TableNames.ACCOUNTS)
 					.select();
@@ -294,7 +276,6 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 				}
 			}
 
-			cookies && cookies.set(cookieName, 'false', cookieSetSettings);
 			res.status(500).end();
 		} catch (e) {
 			next(e);
