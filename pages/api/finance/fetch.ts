@@ -71,7 +71,6 @@ export const fetchTransactionsHelper = async (
 			return data;
 		}
 	} else {
-		console.log('here');
 		cookies && cookies.set(cookieName, 'no', cookieSetSettings);
 	}
 
