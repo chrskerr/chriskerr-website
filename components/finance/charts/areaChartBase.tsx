@@ -14,13 +14,16 @@ import { ExpensesChartData } from './expensesPerWeek';
 type Props = {
 	data: ExpensesChartData[];
 	categories: string[];
-	labelFormatter: (input: number) => string;
 };
+
+const formatNumber = new Intl.NumberFormat('en-AU', {
+	style: 'currency',
+	currency: 'AUD',
+});
 
 const AreaChartBase = memo(function AreaChartBase({
 	categories,
 	data,
-	labelFormatter,
 }: Props): ReactElement {
 	return (
 		<div className="h-[300px]">
@@ -32,10 +35,10 @@ const AreaChartBase = memo(function AreaChartBase({
 					margin={{ right: 50, left: 50 }}
 				>
 					<XAxis dataKey="startDate" />
-					<YAxis tickFormatter={labelFormatter} />
+					<YAxis tickFormatter={formatNumber.format} />
 					<Tooltip
 						formatter={(value: number, name: string) => {
-							return [labelFormatter(Number(value)), name];
+							return [formatNumber.format(Number(value)), name];
 						}}
 						labelFormatter={(value: string) =>
 							`Week starting: ${value}`

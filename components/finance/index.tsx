@@ -1,5 +1,6 @@
 import { ReactElement, useState } from 'react';
 import { UpApiReturn } from 'types/finance';
+import BalancessPerWeek from './charts/balancesPerWeek';
 import ExpensesPerWeek from './charts/expensesPerWeek';
 
 type TransactionCategories = 'all' | 'category' | 'parent-category';
@@ -12,6 +13,8 @@ export default function Finance({ data }: { data: UpApiReturn }): ReactElement {
 		allTransactions,
 		transactionsByCategory,
 		transactionsByParentCategory,
+		balances,
+		accounts,
 	} = data;
 	let expensesData = allTransactions;
 	if (summariseTransactionsBy === 'category')
@@ -22,7 +25,7 @@ export default function Finance({ data }: { data: UpApiReturn }): ReactElement {
 	return (
 		<>
 			<div>
-				<div className="flex items-center justify-between pb-6">
+				<div className="flex items-end justify-between pb-6">
 					<h2 className="text-xl">Weekly cash flow</h2>
 					<label>
 						Summarise by:
@@ -44,6 +47,12 @@ export default function Finance({ data }: { data: UpApiReturn }): ReactElement {
 					</label>
 				</div>
 				<ExpensesPerWeek data={expensesData} />
+			</div>
+			<div className="mt-20">
+				<div className="flex items-center justify-between pb-6">
+					<h2 className="text-xl">Up Balances by week</h2>
+				</div>
+				<BalancessPerWeek balances={balances} accounts={accounts} />
 			</div>
 		</>
 	);

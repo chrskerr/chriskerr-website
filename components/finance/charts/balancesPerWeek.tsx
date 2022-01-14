@@ -1,8 +1,7 @@
-import { memo, ReactElement, useEffect, useState } from 'react';
-import { TransactionsSummary } from 'types/finance';
+import { ReactElement, useEffect, useState, memo } from 'react';
+import { Account, BalanceWithStart } from 'types/finance';
 
 import { format } from 'date-fns';
-import startCase from 'lodash/startCase';
 
 import AreaChartBase from './areaChartBase';
 
@@ -11,25 +10,27 @@ export type ExpensesChartData = {
 	[key: string]: number | string;
 };
 
-const ExpensesPerWeek = memo(function ExpensesPerWeek({
-	data,
+const BalancesPerWeek = memo(function BalancessPerWeek({
+	balances,
+	accounts,
 }: {
-	data: TransactionsSummary[];
+	balances: BalanceWithStart[];
+	accounts: Account[];
 }): ReactElement {
 	const [categories, setCategories] = useState<string[]>([]);
 	const [cleanedData, setCleanedData] = useState<ExpensesChartData[]>([]);
 
 	useEffect(() => {
-		const newCategories = data.reduce<string[]>((acc, curr) => {
-			const currentCategory = startCase(
-				curr.parentCategory || curr.category || 'All',
-			);
+		const newCategories = balances.reduce<string[]>((acc, curr) => {
+			const currentCategory =
+				accounts.find(({ id }) => id === curr.accountId)?.name ||
+				'unknown';
 			if (acc.includes(currentCategory)) return acc;
 			return [...acc, currentCategory];
 		}, []);
 		setCategories(newCategories);
 
-		const dataWithDate = data.map(curr => ({
+		const dataWithDate = balances.map(curr => ({
 			...curr,
 			startDate: format(new Date(curr.weekStartOn), 'dd/MM/yy'),
 		}));
@@ -48,9 +49,9 @@ const ExpensesPerWeek = memo(function ExpensesPerWeek({
 				const result: ExpensesChartData = { startDate: date };
 
 				dataPoints.forEach(curr => {
-					const currentCategory = startCase(
-						curr.parentCategory || curr.category || 'All',
-					);
+					const currentCategory =
+						accounts.find(({ id }) => id === curr.accountId)
+							?.name || 'unknown';
 
 					const existingResult = (
 						typeof result[currentCategory] === 'number'
@@ -59,13 +60,13 @@ const ExpensesPerWeek = memo(function ExpensesPerWeek({
 					) as number;
 
 					result[currentCategory] =
-						existingResult + curr.amount / 100;
+						existingResult + curr.balance / 100;
 				});
 
 				return result;
 			}),
 		);
-	}, [data]);
+	}, [balances]);
 
 	return categories && cleanedData ? (
 		<AreaChartBase categories={categories} data={cleanedData} />
@@ -74,4 +75,4 @@ const ExpensesPerWeek = memo(function ExpensesPerWeek({
 	);
 });
 
-export default ExpensesPerWeek;
+export default BalancesPerWeek;
