@@ -1,6 +1,7 @@
 import { Express, Request } from 'express';
 
 import crypto from 'crypto';
+import Cookies from 'cookies';
 
 import rateLimit from 'express-rate-limit';
 import axios from 'axios';
@@ -247,10 +248,27 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 
 	app.get('/up/:period', limiter, async (req, res, next) => {
 		try {
-			const hasAuthHeaders = getHasAuthHeaders(req);
+			const cookieName = 'hasAccess';
+			const cookieKey = process.env.COOKIE_KEY;
+			const cookieSetSettings: Cookies.SetOption = {
+				signed: true,
+				maxAge: 14 * 24 * 60 * 60 * 1000,
+				httpOnly: true,
+				overwrite: true,
+			};
+			const cookies =
+				cookieKey && new Cookies(req, res, { keys: [cookieKey] });
+
+			const authCookie =
+				!!cookies &&
+				cookies.get(cookieName, { signed: true }) === 'true';
+
+			const hasAuth = authCookie || getHasAuthHeaders(req);
 			const period = req.params.period;
 
-			if (hasAuthHeaders) {
+			if (hasAuth) {
+				cookies && cookies.set(cookieName, 'true', cookieSetSettings);
+
 				const accounts = await knex
 					.table<Account>(TableNames.ACCOUNTS)
 					.select();
@@ -261,185 +279,186 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 					.table<Transaction>(TableNames.TRANSACTIONS)
 					.select();
 
+				let result: UpApiReturn | undefined = undefined;
+
 				if (period === 'week') {
-					const transactionSummaries = transactions.reduce<{
-						allTransactions: TransactionsSummary[];
-						transactionsByParentCategory: TransactionsSummary[];
-						transactionsByCategory: TransactionsSummary[];
-					}>(
-						(acc, transaction) => {
-							const {
-								amount,
-								createdAt,
-								accountId,
-								category,
-								parentCategory,
-							} = transaction;
-							if (!createdAt) return acc;
-
-							const weekStartOn = startOfWeek(
-								new Date(createdAt),
-							);
-
-							// All Transactions
-
-							const allFilter = (
-								summary: TransactionsSummary,
-							): boolean => {
-								return (
-									summary.accountId === accountId &&
-									summary.weekStartOn === weekStartOn
-								);
-							};
-
-							const currentAll: TransactionsSummary =
-								acc.allTransactions.find(allFilter) || {
-									weekStartOn,
-									accountId,
-									amount: 0,
-								};
-
-							const updatedAll = {
-								...currentAll,
-								amount: currentAll.amount + amount,
-							};
-
-							const allTransactions = [
-								...reject(acc.allTransactions, allFilter),
-								updatedAll,
-							];
-
-							// Transactions By Parent Category
-
-							const byParentCategoryFilter = (
-								summary: TransactionsSummary,
-							): boolean => {
-								return (
-									summary.accountId === accountId &&
-									summary.weekStartOn === weekStartOn &&
-									summary.parentCategory === parentCategory
-								);
-							};
-
-							const currentByParent: TransactionsSummary =
-								acc.transactionsByParentCategory.find(
-									byParentCategoryFilter,
-								) || {
-									weekStartOn,
-									accountId,
-									parentCategory,
-									amount: 0,
-								};
-
-							const updatedCurrentByParent = {
-								...currentByParent,
-								amount: currentByParent.amount + amount,
-							};
-
-							const transactionsByParentCategory = [
-								...reject(
-									acc.transactionsByParentCategory,
-									byParentCategoryFilter,
-								),
-								updatedCurrentByParent,
-							];
-
-							// Transactions by Category
-
-							const byCategoryFilter = (
-								summary: TransactionsSummary,
-							): boolean => {
-								return (
-									summary.accountId === accountId &&
-									summary.weekStartOn === weekStartOn &&
-									summary.category === category
-								);
-							};
-
-							const currentByCategory: TransactionsSummary =
-								acc.transactionsByCategory.find(
-									byCategoryFilter,
-								) || {
-									weekStartOn,
-									accountId,
-									category,
-									amount: 0,
-								};
-
-							const updatedCurryByCategory = {
-								...currentByCategory,
-								amount: currentByCategory.amount + amount,
-							};
-
-							const transactionsByCategory = [
-								...reject(
-									acc.transactionsByCategory,
-									byCategoryFilter,
-								),
-								updatedCurryByCategory,
-							];
-
-							return {
-								allTransactions,
-								transactionsByParentCategory,
-								transactionsByCategory,
-							};
-						},
-						{
-							allTransactions: [],
-							transactionsByParentCategory: [],
-							transactionsByCategory: [],
-						},
-					);
-
-					const uniqueBalances = balances
-						.map(balance => {
-							if (balance.createdAt) {
-								return {
-									...balance,
-									weekStartOn: startOfWeek(
-										new Date(balance.createdAt),
-									),
-								};
-							}
-						})
-						.filter(
-							(balance): balance is BalanceWithStart => !!balance,
-						)
-						.filter((balance, i, arr) => {
-							const balancesForThisWeek = arr
-								.filter(
-									curr =>
-										curr.weekStartOn.valueOf() ===
-											balance.weekStartOn.valueOf() &&
-										curr.accountId === balance.accountId,
-								)
-								.sort((a, b) =>
-									differenceInSeconds(
-										new Date(a.createdAt),
-										new Date(b.createdAt),
-									),
-								);
-
-							return (
-								balancesForThisWeek[0].createdAt ===
-								balance.createdAt
-							);
-						});
-
-					const result: UpApiReturn = {
+					result = createWeeklyData({
+						balances,
 						accounts,
-						balances: uniqueBalances,
-						...transactionSummaries,
-					};
+						transactions,
+					});
+				}
 
+				if (result) {
 					res.status(200).json(result);
 				}
 			}
 
+			cookies && cookies.set(cookieName, 'false', cookieSetSettings);
 			res.status(500).end();
 		} catch (e) {
 			next(e);
 		}
 	});
+}
+
+function createWeeklyData({
+	balances,
+	accounts,
+	transactions,
+}: {
+	balances: Balance[];
+	accounts: Account[];
+	transactions: Transaction[];
+}): UpApiReturn {
+	const transactionSummaries = transactions.reduce<{
+		allTransactions: TransactionsSummary[];
+		transactionsByParentCategory: TransactionsSummary[];
+		transactionsByCategory: TransactionsSummary[];
+	}>(
+		(acc, transaction) => {
+			const { amount, createdAt, accountId, category, parentCategory } =
+				transaction;
+			if (!createdAt) return acc;
+
+			const weekStartOn = startOfWeek(new Date(createdAt));
+
+			// All Transactions
+
+			const allFilter = (summary: TransactionsSummary): boolean => {
+				return (
+					summary.accountId === accountId &&
+					summary.weekStartOn === weekStartOn
+				);
+			};
+
+			const currentAll: TransactionsSummary = acc.allTransactions.find(
+				allFilter,
+			) || {
+				weekStartOn,
+				accountId,
+				amount: 0,
+			};
+
+			const updatedAll = {
+				...currentAll,
+				amount: currentAll.amount + amount,
+			};
+
+			const allTransactions = [
+				...reject(acc.allTransactions, allFilter),
+				updatedAll,
+			];
+
+			// Transactions By Parent Category
+
+			const byParentCategoryFilter = (
+				summary: TransactionsSummary,
+			): boolean => {
+				return (
+					summary.accountId === accountId &&
+					summary.weekStartOn === weekStartOn &&
+					summary.parentCategory === parentCategory
+				);
+			};
+
+			const currentByParent: TransactionsSummary =
+				acc.transactionsByParentCategory.find(
+					byParentCategoryFilter,
+				) || {
+					weekStartOn,
+					accountId,
+					parentCategory,
+					amount: 0,
+				};
+
+			const updatedCurrentByParent = {
+				...currentByParent,
+				amount: currentByParent.amount + amount,
+			};
+
+			const transactionsByParentCategory = [
+				...reject(
+					acc.transactionsByParentCategory,
+					byParentCategoryFilter,
+				),
+				updatedCurrentByParent,
+			];
+
+			// Transactions by Category
+
+			const byCategoryFilter = (
+				summary: TransactionsSummary,
+			): boolean => {
+				return (
+					summary.accountId === accountId &&
+					summary.weekStartOn === weekStartOn &&
+					summary.category === category
+				);
+			};
+
+			const currentByCategory: TransactionsSummary =
+				acc.transactionsByCategory.find(byCategoryFilter) || {
+					weekStartOn,
+					accountId,
+					category,
+					amount: 0,
+				};
+
+			const updatedCurryByCategory = {
+				...currentByCategory,
+				amount: currentByCategory.amount + amount,
+			};
+
+			const transactionsByCategory = [
+				...reject(acc.transactionsByCategory, byCategoryFilter),
+				updatedCurryByCategory,
+			];
+
+			return {
+				allTransactions,
+				transactionsByParentCategory,
+				transactionsByCategory,
+			};
+		},
+		{
+			allTransactions: [],
+			transactionsByParentCategory: [],
+			transactionsByCategory: [],
+		},
+	);
+
+	const uniqueBalances = balances
+		.map(balance => {
+			if (balance.createdAt) {
+				return {
+					...balance,
+					weekStartOn: startOfWeek(new Date(balance.createdAt)),
+				};
+			}
+		})
+		.filter((balance): balance is BalanceWithStart => !!balance)
+		.filter((balance, i, arr) => {
+			const balancesForThisWeek = arr
+				.filter(
+					curr =>
+						curr.weekStartOn.valueOf() ===
+							balance.weekStartOn.valueOf() &&
+						curr.accountId === balance.accountId,
+				)
+				.sort((a, b) =>
+					differenceInSeconds(
+						new Date(a.createdAt),
+						new Date(b.createdAt),
+					),
+				);
+
+			return balancesForThisWeek[0].createdAt === balance.createdAt;
+		});
+
+	return {
+		accounts,
+		balances: uniqueBalances,
+		...transactionSummaries,
+	};
 }

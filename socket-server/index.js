@@ -50315,6 +50315,550 @@ var require_dist6 = __commonJS({
   }
 });
 
+// node_modules/cookies/node_modules/depd/index.js
+var require_depd2 = __commonJS({
+  "node_modules/cookies/node_modules/depd/index.js"(exports2, module2) {
+    var relative2 = require("path").relative;
+    module2.exports = depd2;
+    var basePath2 = process.cwd();
+    function containsNamespace2(str, namespace) {
+      var vals = str.split(/[ ,]+/);
+      var ns = String(namespace).toLowerCase();
+      for (var i = 0; i < vals.length; i++) {
+        var val = vals[i];
+        if (val && (val === "*" || val.toLowerCase() === ns)) {
+          return true;
+        }
+      }
+      return false;
+    }
+    function convertDataDescriptorToAccessor2(obj, prop, message2) {
+      var descriptor = Object.getOwnPropertyDescriptor(obj, prop);
+      var value = descriptor.value;
+      descriptor.get = function getter() {
+        return value;
+      };
+      if (descriptor.writable) {
+        descriptor.set = function setter(val) {
+          return value = val;
+        };
+      }
+      delete descriptor.value;
+      delete descriptor.writable;
+      Object.defineProperty(obj, prop, descriptor);
+      return descriptor;
+    }
+    function createArgumentsString2(arity) {
+      var str = "";
+      for (var i = 0; i < arity; i++) {
+        str += ", arg" + i;
+      }
+      return str.substr(2);
+    }
+    function createStackString2(stack2) {
+      var str = this.name + ": " + this.namespace;
+      if (this.message) {
+        str += " deprecated " + this.message;
+      }
+      for (var i = 0; i < stack2.length; i++) {
+        str += "\n    at " + stack2[i].toString();
+      }
+      return str;
+    }
+    function depd2(namespace) {
+      if (!namespace) {
+        throw new TypeError("argument namespace is required");
+      }
+      var stack2 = getStack2();
+      var site2 = callSiteLocation2(stack2[1]);
+      var file = site2[0];
+      function deprecate2(message2) {
+        log2.call(deprecate2, message2);
+      }
+      deprecate2._file = file;
+      deprecate2._ignored = isignored2(namespace);
+      deprecate2._namespace = namespace;
+      deprecate2._traced = istraced2(namespace);
+      deprecate2._warned = Object.create(null);
+      deprecate2.function = wrapfunction2;
+      deprecate2.property = wrapproperty2;
+      return deprecate2;
+    }
+    function eehaslisteners(emitter, type) {
+      var count = typeof emitter.listenerCount !== "function" ? emitter.listeners(type).length : emitter.listenerCount(type);
+      return count > 0;
+    }
+    function isignored2(namespace) {
+      if (process.noDeprecation) {
+        return true;
+      }
+      var str = process.env.NO_DEPRECATION || "";
+      return containsNamespace2(str, namespace);
+    }
+    function istraced2(namespace) {
+      if (process.traceDeprecation) {
+        return true;
+      }
+      var str = process.env.TRACE_DEPRECATION || "";
+      return containsNamespace2(str, namespace);
+    }
+    function log2(message2, site2) {
+      var haslisteners = eehaslisteners(process, "deprecation");
+      if (!haslisteners && this._ignored) {
+        return;
+      }
+      var caller;
+      var callFile;
+      var callSite;
+      var depSite;
+      var i = 0;
+      var seen = false;
+      var stack2 = getStack2();
+      var file = this._file;
+      if (site2) {
+        depSite = site2;
+        callSite = callSiteLocation2(stack2[1]);
+        callSite.name = depSite.name;
+        file = callSite[0];
+      } else {
+        i = 2;
+        depSite = callSiteLocation2(stack2[i]);
+        callSite = depSite;
+      }
+      for (; i < stack2.length; i++) {
+        caller = callSiteLocation2(stack2[i]);
+        callFile = caller[0];
+        if (callFile === file) {
+          seen = true;
+        } else if (callFile === this._file) {
+          file = this._file;
+        } else if (seen) {
+          break;
+        }
+      }
+      var key = caller ? depSite.join(":") + "__" + caller.join(":") : void 0;
+      if (key !== void 0 && key in this._warned) {
+        return;
+      }
+      this._warned[key] = true;
+      var msg = message2;
+      if (!msg) {
+        msg = callSite === depSite || !callSite.name ? defaultMessage2(depSite) : defaultMessage2(callSite);
+      }
+      if (haslisteners) {
+        var err = DeprecationError2(this._namespace, msg, stack2.slice(i));
+        process.emit("deprecation", err);
+        return;
+      }
+      var format = process.stderr.isTTY ? formatColor2 : formatPlain2;
+      var output = format.call(this, msg, caller, stack2.slice(i));
+      process.stderr.write(output + "\n", "utf8");
+    }
+    function callSiteLocation2(callSite) {
+      var file = callSite.getFileName() || "<anonymous>";
+      var line = callSite.getLineNumber();
+      var colm = callSite.getColumnNumber();
+      if (callSite.isEval()) {
+        file = callSite.getEvalOrigin() + ", " + file;
+      }
+      var site2 = [file, line, colm];
+      site2.callSite = callSite;
+      site2.name = callSite.getFunctionName();
+      return site2;
+    }
+    function defaultMessage2(site2) {
+      var callSite = site2.callSite;
+      var funcName = site2.name;
+      if (!funcName) {
+        funcName = "<anonymous@" + formatLocation2(site2) + ">";
+      }
+      var context = callSite.getThis();
+      var typeName = context && callSite.getTypeName();
+      if (typeName === "Object") {
+        typeName = void 0;
+      }
+      if (typeName === "Function") {
+        typeName = context.name || typeName;
+      }
+      return typeName && callSite.getMethodName() ? typeName + "." + funcName : funcName;
+    }
+    function formatPlain2(msg, caller, stack2) {
+      var timestamp = new Date().toUTCString();
+      var formatted = timestamp + " " + this._namespace + " deprecated " + msg;
+      if (this._traced) {
+        for (var i = 0; i < stack2.length; i++) {
+          formatted += "\n    at " + stack2[i].toString();
+        }
+        return formatted;
+      }
+      if (caller) {
+        formatted += " at " + formatLocation2(caller);
+      }
+      return formatted;
+    }
+    function formatColor2(msg, caller, stack2) {
+      var formatted = "[36;1m" + this._namespace + "[22;39m [33;1mdeprecated[22;39m [0m" + msg + "[39m";
+      if (this._traced) {
+        for (var i = 0; i < stack2.length; i++) {
+          formatted += "\n    [36mat " + stack2[i].toString() + "[39m";
+        }
+        return formatted;
+      }
+      if (caller) {
+        formatted += " [36m" + formatLocation2(caller) + "[39m";
+      }
+      return formatted;
+    }
+    function formatLocation2(callSite) {
+      return relative2(basePath2, callSite[0]) + ":" + callSite[1] + ":" + callSite[2];
+    }
+    function getStack2() {
+      var limit = Error.stackTraceLimit;
+      var obj = {};
+      var prep = Error.prepareStackTrace;
+      Error.prepareStackTrace = prepareObjectStackTrace2;
+      Error.stackTraceLimit = Math.max(10, limit);
+      Error.captureStackTrace(obj);
+      var stack2 = obj.stack.slice(1);
+      Error.prepareStackTrace = prep;
+      Error.stackTraceLimit = limit;
+      return stack2;
+    }
+    function prepareObjectStackTrace2(obj, stack2) {
+      return stack2;
+    }
+    function wrapfunction2(fn2, message2) {
+      if (typeof fn2 !== "function") {
+        throw new TypeError("argument fn must be a function");
+      }
+      var args2 = createArgumentsString2(fn2.length);
+      var stack2 = getStack2();
+      var site2 = callSiteLocation2(stack2[1]);
+      site2.name = fn2.name;
+      var deprecatedfn2 = new Function("fn", "log", "deprecate", "message", "site", '"use strict"\nreturn function (' + args2 + ") {log.call(deprecate, message, site)\nreturn fn.apply(this, arguments)\n}")(fn2, log2, this, message2, site2);
+      return deprecatedfn2;
+    }
+    function wrapproperty2(obj, prop, message2) {
+      if (!obj || typeof obj !== "object" && typeof obj !== "function") {
+        throw new TypeError("argument obj must be object");
+      }
+      var descriptor = Object.getOwnPropertyDescriptor(obj, prop);
+      if (!descriptor) {
+        throw new TypeError("must call property on owner object");
+      }
+      if (!descriptor.configurable) {
+        throw new TypeError("property must be configurable");
+      }
+      var deprecate2 = this;
+      var stack2 = getStack2();
+      var site2 = callSiteLocation2(stack2[1]);
+      site2.name = prop;
+      if ("value" in descriptor) {
+        descriptor = convertDataDescriptorToAccessor2(obj, prop, message2);
+      }
+      var get = descriptor.get;
+      var set = descriptor.set;
+      if (typeof get === "function") {
+        descriptor.get = function getter() {
+          log2.call(deprecate2, message2, site2);
+          return get.apply(this, arguments);
+        };
+      }
+      if (typeof set === "function") {
+        descriptor.set = function setter() {
+          log2.call(deprecate2, message2, site2);
+          return set.apply(this, arguments);
+        };
+      }
+      Object.defineProperty(obj, prop, descriptor);
+    }
+    function DeprecationError2(namespace, message2, stack2) {
+      var error = new Error();
+      var stackString;
+      Object.defineProperty(error, "constructor", {
+        value: DeprecationError2
+      });
+      Object.defineProperty(error, "message", {
+        configurable: true,
+        enumerable: false,
+        value: message2,
+        writable: true
+      });
+      Object.defineProperty(error, "name", {
+        enumerable: false,
+        configurable: true,
+        value: "DeprecationError",
+        writable: true
+      });
+      Object.defineProperty(error, "namespace", {
+        configurable: true,
+        enumerable: false,
+        value: namespace,
+        writable: true
+      });
+      Object.defineProperty(error, "stack", {
+        configurable: true,
+        enumerable: false,
+        get: function() {
+          if (stackString !== void 0) {
+            return stackString;
+          }
+          return stackString = createStackString2.call(this, stack2);
+        },
+        set: function setter(val) {
+          stackString = val;
+        }
+      });
+      return error;
+    }
+  }
+});
+
+// node_modules/tsscmp/lib/index.js
+var require_lib7 = __commonJS({
+  "node_modules/tsscmp/lib/index.js"(exports2, module2) {
+    "use strict";
+    var crypto3 = require("crypto");
+    function bufferEqual(a, b) {
+      if (a.length !== b.length) {
+        return false;
+      }
+      if (crypto3.timingSafeEqual) {
+        return crypto3.timingSafeEqual(a, b);
+      }
+      for (var i = 0; i < a.length; i++) {
+        if (a[i] !== b[i]) {
+          return false;
+        }
+      }
+      return true;
+    }
+    function timeSafeCompare(a, b) {
+      var sa = String(a);
+      var sb = String(b);
+      var key = crypto3.pseudoRandomBytes(32);
+      var ah = crypto3.createHmac("sha256", key).update(sa).digest();
+      var bh = crypto3.createHmac("sha256", key).update(sb).digest();
+      return bufferEqual(ah, bh) && a === b;
+    }
+    module2.exports = timeSafeCompare;
+  }
+});
+
+// node_modules/keygrip/index.js
+var require_keygrip = __commonJS({
+  "node_modules/keygrip/index.js"(exports2, module2) {
+    "use strict";
+    var compare = require_lib7();
+    var crypto3 = require("crypto");
+    function Keygrip(keys, algorithm, encoding) {
+      if (!algorithm)
+        algorithm = "sha1";
+      if (!encoding)
+        encoding = "base64";
+      if (!(this instanceof Keygrip))
+        return new Keygrip(keys, algorithm, encoding);
+      if (!keys || !(0 in keys)) {
+        throw new Error("Keys must be provided.");
+      }
+      function sign(data, key) {
+        return crypto3.createHmac(algorithm, key).update(data).digest(encoding).replace(/\/|\+|=/g, function(x) {
+          return { "/": "_", "+": "-", "=": "" }[x];
+        });
+      }
+      this.sign = function(data) {
+        return sign(data, keys[0]);
+      };
+      this.verify = function(data, digest) {
+        return this.index(data, digest) > -1;
+      };
+      this.index = function(data, digest) {
+        for (var i = 0, l = keys.length; i < l; i++) {
+          if (compare(digest, sign(data, keys[i]))) {
+            return i;
+          }
+        }
+        return -1;
+      };
+    }
+    Keygrip.sign = Keygrip.verify = Keygrip.index = function() {
+      throw new Error("Usage: require('keygrip')(<array-of-keys>)");
+    };
+    module2.exports = Keygrip;
+  }
+});
+
+// node_modules/cookies/index.js
+var require_cookies = __commonJS({
+  "node_modules/cookies/index.js"(exports2, module2) {
+    "use strict";
+    var deprecate2 = require_depd2()("cookies");
+    var Keygrip = require_keygrip();
+    var http2 = require("http");
+    var cache = {};
+    var fieldContentRegExp = /^[\u0009\u0020-\u007e\u0080-\u00ff]+$/;
+    var SAME_SITE_REGEXP = /^(?:lax|none|strict)$/i;
+    function Cookies2(request, response, options) {
+      if (!(this instanceof Cookies2))
+        return new Cookies2(request, response, options);
+      this.secure = void 0;
+      this.request = request;
+      this.response = response;
+      if (options) {
+        if (Array.isArray(options)) {
+          deprecate2('"keys" argument; provide using options {"keys": [...]}');
+          this.keys = new Keygrip(options);
+        } else if (options.constructor && options.constructor.name === "Keygrip") {
+          deprecate2('"keys" argument; provide using options {"keys": keygrip}');
+          this.keys = options;
+        } else {
+          this.keys = Array.isArray(options.keys) ? new Keygrip(options.keys) : options.keys;
+          this.secure = options.secure;
+        }
+      }
+    }
+    Cookies2.prototype.get = function(name, opts) {
+      var sigName = name + ".sig", header, match, value, remote, data, index, signed = opts && opts.signed !== void 0 ? opts.signed : !!this.keys;
+      header = this.request.headers["cookie"];
+      if (!header)
+        return;
+      match = header.match(getPattern(name));
+      if (!match)
+        return;
+      value = match[1];
+      if (!opts || !signed)
+        return value;
+      remote = this.get(sigName);
+      if (!remote)
+        return;
+      data = name + "=" + value;
+      if (!this.keys)
+        throw new Error(".keys required for signed cookies");
+      index = this.keys.index(data, remote);
+      if (index < 0) {
+        this.set(sigName, null, { path: "/", signed: false });
+      } else {
+        index && this.set(sigName, this.keys.sign(data), { signed: false });
+        return value;
+      }
+    };
+    Cookies2.prototype.set = function(name, value, opts) {
+      var res = this.response, req = this.request, headers = res.getHeader("Set-Cookie") || [], secure = this.secure !== void 0 ? !!this.secure : req.protocol === "https" || req.connection.encrypted, cookie = new Cookie(name, value, opts), signed = opts && opts.signed !== void 0 ? opts.signed : !!this.keys;
+      if (typeof headers == "string")
+        headers = [headers];
+      if (!secure && opts && opts.secure) {
+        throw new Error("Cannot send secure cookie over unencrypted connection");
+      }
+      cookie.secure = opts && opts.secure !== void 0 ? opts.secure : secure;
+      if (opts && "secureProxy" in opts) {
+        deprecate2('"secureProxy" option; use "secure" option, provide "secure" to constructor if needed');
+        cookie.secure = opts.secureProxy;
+      }
+      pushCookie(headers, cookie);
+      if (opts && signed) {
+        if (!this.keys)
+          throw new Error(".keys required for signed cookies");
+        cookie.value = this.keys.sign(cookie.toString());
+        cookie.name += ".sig";
+        pushCookie(headers, cookie);
+      }
+      var setHeader = res.set ? http2.OutgoingMessage.prototype.setHeader : res.setHeader;
+      setHeader.call(res, "Set-Cookie", headers);
+      return this;
+    };
+    function Cookie(name, value, attrs) {
+      if (!fieldContentRegExp.test(name)) {
+        throw new TypeError("argument name is invalid");
+      }
+      if (value && !fieldContentRegExp.test(value)) {
+        throw new TypeError("argument value is invalid");
+      }
+      this.name = name;
+      this.value = value || "";
+      for (var name in attrs) {
+        this[name] = attrs[name];
+      }
+      if (!this.value) {
+        this.expires = new Date(0);
+        this.maxAge = null;
+      }
+      if (this.path && !fieldContentRegExp.test(this.path)) {
+        throw new TypeError("option path is invalid");
+      }
+      if (this.domain && !fieldContentRegExp.test(this.domain)) {
+        throw new TypeError("option domain is invalid");
+      }
+      if (this.sameSite && this.sameSite !== true && !SAME_SITE_REGEXP.test(this.sameSite)) {
+        throw new TypeError("option sameSite is invalid");
+      }
+    }
+    Cookie.prototype.path = "/";
+    Cookie.prototype.expires = void 0;
+    Cookie.prototype.domain = void 0;
+    Cookie.prototype.httpOnly = true;
+    Cookie.prototype.sameSite = false;
+    Cookie.prototype.secure = false;
+    Cookie.prototype.overwrite = false;
+    Cookie.prototype.toString = function() {
+      return this.name + "=" + this.value;
+    };
+    Cookie.prototype.toHeader = function() {
+      var header = this.toString();
+      if (this.maxAge)
+        this.expires = new Date(Date.now() + this.maxAge);
+      if (this.path)
+        header += "; path=" + this.path;
+      if (this.expires)
+        header += "; expires=" + this.expires.toUTCString();
+      if (this.domain)
+        header += "; domain=" + this.domain;
+      if (this.sameSite)
+        header += "; samesite=" + (this.sameSite === true ? "strict" : this.sameSite.toLowerCase());
+      if (this.secure)
+        header += "; secure";
+      if (this.httpOnly)
+        header += "; httponly";
+      return header;
+    };
+    Object.defineProperty(Cookie.prototype, "maxage", {
+      configurable: true,
+      enumerable: true,
+      get: function() {
+        return this.maxAge;
+      },
+      set: function(val) {
+        return this.maxAge = val;
+      }
+    });
+    deprecate2.property(Cookie.prototype, "maxage", '"maxage"; use "maxAge" instead');
+    function getPattern(name) {
+      if (cache[name])
+        return cache[name];
+      return cache[name] = new RegExp("(?:^|;) *" + name.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&") + "=([^;]*)");
+    }
+    function pushCookie(headers, cookie) {
+      if (cookie.overwrite) {
+        for (var i = headers.length - 1; i >= 0; i--) {
+          if (headers[i].indexOf(cookie.name + "=") === 0) {
+            headers.splice(i, 1);
+          }
+        }
+      }
+      headers.push(cookie.toHeader());
+    }
+    Cookies2.connect = Cookies2.express = function(keys) {
+      return function(req, res, next) {
+        req.cookies = res.cookies = new Cookies2(req, res, {
+          keys
+        });
+        next();
+      };
+    };
+    Cookies2.Cookie = Cookie;
+    module2.exports = Cookies2;
+  }
+});
+
 // node_modules/axios/lib/helpers/bind.js
 var require_bind = __commonJS({
   "node_modules/axios/lib/helpers/bind.js"(exports2, module2) {
@@ -50645,7 +51189,7 @@ var require_settle = __commonJS({
 });
 
 // node_modules/axios/lib/helpers/cookies.js
-var require_cookies = __commonJS({
+var require_cookies2 = __commonJS({
   "node_modules/axios/lib/helpers/cookies.js"(exports2, module2) {
     "use strict";
     var utils = require_utils5();
@@ -50838,7 +51382,7 @@ var require_xhr = __commonJS({
     "use strict";
     var utils = require_utils5();
     var settle = require_settle();
-    var cookies = require_cookies();
+    var cookies = require_cookies2();
     var buildURL = require_buildURL();
     var buildFullPath = require_buildFullPath();
     var parseHeaders = require_parseHeaders();
@@ -64489,6 +65033,7 @@ var unsavedNoteId = "n";
 
 // up.ts
 var import_crypto2 = __toESM(require("crypto"));
+var import_cookies = __toESM(require_cookies());
 
 // node_modules/express-rate-limit/dist/index.mjs
 var calculateNextResetTime = (windowMs) => {
@@ -64775,103 +65320,123 @@ function createUpRoutes(app2, knex2) {
   }));
   app2.get("/up/:period", limiter, (req, res, next) => __async(this, null, function* () {
     try {
-      const hasAuthHeaders = getHasAuthHeaders(req);
+      const cookieName = "hasAccess";
+      const cookieKey = process.env.COOKIE_KEY;
+      const cookieSetSettings = {
+        signed: true,
+        maxAge: 14 * 24 * 60 * 60 * 1e3,
+        httpOnly: true,
+        overwrite: true
+      };
+      const cookies = cookieKey && new import_cookies.default(req, res, { keys: [cookieKey] });
+      const authCookie = !!cookies && cookies.get(cookieName, { signed: true }) === "true";
+      const hasAuth = authCookie || getHasAuthHeaders(req);
       const period = req.params.period;
-      if (hasAuthHeaders) {
+      if (hasAuth) {
+        cookies && cookies.set(cookieName, "true", cookieSetSettings);
         const accounts = yield knex2.table("accounts" /* ACCOUNTS */).select();
         const balances = yield knex2.table("account_balances" /* BALANCES */).select("*");
         const transactions = yield knex2.table("account_transactions" /* TRANSACTIONS */).select();
+        let result = void 0;
         if (period === "week") {
-          const transactionSummaries = transactions.reduce((acc, transaction) => {
-            const {
-              amount,
-              createdAt,
-              accountId,
-              category,
-              parentCategory
-            } = transaction;
-            if (!createdAt)
-              return acc;
-            const weekStartOn = (0, import_date_fns.startOfWeek)(new Date(createdAt));
-            const allFilter = (summary) => {
-              return summary.accountId === accountId && summary.weekStartOn === weekStartOn;
-            };
-            const currentAll = acc.allTransactions.find(allFilter) || {
-              weekStartOn,
-              accountId,
-              amount: 0
-            };
-            const updatedAll = __spreadProps(__spreadValues({}, currentAll), {
-              amount: currentAll.amount + amount
-            });
-            const allTransactions = [
-              ...(0, import_reject.default)(acc.allTransactions, allFilter),
-              updatedAll
-            ];
-            const byParentCategoryFilter = (summary) => {
-              return summary.accountId === accountId && summary.weekStartOn === weekStartOn && summary.parentCategory === parentCategory;
-            };
-            const currentByParent = acc.transactionsByParentCategory.find(byParentCategoryFilter) || {
-              weekStartOn,
-              accountId,
-              parentCategory,
-              amount: 0
-            };
-            const updatedCurrentByParent = __spreadProps(__spreadValues({}, currentByParent), {
-              amount: currentByParent.amount + amount
-            });
-            const transactionsByParentCategory = [
-              ...(0, import_reject.default)(acc.transactionsByParentCategory, byParentCategoryFilter),
-              updatedCurrentByParent
-            ];
-            const byCategoryFilter = (summary) => {
-              return summary.accountId === accountId && summary.weekStartOn === weekStartOn && summary.category === category;
-            };
-            const currentByCategory = acc.transactionsByCategory.find(byCategoryFilter) || {
-              weekStartOn,
-              accountId,
-              category,
-              amount: 0
-            };
-            const updatedCurryByCategory = __spreadProps(__spreadValues({}, currentByCategory), {
-              amount: currentByCategory.amount + amount
-            });
-            const transactionsByCategory = [
-              ...(0, import_reject.default)(acc.transactionsByCategory, byCategoryFilter),
-              updatedCurryByCategory
-            ];
-            return {
-              allTransactions,
-              transactionsByParentCategory,
-              transactionsByCategory
-            };
-          }, {
-            allTransactions: [],
-            transactionsByParentCategory: [],
-            transactionsByCategory: []
-          });
-          const uniqueBalances = balances.map((balance) => {
-            if (balance.createdAt) {
-              return __spreadProps(__spreadValues({}, balance), {
-                weekStartOn: (0, import_date_fns.startOfWeek)(new Date(balance.createdAt))
-              });
-            }
-          }).filter((balance) => !!balance).filter((balance, i, arr) => {
-            const balancesForThisWeek = arr.filter((curr) => curr.weekStartOn.valueOf() === balance.weekStartOn.valueOf() && curr.accountId === balance.accountId).sort((a, b) => (0, import_date_fns.differenceInSeconds)(new Date(a.createdAt), new Date(b.createdAt)));
-            return balancesForThisWeek[0].createdAt === balance.createdAt;
-          });
-          const result = __spreadValues({
+          result = createWeeklyData({
+            balances,
             accounts,
-            balances: uniqueBalances
-          }, transactionSummaries);
+            transactions
+          });
+        }
+        if (result) {
           res.status(200).json(result);
         }
       }
+      cookies && cookies.set(cookieName, "false", cookieSetSettings);
       res.status(500).end();
     } catch (e) {
       next(e);
     }
   }));
+}
+function createWeeklyData({
+  balances,
+  accounts,
+  transactions
+}) {
+  const transactionSummaries = transactions.reduce((acc, transaction) => {
+    const { amount, createdAt, accountId, category, parentCategory } = transaction;
+    if (!createdAt)
+      return acc;
+    const weekStartOn = (0, import_date_fns.startOfWeek)(new Date(createdAt));
+    const allFilter = (summary) => {
+      return summary.accountId === accountId && summary.weekStartOn === weekStartOn;
+    };
+    const currentAll = acc.allTransactions.find(allFilter) || {
+      weekStartOn,
+      accountId,
+      amount: 0
+    };
+    const updatedAll = __spreadProps(__spreadValues({}, currentAll), {
+      amount: currentAll.amount + amount
+    });
+    const allTransactions = [
+      ...(0, import_reject.default)(acc.allTransactions, allFilter),
+      updatedAll
+    ];
+    const byParentCategoryFilter = (summary) => {
+      return summary.accountId === accountId && summary.weekStartOn === weekStartOn && summary.parentCategory === parentCategory;
+    };
+    const currentByParent = acc.transactionsByParentCategory.find(byParentCategoryFilter) || {
+      weekStartOn,
+      accountId,
+      parentCategory,
+      amount: 0
+    };
+    const updatedCurrentByParent = __spreadProps(__spreadValues({}, currentByParent), {
+      amount: currentByParent.amount + amount
+    });
+    const transactionsByParentCategory = [
+      ...(0, import_reject.default)(acc.transactionsByParentCategory, byParentCategoryFilter),
+      updatedCurrentByParent
+    ];
+    const byCategoryFilter = (summary) => {
+      return summary.accountId === accountId && summary.weekStartOn === weekStartOn && summary.category === category;
+    };
+    const currentByCategory = acc.transactionsByCategory.find(byCategoryFilter) || {
+      weekStartOn,
+      accountId,
+      category,
+      amount: 0
+    };
+    const updatedCurryByCategory = __spreadProps(__spreadValues({}, currentByCategory), {
+      amount: currentByCategory.amount + amount
+    });
+    const transactionsByCategory = [
+      ...(0, import_reject.default)(acc.transactionsByCategory, byCategoryFilter),
+      updatedCurryByCategory
+    ];
+    return {
+      allTransactions,
+      transactionsByParentCategory,
+      transactionsByCategory
+    };
+  }, {
+    allTransactions: [],
+    transactionsByParentCategory: [],
+    transactionsByCategory: []
+  });
+  const uniqueBalances = balances.map((balance) => {
+    if (balance.createdAt) {
+      return __spreadProps(__spreadValues({}, balance), {
+        weekStartOn: (0, import_date_fns.startOfWeek)(new Date(balance.createdAt))
+      });
+    }
+  }).filter((balance) => !!balance).filter((balance, i, arr) => {
+    const balancesForThisWeek = arr.filter((curr) => curr.weekStartOn.valueOf() === balance.weekStartOn.valueOf() && curr.accountId === balance.accountId).sort((a, b) => (0, import_date_fns.differenceInSeconds)(new Date(a.createdAt), new Date(b.createdAt)));
+    return balancesForThisWeek[0].createdAt === balance.createdAt;
+  });
+  return __spreadValues({
+    accounts,
+    balances: uniqueBalances
+  }, transactionSummaries);
 }
 
 // index.ts
@@ -65059,6 +65624,12 @@ object-assign
  * MIT Licensed
  */
 /*!
+ * cookies
+ * Copyright(c) 2014 Jed Schmidt, http://jed.is/
+ * Copyright(c) 2015-2016 Douglas Christopher Wilson
+ * MIT Licensed
+ */
+/*!
  * depd
  * Copyright(c) 2014 Douglas Christopher Wilson
  * MIT Licensed
@@ -65071,6 +65642,11 @@ object-assign
 /*!
  * depd
  * Copyright(c) 2014-2017 Douglas Christopher Wilson
+ * MIT Licensed
+ */
+/*!
+ * depd
+ * Copyright(c) 2014-2018 Douglas Christopher Wilson
  * MIT Licensed
  */
 /*!
@@ -65138,6 +65714,11 @@ object-assign
  * http-errors
  * Copyright(c) 2014 Jonathan Ong
  * Copyright(c) 2016 Douglas Christopher Wilson
+ * MIT Licensed
+ */
+/*!
+ * keygrip
+ * Copyright(c) 2011-2014 Jed Schmidt
  * MIT Licensed
  */
 /*!
