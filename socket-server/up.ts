@@ -245,6 +245,23 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 		}
 	});
 
+	app.post('/up/report', limiter, async (req, res, next) => {
+		try {
+			const hasAuthHeaders = getHasAuthHeaders(req);
+			const balance = req.body.balance || JSON.parse(req.body).balance;
+
+			if (hasAuthHeaders || typeof balance === 'number') {
+				await createOrUpdateAccount('stockspot', 'StockSpot');
+				await insertAccountBalance('stockspot', balance);
+				res.status(200).end();
+			} else {
+				res.status(500).end();
+			}
+		} catch (e) {
+			next(e);
+		}
+	});
+
 	app.get('/up/:period', limiter, async (req, res, next) => {
 		try {
 			const hasAuth = getHasAuthHeaders(req);

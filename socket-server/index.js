@@ -64773,6 +64773,21 @@ function createUpRoutes(app2, knex2) {
       next(e);
     }
   }));
+  app2.post("/up/report", limiter, (req, res, next) => __async(this, null, function* () {
+    try {
+      const hasAuthHeaders = getHasAuthHeaders(req);
+      const balance = req.body.balance || JSON.parse(req.body).balance;
+      if (hasAuthHeaders || typeof balance === "number") {
+        yield createOrUpdateAccount("stockspot", "StockSpot");
+        yield insertAccountBalance("stockspot", balance);
+        res.status(200).end();
+      } else {
+        res.status(500).end();
+      }
+    } catch (e) {
+      next(e);
+    }
+  }));
   app2.get("/up/:period", limiter, (req, res, next) => __async(this, null, function* () {
     try {
       const hasAuth = getHasAuthHeaders(req);

@@ -4,7 +4,8 @@ import { NextSeo } from 'next-seo';
 import { UpApiReturn } from 'types/finance';
 import Finance from 'components/finance';
 import { GetServerSideProps } from 'next';
-import { fetchTransactionsHelper } from './api/finance/fetch';
+import { fetchTransactionsHelper } from 'components/finance/helpers';
+import Link from 'next/link';
 
 interface Props {
 	initialData: UpApiReturn | null;
@@ -37,6 +38,11 @@ export default function FinancesPage({ initialData }: Props): ReactElement {
 			<NextSeo noindex={true} nofollow={true} />
 			<div className="display-width">
 				<h2 className="mb-4 text-3xl">Our Finances</h2>
+				<Link href="/finance/stockspot" passHref>
+					<a className="hover:underline text-brand">
+						Report Stockspot balance
+					</a>
+				</Link>
 			</div>
 			<div className="display-width divider-before">
 				{loading ? (
