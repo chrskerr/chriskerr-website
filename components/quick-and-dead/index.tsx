@@ -1,6 +1,6 @@
 import { NextSeo } from 'next-seo';
 import { ReactElement, useEffect, useState } from 'react';
-import { Day, Week } from 'types/quick-and-dead';
+import { Day, Type, Week } from 'types/quick-and-dead';
 
 import { createSession, createWeek, encode } from './helpers';
 
@@ -48,8 +48,6 @@ export default function QuickAndDead({
 		setWeekUrl(week ? `${baseUrl}/${encode(week)}` : undefined);
 	}, [week]);
 
-	const buttonClasses = 'button mr-4 mb-4';
-
 	return (
 		<>
 			<NextSeo
@@ -59,22 +57,32 @@ export default function QuickAndDead({
 			/>
 			<div className="display-width">
 				<h2 className="pb-4 text-3xl">{title}</h2>
-				<p className="pb-4 text-xl">
+				<p className="pb-12 text-xl">
 					A workout generator for Pavel&apos;s The Quick and The Dead
 				</p>
-				<p className="pb-16 text-xl">(very much in-progress)</p>
 				<div>
-					<button className={buttonClasses} onClick={doGenerate}>
-						Generate New Day
+					<button
+						className="mb-4 mr-4 uppercase button maroon"
+						onClick={doGenerate}
+					>
+						Generate Session
 					</button>
-					<button className={buttonClasses} onClick={doGenerateWeek}>
-						Generate New Week
+					<button
+						className="mb-4 mr-4 uppercase button dark"
+						onClick={doGenerateWeek}
+					>
+						Generate Week
 					</button>
 				</div>
-
+			</div>
+			<div className="display-width divider-before">
 				{day && (
-					<div className="mt-4">
-						<p className="mb-6 text-lg">
+					<div>
+						<div>
+							<p className="mb-2 font-bold">Session</p>
+							<DayRenderer day={day} colour="maroon" />
+						</div>
+						<p className="mt-6">
 							Permanent url:{' '}
 							<a
 								href={dayUrl}
@@ -83,22 +91,21 @@ export default function QuickAndDead({
 								{dayUrl}
 							</a>
 						</p>
-						<p className="mb-2 font-bold">Today</p>
-						<div className="grid grid-cols-2 gap-x-12 w-[fit-content]">
-							<p className="mb-2">Rounds:</p>
-							<p className="mb-2 font-bold">{day.rounds}</p>
-							<p className="mb-2">Swing Type:</p>
-							<p className="mb-2 font-bold">{day.swingType}</p>
-							<p className="mb-2">Split reps into sets of:</p>
-							<p className="mb-2 font-bold">
-								{day.repSplit}&apos;s
-							</p>
-						</div>
 					</div>
 				)}
 				{week && (
-					<div className="mt-4">
-						<p className="mb-6 text-lg">
+					<div>
+						<div className="grid grid-cols-2 gap-4">
+							{week.map((day, i) => (
+								<div key={i} className="mb-6">
+									<p className="mb-2 font-bold">
+										Day {i + 1}
+									</p>
+									<DayRenderer day={day} colour="blue" />
+								</div>
+							))}
+						</div>
+						<p className="mt-6">
 							Permanent url:{' '}
 							<a
 								href={weekUrl}
@@ -107,42 +114,66 @@ export default function QuickAndDead({
 								{weekUrl}
 							</a>
 						</p>
-						<div className="grid grid-cols-2 gap-4">
-							{week.map((day, i) => (
-								<div key={i} className="mb-6">
-									<p className="mb-2 font-bold">
-										Day {i + 1}
-									</p>
-									{day ? (
-										<div className="grid grid-cols-2 w-[fit-content]">
-											<p className="mb-2 mr-12">
-												Rounds:
-											</p>
-											<p className="mb-2 font-bold">
-												{day.rounds}
-											</p>
-											<p className="mb-2 mr-12">
-												Swing Type:
-											</p>
-											<p className="mb-2 font-bold">
-												{day.swingType}
-											</p>
-											<p className="mb-2 mr-12">
-												Split reps into sets of:
-											</p>
-											<p className="mb-2 font-bold">
-												{day.repSplit}&apos;s
-											</p>
-										</div>
-									) : (
-										<p>Rest Day 🎉</p>
-									)}
-								</div>
-							))}
-						</div>
 					</div>
 				)}
 			</div>
 		</>
+	);
+}
+
+function DayRenderer({
+	day,
+	colour,
+}: {
+	day: Day | null;
+	colour: 'blue' | 'maroon';
+}): ReactElement {
+	return (
+		<div className="grid w-[fit-content] grid-cols-3 gap-4">
+			{day ? (
+				<>
+					<Cell
+						content={String(day.rounds)}
+						colour={colour}
+						subContent="Rounds"
+					/>
+					<Cell
+						content={String(
+							day.swingType === Type.TWO_HANDED ? 2 : 1,
+						)}
+						colour={colour}
+						subContent="Handed"
+					/>
+					<Cell
+						content={String(day.repSplit)}
+						colour={colour}
+						subContent="Reps"
+					/>
+				</>
+			) : (
+				<Cell content="🎉" colour={colour} subContent="Rest" />
+			)}
+		</div>
+	);
+}
+
+function Cell({
+	content,
+	subContent,
+	colour,
+}: {
+	content: string;
+	subContent: string;
+	colour: 'blue' | 'maroon';
+}): ReactElement {
+	return (
+		<div
+			className={`${
+				colour === 'blue' ? 'bg-brand-dark' : 'bg-brand-maroon'
+			} rounded text-white aspect-square w-[75px] flex flex-col justify-center items-center shadow-md`}
+		>
+			<p className="text-4xl">{content}</p>
+			<p className="text-sm uppercase">{subContent}</p>
+		</div>
 	);
 }
