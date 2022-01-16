@@ -40,31 +40,43 @@ const ExpensesPerWeek = memo(function ExpensesPerWeek({
 		}, []);
 
 		setCleanedData(
-			startDates.map<ExpensesChartData>(date => {
-				const dataPoints = dataWithDate.filter(
-					({ startDate }) => startDate === date,
-				);
-
-				const result: ExpensesChartData = { startDate: date };
-				newCategories.forEach(category => (result[category] = 0));
-
-				dataPoints.forEach(curr => {
-					const currentCategory = startCase(
-						curr.parentCategory || curr.category || 'All',
+			startDates
+				.map<ExpensesChartData>(date => {
+					const dataPoints = dataWithDate.filter(
+						({ startDate }) => startDate === date,
 					);
 
-					const existingResult = (
-						typeof result[currentCategory] === 'number'
-							? result[currentCategory]
-							: 0
-					) as number;
+					const result: ExpensesChartData = { startDate: date };
+					newCategories.forEach(category => (result[category] = 0));
 
-					result[currentCategory] =
-						existingResult + curr.amount / 100;
-				});
+					dataPoints.forEach(curr => {
+						const currentCategory = startCase(
+							curr.parentCategory || curr.category || 'All',
+						);
 
-				return result;
-			}),
+						const existingResult = (
+							typeof result[currentCategory] === 'number'
+								? result[currentCategory]
+								: 0
+						) as number;
+
+						result[currentCategory] =
+							existingResult + curr.amount / 100;
+					});
+
+					return result;
+				})
+				.sort((a, b) => {
+					const weekStartOnA = dataWithDate.find(
+						({ startDate }) => startDate === a.startDate,
+					)?.weekStartOn;
+					const weekStartOnB = dataWithDate.find(
+						({ startDate }) => startDate === b.startDate,
+					)?.weekStartOn;
+
+					if (!weekStartOnA || !weekStartOnB) return 0;
+					return weekStartOnB > weekStartOnA ? -1 : 1;
+				}),
 		);
 	}, [data]);
 
