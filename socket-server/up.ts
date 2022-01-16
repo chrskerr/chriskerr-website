@@ -319,7 +319,9 @@ function createWeeklyData({
 				transaction;
 			if (!createdAt) return acc;
 
-			const weekStartOn = startOfWeek(new Date(createdAt));
+			const weekStartOn = startOfWeek(new Date(createdAt), {
+				weekStartsOn: 1,
+			});
 
 			// All Transactions
 
@@ -431,7 +433,9 @@ function createWeeklyData({
 			if (balance.createdAt) {
 				return {
 					...balance,
-					weekStartOn: startOfWeek(new Date(balance.createdAt)),
+					weekStartOn: startOfWeek(new Date(balance.createdAt), {
+						weekStartsOn: 1,
+					}),
 				};
 			}
 		})

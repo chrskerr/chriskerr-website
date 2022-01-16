@@ -26,11 +26,11 @@ const AreaChartBase = memo(function AreaChartBase({
 	data,
 }: Props): ReactElement {
 	return (
-		<div className="h-[300px]">
+		<div className="h-[400px]">
 			<ResponsiveContainer width="100%" height="100%">
 				<AreaChart
 					width={200}
-					height={300}
+					height={400}
 					data={data}
 					margin={{ right: 50, left: 50 }}
 				>
@@ -47,11 +47,11 @@ const AreaChartBase = memo(function AreaChartBase({
 					{categories.map((category, i) => (
 						<Area
 							key={category}
-							type="monotone"
+							type="natural"
 							dataKey={category}
 							stackId={1}
 							stroke={getStroke(i, categories.length)}
-							fill="transparent"
+							fill={getFill(i, categories.length)}
 						/>
 					))}
 					<Legend />
@@ -65,3 +65,6 @@ export default AreaChartBase;
 
 const getStroke = (i: number, of: number): string =>
 	`hsl(${(202 + (360 * i) / of) % 360}, 100%, 37%)`;
+
+const getFill = (i: number, of: number): string =>
+	`hsl(${(202 + (360 * i) / of) % 360}, 100%, 70%)`;

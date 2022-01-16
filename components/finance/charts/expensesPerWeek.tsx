@@ -46,6 +46,7 @@ const ExpensesPerWeek = memo(function ExpensesPerWeek({
 				);
 
 				const result: ExpensesChartData = { startDate: date };
+				newCategories.forEach(category => (result[category] = 0));
 
 				dataPoints.forEach(curr => {
 					const currentCategory = startCase(

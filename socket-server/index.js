@@ -64823,7 +64823,9 @@ function createWeeklyData({
     const { amount, createdAt, accountId, category, parentCategory } = transaction;
     if (!createdAt)
       return acc;
-    const weekStartOn = (0, import_date_fns.startOfWeek)(new Date(createdAt));
+    const weekStartOn = (0, import_date_fns.startOfWeek)(new Date(createdAt), {
+      weekStartsOn: 1
+    });
     const allFilter = (summary) => {
       return summary.accountId === accountId && summary.weekStartOn === weekStartOn;
     };
@@ -64884,7 +64886,9 @@ function createWeeklyData({
   const uniqueBalances = balances.map((balance) => {
     if (balance.createdAt) {
       return __spreadProps(__spreadValues({}, balance), {
-        weekStartOn: (0, import_date_fns.startOfWeek)(new Date(balance.createdAt))
+        weekStartOn: (0, import_date_fns.startOfWeek)(new Date(balance.createdAt), {
+          weekStartsOn: 1
+        })
       });
     }
   }).filter((balance) => !!balance).filter((balance, i, arr) => {
