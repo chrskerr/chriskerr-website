@@ -2,12 +2,10 @@ import { ReactElement, useState } from 'react';
 import { NextSeo } from 'next-seo';
 
 import { UpApiReturn } from 'types/finance';
+import Finance from 'components/finance';
 import { GetServerSideProps } from 'next';
 import { fetchTransactionsHelper } from 'components/finance/helpers';
 import Link from 'next/link';
-
-import dynamic from 'next/dynamic';
-const Finance = dynamic(() => import('components/finance'), { ssr: false });
 
 interface Props {
 	initialData: UpApiReturn | null;
