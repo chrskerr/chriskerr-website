@@ -220,4 +220,14 @@ server.listen(port, () => {
 			table.foreign('accountId').references(TableNames.ACCOUNTS + '.id');
 		});
 	}
+
+	const hasTransactionId = await knex.schema.hasColumn(
+		TableNames.TRANSACTIONS,
+		'transactionId',
+	);
+	if (!hasTransactionId) {
+		await knex.schema.alterTable(TableNames.TRANSACTIONS, table => {
+			table.text('transactionId').nullable().unique();
+		});
+	}
 })();

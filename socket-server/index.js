@@ -64713,17 +64713,23 @@ function createUpRoutes(app2, knex2) {
       yield knex2.table("account_balances" /* BALANCES */).insert({ accountId, balance });
     });
   }
-  function createTransaction(accountId, txn) {
+  function createOrUpdateTransaction(accountId, eventType, txn) {
     return __async(this, null, function* () {
-      var _a, _b;
-      return yield knex2.table("account_transactions" /* TRANSACTIONS */).insert({
+      var _a, _b, _c, _d;
+      return eventType === "TRANSACTION_CREATED" ? yield knex2.table("account_transactions" /* TRANSACTIONS */).insert({
         accountId,
+        transactionId: txn.data.id,
         amount: txn.data.attributes.amount.valueInBaseUnits,
         category: (_a = txn.data.relationships.category.data) == null ? void 0 : _a.id,
         parentCategory: (_b = txn.data.relationships.parentCategory.data) == null ? void 0 : _b.id,
         description: txn.data.attributes.description,
         createdAt: txn.data.attributes.createdAt
-      }).returning("*");
+      }).returning("*") : yield knex2.table("account_transactions" /* TRANSACTIONS */).where({ transactionId: txn.data.id }).update({
+        amount: txn.data.attributes.amount.valueInBaseUnits,
+        category: (_c = txn.data.relationships.category.data) == null ? void 0 : _c.id,
+        parentCategory: (_d = txn.data.relationships.parentCategory.data) == null ? void 0 : _d.id,
+        description: txn.data.attributes.description
+      });
     });
   }
   app2.set("trust proxy", 1);
@@ -64755,15 +64761,15 @@ function createUpRoutes(app2, knex2) {
       hmac.update(req.rawBody);
       const hash = hmac.digest("hex");
       const upSignature = req.headers["x-up-authenticity-signature"];
-      if (body.attributes.eventType === "TRANSACTION_CREATED" && txnId && hash === upSignature) {
+      const eventType = isEventType(body.attributes.eventType) ? body.attributes.eventType : void 0;
+      if (eventType && txnId && hash === upSignature) {
         const txnData = yield import_axios.default.get(urlBase + "/transactions/" + txnId);
         const txn = txnData.data;
         const accountId = txn.data.relationships.account.data.id;
         const accountRes = yield import_axios.default.get(urlBase + "/accounts/" + accountId);
         const account = accountRes.data.data;
         yield createOrUpdateAccount(accountId, account == null ? void 0 : account.attributes.displayName);
-        const newTransaction = yield createTransaction(accountId, txn);
-        console.log(newTransaction);
+        yield createOrUpdateTransaction(accountId, eventType, txn);
       } else {
         console.log(body);
         console.log("signature matched?", hash === upSignature);
@@ -64814,6 +64820,9 @@ function createUpRoutes(app2, knex2) {
     }
   }));
 }
+var isEventType = (string) => {
+  return string === "TRANSACTION_CREATED" || string === "TRANSACTION_SETTLED";
+};
 function createWeeklyData({
   balances,
   accounts,
@@ -65035,6 +65044,12 @@ server.listen(port, () => {
       table.text("description").nullable();
       table.text("accountId").notNullable();
       table.foreign("accountId").references("accounts" /* ACCOUNTS */ + ".id");
+    });
+  }
+  const hasTransactionId = yield knex.schema.hasColumn("account_transactions" /* TRANSACTIONS */, "transactionId");
+  if (!hasTransactionId) {
+    yield knex.schema.alterTable("account_transactions" /* TRANSACTIONS */, (table) => {
+      table.text("transactionId").nullable().unique();
     });
   }
 }))();

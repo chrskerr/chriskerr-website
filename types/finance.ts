@@ -23,6 +23,7 @@ export type BalanceWithStart = Balance & { weekStartOn: Date };
 
 export type Transaction = {
 	id: number;
+	transactionId: string | null;
 	/** transaction value in cents */
 	amount: number;
 	category: string | undefined;

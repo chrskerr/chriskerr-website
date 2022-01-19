@@ -73,18 +73,35 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 			.insert({ accountId, balance });
 	}
 
-	async function createTransaction(accountId: string, txn: UpTransaction) {
-		return await knex
-			.table<Transaction>(TableNames.TRANSACTIONS)
-			.insert({
-				accountId,
-				amount: txn.data.attributes.amount.valueInBaseUnits,
-				category: txn.data.relationships.category.data?.id,
-				parentCategory: txn.data.relationships.parentCategory.data?.id,
-				description: txn.data.attributes.description,
-				createdAt: txn.data.attributes.createdAt,
-			})
-			.returning('*');
+	async function createOrUpdateTransaction(
+		accountId: string,
+		eventType: AcceptedEventTypes,
+		txn: UpTransaction,
+	) {
+		return eventType === 'TRANSACTION_CREATED'
+			? await knex
+					.table<Transaction>(TableNames.TRANSACTIONS)
+					.insert({
+						accountId,
+						transactionId: txn.data.id,
+						amount: txn.data.attributes.amount.valueInBaseUnits,
+						category: txn.data.relationships.category.data?.id,
+						parentCategory:
+							txn.data.relationships.parentCategory.data?.id,
+						description: txn.data.attributes.description,
+						createdAt: txn.data.attributes.createdAt,
+					})
+					.returning('*')
+			: await knex
+					.table<Transaction>(TableNames.TRANSACTIONS)
+					.where({ transactionId: txn.data.id })
+					.update({
+						amount: txn.data.attributes.amount.valueInBaseUnits,
+						category: txn.data.relationships.category.data?.id,
+						parentCategory:
+							txn.data.relationships.parentCategory.data?.id,
+						description: txn.data.attributes.description,
+					});
 	}
 
 	app.set('trust proxy', 1);
@@ -210,11 +227,11 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 			const hash = hmac.digest('hex');
 			const upSignature = req.headers['x-up-authenticity-signature'];
 
-			if (
-				body.attributes.eventType === 'TRANSACTION_CREATED' &&
-				txnId &&
-				hash === upSignature
-			) {
+			const eventType = isEventType(body.attributes.eventType)
+				? body.attributes.eventType
+				: undefined;
+
+			if (eventType && txnId && hash === upSignature) {
 				const txnData = await axios.get(
 					urlBase + '/transactions/' + txnId,
 				);
@@ -232,8 +249,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 					account?.attributes.displayName,
 				);
 
-				const newTransaction = await createTransaction(accountId, txn);
-				console.log(newTransaction);
+				await createOrUpdateTransaction(accountId, eventType, txn);
 			} else {
 				console.log(body);
 				console.log('signature matched?', hash === upSignature);
@@ -299,6 +315,12 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 		}
 	});
 }
+
+type AcceptedEventTypes = 'TRANSACTION_CREATED' | 'TRANSACTION_SETTLED';
+
+const isEventType = (string: string): string is AcceptedEventTypes => {
+	return string === 'TRANSACTION_CREATED' || string === 'TRANSACTION_SETTLED';
+};
 
 function createWeeklyData({
 	balances,
