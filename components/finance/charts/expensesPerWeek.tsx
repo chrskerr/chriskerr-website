@@ -18,6 +18,10 @@ const ExpensesPerWeek = memo(function ExpensesPerWeek({
 }): ReactElement {
 	const [categories, setCategories] = useState<string[]>([]);
 	const [cleanedData, setCleanedData] = useState<ExpensesChartData[]>([]);
+	const [filteredData, setFilteredData] = useState<ExpensesChartData[]>([]);
+
+	const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+	const [toggleCategoriesShown, setToggleCategoriesShown] = useState(false);
 
 	useEffect(() => {
 		const newCategories = data.reduce<string[]>((acc, curr) => {
@@ -28,6 +32,7 @@ const ExpensesPerWeek = memo(function ExpensesPerWeek({
 			return [...acc, currentCategory];
 		}, []);
 		setCategories(newCategories);
+		setSelectedCategories(newCategories);
 
 		const dataWithDate = data.map(curr => ({
 			...curr,
@@ -80,8 +85,80 @@ const ExpensesPerWeek = memo(function ExpensesPerWeek({
 		);
 	}, [data]);
 
+	useEffect(() => {
+		setFilteredData(
+			cleanedData.map(curr => {
+				const updated = { ...curr };
+				Object.keys(updated).forEach(key => {
+					if (key === 'startDate') return;
+					if (!selectedCategories.includes(key)) {
+						delete updated[key];
+					}
+				});
+
+				return updated;
+			}),
+		);
+	}, [cleanedData, selectedCategories]);
+
 	return categories && cleanedData ? (
-		<AreaChartBase categories={categories} data={cleanedData} />
+		<>
+			<div onClick={() => setToggleCategoriesShown(false)}>
+				<button
+					className="mb-8 button small"
+					onClick={e => {
+						e.stopPropagation();
+						setToggleCategoriesShown(e => !e);
+					}}
+				>
+					Toggle category selector
+				</button>
+				<AreaChartBase
+					categories={selectedCategories}
+					data={filteredData}
+				/>
+			</div>
+			{toggleCategoriesShown && (
+				<div className="absolute flex flex-col items-end p-8 bg-white border rounded top-4 right-4">
+					<span
+						className="-mt-3 text-2xl cursor-pointer font-heading"
+						onClick={() => setToggleCategoriesShown(false)}
+					>
+						x
+					</span>
+					<div className="grid grid-cols-2">
+						{categories &&
+							categories.map(category => {
+								const isChecked =
+									selectedCategories.includes(category);
+								const handleChange = () => {
+									setSelectedCategories(c => {
+										return isChecked
+											? c.filter(
+													curr => curr !== category,
+											  )
+											: [...c, category];
+									});
+								};
+								return (
+									<div
+										key={category}
+										className="flex items-center px-2"
+									>
+										<input
+											type="checkbox"
+											className="mr-4"
+											checked={isChecked}
+											onChange={handleChange}
+										/>
+										<label>{category}</label>
+									</div>
+								);
+							})}
+					</div>
+				</div>
+			)}
+		</>
 	) : (
 		<></>
 	);
