@@ -9,8 +9,7 @@ import dotenv from 'dotenv';
 import { Knex } from 'knex';
 dotenv.config({ path: '.env.local' });
 
-import { differenceInSeconds, startOfWeek } from 'date-fns';
-import reject from 'lodash/reject';
+import { differenceInSeconds, format, startOfWeek } from 'date-fns';
 
 import type {
 	Balance,
@@ -21,8 +20,7 @@ import type {
 	UpAccounts,
 	UpWebhook,
 	UpAccount,
-	TransactionsSummary,
-	BalanceWithStart,
+	ChartData,
 } from '../types/finance';
 
 export enum TableNames {
@@ -250,9 +248,6 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 				);
 
 				await createOrUpdateTransaction(accountId, eventType, txn);
-			} else {
-				console.log(body);
-				console.log('signature matched?', hash === upSignature);
 			}
 
 			res.status(200).end();
@@ -331,158 +326,141 @@ function createWeeklyData({
 	accounts: Account[];
 	transactions: Transaction[];
 }): UpApiReturn {
-	const transactionSummaries = transactions.reduce<{
-		allTransactions: TransactionsSummary[];
-		transactionsByParentCategory: TransactionsSummary[];
-		transactionsByCategory: TransactionsSummary[];
-	}>(
-		(acc, transaction) => {
-			const { amount, createdAt, accountId, category, parentCategory } =
-				transaction;
-			if (!createdAt) return acc;
+	const allStartDates: string[] = [];
+	const allCategories: string[] = [];
+	const allParentCategories: string[] = [];
 
-			const weekStartOn = startOfWeek(new Date(createdAt), {
+	const transactionsWithStartDate = transactions.map(txn => {
+		const startDate = format(
+			startOfWeek(new Date(txn.createdAt), {
 				weekStartsOn: 1,
-			});
+			}),
+			'dd/MM/yy',
+		);
+		allStartDates.push(startDate);
+		allCategories.push(txn.category || 'Uncategorised');
+		allParentCategories.push(txn.parentCategory || 'Uncategorised');
+		return {
+			...txn,
+			startDate,
+		};
+	});
 
-			// All Transactions
+	const balancesWithStartDate = balances.map(txn => {
+		const startDate = format(
+			startOfWeek(new Date(txn.createdAt), {
+				weekStartsOn: 1,
+			}),
+			'dd/MM/yy',
+		);
+		allStartDates.push(startDate);
+		return {
+			...txn,
+			startDate,
+		};
+	});
 
-			const allFilter = (summary: TransactionsSummary): boolean => {
-				return (
-					summary.accountId === accountId &&
-					summary.weekStartOn === weekStartOn
-				);
-			};
+	const startDates = [...new Set(allStartDates)].sort((a, b) =>
+		differenceInSeconds(new Date(a), new Date(b)),
+	);
 
-			const currentAll: TransactionsSummary = acc.allTransactions.find(
-				allFilter,
-			) || {
-				weekStartOn,
-				accountId,
-				amount: 0,
-			};
+	const categories = [...new Set(allCategories)];
+	const parentCategories = [...new Set(allParentCategories)];
 
-			const updatedAll = {
-				...currentAll,
-				amount: currentAll.amount + amount,
-			};
+	const createAccStart = (startDate: string, set: string[]) =>
+		set.reduce<ChartData>((acc, curr) => ({ ...acc, [curr]: 0 }), {
+			startDate,
+		});
 
-			const allTransactions = [
-				...reject(acc.allTransactions, allFilter),
-				updatedAll,
-			];
+	const transactionSummaries = allStartDates.reduce<{
+		all: ChartData[];
+		byParent: ChartData[];
+		byCategory: ChartData[];
+	}>(
+		(acc, startDate) => {
+			const transactionsForStart = transactionsWithStartDate.filter(
+				txn => txn.startDate === startDate,
+			);
 
-			// Transactions By Parent Category
-
-			const byParentCategoryFilter = (
-				summary: TransactionsSummary,
-			): boolean => {
-				return (
-					summary.accountId === accountId &&
-					summary.weekStartOn === weekStartOn &&
-					summary.parentCategory === parentCategory
-				);
-			};
-
-			const currentByParent: TransactionsSummary =
-				acc.transactionsByParentCategory.find(
-					byParentCategoryFilter,
-				) || {
-					weekStartOn,
-					accountId,
-					parentCategory,
-					amount: 0,
-				};
-
-			const updatedCurrentByParent = {
-				...currentByParent,
-				amount: currentByParent.amount + amount,
-			};
-
-			const transactionsByParentCategory = [
-				...reject(
-					acc.transactionsByParentCategory,
-					byParentCategoryFilter,
+			const all: ChartData[] = [
+				...acc.all,
+				transactionsForStart.reduce<ChartData>(
+					(acc_2, curr) => ({
+						...acc_2,
+						All: curr.amount + Number(acc_2['All']),
+					}),
+					{ startDate, All: 0 },
 				),
-				updatedCurrentByParent,
 			];
 
-			// Transactions by Category
+			const byParent: ChartData[] = [
+				...acc.byParent,
+				transactionsForStart.reduce<ChartData>((acc_2, curr) => {
+					const category = curr.parentCategory || 'Uncategorised';
+					return {
+						...acc_2,
+						[category]: curr.amount + Number(acc_2[category]),
+					};
+				}, createAccStart(startDate, parentCategories)),
+			];
 
-			const byCategoryFilter = (
-				summary: TransactionsSummary,
-			): boolean => {
-				return (
-					summary.accountId === accountId &&
-					summary.weekStartOn === weekStartOn &&
-					summary.category === category
-				);
-			};
-
-			const currentByCategory: TransactionsSummary =
-				acc.transactionsByCategory.find(byCategoryFilter) || {
-					weekStartOn,
-					accountId,
-					category,
-					amount: 0,
-				};
-
-			const updatedCurryByCategory = {
-				...currentByCategory,
-				amount: currentByCategory.amount + amount,
-			};
-
-			const transactionsByCategory = [
-				...reject(acc.transactionsByCategory, byCategoryFilter),
-				updatedCurryByCategory,
+			const byCategory: ChartData[] = [
+				...acc.byCategory,
+				transactionsForStart.reduce<ChartData>((acc_2, curr) => {
+					const category = curr.category || 'Uncategorised';
+					return {
+						...acc_2,
+						[category]: curr.amount + Number(acc_2[category]),
+					};
+				}, createAccStart(startDate, categories)),
 			];
 
 			return {
-				allTransactions,
-				transactionsByParentCategory,
-				transactionsByCategory,
+				all,
+				byParent,
+				byCategory,
 			};
 		},
 		{
-			allTransactions: [],
-			transactionsByParentCategory: [],
-			transactionsByCategory: [],
+			all: [],
+			byParent: [],
+			byCategory: [],
 		},
 	);
 
-	const uniqueBalances = balances
-		.map(balance => {
-			if (balance.createdAt) {
-				return {
-					...balance,
-					weekStartOn: startOfWeek(new Date(balance.createdAt), {
-						weekStartsOn: 1,
-					}),
-				};
-			}
-		})
-		.filter((balance): balance is BalanceWithStart => !!balance)
-		.filter((balance, i, arr) => {
-			const balancesForThisWeek = arr
-				.filter(
-					curr =>
-						curr.weekStartOn.valueOf() ===
-							balance.weekStartOn.valueOf() &&
-						curr.accountId === balance.accountId,
-				)
-				.sort((a, b) =>
-					differenceInSeconds(
-						new Date(a.createdAt),
-						new Date(b.createdAt),
-					),
-				);
+	const uniqueBalances = startDates.map<ChartData>(startDate => {
+		return accounts
+			.map(account => {
+				const balancesForAccountAndStart = balancesWithStartDate
+					.filter(
+						curr =>
+							curr.startDate === startDate &&
+							curr.accountId === account.id,
+					)
+					.sort((a, b) =>
+						differenceInSeconds(
+							new Date(a.createdAt),
+							new Date(b.createdAt),
+						),
+					);
 
-			return balancesForThisWeek[0].createdAt === balance.createdAt;
-		});
+				return {
+					...balancesForAccountAndStart[0],
+					accountName: account.name,
+				};
+			})
+			.reduce<ChartData>(
+				(acc, curr) => ({
+					...acc,
+					[curr.accountName]: curr.balance,
+				}),
+				{ startDate },
+			);
+	});
 
 	return {
 		accounts,
 		balances: uniqueBalances,
-		...transactionSummaries,
+		transactions: transactionSummaries,
 	};
 }

@@ -9,18 +9,12 @@ export default function Finance({ data }: { data: UpApiReturn }): ReactElement {
 	const [summariseTransactionsBy, setSummariseTransactionsBy] =
 		useState<TransactionCategories>('parent-category');
 
-	const {
-		allTransactions,
-		transactionsByCategory,
-		transactionsByParentCategory,
-		balances,
-		accounts,
-	} = data;
-	let expensesData = allTransactions;
+	const { transactions, balances, accounts } = data;
+	let expensesData = transactions.all;
 	if (summariseTransactionsBy === 'category')
-		expensesData = transactionsByCategory;
+		expensesData = transactions.byCategory;
 	if (summariseTransactionsBy === 'parent-category')
-		expensesData = transactionsByParentCategory;
+		expensesData = transactions.byParent;
 
 	return (
 		<>

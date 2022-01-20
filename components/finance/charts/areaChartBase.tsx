@@ -16,10 +16,10 @@ import { ContentType } from 'recharts/types/component/Tooltip';
 
 import takeRight from 'lodash/takeRight';
 
-import { ExpensesChartData } from './expensesPerWeek';
+import { ChartData } from 'types/finance';
 
 type Props = {
-	data: ExpensesChartData[];
+	data: ChartData[];
 	categories: string[];
 };
 

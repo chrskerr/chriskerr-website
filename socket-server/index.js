@@ -37,19 +37,19 @@ var __toESM = (module2, isNodeMode) => {
   return __reExport(__markAsModule(__defProp(module2 != null ? __create(__getProtoOf(module2)) : {}, "default", !isNodeMode && module2 && module2.__esModule ? { get: () => module2.default, enumerable: true } : { value: module2, enumerable: true })), module2);
 };
 var __async = (__this, __arguments, generator) => {
-  return new Promise((resolve, reject2) => {
+  return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
         step(generator.next(value));
       } catch (e) {
-        reject2(e);
+        reject(e);
       }
     };
     var rejected = (value) => {
       try {
         step(generator.throw(value));
       } catch (e) {
-        reject2(e);
+        reject(e);
       }
     };
     var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
@@ -318,8 +318,8 @@ var require_depd = __commonJS({
         process.emit("deprecation", err);
         return;
       }
-      var format = process.stderr.isTTY ? formatColor : formatPlain;
-      var output = format.call(this, msg, caller, stack2.slice(i));
+      var format2 = process.stderr.isTTY ? formatColor : formatPlain;
+      var output = format2.call(this, msg, caller, stack2.slice(i));
       process.stderr.write(output + "\n", "utf8");
     }
     function callSiteLocation(callSite) {
@@ -488,7 +488,7 @@ var require_bytes = __commonJS({
   "node_modules/bytes/index.js"(exports2, module2) {
     "use strict";
     module2.exports = bytes;
-    module2.exports.format = format;
+    module2.exports.format = format2;
     module2.exports.parse = parse;
     var formatThousandsRegExp = /\B(?=(\d{3})+(?!\d))/g;
     var formatDecimalsRegExp = /(?:\.0*|(\.[^0]+)0+)$/;
@@ -506,11 +506,11 @@ var require_bytes = __commonJS({
         return parse(value);
       }
       if (typeof value === "number") {
-        return format(value, options);
+        return format2(value, options);
       }
       return null;
     }
-    function format(value, options) {
+    function format2(value, options) {
       if (!Number.isFinite(value)) {
         return null;
       }
@@ -577,9 +577,9 @@ var require_content_type = __commonJS({
     var QESC_REGEXP = /\\([\u000b\u0020-\u00ff])/g;
     var QUOTE_REGEXP = /([\\"])/g;
     var TYPE_REGEXP = /^[!#$%&'*+.^_`|~0-9A-Za-z-]+\/[!#$%&'*+.^_`|~0-9A-Za-z-]+$/;
-    exports2.format = format;
+    exports2.format = format2;
     exports2.parse = parse;
-    function format(obj) {
+    function format2(obj) {
       if (!obj || typeof obj !== "object") {
         throw new TypeError("argument obj is required");
       }
@@ -1172,11 +1172,11 @@ var require_debug = __commonJS({
           args2.unshift("%O");
         }
         var index = 0;
-        args2[0] = args2[0].replace(/%([a-zA-Z%])/g, function(match, format) {
+        args2[0] = args2[0].replace(/%([a-zA-Z%])/g, function(match, format2) {
           if (match === "%%")
             return match;
           index++;
-          var formatter = exports2.formatters[format];
+          var formatter = exports2.formatters[format2];
           if (typeof formatter === "function") {
             var val = args2[index];
             match = formatter.call(self2, val);
@@ -4921,10 +4921,10 @@ var require_raw_body = __commonJS({
       if (done) {
         return readStream(stream, encoding, length, limit, done);
       }
-      return new Promise(function executor(resolve, reject2) {
+      return new Promise(function executor(resolve, reject) {
         readStream(stream, encoding, length, limit, function onRead(err, buf) {
           if (err)
-            return reject2(err);
+            return reject(err);
           resolve(buf);
         });
       });
@@ -5313,9 +5313,9 @@ var require_media_typer = __commonJS({
     var subtypeNameRegExp = /^[A-Za-z0-9][A-Za-z0-9!#$&^_.-]{0,126}$/;
     var typeNameRegExp = /^[A-Za-z0-9][A-Za-z0-9!#$&^_-]{0,126}$/;
     var typeRegExp = /^ *([A-Za-z0-9][A-Za-z0-9!#$&^_-]{0,126})\/([A-Za-z0-9][A-Za-z0-9!#$&^_.+-]{0,126}) *$/;
-    exports2.format = format;
+    exports2.format = format2;
     exports2.parse = parse;
-    function format(obj) {
+    function format2(obj) {
       if (!obj || typeof obj !== "object") {
         throw new TypeError("argument obj is required");
       }
@@ -14654,14 +14654,14 @@ var require_stringify = __commonJS({
       if (typeof opts.charset !== "undefined" && opts.charset !== "utf-8" && opts.charset !== "iso-8859-1") {
         throw new TypeError("The charset option must be either utf-8, iso-8859-1, or undefined");
       }
-      var format = formats["default"];
+      var format2 = formats["default"];
       if (typeof opts.format !== "undefined") {
         if (!has.call(formats.formatters, opts.format)) {
           throw new TypeError("Unknown format option provided.");
         }
-        format = opts.format;
+        format2 = opts.format;
       }
-      var formatter = formats.formatters[format];
+      var formatter = formats.formatters[format2];
       var filter = defaults.filter;
       if (typeof opts.filter === "function" || isArray(opts.filter)) {
         filter = opts.filter;
@@ -15545,17 +15545,17 @@ var require_path_to_regexp = __commonJS({
         });
         return new RegExp("(?:" + path.join("|") + ")", flags);
       }
-      path = ("^" + path + (strict ? "" : path[path.length - 1] === "/" ? "?" : "/?")).replace(/\/\(/g, "/(?:").replace(/([\/\.])/g, "\\$1").replace(/(\\\/)?(\\\.)?:(\w+)(\(.*?\))?(\*)?(\?)?/g, function(match, slash, format, key, capture, star, optional, offset) {
+      path = ("^" + path + (strict ? "" : path[path.length - 1] === "/" ? "?" : "/?")).replace(/\/\(/g, "/(?:").replace(/([\/\.])/g, "\\$1").replace(/(\\\/)?(\\\.)?:(\w+)(\(.*?\))?(\*)?(\?)?/g, function(match, slash, format2, key, capture, star, optional, offset) {
         slash = slash || "";
-        format = format || "";
-        capture = capture || "([^\\/" + format + "]+?)";
+        format2 = format2 || "";
+        capture = capture || "([^\\/" + format2 + "]+?)";
         optional = optional || "";
         keys.push({
           name: key,
           optional: !!optional,
           offset: offset + extraOffset
         });
-        var result = "" + (optional ? "" : slash) + "(?:" + format + (optional ? slash : "") + capture + (star ? "((?:[\\/" + format + "].+?)?)" : "") + ")" + optional;
+        var result = "" + (optional ? "" : slash) + "(?:" + format2 + (optional ? slash : "") + capture + (star ? "((?:[\\/" + format2 + "].+?)?)" : "") + ")" + optional;
         extraOffset += result.length - match.length;
         return result;
       }).replace(/\*/g, function(star, index2) {
@@ -16437,7 +16437,7 @@ var require_content_disposition = __commonJS({
       var opts = options || {};
       var type = opts.type || "attachment";
       var params = createparams(filename, opts.fallback);
-      return format(new ContentDisposition(type, params));
+      return format2(new ContentDisposition(type, params));
     }
     function createparams(filename, fallback) {
       if (filename === void 0) {
@@ -16468,7 +16468,7 @@ var require_content_disposition = __commonJS({
       }
       return params;
     }
-    function format(obj) {
+    function format2(obj) {
       var parameters = obj.parameters;
       var type = obj.type;
       if (!type || typeof type !== "string" || !TOKEN_REGEXP.test(type)) {
@@ -21278,12 +21278,12 @@ var require_common = __commonJS({
             args2.unshift("%O");
           }
           let index = 0;
-          args2[0] = args2[0].replace(/%([a-zA-Z%])/g, (match, format) => {
+          args2[0] = args2[0].replace(/%([a-zA-Z%])/g, (match, format2) => {
             if (match === "%%") {
               return "%";
             }
             index++;
-            const formatter = createDebug.formatters[format];
+            const formatter = createDebug.formatters[format2];
             if (typeof formatter === "function") {
               const val = args2[index];
               match = formatter.call(self2, val);
@@ -24167,7 +24167,7 @@ var require_extension = __commonJS({
       }
       return offers;
     }
-    function format(extensions) {
+    function format2(extensions) {
       return Object.keys(extensions).map((extension) => {
         let configurations = extensions[extension];
         if (!Array.isArray(configurations))
@@ -24182,7 +24182,7 @@ var require_extension = __commonJS({
         }).join(", ");
       }).join(", ");
     }
-    module2.exports = { format, parse };
+    module2.exports = { format: format2, parse };
   }
 });
 
@@ -24214,7 +24214,7 @@ var require_websocket2 = __commonJS({
     var {
       EventTarget: { addEventListener, removeEventListener }
     } = require_event_target();
-    var { format, parse } = require_extension();
+    var { format: format2, parse } = require_extension();
     var { toBuffer } = require_buffer_util();
     var readyStates = ["CONNECTING", "OPEN", "CLOSING", "CLOSED"];
     var subprotocolRegex = /^[!#$%&'*+\-.0-9A-Z^_`|a-z~]+$/;
@@ -24576,7 +24576,7 @@ var require_websocket2 = __commonJS({
       opts.timeout = opts.handshakeTimeout;
       if (opts.perMessageDeflate) {
         perMessageDeflate = new PerMessageDeflate(opts.perMessageDeflate !== true ? opts.perMessageDeflate : {}, false, opts.maxPayload);
-        opts.headers["Sec-WebSocket-Extensions"] = format({
+        opts.headers["Sec-WebSocket-Extensions"] = format2({
           [PerMessageDeflate.extensionName]: perMessageDeflate.offer()
         });
       }
@@ -27169,12 +27169,12 @@ var require_common2 = __commonJS({
             args2.unshift("%O");
           }
           let index = 0;
-          args2[0] = args2[0].replace(/%([a-zA-Z%])/g, (match, format) => {
+          args2[0] = args2[0].replace(/%([a-zA-Z%])/g, (match, format2) => {
             if (match === "%%") {
               return "%";
             }
             index++;
-            const formatter = createDebug.formatters[format];
+            const formatter = createDebug.formatters[format2];
             if (typeof formatter === "function") {
               const val = args2[index];
               match = formatter.call(self2, val);
@@ -27988,12 +27988,12 @@ var require_common3 = __commonJS({
             args2.unshift("%O");
           }
           let index = 0;
-          args2[0] = args2[0].replace(/%([a-zA-Z%])/g, (match, format) => {
+          args2[0] = args2[0].replace(/%([a-zA-Z%])/g, (match, format2) => {
             if (match === "%%") {
               return "%";
             }
             index++;
-            const formatter = createDebug.formatters[format];
+            const formatter = createDebug.formatters[format2];
             if (typeof formatter === "function") {
               const val = args2[index];
               match = formatter.call(self2, val);
@@ -30122,15 +30122,15 @@ var require_utils3 = __commonJS({
     var PromiseInspection_1 = require_PromiseInspection();
     function defer() {
       let resolve = null;
-      let reject2 = null;
+      let reject = null;
       const promise = new Promise((resolver, rejecter) => {
         resolve = resolver;
-        reject2 = rejecter;
+        reject = rejecter;
       });
       return {
         promise,
         resolve,
-        reject: reject2
+        reject
       };
     }
     exports2.defer = defer;
@@ -30214,14 +30214,14 @@ var require_PendingOperation = __commonJS({
     };
     exports2.PendingOperation = PendingOperation;
     function timeout(promise, time) {
-      return new Promise((resolve, reject2) => {
-        const timeoutHandle = setTimeout(() => reject2(new TimeoutError_1.TimeoutError()), time);
+      return new Promise((resolve, reject) => {
+        const timeoutHandle = setTimeout(() => reject(new TimeoutError_1.TimeoutError()), time);
         promise.then((result) => {
           clearTimeout(timeoutHandle);
           resolve(result);
         }).catch((err) => {
           clearTimeout(timeoutHandle);
-          reject2(err);
+          reject(err);
         });
       });
     }
@@ -30423,7 +30423,7 @@ var require_Pool = __commonJS({
         this._stopReaping();
         this.destroyed = true;
         return utils_1.reflect(Promise.all(this.pendingCreates.map((create) => utils_1.reflect(create.promise))).then(() => {
-          return new Promise((resolve, reject2) => {
+          return new Promise((resolve, reject) => {
             if (this.numPendingValidations() === 0) {
               resolve();
               return;
@@ -30646,10 +30646,10 @@ var require_Pool = __commonJS({
       }
     }
     function callbackOrPromise(func) {
-      return new Promise((resolve, reject2) => {
+      return new Promise((resolve, reject) => {
         const callback = (err, resource) => {
           if (err) {
-            reject2(err);
+            reject(err);
           } else {
             resolve(resource);
           }
@@ -30659,7 +30659,7 @@ var require_Pool = __commonJS({
             resolve(res);
           }
         }).catch((err) => {
-          reject2(err);
+          reject(err);
         });
       });
     }
@@ -32902,9 +32902,9 @@ var require_timeout = __commonJS({
       }
     };
     function timeout(promise, ms) {
-      return new Promise(function(resolve, reject2) {
+      return new Promise(function(resolve, reject) {
         const id = setTimeout(function() {
-          reject2(new KnexTimeoutError("operation timed out"));
+          reject(new KnexTimeoutError("operation timed out"));
         }, ms);
         function wrappedResolve(value) {
           clearTimeout(id);
@@ -32912,7 +32912,7 @@ var require_timeout = __commonJS({
         }
         function wrappedReject(err) {
           clearTimeout(id);
-          reject2(err);
+          reject(err);
         }
         promise.then(wrappedResolve, wrappedReject);
       });
@@ -33287,12 +33287,12 @@ var require_common4 = __commonJS({
             args2.unshift("%O");
           }
           let index = 0;
-          args2[0] = args2[0].replace(/%([a-zA-Z%])/g, (match, format) => {
+          args2[0] = args2[0].replace(/%([a-zA-Z%])/g, (match, format2) => {
             if (match === "%%") {
               return "%";
             }
             index++;
-            const formatter = createDebug.formatters[format];
+            const formatter = createDebug.formatters[format2];
             if (typeof formatter === "function") {
               const val = args2[index];
               match = formatter.call(self2, val);
@@ -36083,11 +36083,11 @@ var require_Migrator = __commonJS({
       }
       rollback(config, all = false) {
         this._disableProcessing();
-        return new Promise((resolve, reject2) => {
+        return new Promise((resolve, reject) => {
           try {
             this.config = getMergedConfig(config, this.config, this.knex.client.logger);
           } catch (e) {
-            reject2(e);
+            reject(e);
           }
           migrationListResolver.listAllAndCompleted(this.config, this.knex).then((value) => {
             if (!this.config.disableMigrationsListValidation) {
@@ -36101,7 +36101,7 @@ var require_Migrator = __commonJS({
             }).reverse() : this._getLastBatch(val);
           }).then((migrations) => {
             return this._runBatch(migrations, "down");
-          }).then(resolve, reject2);
+          }).then(resolve, reject);
         });
       }
       down(config) {
@@ -37120,8 +37120,8 @@ var require_make_knex = __commonJS({
             const trx = this.client.transaction(container, config, outerTx);
             return trx;
           } else {
-            return new Promise((resolve, reject2) => {
-              this.client.transaction(resolve, config, outerTx).catch(reject2);
+            return new Promise((resolve, reject) => {
+              this.client.transaction(resolve, config, outerTx).catch(reject);
             });
           }
         },
@@ -37505,7 +37505,7 @@ var require_transaction = __commonJS({
       const _query = trxClient.query;
       trxClient.query = function(conn, obj) {
         const completed = trx.isCompleted();
-        return new Promise(function(resolve, reject2) {
+        return new Promise(function(resolve, reject) {
           try {
             if (conn !== connection)
               throw new Error("Invalid connection for transaction query.");
@@ -37513,14 +37513,14 @@ var require_transaction = __commonJS({
               completedError(trx, obj);
             resolve(_query.call(trxClient, conn, obj));
           } catch (e) {
-            reject2(e);
+            reject(e);
           }
         });
       };
       const _stream = trxClient.stream;
       trxClient.stream = function(conn, obj, stream, options) {
         const completed = trx.isCompleted();
-        return new Promise(function(resolve, reject2) {
+        return new Promise(function(resolve, reject) {
           try {
             if (conn !== connection)
               throw new Error("Invalid connection for transaction query.");
@@ -37528,7 +37528,7 @@ var require_transaction = __commonJS({
               completedError(trx, obj);
             resolve(_stream.call(trxClient, conn, obj, stream, options));
           } catch (e) {
-            reject2(e);
+            reject(e);
           }
         });
       };
@@ -37718,11 +37718,11 @@ var require_reject = __commonJS({
     var baseIteratee = require_baseIteratee();
     var isArray = require_isArray();
     var negate = require_negate();
-    function reject2(collection, predicate) {
+    function reject(collection, predicate) {
       var func = isArray(collection) ? arrayFilter : baseFilter;
       return func(collection, negate(baseIteratee(predicate, 3)));
     }
-    module2.exports = reject2;
+    module2.exports = reject;
   }
 });
 
@@ -38370,7 +38370,7 @@ var require_querybuilder = __commonJS({
     var isEmpty = require_isEmpty();
     var isPlainObject = require_isPlainObject();
     var last = require_last();
-    var reject2 = require_reject();
+    var reject = require_reject();
     var tail = require_tail();
     var toArray = require_toArray();
     var { addQueryContext, normalizeArr } = require_helpers();
@@ -39422,7 +39422,7 @@ var require_querybuilder = __commonJS({
         if (grouping in this._single) {
           this._single[grouping] = void 0;
         } else {
-          this._statements = reject2(this._statements, { grouping });
+          this._statements = reject(this._statements, { grouping });
         }
       }
       _isSelectQuery() {
@@ -44229,19 +44229,19 @@ var require_pg_types = __commonJS({
     function noParse(val) {
       return String(val);
     }
-    function getTypeParser(oid, format) {
-      format = format || "text";
-      if (!typeParsers[format]) {
+    function getTypeParser(oid, format2) {
+      format2 = format2 || "text";
+      if (!typeParsers[format2]) {
         return noParse;
       }
-      return typeParsers[format][oid] || noParse;
+      return typeParsers[format2][oid] || noParse;
     }
-    function setTypeParser(oid, format, parseFn) {
-      if (typeof format == "function") {
-        parseFn = format;
-        format = "text";
+    function setTypeParser(oid, format2, parseFn) {
+      if (typeof format2 == "function") {
+        parseFn = format2;
+        format2 = "text";
       }
-      typeParsers[format][oid] = parseFn;
+      typeParsers[format2][oid] = parseFn;
     }
     textParsers.init(function(oid, converter) {
       typeParsers.text[oid] = converter;
@@ -44888,8 +44888,8 @@ var require_type_overrides = __commonJS({
       this.text = {};
       this.binary = {};
     }
-    TypeOverrides.prototype.getOverrides = function(format) {
-      switch (format) {
+    TypeOverrides.prototype.getOverrides = function(format2) {
+      switch (format2) {
         case "text":
           return this.text;
         case "binary":
@@ -44898,16 +44898,16 @@ var require_type_overrides = __commonJS({
           return {};
       }
     };
-    TypeOverrides.prototype.setTypeParser = function(oid, format, parseFn) {
-      if (typeof format === "function") {
-        parseFn = format;
-        format = "text";
+    TypeOverrides.prototype.setTypeParser = function(oid, format2, parseFn) {
+      if (typeof format2 === "function") {
+        parseFn = format2;
+        format2 = "text";
       }
-      this.getOverrides(format)[oid] = parseFn;
+      this.getOverrides(format2)[oid] = parseFn;
     };
-    TypeOverrides.prototype.getTypeParser = function(oid, format) {
-      format = format || "text";
-      return this.getOverrides(format)[oid] || this._types.getTypeParser(oid, format);
+    TypeOverrides.prototype.getTypeParser = function(oid, format2) {
+      format2 = format2 || "text";
+      return this.getOverrides(format2)[oid] || this._types.getTypeParser(oid, format2);
     };
     module2.exports = TypeOverrides;
   }
@@ -45377,14 +45377,14 @@ var require_messages = __commonJS({
     };
     exports2.CopyResponse = CopyResponse;
     var Field = class {
-      constructor(name, tableID, columnID, dataTypeID, dataTypeSize, dataTypeModifier, format) {
+      constructor(name, tableID, columnID, dataTypeID, dataTypeSize, dataTypeModifier, format2) {
         this.name = name;
         this.tableID = tableID;
         this.columnID = columnID;
         this.dataTypeID = dataTypeID;
         this.dataTypeSize = dataTypeSize;
         this.dataTypeModifier = dataTypeModifier;
-        this.format = format;
+        this.format = format2;
       }
     };
     exports2.Field = Field;
@@ -46409,10 +46409,10 @@ var require_client3 = __commonJS({
           this._connect(callback);
           return;
         }
-        return new this._Promise((resolve, reject2) => {
+        return new this._Promise((resolve, reject) => {
           this._connect((error) => {
             if (error) {
-              reject2(error);
+              reject(error);
             } else {
               resolve();
             }
@@ -46618,11 +46618,11 @@ var require_client3 = __commonJS({
           client.queryQueue.splice(client.queryQueue.indexOf(query), 1);
         }
       }
-      setTypeParser(oid, format, parseFn) {
-        return this._types.setTypeParser(oid, format, parseFn);
+      setTypeParser(oid, format2, parseFn) {
+        return this._types.setTypeParser(oid, format2, parseFn);
       }
-      getTypeParser(oid, format) {
-        return this._types.getTypeParser(oid, format);
+      getTypeParser(oid, format2) {
+        return this._types.getTypeParser(oid, format2);
       }
       escapeIdentifier(str) {
         return '"' + str.replace(/"/g, '""') + '"';
@@ -46685,8 +46685,8 @@ var require_client3 = __commonJS({
           readTimeout = this.connectionParameters.query_timeout;
           query = new Query(config, values, callback);
           if (!query.callback) {
-            result = new this._Promise((resolve, reject2) => {
-              query.callback = (err, res) => err ? reject2(err) : resolve(res);
+            result = new this._Promise((resolve, reject) => {
+              query.callback = (err, res) => err ? reject(err) : resolve(res);
             });
           }
         }
@@ -46802,9 +46802,9 @@ var require_pg_pool = __commonJS({
       const cb = function(err, client) {
         err ? rej(err) : res(client);
       };
-      const result = new Promise2(function(resolve, reject2) {
+      const result = new Promise2(function(resolve, reject) {
         res = resolve;
-        rej = reject2;
+        rej = reject;
       });
       return { callback: cb, result };
     }
@@ -48004,19 +48004,19 @@ var require_pg_types2 = __commonJS({
     function noParse(val) {
       return String(val);
     }
-    function getTypeParser(oid, format) {
-      format = format || "text";
-      if (!typeParsers[format]) {
+    function getTypeParser(oid, format2) {
+      format2 = format2 || "text";
+      if (!typeParsers[format2]) {
         return noParse;
       }
-      return typeParsers[format][oid] || noParse;
+      return typeParsers[format2][oid] || noParse;
     }
-    function setTypeParser(oid, format, parseFn) {
-      if (typeof format == "function") {
-        parseFn = format;
-        format = "text";
+    function setTypeParser(oid, format2, parseFn) {
+      if (typeof format2 == "function") {
+        parseFn = format2;
+        format2 = "text";
       }
-      typeParsers[format][oid] = parseFn;
+      typeParsers[format2][oid] = parseFn;
     }
     textParsers.init(function(oid, converter) {
       typeParsers.text[oid] = converter;
@@ -48641,9 +48641,9 @@ var require_query3 = __commonJS({
     NativeQuery.prototype._getPromise = function() {
       if (this._promise)
         return this._promise;
-      this._promise = new Promise(function(resolve, reject2) {
+      this._promise = new Promise(function(resolve, reject) {
         this._once("end", resolve);
-        this._once("error", reject2);
+        this._once("error", reject);
       }.bind(this));
       return this._promise;
     };
@@ -48807,10 +48807,10 @@ var require_client4 = __commonJS({
         this._connect(callback);
         return;
       }
-      return new this._Promise((resolve, reject2) => {
+      return new this._Promise((resolve, reject) => {
         this._connect((error) => {
           if (error) {
-            reject2(error);
+            reject(error);
           } else {
             resolve();
           }
@@ -48836,9 +48836,9 @@ var require_client4 = __commonJS({
         query = new NativeQuery(config, values, callback);
         if (!query.callback) {
           let resolveOut, rejectOut;
-          result = new this._Promise((resolve, reject2) => {
+          result = new this._Promise((resolve, reject) => {
             resolveOut = resolve;
-            rejectOut = reject2;
+            rejectOut = reject;
           });
           query.callback = (err, res) => err ? rejectOut(err) : resolveOut(res);
         }
@@ -48890,8 +48890,8 @@ var require_client4 = __commonJS({
       }
       var result;
       if (!cb) {
-        result = new this._Promise(function(resolve, reject2) {
-          cb = (err) => err ? reject2(err) : resolve();
+        result = new this._Promise(function(resolve, reject) {
+          cb = (err) => err ? reject(err) : resolve();
         });
       }
       this.native.end(function() {
@@ -48940,11 +48940,11 @@ var require_client4 = __commonJS({
     };
     Client.prototype.unref = function() {
     };
-    Client.prototype.setTypeParser = function(oid, format, parseFn) {
-      return this._types.setTypeParser(oid, format, parseFn);
+    Client.prototype.setTypeParser = function(oid, format2, parseFn) {
+      return this._types.setTypeParser(oid, format2, parseFn);
     };
-    Client.prototype.getTypeParser = function(oid, format) {
-      return this._types.getTypeParser(oid, format);
+    Client.prototype.getTypeParser = function(oid, format2) {
+      return this._types.getTypeParser(oid, format2);
     };
   }
 });
@@ -49157,8 +49157,8 @@ var require_pg_cursor = __commonJS({
       close(cb) {
         let promise;
         if (!cb) {
-          promise = new this._Promise((resolve, reject2) => {
-            cb = (err) => err ? reject2(err) : resolve();
+          promise = new this._Promise((resolve, reject) => {
+            cb = (err) => err ? reject(err) : resolve();
           });
         }
         if (!this.connection || this.state === "done") {
@@ -49180,8 +49180,8 @@ var require_pg_cursor = __commonJS({
       read(rows, cb) {
         let promise;
         if (!cb) {
-          promise = new this._Promise((resolve, reject2) => {
-            cb = (err, rows2) => err ? reject2(err) : resolve(rows2);
+          promise = new this._Promise((resolve, reject) => {
+            cb = (err, rows2) => err ? reject(err) : resolve(rows2);
           });
         }
         if (this.state === "idle" || this.state === "submitted") {
@@ -49342,10 +49342,10 @@ var require_postgres = __commonJS({
         return end();
       }
       checkVersion(connection) {
-        return new Promise((resolve, reject2) => {
+        return new Promise((resolve, reject) => {
           connection.query("select version();", (err, resp) => {
             if (err)
-              return reject2(err);
+              return reject(err);
             resolve(this._parseVersion(resp.rows[0].version));
           });
         });
@@ -50269,21 +50269,21 @@ var require_dist6 = __commonJS({
       partsOfSpeech.push("noun");
       return partsOfSpeech;
     }
-    function formatter(arr, format) {
-      if (format === "kebab") {
+    function formatter(arr, format2) {
+      if (format2 === "kebab") {
         return arr.join("-").toLowerCase();
       }
-      if (format === "camel") {
+      if (format2 === "camel") {
         return arr.map(function(el, i) {
           if (i === 0)
             return el.toLowerCase();
           return el[0].toUpperCase() + el.slice(1).toLowerCase();
         }).join("");
       }
-      if (format === "lower") {
+      if (format2 === "lower") {
         return arr.join(" ").toLowerCase();
       }
-      if (format === "sentence") {
+      if (format2 === "sentence") {
         return arr.map(function(el, i) {
           if (i === 0) {
             return el[0].toUpperCase() + el.slice(1).toLowerCase();
@@ -50633,12 +50633,12 @@ var require_settle = __commonJS({
   "node_modules/axios/lib/core/settle.js"(exports2, module2) {
     "use strict";
     var createError = require_createError();
-    module2.exports = function settle(resolve, reject2, response) {
+    module2.exports = function settle(resolve, reject, response) {
       var validateStatus = response.config.validateStatus;
       if (!response.status || !validateStatus || validateStatus(response.status)) {
         resolve(response);
       } else {
-        reject2(createError("Request failed with status code " + response.status, response.config, null, response.request, response));
+        reject(createError("Request failed with status code " + response.status, response.config, null, response.request, response));
       }
     };
   }
@@ -50847,7 +50847,7 @@ var require_xhr = __commonJS({
     var defaults = require_defaults3();
     var Cancel = require_Cancel();
     module2.exports = function xhrAdapter(config) {
-      return new Promise(function dispatchXhrRequest(resolve, reject2) {
+      return new Promise(function dispatchXhrRequest(resolve, reject) {
         var requestData = config.data;
         var requestHeaders = config.headers;
         var responseType = config.responseType;
@@ -50890,7 +50890,7 @@ var require_xhr = __commonJS({
             resolve(value);
             done();
           }, function _reject(err) {
-            reject2(err);
+            reject(err);
             done();
           }, response);
           request = null;
@@ -50912,11 +50912,11 @@ var require_xhr = __commonJS({
           if (!request) {
             return;
           }
-          reject2(createError("Request aborted", config, "ECONNABORTED", request));
+          reject(createError("Request aborted", config, "ECONNABORTED", request));
           request = null;
         };
         request.onerror = function handleError() {
-          reject2(createError("Network Error", config, null, request));
+          reject(createError("Network Error", config, null, request));
           request = null;
         };
         request.ontimeout = function handleTimeout() {
@@ -50925,7 +50925,7 @@ var require_xhr = __commonJS({
           if (config.timeoutErrorMessage) {
             timeoutErrorMessage = config.timeoutErrorMessage;
           }
-          reject2(createError(timeoutErrorMessage, config, transitional.clarifyTimeoutError ? "ETIMEDOUT" : "ECONNABORTED", request));
+          reject(createError(timeoutErrorMessage, config, transitional.clarifyTimeoutError ? "ETIMEDOUT" : "ECONNABORTED", request));
           request = null;
         };
         if (utils.isStandardBrowserEnv()) {
@@ -50960,7 +50960,7 @@ var require_xhr = __commonJS({
             if (!request) {
               return;
             }
-            reject2(!cancel || cancel && cancel.type ? new Cancel("canceled") : cancel);
+            reject(!cancel || cancel && cancel.type ? new Cancel("canceled") : cancel);
             request.abort();
             request = null;
           };
@@ -51447,7 +51447,7 @@ var require_http = __commonJS({
           done();
           resolvePromise(value);
         };
-        var reject2 = function reject3(value) {
+        var reject = function reject2(value) {
           done();
           rejectPromise(value);
         };
@@ -51471,7 +51471,7 @@ var require_http = __commonJS({
           } else if (utils.isString(data)) {
             data = Buffer.from(data, "utf-8");
           } else {
-            return reject2(createError("Data after transformation must be a string, an ArrayBuffer, a Buffer, or a Stream", config));
+            return reject(createError("Data after transformation must be a string, an ArrayBuffer, a Buffer, or a Stream", config));
           }
           if (!headerNames["content-length"]) {
             headers["Content-Length"] = data.length;
@@ -51598,7 +51598,7 @@ var require_http = __commonJS({
           };
           if (config.responseType === "stream") {
             response.data = stream;
-            settle(resolve, reject2, response);
+            settle(resolve, reject, response);
           } else {
             var responseBuffer = [];
             var totalResponseBytes = 0;
@@ -51607,13 +51607,13 @@ var require_http = __commonJS({
               totalResponseBytes += chunk.length;
               if (config.maxContentLength > -1 && totalResponseBytes > config.maxContentLength) {
                 stream.destroy();
-                reject2(createError("maxContentLength size of " + config.maxContentLength + " exceeded", config, null, lastRequest));
+                reject(createError("maxContentLength size of " + config.maxContentLength + " exceeded", config, null, lastRequest));
               }
             });
             stream.on("error", function handleStreamError(err) {
               if (req.aborted)
                 return;
-              reject2(enhanceError(err, config, null, lastRequest));
+              reject(enhanceError(err, config, null, lastRequest));
             });
             stream.on("end", function handleStreamEnd() {
               var responseData = Buffer.concat(responseBuffer);
@@ -51624,25 +51624,25 @@ var require_http = __commonJS({
                 }
               }
               response.data = responseData;
-              settle(resolve, reject2, response);
+              settle(resolve, reject, response);
             });
           }
         });
         req.on("error", function handleRequestError(err) {
           if (req.aborted && err.code !== "ERR_FR_TOO_MANY_REDIRECTS")
             return;
-          reject2(enhanceError(err, config, null, req));
+          reject(enhanceError(err, config, null, req));
         });
         if (config.timeout) {
           var timeout = parseInt(config.timeout, 10);
           if (isNaN(timeout)) {
-            reject2(createError("error trying to parse `config.timeout` to int", config, "ERR_PARSE_TIMEOUT", req));
+            reject(createError("error trying to parse `config.timeout` to int", config, "ERR_PARSE_TIMEOUT", req));
             return;
           }
           req.setTimeout(timeout, function handleRequestTimeout() {
             req.abort();
             var transitional = config.transitional || defaults.transitional;
-            reject2(createError("timeout of " + timeout + "ms exceeded", config, transitional.clarifyTimeoutError ? "ETIMEDOUT" : "ECONNABORTED", req));
+            reject(createError("timeout of " + timeout + "ms exceeded", config, transitional.clarifyTimeoutError ? "ETIMEDOUT" : "ECONNABORTED", req));
           });
         }
         if (config.cancelToken || config.signal) {
@@ -51650,7 +51650,7 @@ var require_http = __commonJS({
             if (req.aborted)
               return;
             req.abort();
-            reject2(!cancel || cancel && cancel.type ? new Cancel("canceled") : cancel);
+            reject(!cancel || cancel && cancel.type ? new Cancel("canceled") : cancel);
           };
           config.cancelToken && config.cancelToken.subscribe(onCanceled);
           if (config.signal) {
@@ -51659,7 +51659,7 @@ var require_http = __commonJS({
         }
         if (utils.isStream(data)) {
           data.on("error", function handleStreamError(err) {
-            reject2(enhanceError(err, config, null, req));
+            reject(enhanceError(err, config, null, req));
           }).pipe(req);
         } else {
           req.end(data);
@@ -52124,7 +52124,7 @@ var require_CancelToken = __commonJS({
           token.subscribe(resolve);
           _resolve = resolve;
         }).then(onfulfilled);
-        promise.cancel = function reject2() {
+        promise.cancel = function reject() {
           token.unsubscribe(_resolve);
         };
         return promise;
@@ -54908,8 +54908,8 @@ var require_buildFormatLongFn = __commonJS({
       return function() {
         var options = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
         var width = options.width ? String(options.width) : args2.defaultWidth;
-        var format = args2.formats[width] || args2.formats[args2.defaultWidth];
-        return format;
+        var format2 = args2.formats[width] || args2.formats[args2.defaultWidth];
+        return format2;
       };
     }
     module2.exports = exports2.default;
@@ -56526,15 +56526,15 @@ var require_protectedTokens = __commonJS({
     function isProtectedWeekYearToken(token) {
       return protectedWeekYearTokens.indexOf(token) !== -1;
     }
-    function throwProtectedError(token, format, input) {
+    function throwProtectedError(token, format2, input) {
       if (token === "YYYY") {
-        throw new RangeError("Use `yyyy` instead of `YYYY` (in `".concat(format, "`) for formatting years to the input `").concat(input, "`; see: https://git.io/fxCyr"));
+        throw new RangeError("Use `yyyy` instead of `YYYY` (in `".concat(format2, "`) for formatting years to the input `").concat(input, "`; see: https://git.io/fxCyr"));
       } else if (token === "YY") {
-        throw new RangeError("Use `yy` instead of `YY` (in `".concat(format, "`) for formatting years to the input `").concat(input, "`; see: https://git.io/fxCyr"));
+        throw new RangeError("Use `yy` instead of `YY` (in `".concat(format2, "`) for formatting years to the input `").concat(input, "`; see: https://git.io/fxCyr"));
       } else if (token === "D") {
-        throw new RangeError("Use `d` instead of `D` (in `".concat(format, "`) for formatting days of the month to the input `").concat(input, "`; see: https://git.io/fxCyr"));
+        throw new RangeError("Use `d` instead of `D` (in `".concat(format2, "`) for formatting days of the month to the input `").concat(input, "`; see: https://git.io/fxCyr"));
       } else if (token === "DD") {
-        throw new RangeError("Use `dd` instead of `DD` (in `".concat(format, "`) for formatting days of the month to the input `").concat(input, "`; see: https://git.io/fxCyr"));
+        throw new RangeError("Use `dd` instead of `DD` (in `".concat(format2, "`) for formatting days of the month to the input `").concat(input, "`; see: https://git.io/fxCyr"));
       }
     }
   }
@@ -56547,7 +56547,7 @@ var require_format = __commonJS({
     Object.defineProperty(exports2, "__esModule", {
       value: true
     });
-    exports2.default = format;
+    exports2.default = format2;
     var _index = _interopRequireDefault(require_isValid());
     var _index2 = _interopRequireDefault(require_en_US());
     var _index3 = _interopRequireDefault(require_subMilliseconds());
@@ -56566,7 +56566,7 @@ var require_format = __commonJS({
     var escapedStringRegExp = /^'([^]*?)'?$/;
     var doubleQuoteRegExp = /''/g;
     var unescapedLatinCharacterRegExp = /[a-zA-Z]/;
-    function format(dirtyDate, dirtyFormatStr, dirtyOptions) {
+    function format2(dirtyDate, dirtyFormatStr, dirtyOptions) {
       (0, _index10.default)(2, arguments);
       var formatStr = String(dirtyFormatStr);
       var options = dirtyOptions || {};
@@ -56953,11 +56953,11 @@ var require_formatDuration = __commonJS({
       if (arguments.length < 1) {
         throw new TypeError("1 argument required, but only ".concat(arguments.length, " present"));
       }
-      var format = (options === null || options === void 0 ? void 0 : options.format) || defaultFormat;
+      var format2 = (options === null || options === void 0 ? void 0 : options.format) || defaultFormat;
       var locale = (options === null || options === void 0 ? void 0 : options.locale) || _index.default;
       var zero = (options === null || options === void 0 ? void 0 : options.zero) || false;
       var delimiter = (options === null || options === void 0 ? void 0 : options.delimiter) || " ";
-      var result = format.reduce(function(acc, unit) {
+      var result = format2.reduce(function(acc, unit) {
         var token = "x".concat(unit.replace(/(^.)/, function(m) {
           return m.toUpperCase();
         }));
@@ -56990,9 +56990,9 @@ var require_formatISO = __commonJS({
       if (isNaN(originalDate.getTime())) {
         throw new RangeError("Invalid time value");
       }
-      var format = !(options !== null && options !== void 0 && options.format) ? "extended" : String(options.format);
+      var format2 = !(options !== null && options !== void 0 && options.format) ? "extended" : String(options.format);
       var representation = !(options !== null && options !== void 0 && options.representation) ? "complete" : String(options.representation);
-      if (format !== "extended" && format !== "basic") {
+      if (format2 !== "extended" && format2 !== "basic") {
         throw new RangeError("format must be 'extended' or 'basic'");
       }
       if (representation !== "date" && representation !== "time" && representation !== "complete") {
@@ -57000,8 +57000,8 @@ var require_formatISO = __commonJS({
       }
       var result = "";
       var tzOffset = "";
-      var dateDelimiter = format === "extended" ? "-" : "";
-      var timeDelimiter = format === "extended" ? ":" : "";
+      var dateDelimiter = format2 === "extended" ? "-" : "";
+      var timeDelimiter = format2 === "extended" ? ":" : "";
       if (representation !== "time") {
         var day = (0, _index2.default)(originalDate.getDate(), 2);
         var month = (0, _index2.default)(originalDate.getMonth() + 1, 2);
@@ -57055,17 +57055,17 @@ var require_formatISO9075 = __commonJS({
         throw new RangeError("Invalid time value");
       }
       var options = dirtyOptions || {};
-      var format = options.format == null ? "extended" : String(options.format);
+      var format2 = options.format == null ? "extended" : String(options.format);
       var representation = options.representation == null ? "complete" : String(options.representation);
-      if (format !== "extended" && format !== "basic") {
+      if (format2 !== "extended" && format2 !== "basic") {
         throw new RangeError("format must be 'extended' or 'basic'");
       }
       if (representation !== "date" && representation !== "time" && representation !== "complete") {
         throw new RangeError("representation must be 'date', 'time', or 'complete'");
       }
       var result = "";
-      var dateDelimiter = format === "extended" ? "-" : "";
-      var timeDelimiter = format === "extended" ? ":" : "";
+      var dateDelimiter = format2 === "extended" ? "-" : "";
+      var timeDelimiter = format2 === "extended" ? ":" : "";
       if (representation !== "time") {
         var day = (0, _index3.default)(originalDate.getDate(), 2);
         var month = (0, _index3.default)(originalDate.getMonth() + 1, 2);
@@ -64538,10 +64538,10 @@ var promisifyStore = (passedStore) => {
   const legacyStore = passedStore;
   class PromisifiedStore {
     async increment(key) {
-      return new Promise((resolve, reject2) => {
+      return new Promise((resolve, reject) => {
         legacyStore.incr(key, (error, totalHits, resetTime) => {
           if (error)
-            reject2(error);
+            reject(error);
           resolve({ totalHits, resetTime });
         });
       });
@@ -64685,7 +64685,6 @@ var lib_default = rateLimit;
 var import_axios = __toESM(require_axios2());
 var import_dotenv = __toESM(require_main());
 var import_date_fns = __toESM(require_date_fns());
-var import_reject = __toESM(require_reject());
 import_dotenv.default.config({ path: ".env.local" });
 var apiKey = process.env.API_KEY || "";
 var upApiKey = process.env.UP_API_KEY;
@@ -64770,9 +64769,6 @@ function createUpRoutes(app2, knex2) {
         const account = accountRes.data.data;
         yield createOrUpdateAccount(accountId, account == null ? void 0 : account.attributes.displayName);
         yield createOrUpdateTransaction(accountId, eventType, txn);
-      } else {
-        console.log(body);
-        console.log("signature matched?", hash === upSignature);
       }
       res.status(200).end();
     } catch (e) {
@@ -64828,86 +64824,86 @@ function createWeeklyData({
   accounts,
   transactions
 }) {
-  const transactionSummaries = transactions.reduce((acc, transaction) => {
-    const { amount, createdAt, accountId, category, parentCategory } = transaction;
-    if (!createdAt)
-      return acc;
-    const weekStartOn = (0, import_date_fns.startOfWeek)(new Date(createdAt), {
+  const allStartDates = [];
+  const allCategories = [];
+  const allParentCategories = [];
+  const transactionsWithStartDate = transactions.map((txn) => {
+    const startDate = (0, import_date_fns.format)((0, import_date_fns.startOfWeek)(new Date(txn.createdAt), {
       weekStartsOn: 1
+    }), "dd/MM/yy");
+    allStartDates.push(startDate);
+    allCategories.push(txn.category || "Uncategorised");
+    allParentCategories.push(txn.parentCategory || "Uncategorised");
+    return __spreadProps(__spreadValues({}, txn), {
+      startDate
     });
-    const allFilter = (summary) => {
-      return summary.accountId === accountId && summary.weekStartOn === weekStartOn;
-    };
-    const currentAll = acc.allTransactions.find(allFilter) || {
-      weekStartOn,
-      accountId,
-      amount: 0
-    };
-    const updatedAll = __spreadProps(__spreadValues({}, currentAll), {
-      amount: currentAll.amount + amount
+  });
+  const balancesWithStartDate = balances.map((txn) => {
+    const startDate = (0, import_date_fns.format)((0, import_date_fns.startOfWeek)(new Date(txn.createdAt), {
+      weekStartsOn: 1
+    }), "dd/MM/yy");
+    allStartDates.push(startDate);
+    return __spreadProps(__spreadValues({}, txn), {
+      startDate
     });
-    const allTransactions = [
-      ...(0, import_reject.default)(acc.allTransactions, allFilter),
-      updatedAll
+  });
+  const startDates = [...new Set(allStartDates)].sort((a, b) => (0, import_date_fns.differenceInSeconds)(new Date(a), new Date(b)));
+  const categories = [...new Set(allCategories)];
+  const parentCategories = [...new Set(allParentCategories)];
+  const createAccStart = (startDate, set) => set.reduce((acc, curr) => __spreadProps(__spreadValues({}, acc), { [curr]: 0 }), {
+    startDate
+  });
+  const transactionSummaries = allStartDates.reduce((acc, startDate) => {
+    const transactionsForStart = transactionsWithStartDate.filter((txn) => txn.startDate === startDate);
+    const all = [
+      ...acc.all,
+      transactionsForStart.reduce((acc_2, curr) => __spreadProps(__spreadValues({}, acc_2), {
+        All: curr.amount + Number(acc_2["All"])
+      }), { startDate, All: 0 })
     ];
-    const byParentCategoryFilter = (summary) => {
-      return summary.accountId === accountId && summary.weekStartOn === weekStartOn && summary.parentCategory === parentCategory;
-    };
-    const currentByParent = acc.transactionsByParentCategory.find(byParentCategoryFilter) || {
-      weekStartOn,
-      accountId,
-      parentCategory,
-      amount: 0
-    };
-    const updatedCurrentByParent = __spreadProps(__spreadValues({}, currentByParent), {
-      amount: currentByParent.amount + amount
-    });
-    const transactionsByParentCategory = [
-      ...(0, import_reject.default)(acc.transactionsByParentCategory, byParentCategoryFilter),
-      updatedCurrentByParent
+    const byParent = [
+      ...acc.byParent,
+      transactionsForStart.reduce((acc_2, curr) => {
+        const category = curr.parentCategory || "Uncategorised";
+        return __spreadProps(__spreadValues({}, acc_2), {
+          [category]: curr.amount + Number(acc_2[category])
+        });
+      }, createAccStart(startDate, parentCategories))
     ];
-    const byCategoryFilter = (summary) => {
-      return summary.accountId === accountId && summary.weekStartOn === weekStartOn && summary.category === category;
-    };
-    const currentByCategory = acc.transactionsByCategory.find(byCategoryFilter) || {
-      weekStartOn,
-      accountId,
-      category,
-      amount: 0
-    };
-    const updatedCurryByCategory = __spreadProps(__spreadValues({}, currentByCategory), {
-      amount: currentByCategory.amount + amount
-    });
-    const transactionsByCategory = [
-      ...(0, import_reject.default)(acc.transactionsByCategory, byCategoryFilter),
-      updatedCurryByCategory
+    const byCategory = [
+      ...acc.byCategory,
+      transactionsForStart.reduce((acc_2, curr) => {
+        const category = curr.category || "Uncategorised";
+        return __spreadProps(__spreadValues({}, acc_2), {
+          [category]: curr.amount + Number(acc_2[category])
+        });
+      }, createAccStart(startDate, categories))
     ];
     return {
-      allTransactions,
-      transactionsByParentCategory,
-      transactionsByCategory
+      all,
+      byParent,
+      byCategory
     };
   }, {
-    allTransactions: [],
-    transactionsByParentCategory: [],
-    transactionsByCategory: []
+    all: [],
+    byParent: [],
+    byCategory: []
   });
-  const uniqueBalances = balances.map((balance) => {
-    if (balance.createdAt) {
-      return __spreadProps(__spreadValues({}, balance), {
-        weekStartOn: (0, import_date_fns.startOfWeek)(new Date(balance.createdAt), {
-          weekStartsOn: 1
-        })
+  const uniqueBalances = startDates.map((startDate) => {
+    return accounts.map((account) => {
+      const balancesForAccountAndStart = balancesWithStartDate.filter((curr) => curr.startDate === startDate && curr.accountId === account.id).sort((a, b) => (0, import_date_fns.differenceInSeconds)(new Date(a.createdAt), new Date(b.createdAt)));
+      return __spreadProps(__spreadValues({}, balancesForAccountAndStart[0]), {
+        accountName: account.name
       });
-    }
-  }).filter((balance) => !!balance).filter((balance, i, arr) => {
-    const balancesForThisWeek = arr.filter((curr) => curr.weekStartOn.valueOf() === balance.weekStartOn.valueOf() && curr.accountId === balance.accountId).sort((a, b) => (0, import_date_fns.differenceInSeconds)(new Date(a.createdAt), new Date(b.createdAt)));
-    return balancesForThisWeek[0].createdAt === balance.createdAt;
+    }).reduce((acc, curr) => __spreadProps(__spreadValues({}, acc), {
+      [curr.accountName]: curr.balance
+    }), { startDate });
   });
-  return __spreadValues({
+  return {
     accounts,
-    balances: uniqueBalances
-  }, transactionSummaries);
+    balances: uniqueBalances,
+    transactions: transactionSummaries
+  };
 }
 
 // index.ts
