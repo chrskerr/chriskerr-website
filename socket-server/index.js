@@ -64853,7 +64853,7 @@ function createWeeklyData({
   const createAccStart = (startDate, set) => set.reduce((acc, curr) => __spreadProps(__spreadValues({}, acc), { [curr]: 0 }), {
     startDate
   });
-  const transactionSummaries = allStartDates.reduce((acc, startDate) => {
+  const transactionSummaries = startDates.reduce((acc, startDate) => {
     const transactionsForStart = transactionsWithStartDate.filter((txn) => txn.startDate === startDate);
     const all = [
       ...acc.all,
@@ -64864,9 +64864,9 @@ function createWeeklyData({
     const byParent = [
       ...acc.byParent,
       transactionsForStart.reduce((acc_2, curr) => {
-        const category = curr.parentCategory || "Uncategorised";
+        const parentCategory = curr.parentCategory || "Uncategorised";
         return __spreadProps(__spreadValues({}, acc_2), {
-          [category]: curr.amount + Number(acc_2[category])
+          [parentCategory]: curr.amount + Number(acc_2[parentCategory])
         });
       }, createAccStart(startDate, parentCategories))
     ];

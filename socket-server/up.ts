@@ -372,7 +372,7 @@ function createWeeklyData({
 			startDate,
 		});
 
-	const transactionSummaries = allStartDates.reduce<{
+	const transactionSummaries = startDates.reduce<{
 		all: ChartData[];
 		byParent: ChartData[];
 		byCategory: ChartData[];
@@ -396,10 +396,12 @@ function createWeeklyData({
 			const byParent: ChartData[] = [
 				...acc.byParent,
 				transactionsForStart.reduce<ChartData>((acc_2, curr) => {
-					const category = curr.parentCategory || 'Uncategorised';
+					const parentCategory =
+						curr.parentCategory || 'Uncategorised';
 					return {
 						...acc_2,
-						[category]: curr.amount + Number(acc_2[category]),
+						[parentCategory]:
+							curr.amount + Number(acc_2[parentCategory]),
 					};
 				}, createAccStart(startDate, parentCategories)),
 			];
