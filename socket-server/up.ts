@@ -387,7 +387,7 @@ function createWeeklyData({
 				transactionsForStart.reduce<ChartData>(
 					(acc_2, curr) => ({
 						...acc_2,
-						All: curr.amount + Number(acc_2['All']),
+						All: curr.amount / 100 + Number(acc_2['All']),
 					}),
 					{ startDate, All: 0 },
 				),
@@ -401,7 +401,7 @@ function createWeeklyData({
 					return {
 						...acc_2,
 						[parentCategory]:
-							curr.amount + Number(acc_2[parentCategory]),
+							curr.amount / 100 + Number(acc_2[parentCategory]),
 					};
 				}, createAccStart(startDate, parentCategories)),
 			];
@@ -412,7 +412,7 @@ function createWeeklyData({
 					const category = curr.category || 'Uncategorised';
 					return {
 						...acc_2,
-						[category]: curr.amount + Number(acc_2[category]),
+						[category]: curr.amount / 100 + Number(acc_2[category]),
 					};
 				}, createAccStart(startDate, categories)),
 			];
@@ -454,7 +454,7 @@ function createWeeklyData({
 			.reduce<ChartData>(
 				(acc, curr) => ({
 					...acc,
-					[curr.accountName]: curr.balance,
+					[curr.accountName]: curr.balance / 100,
 				}),
 				{ startDate },
 			);

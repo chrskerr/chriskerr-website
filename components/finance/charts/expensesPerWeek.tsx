@@ -39,7 +39,7 @@ const ExpensesPerWeek = memo(function ExpensesPerWeek({
 					if (!selectedCategories.includes(startCaseKey)) {
 						delete updated[key];
 					} else {
-						updated[startCaseKey] = Number(updated[key]) / 100;
+						updated[startCaseKey] = updated[key];
 					}
 				});
 

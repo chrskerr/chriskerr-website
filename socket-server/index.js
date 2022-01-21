@@ -64873,7 +64873,7 @@ function createWeeklyData({
     const all = [
       ...acc.all,
       transactionsForStart.reduce((acc_2, curr) => __spreadProps(__spreadValues({}, acc_2), {
-        All: curr.amount + Number(acc_2["All"])
+        All: curr.amount / 100 + Number(acc_2["All"])
       }), { startDate, All: 0 })
     ];
     const byParent = [
@@ -64881,7 +64881,7 @@ function createWeeklyData({
       transactionsForStart.reduce((acc_2, curr) => {
         const parentCategory = curr.parentCategory || "Uncategorised";
         return __spreadProps(__spreadValues({}, acc_2), {
-          [parentCategory]: curr.amount + Number(acc_2[parentCategory])
+          [parentCategory]: curr.amount / 100 + Number(acc_2[parentCategory])
         });
       }, createAccStart(startDate, parentCategories))
     ];
@@ -64890,7 +64890,7 @@ function createWeeklyData({
       transactionsForStart.reduce((acc_2, curr) => {
         const category = curr.category || "Uncategorised";
         return __spreadProps(__spreadValues({}, acc_2), {
-          [category]: curr.amount + Number(acc_2[category])
+          [category]: curr.amount / 100 + Number(acc_2[category])
         });
       }, createAccStart(startDate, categories))
     ];
@@ -64911,7 +64911,7 @@ function createWeeklyData({
         accountName: account.name
       });
     }).reduce((acc, curr) => __spreadProps(__spreadValues({}, acc), {
-      [curr.accountName]: curr.balance
+      [curr.accountName]: curr.balance / 100
     }), { startDate });
   });
   return {
