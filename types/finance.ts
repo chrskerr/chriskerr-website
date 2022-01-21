@@ -1,5 +1,4 @@
 export type UpApiReturn = {
-	accounts: Account[];
 	balances: ChartData[];
 	transactions: {
 		all: ChartData[];
@@ -21,8 +20,6 @@ export type Balance = {
 	accountId: string;
 };
 
-// export type BalanceWithStart = Balance & { weekStartOn: Date };
-
 export type Transaction = {
 	id: number;
 	transactionId: string | null;
@@ -34,15 +31,6 @@ export type Transaction = {
 	accountId: string;
 	createdAt: string;
 };
-
-// export type TransactionsSummary = {
-// 	weekStartOn: Date;
-// 	accountId: string;
-// 	/** transaction value in cents */
-// 	amount: number;
-// 	category?: string;
-// 	parentCategory?: string;
-// };
 
 export type UpWebhook = {
 	id: string;

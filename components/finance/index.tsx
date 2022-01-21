@@ -9,7 +9,7 @@ export default function Finance({ data }: { data: UpApiReturn }): ReactElement {
 	const [summariseTransactionsBy, setSummariseTransactionsBy] =
 		useState<TransactionCategories>('parent-category');
 
-	const { transactions, balances, accounts } = data;
+	const { transactions, balances } = data;
 	let expensesData = transactions.all;
 	if (summariseTransactionsBy === 'category')
 		expensesData = transactions.byCategory;
@@ -46,7 +46,7 @@ export default function Finance({ data }: { data: UpApiReturn }): ReactElement {
 				<div className="flex items-center justify-between pb-6">
 					<h2 className="text-xl">Up Balances by week</h2>
 				</div>
-				<BalancessPerWeek balances={balances} accounts={accounts} />
+				<BalancessPerWeek balances={balances} />
 			</div>
 		</>
 	);

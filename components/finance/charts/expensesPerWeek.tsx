@@ -20,8 +20,7 @@ const ExpensesPerWeek = memo(function ExpensesPerWeek({
 		const newCategories = data.reduce<string[]>((acc, curr) => {
 			const categories = Object.keys(curr)
 				.filter(key => key !== 'startDate')
-				.map(startCase)
-				.concat('All');
+				.map(startCase);
 
 			return [...new Set([...acc, ...categories])];
 		}, []);
@@ -35,8 +34,12 @@ const ExpensesPerWeek = memo(function ExpensesPerWeek({
 				const updated = { ...curr };
 				Object.keys(updated).forEach(key => {
 					if (key === 'startDate') return;
-					if (!selectedCategories.includes(key)) {
+
+					const startCaseKey = startCase(key);
+					if (!selectedCategories.includes(startCaseKey)) {
 						delete updated[key];
+					} else {
+						updated[startCaseKey] = Number(updated[key]) / 100;
 					}
 				});
 

@@ -461,7 +461,6 @@ function createWeeklyData({
 	});
 
 	return {
-		accounts,
 		balances: uniqueBalances,
 		transactions: transactionSummaries,
 	};

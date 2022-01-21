@@ -1,26 +1,25 @@
 import { ReactElement, useEffect, useState, memo } from 'react';
-import { Account, ChartData } from 'types/finance';
+import { ChartData } from 'types/finance';
 
 import AreaChartBase from './areaChartBase';
 
 const BalancesPerWeek = memo(function BalancessPerWeek({
 	balances,
-	accounts,
 }: {
 	balances: ChartData[];
-	accounts: Account[];
 }): ReactElement {
 	const [categories, setCategories] = useState<string[]>([]);
 
 	useEffect(() => {
-		const newCategories = balances.reduce<string[]>((acc, curr) => {
-			const currentCategory =
-				accounts.find(({ id }) => id === curr.accountId)?.name ||
-				'unknown';
-			if (acc.includes(currentCategory)) return acc;
-			return [...acc, currentCategory];
+		const accountNames = balances.reduce<string[]>((acc, curr) => {
+			return [
+				...new Set([
+					...acc,
+					...Object.keys(curr).filter(key => key !== 'startDate'),
+				]),
+			];
 		}, []);
-		setCategories(newCategories);
+		setCategories(accountNames);
 	}, [balances]);
 
 	return categories && balances ? (

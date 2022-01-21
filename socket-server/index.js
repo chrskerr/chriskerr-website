@@ -22308,6 +22308,7 @@ var require_socket = __commonJS({
     exports2.Socket = void 0;
     var events_1 = require("events");
     var debug_1 = require_src2();
+    var timers_1 = require("timers");
     var debug = (0, debug_1.default)("engine:socket");
     var Socket2 = class extends events_1.EventEmitter {
       constructor(id, server2, transport, req, protocol) {
@@ -22401,15 +22402,15 @@ var require_socket = __commonJS({
         this.onClose("transport error", err);
       }
       schedulePing() {
-        this.pingIntervalTimer = setTimeout(() => {
+        this.pingIntervalTimer = (0, timers_1.setTimeout)(() => {
           debug("writing ping packet - expecting pong within %sms", this.server.opts.pingTimeout);
           this.sendPacket("ping");
           this.resetPingTimeout(this.server.opts.pingTimeout);
         }, this.server.opts.pingInterval);
       }
       resetPingTimeout(timeout) {
-        clearTimeout(this.pingTimeoutTimer);
-        this.pingTimeoutTimer = setTimeout(() => {
+        (0, timers_1.clearTimeout)(this.pingTimeoutTimer);
+        this.pingTimeoutTimer = (0, timers_1.setTimeout)(() => {
           if (this.readyState === "closed")
             return;
           this.onClose("ping timeout");
@@ -22436,7 +22437,7 @@ var require_socket = __commonJS({
       maybeUpgrade(transport) {
         debug('might upgrade socket transport from "%s" to "%s"', this.transport.name, transport.name);
         this.upgrading = true;
-        this.upgradeTimeoutTimer = setTimeout(() => {
+        this.upgradeTimeoutTimer = (0, timers_1.setTimeout)(() => {
           debug("client did not complete upgrade - closing transport");
           cleanup();
           if (transport.readyState === "open") {
@@ -22479,7 +22480,7 @@ var require_socket = __commonJS({
           this.upgrading = false;
           clearInterval(this.checkIntervalTimer);
           this.checkIntervalTimer = null;
-          clearTimeout(this.upgradeTimeoutTimer);
+          (0, timers_1.clearTimeout)(this.upgradeTimeoutTimer);
           this.upgradeTimeoutTimer = null;
           transport.removeListener("packet", onPacket);
           transport.removeListener("close", onTransportClose);
@@ -22514,16 +22515,16 @@ var require_socket = __commonJS({
           debug("error triggered by discarded transport");
         });
         this.transport.close();
-        clearTimeout(this.pingTimeoutTimer);
+        (0, timers_1.clearTimeout)(this.pingTimeoutTimer);
       }
       onClose(reason, description) {
         if (this.readyState !== "closed") {
           this.readyState = "closed";
-          clearTimeout(this.pingIntervalTimer);
-          clearTimeout(this.pingTimeoutTimer);
+          (0, timers_1.clearTimeout)(this.pingIntervalTimer);
+          (0, timers_1.clearTimeout)(this.pingTimeoutTimer);
           clearInterval(this.checkIntervalTimer);
           this.checkIntervalTimer = null;
-          clearTimeout(this.upgradeTimeoutTimer);
+          (0, timers_1.clearTimeout)(this.upgradeTimeoutTimer);
           process.nextTick(() => {
             this.writeBuffer = [];
           });
@@ -25647,6 +25648,12 @@ var require_server = __commonJS({
               method: req.method
             });
           }
+          if (transport === "websocket" && !upgrade) {
+            debug("invalid transport upgrade");
+            return fn2(Server2.errors.BAD_REQUEST, {
+              name: "TRANSPORT_HANDSHAKE_ERROR"
+            });
+          }
           if (!this.opts.allowRequest)
             return fn2();
           return this.opts.allowRequest(req, (message2, success) => {
@@ -25898,7 +25905,6 @@ var require_server = __commonJS({
             client.maybeUpgrade(transport);
           }
         } else {
-          websocket.removeListener("error", onUpgradeError);
           const closeConnection = (errorCode, errorContext) => abortUpgrade(socket, errorCode, errorContext);
           this.handshake(req._query.transport, req, closeConnection);
         }
@@ -26607,6 +26613,9 @@ var require_userver = __commonJS({
         req.connection = {
           remoteAddress: Buffer.from(res.getRemoteAddressAsText()).toString()
         };
+        res.onAborted(() => {
+          debug("response has been aborted");
+        });
       }
       createTransport(transportName, req) {
         return new transports_uws_1.default[transportName](req);
@@ -26614,6 +26623,9 @@ var require_userver = __commonJS({
       attach(app2, options = {}) {
         const path = (options.path || "/engine.io").replace(/\/$/, "") + "/";
         app2.any(path, this.handleRequest.bind(this)).ws(path, {
+          compression: options.compression,
+          idleTimeout: options.idleTimeout,
+          maxBackpressure: options.maxBackpressure,
           maxPayloadLength: this.opts.maxHttpBufferSize,
           upgrade: this.handleUpgrade.bind(this),
           open: (ws) => {
@@ -26756,6 +26768,9 @@ var require_userver = __commonJS({
           this.writeBufferedHeaders();
         }
         this.res.end(data);
+      }
+      onData(fn2) {
+        this.res.onData(fn2);
       }
       onAborted(fn2) {
         this.res.onAborted(fn2);
@@ -64900,7 +64915,6 @@ function createWeeklyData({
     }), { startDate });
   });
   return {
-    accounts,
     balances: uniqueBalances,
     transactions: transactionSummaries
   };
