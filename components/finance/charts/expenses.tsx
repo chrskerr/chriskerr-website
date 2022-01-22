@@ -70,7 +70,7 @@ const ExpensesPerWeek = memo(function ExpensesPerWeek({
 	return (
 		<div>
 			<div className="flex items-end justify-between pb-6">
-				<h2 className="text-xl">Weekly cash flow</h2>
+				<h2 className="text-xl">Expenses</h2>
 				<label>
 					Summarise by:
 					<select

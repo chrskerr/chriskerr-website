@@ -375,7 +375,10 @@ function createWeeklyData({
 	}>(
 		(acc, startDate) => {
 			const transactionsForStart = transactionsWithStartDate.filter(
-				txn => !txn.isTransfer && txn.startDate === startDate,
+				txn =>
+					!txn.isTransfer &&
+					txn.category !== 'investments' &&
+					txn.startDate === startDate,
 			);
 
 			const all: ChartData[] = [
@@ -428,14 +431,14 @@ function createWeeklyData({
 
 	const cashFlow = startDates.map<ChartData>(startDate => {
 		const transactionsForStart = transactionsWithStartDate.filter(
-			txn => txn.startDate === startDate,
+			txn =>
+				txn.startDate === startDate && txn.category !== 'investments',
 		);
 
 		return transactionsForStart.reduce<ChartData>(
 			(acc, curr) => ({
 				...acc,
-				'In/Out':
-					Math.min(curr.amount / 100, 0) + Number(acc['In/Out']),
+				'In/Out': curr.amount / 100 + Number(acc['In/Out']),
 			}),
 			{ startDate, 'In/Out': 0 },
 		);

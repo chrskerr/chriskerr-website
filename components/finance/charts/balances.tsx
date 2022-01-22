@@ -23,9 +23,9 @@ const BalancesPerWeek = memo(function BalancessPerWeek({
 	}, [balances]);
 
 	return (
-		<div className="mt-20">
+		<div>
 			<div className="flex items-center justify-between pb-6">
-				<h2 className="text-xl">Up Balances by week</h2>
+				<h2 className="text-xl">Balances</h2>
 			</div>
 			{categories && balances ? (
 				<AreaChartBase categories={categories} data={balances} />

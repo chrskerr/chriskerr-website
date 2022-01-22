@@ -64866,7 +64866,7 @@ function createWeeklyData({
     startDate
   });
   const expenses = startDates.reduce((acc, startDate) => {
-    const transactionsForStart = transactionsWithStartDate.filter((txn) => !txn.isTransfer && txn.startDate === startDate);
+    const transactionsForStart = transactionsWithStartDate.filter((txn) => !txn.isTransfer && txn.category !== "investments" && txn.startDate === startDate);
     const all = [
       ...acc.all,
       transactionsForStart.reduce((acc_2, curr) => __spreadProps(__spreadValues({}, acc_2), {
@@ -64902,9 +64902,9 @@ function createWeeklyData({
     byCategory: []
   });
   const cashFlow = startDates.map((startDate) => {
-    const transactionsForStart = transactionsWithStartDate.filter((txn) => txn.startDate === startDate);
+    const transactionsForStart = transactionsWithStartDate.filter((txn) => txn.startDate === startDate && txn.category !== "investments");
     return transactionsForStart.reduce((acc, curr) => __spreadProps(__spreadValues({}, acc), {
-      "In/Out": Math.min(curr.amount / 100, 0) + Number(acc["In/Out"])
+      "In/Out": curr.amount / 100 + Number(acc["In/Out"])
     }), { startDate, "In/Out": 0 });
   });
   const uniqueBalances = startDates.map((startDate) => {
