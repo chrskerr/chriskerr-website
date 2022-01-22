@@ -64808,7 +64808,7 @@ function createUpRoutes(app2, knex2) {
       const period = req.params.period;
       if (hasAuth) {
         const accounts = yield knex2.table("accounts" /* ACCOUNTS */).select();
-        const balances = yield knex2.table("account_balances" /* BALANCES */).select("*");
+        const balances = yield knex2.table("account_balances" /* BALANCES */).select();
         const transactions = yield knex2.table("account_transactions" /* TRANSACTIONS */).select();
         let result = void 0;
         if (period === "week") {
@@ -64839,7 +64839,7 @@ function createWeeklyData({
   const allStartDates = [];
   const allCategories = [];
   const allParentCategories = [];
-  const transactionsWithStartDate = transactions.map((txn) => {
+  const transactionsWithStartDate = transactions.filter((txn) => !(txn.isTransfer && txn.description === "Round Up")).map((txn) => {
     const startDate = (0, import_date_fns.format)((0, import_date_fns.startOfWeek)(new Date(txn.createdAt), {
       weekStartsOn: 1
     }), "dd/MM/yy");

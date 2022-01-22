@@ -280,7 +280,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 					.select();
 				const balances = await knex
 					.table<Balance>(TableNames.BALANCES)
-					.select('*');
+					.select();
 				const transactions = await knex
 					.table<Transaction>(TableNames.TRANSACTIONS)
 					.select();
@@ -326,21 +326,23 @@ function createWeeklyData({
 	const allCategories: string[] = [];
 	const allParentCategories: string[] = [];
 
-	const transactionsWithStartDate = transactions.map(txn => {
-		const startDate = format(
-			startOfWeek(new Date(txn.createdAt), {
-				weekStartsOn: 1,
-			}),
-			'dd/MM/yy',
-		);
-		allStartDates.push(startDate);
-		allCategories.push(txn.category || 'Uncategorised');
-		allParentCategories.push(txn.parentCategory || 'Uncategorised');
-		return {
-			...txn,
-			startDate,
-		};
-	});
+	const transactionsWithStartDate = transactions
+		.filter(txn => !(txn.isTransfer && txn.description === 'Round Up'))
+		.map(txn => {
+			const startDate = format(
+				startOfWeek(new Date(txn.createdAt), {
+					weekStartsOn: 1,
+				}),
+				'dd/MM/yy',
+			);
+			allStartDates.push(startDate);
+			allCategories.push(txn.category || 'Uncategorised');
+			allParentCategories.push(txn.parentCategory || 'Uncategorised');
+			return {
+				...txn,
+				startDate,
+			};
+		});
 
 	const balancesWithStartDate = balances.map(txn => {
 		const startDate = format(
