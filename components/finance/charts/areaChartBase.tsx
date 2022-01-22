@@ -131,28 +131,25 @@ const CustomTooltip: ContentType<ValueType, NameType> = ({
 };
 
 const createMovingAverage = (data: ChartData[]): ChartData[] => {
-	const result: ChartData[] = [];
 	const lookBack = 8;
 
-	const dataWithTotals = data.map(curr => ({
-		...curr,
-		total: Object.values(curr).reduce<number>((acc, curr) => {
-			return typeof curr === 'number' ? acc + curr : acc;
-		}, 0),
-	}));
-
-	for (let i = 0; i < dataWithTotals.length; i++) {
-		const curr = data[i];
-
+	return data.reduce<ChartData[]>((acc, curr, i) => {
 		const start = Math.max(0, i - lookBack);
 
-		const items = [...dataWithTotals].splice(start, i + 1);
+		const currWithTotal = {
+			...curr,
+			total: Object.values(curr).reduce<number>((totalAcc, value) => {
+				return typeof value === 'number' ? totalAcc + value : totalAcc;
+			}, 0),
+		};
+
+		const items = [...[...acc].splice(start, i), currWithTotal];
 		const average =
-			items.reduce<number>((acc, curr) => acc + curr.total, 0) /
-			items.length;
+			items.reduce<number>(
+				(averageAcc, item) => averageAcc + Number(item.total),
+				0,
+			) / items.length;
 
-		result[i] = { ...curr, [averageKey]: average };
-	}
-
-	return result;
+		return [...acc, { ...currWithTotal, [averageKey]: average }];
+	}, []);
 };

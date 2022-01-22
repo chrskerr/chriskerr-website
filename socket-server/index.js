@@ -64903,9 +64903,10 @@ function createWeeklyData({
   });
   const cashFlow = startDates.map((startDate) => {
     const transactionsForStart = transactionsWithStartDate.filter((txn) => txn.startDate === startDate && txn.category !== "investments");
+    const cashFlowKey = "In/Out";
     return transactionsForStart.reduce((acc, curr) => __spreadProps(__spreadValues({}, acc), {
-      "In/Out": curr.amount / 100 + Number(acc["In/Out"])
-    }), { startDate, "In/Out": 0 });
+      [cashFlowKey]: curr.amount / 100 + Number(acc[cashFlowKey])
+    }), { startDate, [cashFlowKey]: 0 });
   });
   const uniqueBalances = startDates.map((startDate) => {
     return accounts.map((account) => {
