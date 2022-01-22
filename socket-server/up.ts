@@ -435,12 +435,14 @@ function createWeeklyData({
 				txn.startDate === startDate && txn.category !== 'investments',
 		);
 
+		const cashFlowKey = 'In/Out';
+
 		return transactionsForStart.reduce<ChartData>(
 			(acc, curr) => ({
 				...acc,
-				'In/Out': curr.amount / 100 + Number(acc['In/Out']),
+				[cashFlowKey]: curr.amount / 100 + Number(acc[cashFlowKey]),
 			}),
-			{ startDate, 'In/Out': 0 },
+			{ startDate, [cashFlowKey]: 0 },
 		);
 	});
 
