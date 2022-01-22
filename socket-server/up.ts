@@ -372,7 +372,7 @@ function createWeeklyData({
 			startDate,
 		});
 
-	const transactionSummaries = startDates.reduce<{
+	const expenses = startDates.reduce<{
 		all: ChartData[];
 		byParent: ChartData[];
 		byCategory: ChartData[];
@@ -387,7 +387,9 @@ function createWeeklyData({
 				transactionsForStart.reduce<ChartData>(
 					(acc_2, curr) => ({
 						...acc_2,
-						All: curr.amount / 100 + Number(acc_2['All']),
+						All:
+							Math.min(curr.amount / 100, 0) +
+							Number(acc_2['All']),
 					}),
 					{ startDate, All: 0 },
 				),
@@ -401,7 +403,8 @@ function createWeeklyData({
 					return {
 						...acc_2,
 						[parentCategory]:
-							curr.amount / 100 + Number(acc_2[parentCategory]),
+							Math.min(curr.amount / 100, 0) +
+							Number(acc_2[parentCategory]),
 					};
 				}, createAccStart(startDate, parentCategories)),
 			];
@@ -412,7 +415,9 @@ function createWeeklyData({
 					const category = curr.category || 'Uncategorised';
 					return {
 						...acc_2,
-						[category]: curr.amount / 100 + Number(acc_2[category]),
+						[category]:
+							Math.min(curr.amount / 100, 0) +
+							Number(acc_2[category]),
 					};
 				}, createAccStart(startDate, categories)),
 			];
@@ -429,6 +434,21 @@ function createWeeklyData({
 			byCategory: [],
 		},
 	);
+
+	const cashFlow = startDates.map<ChartData>(startDate => {
+		const transactionsForStart = transactionsWithStartDate.filter(
+			txn => txn.startDate === startDate,
+		);
+
+		return transactionsForStart.reduce<ChartData>(
+			(acc, curr) => ({
+				...acc,
+				'In/Out':
+					Math.min(curr.amount / 100, 0) + Number(acc['In/Out']),
+			}),
+			{ startDate, 'In/Out': 0 },
+		);
+	});
 
 	const uniqueBalances = startDates.map<ChartData>(startDate => {
 		return accounts
@@ -462,6 +482,7 @@ function createWeeklyData({
 
 	return {
 		balances: uniqueBalances,
-		transactions: transactionSummaries,
+		expenses,
+		cashFlow,
 	};
 }

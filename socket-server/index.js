@@ -64868,12 +64868,12 @@ function createWeeklyData({
   const createAccStart = (startDate, set) => set.reduce((acc, curr) => __spreadProps(__spreadValues({}, acc), { [curr]: 0 }), {
     startDate
   });
-  const transactionSummaries = startDates.reduce((acc, startDate) => {
+  const expenses = startDates.reduce((acc, startDate) => {
     const transactionsForStart = transactionsWithStartDate.filter((txn) => txn.startDate === startDate);
     const all = [
       ...acc.all,
       transactionsForStart.reduce((acc_2, curr) => __spreadProps(__spreadValues({}, acc_2), {
-        All: curr.amount / 100 + Number(acc_2["All"])
+        All: Math.min(curr.amount / 100, 0) + Number(acc_2["All"])
       }), { startDate, All: 0 })
     ];
     const byParent = [
@@ -64881,7 +64881,7 @@ function createWeeklyData({
       transactionsForStart.reduce((acc_2, curr) => {
         const parentCategory = curr.parentCategory || "Uncategorised";
         return __spreadProps(__spreadValues({}, acc_2), {
-          [parentCategory]: curr.amount / 100 + Number(acc_2[parentCategory])
+          [parentCategory]: Math.min(curr.amount / 100, 0) + Number(acc_2[parentCategory])
         });
       }, createAccStart(startDate, parentCategories))
     ];
@@ -64890,7 +64890,7 @@ function createWeeklyData({
       transactionsForStart.reduce((acc_2, curr) => {
         const category = curr.category || "Uncategorised";
         return __spreadProps(__spreadValues({}, acc_2), {
-          [category]: curr.amount / 100 + Number(acc_2[category])
+          [category]: Math.min(curr.amount / 100, 0) + Number(acc_2[category])
         });
       }, createAccStart(startDate, categories))
     ];
@@ -64904,6 +64904,12 @@ function createWeeklyData({
     byParent: [],
     byCategory: []
   });
+  const cashFlow = startDates.map((startDate) => {
+    const transactionsForStart = transactionsWithStartDate.filter((txn) => txn.startDate === startDate);
+    return transactionsForStart.reduce((acc, curr) => __spreadProps(__spreadValues({}, acc), {
+      "In/Out": Math.min(curr.amount / 100, 0) + Number(acc["In/Out"])
+    }), { startDate, "In/Out": 0 });
+  });
   const uniqueBalances = startDates.map((startDate) => {
     return accounts.map((account) => {
       const balancesForAccountAndStart = balancesWithStartDate.filter((curr) => curr.startDate === startDate && curr.accountId === account.id).sort((a, b) => (0, import_date_fns.differenceInSeconds)(new Date(a.createdAt), new Date(b.createdAt)));
@@ -64916,7 +64922,8 @@ function createWeeklyData({
   });
   return {
     balances: uniqueBalances,
-    transactions: transactionSummaries
+    expenses,
+    cashFlow
   };
 }
 

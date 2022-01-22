@@ -1,6 +1,7 @@
 export type UpApiReturn = {
 	balances: ChartData[];
-	transactions: {
+	cashFlow: ChartData[];
+	expenses: {
 		all: ChartData[];
 		byParent: ChartData[];
 		byCategory: ChartData[];
