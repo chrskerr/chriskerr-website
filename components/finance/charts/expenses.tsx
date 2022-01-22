@@ -68,7 +68,7 @@ const ExpensesPerWeek = memo(function ExpensesPerWeek({
 	}, []);
 
 	return (
-		<div>
+		<div className="relative">
 			<div className="flex items-end justify-between pb-6">
 				<h2 className="text-xl">Expenses</h2>
 				<label>
@@ -91,15 +91,17 @@ const ExpensesPerWeek = memo(function ExpensesPerWeek({
 			{categories && filteredData ? (
 				<>
 					<div>
-						<button
-							className="mb-8 button small"
-							onClick={e => {
-								e.stopPropagation();
-								setToggleCategoriesShown(e => !e);
-							}}
-						>
-							Toggle category selector
-						</button>
+						<div className="flex justify-end w-full">
+							<button
+								className="mb-8 button small"
+								onClick={e => {
+									e.stopPropagation();
+									setToggleCategoriesShown(true);
+								}}
+							>
+								Show category selector
+							</button>
+						</div>
 						<AreaChartBase
 							categories={selectedCategories}
 							data={filteredData}
