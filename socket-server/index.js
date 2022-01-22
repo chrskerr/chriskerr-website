@@ -64729,8 +64729,8 @@ function createUpRoutes(app2, knex2) {
   }
   function createOrUpdateTransaction(accountId, eventType, txn) {
     return __async(this, null, function* () {
-      var _a, _b, _c, _d, _e, _f;
-      return eventType === "TRANSACTION_CREATED" ? yield knex2.table("account_transactions" /* TRANSACTIONS */).insert({
+      var _a, _b, _c;
+      const transaction = {
         accountId,
         transactionId: txn.data.id,
         amount: txn.data.attributes.amount.valueInBaseUnits,
@@ -64739,13 +64739,8 @@ function createUpRoutes(app2, knex2) {
         description: txn.data.attributes.description,
         createdAt: txn.data.attributes.createdAt,
         isTransfer: !!((_c = txn.data.relationships.transferAccount.data) == null ? void 0 : _c.id)
-      }).returning("*") : yield knex2.table("account_transactions" /* TRANSACTIONS */).where({ transactionId: txn.data.id }).update({
-        amount: txn.data.attributes.amount.valueInBaseUnits,
-        category: (_d = txn.data.relationships.category.data) == null ? void 0 : _d.id,
-        parentCategory: (_e = txn.data.relationships.parentCategory.data) == null ? void 0 : _e.id,
-        description: txn.data.attributes.description,
-        isTransfer: !!((_f = txn.data.relationships.transferAccount.data) == null ? void 0 : _f.id)
-      });
+      };
+      return eventType === "TRANSACTION_CREATED" ? yield knex2.table("account_transactions" /* TRANSACTIONS */).insert(transaction).returning("*") : yield knex2.table("account_transactions" /* TRANSACTIONS */).where({ transactionId: txn.data.id }).update(transaction);
     });
   }
   app2.set("trust proxy", 1);
@@ -64814,7 +64809,7 @@ function createUpRoutes(app2, knex2) {
       if (hasAuth) {
         const accounts = yield knex2.table("accounts" /* ACCOUNTS */).select();
         const balances = yield knex2.table("account_balances" /* BALANCES */).select("*");
-        const transactions = yield knex2.table("account_transactions" /* TRANSACTIONS */).where({ isTransfer: false }).select();
+        const transactions = yield knex2.table("account_transactions" /* TRANSACTIONS */).select();
         let result = void 0;
         if (period === "week") {
           result = createWeeklyData({
@@ -64871,7 +64866,7 @@ function createWeeklyData({
     startDate
   });
   const expenses = startDates.reduce((acc, startDate) => {
-    const transactionsForStart = transactionsWithStartDate.filter((txn) => txn.startDate === startDate);
+    const transactionsForStart = transactionsWithStartDate.filter((txn) => !txn.isTransfer && txn.startDate === startDate);
     const all = [
       ...acc.all,
       transactionsForStart.reduce((acc_2, curr) => __spreadProps(__spreadValues({}, acc_2), {

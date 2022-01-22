@@ -76,34 +76,26 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 		eventType: AcceptedEventTypes,
 		txn: UpTransaction,
 	) {
+		const transaction: Omit<Transaction, 'id'> = {
+			accountId,
+			transactionId: txn.data.id,
+			amount: txn.data.attributes.amount.valueInBaseUnits,
+			category: txn.data.relationships.category.data?.id,
+			parentCategory: txn.data.relationships.parentCategory.data?.id,
+			description: txn.data.attributes.description,
+			createdAt: txn.data.attributes.createdAt,
+			isTransfer: !!txn.data.relationships.transferAccount.data?.id,
+		};
+
 		return eventType === 'TRANSACTION_CREATED'
 			? await knex
 					.table<Transaction>(TableNames.TRANSACTIONS)
-					.insert({
-						accountId,
-						transactionId: txn.data.id,
-						amount: txn.data.attributes.amount.valueInBaseUnits,
-						category: txn.data.relationships.category.data?.id,
-						parentCategory:
-							txn.data.relationships.parentCategory.data?.id,
-						description: txn.data.attributes.description,
-						createdAt: txn.data.attributes.createdAt,
-						isTransfer:
-							!!txn.data.relationships.transferAccount.data?.id,
-					})
+					.insert(transaction)
 					.returning('*')
 			: await knex
 					.table<Transaction>(TableNames.TRANSACTIONS)
 					.where({ transactionId: txn.data.id })
-					.update({
-						amount: txn.data.attributes.amount.valueInBaseUnits,
-						category: txn.data.relationships.category.data?.id,
-						parentCategory:
-							txn.data.relationships.parentCategory.data?.id,
-						description: txn.data.attributes.description,
-						isTransfer:
-							!!txn.data.relationships.transferAccount.data?.id,
-					});
+					.update(transaction);
 	}
 
 	app.set('trust proxy', 1);
@@ -291,7 +283,6 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 					.select('*');
 				const transactions = await knex
 					.table<Transaction>(TableNames.TRANSACTIONS)
-					.where({ isTransfer: false })
 					.select();
 
 				let result: UpApiReturn | undefined = undefined;
@@ -384,7 +375,7 @@ function createWeeklyData({
 	}>(
 		(acc, startDate) => {
 			const transactionsForStart = transactionsWithStartDate.filter(
-				txn => txn.startDate === startDate,
+				txn => !txn.isTransfer && txn.startDate === startDate,
 			);
 
 			const all: ChartData[] = [
