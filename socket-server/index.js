@@ -64866,7 +64866,7 @@ function createWeeklyData({
     startDate
   });
   const expenses = startDates.reduce((acc, startDate) => {
-    const transactionsForStart = transactionsWithStartDate.filter((txn) => !txn.isTransfer && txn.category !== "investments" && txn.startDate === startDate);
+    const transactionsForStart = transactionsWithStartDate.filter((txn) => !txn.isTransfer && txn.amount < 0 && txn.category !== "investments" && txn.startDate === startDate);
     const all = [
       ...acc.all,
       transactionsForStart.reduce((acc_2, curr) => __spreadProps(__spreadValues({}, acc_2), {

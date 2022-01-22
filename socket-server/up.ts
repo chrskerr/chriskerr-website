@@ -377,6 +377,7 @@ function createWeeklyData({
 			const transactionsForStart = transactionsWithStartDate.filter(
 				txn =>
 					!txn.isTransfer &&
+					txn.amount < 0 &&
 					txn.category !== 'investments' &&
 					txn.startDate === startDate,
 			);
