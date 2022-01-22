@@ -64729,7 +64729,7 @@ function createUpRoutes(app2, knex2) {
   }
   function createOrUpdateTransaction(accountId, eventType, txn) {
     return __async(this, null, function* () {
-      var _a, _b, _c, _d;
+      var _a, _b, _c, _d, _e, _f;
       return eventType === "TRANSACTION_CREATED" ? yield knex2.table("account_transactions" /* TRANSACTIONS */).insert({
         accountId,
         transactionId: txn.data.id,
@@ -64737,12 +64737,14 @@ function createUpRoutes(app2, knex2) {
         category: (_a = txn.data.relationships.category.data) == null ? void 0 : _a.id,
         parentCategory: (_b = txn.data.relationships.parentCategory.data) == null ? void 0 : _b.id,
         description: txn.data.attributes.description,
-        createdAt: txn.data.attributes.createdAt
+        createdAt: txn.data.attributes.createdAt,
+        isTransfer: !!((_c = txn.data.relationships.transferAccount.data) == null ? void 0 : _c.id)
       }).returning("*") : yield knex2.table("account_transactions" /* TRANSACTIONS */).where({ transactionId: txn.data.id }).update({
         amount: txn.data.attributes.amount.valueInBaseUnits,
-        category: (_c = txn.data.relationships.category.data) == null ? void 0 : _c.id,
-        parentCategory: (_d = txn.data.relationships.parentCategory.data) == null ? void 0 : _d.id,
-        description: txn.data.attributes.description
+        category: (_d = txn.data.relationships.category.data) == null ? void 0 : _d.id,
+        parentCategory: (_e = txn.data.relationships.parentCategory.data) == null ? void 0 : _e.id,
+        description: txn.data.attributes.description,
+        isTransfer: !!((_f = txn.data.relationships.transferAccount.data) == null ? void 0 : _f.id)
       });
     });
   }
@@ -64812,7 +64814,7 @@ function createUpRoutes(app2, knex2) {
       if (hasAuth) {
         const accounts = yield knex2.table("accounts" /* ACCOUNTS */).select();
         const balances = yield knex2.table("account_balances" /* BALANCES */).select("*");
-        const transactions = yield knex2.table("account_transactions" /* TRANSACTIONS */).select();
+        const transactions = yield knex2.table("account_transactions" /* TRANSACTIONS */).where({ isTransfer: false }).select();
         let result = void 0;
         if (period === "week") {
           result = createWeeklyData({
@@ -64873,7 +64875,7 @@ function createWeeklyData({
     const all = [
       ...acc.all,
       transactionsForStart.reduce((acc_2, curr) => __spreadProps(__spreadValues({}, acc_2), {
-        All: Math.min(curr.amount / 100, 0) + Number(acc_2["All"])
+        All: curr.amount / 100 + Number(acc_2["All"])
       }), { startDate, All: 0 })
     ];
     const byParent = [
@@ -64881,7 +64883,7 @@ function createWeeklyData({
       transactionsForStart.reduce((acc_2, curr) => {
         const parentCategory = curr.parentCategory || "Uncategorised";
         return __spreadProps(__spreadValues({}, acc_2), {
-          [parentCategory]: Math.min(curr.amount / 100, 0) + Number(acc_2[parentCategory])
+          [parentCategory]: curr.amount / 100 + Number(acc_2[parentCategory])
         });
       }, createAccStart(startDate, parentCategories))
     ];
@@ -64890,7 +64892,7 @@ function createWeeklyData({
       transactionsForStart.reduce((acc_2, curr) => {
         const category = curr.category || "Uncategorised";
         return __spreadProps(__spreadValues({}, acc_2), {
-          [category]: Math.min(curr.amount / 100, 0) + Number(acc_2[category])
+          [category]: curr.amount / 100 + Number(acc_2[category])
         });
       }, createAccStart(startDate, categories))
     ];
@@ -65067,6 +65069,12 @@ server.listen(port, () => {
   if (!hasTransactionId) {
     yield knex.schema.alterTable("account_transactions" /* TRANSACTIONS */, (table) => {
       table.text("transactionId").nullable().unique();
+    });
+  }
+  const hasTransactionIsTransfer = yield knex.schema.hasColumn("account_transactions" /* TRANSACTIONS */, "isTransfer");
+  if (!hasTransactionIsTransfer) {
+    yield knex.schema.alterTable("account_transactions" /* TRANSACTIONS */, (table) => {
+      table.boolean("isTransfer").defaultTo(false);
     });
   }
 }))();

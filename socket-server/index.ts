@@ -230,4 +230,14 @@ server.listen(port, () => {
 			table.text('transactionId').nullable().unique();
 		});
 	}
+
+	const hasTransactionIsTransfer = await knex.schema.hasColumn(
+		TableNames.TRANSACTIONS,
+		'isTransfer',
+	);
+	if (!hasTransactionIsTransfer) {
+		await knex.schema.alterTable(TableNames.TRANSACTIONS, table => {
+			table.boolean('isTransfer').defaultTo(false);
+		});
+	}
 })();

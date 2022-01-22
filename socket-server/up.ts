@@ -88,6 +88,8 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 							txn.data.relationships.parentCategory.data?.id,
 						description: txn.data.attributes.description,
 						createdAt: txn.data.attributes.createdAt,
+						isTransfer:
+							!!txn.data.relationships.transferAccount.data?.id,
 					})
 					.returning('*')
 			: await knex
@@ -99,6 +101,8 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 						parentCategory:
 							txn.data.relationships.parentCategory.data?.id,
 						description: txn.data.attributes.description,
+						isTransfer:
+							!!txn.data.relationships.transferAccount.data?.id,
 					});
 	}
 
@@ -287,6 +291,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 					.select('*');
 				const transactions = await knex
 					.table<Transaction>(TableNames.TRANSACTIONS)
+					.where({ isTransfer: false })
 					.select();
 
 				let result: UpApiReturn | undefined = undefined;
@@ -387,9 +392,7 @@ function createWeeklyData({
 				transactionsForStart.reduce<ChartData>(
 					(acc_2, curr) => ({
 						...acc_2,
-						All:
-							Math.min(curr.amount / 100, 0) +
-							Number(acc_2['All']),
+						All: curr.amount / 100 + Number(acc_2['All']),
 					}),
 					{ startDate, All: 0 },
 				),
@@ -403,8 +406,7 @@ function createWeeklyData({
 					return {
 						...acc_2,
 						[parentCategory]:
-							Math.min(curr.amount / 100, 0) +
-							Number(acc_2[parentCategory]),
+							curr.amount / 100 + Number(acc_2[parentCategory]),
 					};
 				}, createAccStart(startDate, parentCategories)),
 			];
@@ -415,9 +417,7 @@ function createWeeklyData({
 					const category = curr.category || 'Uncategorised';
 					return {
 						...acc_2,
-						[category]:
-							Math.min(curr.amount / 100, 0) +
-							Number(acc_2[category]),
+						[category]: curr.amount / 100 + Number(acc_2[category]),
 					};
 				}, createAccStart(startDate, categories)),
 			];

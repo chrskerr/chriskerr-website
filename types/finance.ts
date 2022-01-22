@@ -31,6 +31,7 @@ export type Transaction = {
 	description: string;
 	accountId: string;
 	createdAt: string;
+	isTransfer: boolean;
 };
 
 export type UpWebhook = {
@@ -69,6 +70,12 @@ export type UpTransaction = {
 					type: 'accounts';
 					id: string;
 				};
+			};
+			transferAccount: {
+				data: {
+					type: 'accounts';
+					id: string;
+				} | null;
 			};
 			category: {
 				data: null | { id: string };

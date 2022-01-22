@@ -22,10 +22,17 @@ const BalancesPerWeek = memo(function BalancessPerWeek({
 		setCategories(accountNames);
 	}, [balances]);
 
-	return categories && balances ? (
-		<AreaChartBase categories={categories} data={balances} />
-	) : (
-		<></>
+	return (
+		<div className="mt-20">
+			<div className="flex items-center justify-between pb-6">
+				<h2 className="text-xl">Up Balances by week</h2>
+			</div>
+			{categories && balances ? (
+				<AreaChartBase categories={categories} data={balances} />
+			) : (
+				<></>
+			)}
+		</div>
 	);
 });
 
