@@ -64708,7 +64708,7 @@ import_axios.default.defaults.headers.common["Authorization"] = `Bearer ${upApiK
 var getHasAuthHeaders = (req) => req.headers["api_key"] === apiKey;
 var limiter = lib_default({
   windowMs: 1e3,
-  max: 1,
+  max: 5,
   standardHeaders: true,
   legacyHeaders: false
 });
@@ -64765,15 +64765,20 @@ function createUpRoutes(app2, knex2) {
     try {
       const body = req.body.data;
       const upSigningSecret = process.env.UP_SIGNING_SECRET;
-      if (!body || !upSigningSecret)
+      const upSigningSecretKate = process.env.UP_SIGNING_SECRET_KATE;
+      if (!body || !upSigningSecret || !upSigningSecretKate) {
         return res.status(200).end();
+      }
       const txnId = (_c = (_b = (_a = body.relationships) == null ? void 0 : _a.transaction) == null ? void 0 : _b.data) == null ? void 0 : _c.id;
       const hmac = import_crypto2.default.createHmac("sha256", upSigningSecret);
       hmac.update(req.rawBody);
       const hash = hmac.digest("hex");
+      const hmacKate = import_crypto2.default.createHmac("sha256", upSigningSecretKate);
+      hmacKate.update(req.rawBody);
+      const hashKate = hmac.digest("hex");
       const upSignature = req.headers["x-up-authenticity-signature"];
       const eventType = isEventType(body.attributes.eventType) ? body.attributes.eventType : void 0;
-      if (eventType && txnId && hash === upSignature) {
+      if (eventType && txnId && (hash === upSignature || hashKate === upSignature)) {
         const txnData = yield import_axios.default.get(urlBase + "/transactions/" + txnId);
         const txn = txnData.data;
         const accountId = txn.data.relationships.account.data.id;
@@ -64809,7 +64814,7 @@ function createUpRoutes(app2, knex2) {
       if (hasAuth) {
         const accounts = yield knex2.table("accounts" /* ACCOUNTS */).select();
         const balances = yield knex2.table("account_balances" /* BALANCES */).select();
-        const transactions = yield knex2.table("account_transactions" /* TRANSACTIONS */).select();
+        const transactions = yield knex2.table("account_transactions" /* TRANSACTIONS */).where({ isTransfer: false }).select();
         let result = void 0;
         if (period === "week") {
           result = createWeeklyData({
@@ -64839,7 +64844,7 @@ function createWeeklyData({
   const allStartDates = [];
   const allCategories = [];
   const allParentCategories = [];
-  const transactionsWithStartDate = transactions.filter((txn) => !(txn.isTransfer && txn.description === "Round Up")).map((txn) => {
+  const transactionsWithStartDate = transactions.map((txn) => {
     const startDate = (0, import_date_fns.format)((0, import_date_fns.startOfWeek)(new Date(txn.createdAt), {
       weekStartsOn: 1
     }), "dd/MM/yy");
@@ -64866,7 +64871,7 @@ function createWeeklyData({
     startDate
   });
   const expenses = startDates.reduce((acc, startDate) => {
-    const transactionsForStart = transactionsWithStartDate.filter((txn) => !txn.isTransfer && txn.amount < 0 && txn.category !== "investments" && txn.startDate === startDate);
+    const transactionsForStart = transactionsWithStartDate.filter((txn) => txn.amount < 0 && txn.category !== "investments" && txn.startDate === startDate);
     const all = [
       ...acc.all,
       transactionsForStart.reduce((acc_2, curr) => __spreadProps(__spreadValues({}, acc_2), {
@@ -65070,7 +65075,7 @@ server.listen(port, () => {
   const hasTransactionIsTransfer = yield knex.schema.hasColumn("account_transactions" /* TRANSACTIONS */, "isTransfer");
   if (!hasTransactionIsTransfer) {
     yield knex.schema.alterTable("account_transactions" /* TRANSACTIONS */, (table) => {
-      table.boolean("isTransfer").defaultTo(false);
+      table.boolean("isTransfer").defaultTo(false).index();
     });
   }
 }))();

@@ -41,7 +41,7 @@ const getHasAuthHeaders = (req: Request): boolean =>
 
 const limiter = rateLimit({
 	windowMs: 1000,
-	max: 1,
+	max: 5,
 	standardHeaders: true,
 	legacyHeaders: false,
 });
@@ -122,6 +122,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 	// 		}
 	// 		res.status(200).end();
 	// 	} catch (e) {
+	// 		console.log(e);
 	// 		next(e);
 	// 	}
 	// });
@@ -210,22 +211,32 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 		try {
 			const body = req.body.data as UpWebhook;
 			const upSigningSecret = process.env.UP_SIGNING_SECRET;
+			const upSigningSecretKate = process.env.UP_SIGNING_SECRET_KATE;
 
-			if (!body || !upSigningSecret) return res.status(200).end();
-
+			if (!body || !upSigningSecret || !upSigningSecretKate) {
+				return res.status(200).end();
+			}
 			const txnId = body.relationships?.transaction?.data?.id;
 
 			const hmac = crypto.createHmac('sha256', upSigningSecret);
 			hmac.update(req.rawBody);
-
 			const hash = hmac.digest('hex');
+
+			const hmacKate = crypto.createHmac('sha256', upSigningSecretKate);
+			hmacKate.update(req.rawBody);
+			const hashKate = hmac.digest('hex');
+
 			const upSignature = req.headers['x-up-authenticity-signature'];
 
 			const eventType = isEventType(body.attributes.eventType)
 				? body.attributes.eventType
 				: undefined;
 
-			if (eventType && txnId && hash === upSignature) {
+			if (
+				eventType &&
+				txnId &&
+				(hash === upSignature || hashKate === upSignature)
+			) {
 				const txnData = await axios.get(
 					urlBase + '/transactions/' + txnId,
 				);
@@ -283,6 +294,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 					.select();
 				const transactions = await knex
 					.table<Transaction>(TableNames.TRANSACTIONS)
+					.where({ isTransfer: false })
 					.select();
 
 				let result: UpApiReturn | undefined = undefined;
@@ -326,23 +338,21 @@ function createWeeklyData({
 	const allCategories: string[] = [];
 	const allParentCategories: string[] = [];
 
-	const transactionsWithStartDate = transactions
-		.filter(txn => !(txn.isTransfer && txn.description === 'Round Up'))
-		.map(txn => {
-			const startDate = format(
-				startOfWeek(new Date(txn.createdAt), {
-					weekStartsOn: 1,
-				}),
-				'dd/MM/yy',
-			);
-			allStartDates.push(startDate);
-			allCategories.push(txn.category || 'Uncategorised');
-			allParentCategories.push(txn.parentCategory || 'Uncategorised');
-			return {
-				...txn,
-				startDate,
-			};
-		});
+	const transactionsWithStartDate = transactions.map(txn => {
+		const startDate = format(
+			startOfWeek(new Date(txn.createdAt), {
+				weekStartsOn: 1,
+			}),
+			'dd/MM/yy',
+		);
+		allStartDates.push(startDate);
+		allCategories.push(txn.category || 'Uncategorised');
+		allParentCategories.push(txn.parentCategory || 'Uncategorised');
+		return {
+			...txn,
+			startDate,
+		};
+	});
 
 	const balancesWithStartDate = balances.map(txn => {
 		const startDate = format(
@@ -378,7 +388,6 @@ function createWeeklyData({
 		(acc, startDate) => {
 			const transactionsForStart = transactionsWithStartDate.filter(
 				txn =>
-					!txn.isTransfer &&
 					txn.amount < 0 &&
 					txn.category !== 'investments' &&
 					txn.startDate === startDate,

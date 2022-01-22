@@ -237,7 +237,7 @@ server.listen(port, () => {
 	);
 	if (!hasTransactionIsTransfer) {
 		await knex.schema.alterTable(TableNames.TRANSACTIONS, table => {
-			table.boolean('isTransfer').defaultTo(false);
+			table.boolean('isTransfer').defaultTo(false).index();
 		});
 	}
 })();
