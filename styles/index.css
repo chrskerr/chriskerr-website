@@ -5,6 +5,19 @@
 	--brand-secondary: #e94d10;
 	--brand-maroon: #480032;
 	--brand-maroon-dark: #380027;
+
+	--rainbow-gradient: linear-gradient(
+		90deg,
+		hsl(202deg 100% 37%) 0%,
+		hsl(194deg 100% 47%) 22%,
+		hsl(186deg 100% 57%) 33%,
+		hsl(178deg 100% 67%) 42%,
+		hsl(169deg 100% 77%) 50%,
+		hsl(131deg 97% 70%) 58%,
+		hsl(93deg 94% 63%) 67%,
+		hsl(55deg 90% 56%) 78%,
+		hsl(17deg 87% 49%) 100%
+	);
 }
 
 html,
@@ -17,18 +30,7 @@ body {
 }
 
 .nav-gradient:before {
-	background-image: linear-gradient(
-		90deg,
-		hsl(202deg 100% 37%) 0%,
-		hsl(194deg 100% 47%) 22%,
-		hsl(186deg 100% 57%) 33%,
-		hsl(178deg 100% 67%) 42%,
-		hsl(169deg 100% 77%) 50%,
-		hsl(131deg 97% 70%) 58%,
-		hsl(93deg 94% 63%) 67%,
-		hsl(55deg 90% 56%) 78%,
-		hsl(17deg 87% 49%) 100%
-	);
+	background-image: var(--rainbow-gradient);
 	content: ' ';
 }
 
@@ -137,7 +139,7 @@ body {
 	content: ' ';
 	height: 4px;
 	width: 50%;
-	background-color: var(--brand-blue);
+	background-image: var(--rainbow-gradient);
 	left: 50%;
 	transform: translateX(-50%);
 	top: -3rem;

@@ -54,7 +54,7 @@ export default function Landing(): ReactElement {
 						image="/images/tiles/bird-eat-bird.png"
 					/>
 					<Tile
-						url={`/${BlogPostSlugs.ASYNC_FUNCTIONS}`}
+						url={`/writing/${BlogPostSlugs.ASYNC_FUNCTIONS}`}
 						title={BlogPostTitles.ASYNC_FUNCTIONS}
 						image="/images/tiles/asynchronous_function_tile.png"
 					/>

@@ -98,16 +98,11 @@ export default function AsyncFunctionSerialiser(blog: Blog): ReactElement {
 }
 
 export const getStaticProps: GetStaticProps = context => {
-	const post = allWriting.find(
-		({ slug }) => slug === context.params?.writing,
-	);
+	const post = allWriting.find(({ slug }) => slug === context.params?.slug);
 
 	if (!post) {
 		return {
-			redirect: {
-				permanent: false,
-				destination: '/',
-			},
+			notFound: true,
 		};
 	}
 
@@ -123,7 +118,7 @@ export const getStaticProps: GetStaticProps = context => {
 
 	const props: Blog = {
 		...rest,
-		url: `${process.env.NEXT_PUBLIC_URL_BASE}/${rest.slug}`,
+		url: `${process.env.NEXT_PUBLIC_URL_BASE}/writing/${rest.slug}`,
 		htmlContent,
 	};
 
@@ -131,7 +126,7 @@ export const getStaticProps: GetStaticProps = context => {
 };
 
 export const getStaticPaths: GetStaticPaths = () => {
-	const paths = allWriting.map(({ slug }) => `/${slug}`);
+	const paths = allWriting.map(({ slug }) => `/writing/${slug}`);
 
 	return {
 		paths,
