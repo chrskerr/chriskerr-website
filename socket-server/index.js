@@ -64713,7 +64713,7 @@ var limiter = lib_default({
   legacyHeaders: false
 });
 function createUpRoutes(app2, knex2) {
-  function createOrUpdateAccount(id, name = "unnamed") {
+  function createOrUpdateAccount(id, name) {
     return __async(this, null, function* () {
       let r = yield knex2.table("accounts" /* ACCOUNTS */).where({ id }).update({ name }).returning("*");
       if (!r || r.length < 1) {
@@ -64771,21 +64771,23 @@ function createUpRoutes(app2, knex2) {
         return res.status(200).end();
       }
       const txnId = (_c = (_b = (_a = body.relationships) == null ? void 0 : _a.transaction) == null ? void 0 : _b.data) == null ? void 0 : _c.id;
-      const hmac = import_crypto2.default.createHmac("sha256", upSigningSecret);
-      hmac.update(req.rawBody);
-      const hash = hmac.digest("hex");
-      const hmacKate = import_crypto2.default.createHmac("sha256", upSigningSecretKate);
-      hmacKate.update(req.rawBody);
-      const hashKate = hmacKate.digest("hex");
+      const hashChris = import_crypto2.default.createHmac("sha256", upSigningSecret).update(req.rawBody).digest("hex");
+      const hashKate = import_crypto2.default.createHmac("sha256", upSigningSecretKate).update(req.rawBody).digest("hex");
       const upSignature = req.headers["x-up-authenticity-signature"];
+      const isChris = hashChris === upSignature;
+      const isKate = hashKate === upSignature;
       const eventType = isEventType(body.attributes.eventType) ? body.attributes.eventType : void 0;
-      if (eventType && txnId && (hash === upSignature || hashKate === upSignature)) {
+      if (eventType && txnId && (isChris || isKate)) {
         const txnData = yield import_axios.default.get(urlBase + "/transactions/" + txnId);
         const txn = txnData.data;
         const accountId = txn.data.relationships.account.data.id;
         const accountRes = yield import_axios.default.get(urlBase + "/accounts/" + accountId);
         const account = accountRes.data.data;
-        yield createOrUpdateAccount(accountId, account == null ? void 0 : account.attributes.displayName);
+        let accountName = (account == null ? void 0 : account.attributes.displayName) || "unnamed";
+        if (accountName === "Spending") {
+          accountName = isChris ? "Chris Spending" : "Kate Spending";
+        }
+        yield createOrUpdateAccount(accountId, accountName);
         yield createOrUpdateTransaction(accountId, eventType, txn);
       } else {
         console.log("hmac not matched", body);

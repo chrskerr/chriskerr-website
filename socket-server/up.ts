@@ -47,7 +47,7 @@ const limiter = rateLimit({
 });
 
 export default function createUpRoutes(app: Express, knex: Knex): void {
-	async function createOrUpdateAccount(id: string, name = 'unnamed') {
+	async function createOrUpdateAccount(id: string, name: string) {
 		let r = await knex
 			.table<Account>(TableNames.ACCOUNTS)
 			.where({ id })
@@ -219,25 +219,26 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 			}
 			const txnId = body.relationships?.transaction?.data?.id;
 
-			const hmac = crypto.createHmac('sha256', upSigningSecret);
-			hmac.update(req.rawBody);
-			const hash = hmac.digest('hex');
+			const hashChris = crypto
+				.createHmac('sha256', upSigningSecret)
+				.update(req.rawBody)
+				.digest('hex');
 
-			const hmacKate = crypto.createHmac('sha256', upSigningSecretKate);
-			hmacKate.update(req.rawBody);
-			const hashKate = hmacKate.digest('hex');
+			const hashKate = crypto
+				.createHmac('sha256', upSigningSecretKate)
+				.update(req.rawBody)
+				.digest('hex');
 
 			const upSignature = req.headers['x-up-authenticity-signature'];
+
+			const isChris = hashChris === upSignature;
+			const isKate = hashKate === upSignature;
 
 			const eventType = isEventType(body.attributes.eventType)
 				? body.attributes.eventType
 				: undefined;
 
-			if (
-				eventType &&
-				txnId &&
-				(hash === upSignature || hashKate === upSignature)
-			) {
+			if (eventType && txnId && (isChris || isKate)) {
 				const txnData = await axios.get(
 					urlBase + '/transactions/' + txnId,
 				);
@@ -249,11 +250,11 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 					urlBase + '/accounts/' + accountId,
 				);
 				const account = accountRes.data.data as UpAccount | undefined;
-
-				await createOrUpdateAccount(
-					accountId,
-					account?.attributes.displayName,
-				);
+				let accountName = account?.attributes.displayName || 'unnamed';
+				if (accountName === 'Spending') {
+					accountName = isChris ? 'Chris Spending' : 'Kate Spending';
+				}
+				await createOrUpdateAccount(accountId, accountName);
 
 				await createOrUpdateTransaction(accountId, eventType, txn);
 			} else {
