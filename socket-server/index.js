@@ -64786,6 +64786,8 @@ function createUpRoutes(app2, knex2) {
         const account = accountRes.data.data;
         yield createOrUpdateAccount(accountId, account == null ? void 0 : account.attributes.displayName);
         yield createOrUpdateTransaction(accountId, eventType, txn);
+      } else {
+        console.log("hmac not matched", body);
       }
       res.status(200).end();
     } catch (e) {
@@ -64914,11 +64916,14 @@ function createWeeklyData({
     }), { startDate, [cashFlowKey]: 0 });
   });
   const uniqueBalances = startDates.map((startDate) => {
+    const balancesForStart = balancesWithStartDate.filter((curr) => curr.startDate === startDate);
     return accounts.map((account) => {
-      const balancesForAccountAndStart = balancesWithStartDate.filter((curr) => curr.startDate === startDate && curr.accountId === account.id).sort((a, b) => (0, import_date_fns.differenceInSeconds)(new Date(a.createdAt), new Date(b.createdAt)));
-      return __spreadProps(__spreadValues({}, balancesForAccountAndStart[0]), {
+      var _a;
+      const balancesForAccount = balancesForStart.filter((curr) => curr.accountId === account.id).sort((a, b) => (0, import_date_fns.differenceInSeconds)(new Date(a.createdAt), new Date(b.createdAt)));
+      return {
+        balance: ((_a = balancesForAccount == null ? void 0 : balancesForAccount[0]) == null ? void 0 : _a.balance) || 0,
         accountName: account.name
-      });
+      };
     }).reduce((acc, curr) => __spreadProps(__spreadValues({}, acc), {
       [curr.accountName]: curr.balance / 100
     }), { startDate });

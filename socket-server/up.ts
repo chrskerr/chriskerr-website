@@ -255,6 +255,8 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 				);
 
 				await createOrUpdateTransaction(accountId, eventType, txn);
+			} else {
+				console.log('hmac not matched', body);
 			}
 
 			res.status(200).end();
@@ -354,19 +356,21 @@ function createWeeklyData({
 		};
 	});
 
-	const balancesWithStartDate = balances.map(txn => {
-		const startDate = format(
-			startOfWeek(new Date(txn.createdAt), {
-				weekStartsOn: 1,
-			}),
-			'dd/MM/yy',
-		);
-		allStartDates.push(startDate);
-		return {
-			...txn,
-			startDate,
-		};
-	});
+	const balancesWithStartDate = balances.map<Balance & { startDate: string }>(
+		txn => {
+			const startDate = format(
+				startOfWeek(new Date(txn.createdAt), {
+					weekStartsOn: 1,
+				}),
+				'dd/MM/yy',
+			);
+			allStartDates.push(startDate);
+			return {
+				...txn,
+				startDate,
+			};
+		},
+	);
 
 	const startDates = [...new Set(allStartDates)].sort((a, b) =>
 		differenceInSeconds(new Date(a), new Date(b)),
@@ -459,14 +463,13 @@ function createWeeklyData({
 	});
 
 	const uniqueBalances = startDates.map<ChartData>(startDate => {
+		const balancesForStart = balancesWithStartDate.filter(
+			curr => curr.startDate === startDate,
+		);
 		return accounts
 			.map(account => {
-				const balancesForAccountAndStart = balancesWithStartDate
-					.filter(
-						curr =>
-							curr.startDate === startDate &&
-							curr.accountId === account.id,
-					)
+				const balancesForAccount = balancesForStart
+					.filter(curr => curr.accountId === account.id)
 					.sort((a, b) =>
 						differenceInSeconds(
 							new Date(a.createdAt),
@@ -475,7 +478,7 @@ function createWeeklyData({
 					);
 
 				return {
-					...balancesForAccountAndStart[0],
+					balance: balancesForAccount?.[0]?.balance || 0,
 					accountName: account.name,
 				};
 			})
