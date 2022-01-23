@@ -64767,6 +64767,7 @@ function createUpRoutes(app2, knex2) {
       const upSigningSecret = process.env.UP_SIGNING_SECRET;
       const upSigningSecretKate = process.env.UP_SIGNING_SECRET_KATE;
       if (!body || !upSigningSecret || !upSigningSecretKate) {
+        console.log("secrets or data missing");
         return res.status(200).end();
       }
       const txnId = (_c = (_b = (_a = body.relationships) == null ? void 0 : _a.transaction) == null ? void 0 : _b.data) == null ? void 0 : _c.id;
@@ -64775,7 +64776,7 @@ function createUpRoutes(app2, knex2) {
       const hash = hmac.digest("hex");
       const hmacKate = import_crypto2.default.createHmac("sha256", upSigningSecretKate);
       hmacKate.update(req.rawBody);
-      const hashKate = hmac.digest("hex");
+      const hashKate = hmacKate.digest("hex");
       const upSignature = req.headers["x-up-authenticity-signature"];
       const eventType = isEventType(body.attributes.eventType) ? body.attributes.eventType : void 0;
       if (eventType && txnId && (hash === upSignature || hashKate === upSignature)) {

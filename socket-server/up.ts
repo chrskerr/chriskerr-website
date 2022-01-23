@@ -214,6 +214,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 			const upSigningSecretKate = process.env.UP_SIGNING_SECRET_KATE;
 
 			if (!body || !upSigningSecret || !upSigningSecretKate) {
+				console.log('secrets or data missing');
 				return res.status(200).end();
 			}
 			const txnId = body.relationships?.transaction?.data?.id;
@@ -224,7 +225,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 
 			const hmacKate = crypto.createHmac('sha256', upSigningSecretKate);
 			hmacKate.update(req.rawBody);
-			const hashKate = hmac.digest('hex');
+			const hashKate = hmacKate.digest('hex');
 
 			const upSignature = req.headers['x-up-authenticity-signature'];
 
