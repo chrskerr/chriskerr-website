@@ -31,10 +31,11 @@ export enum TableNames {
 }
 
 const apiKey = process.env.API_KEY || '';
-const upApiKey = process.env.UP_API_KEY;
-const urlBase = 'https://api.up.com.au/api/v1';
 
-axios.defaults.headers.common['Authorization'] = `Bearer ${upApiKey}`;
+const upApiKeyChris = process.env.UP_API_KEY;
+const upApiKeyKate = process.env.UP_API_KEY_KATE;
+
+const urlBase = 'https://api.up.com.au/api/v1';
 
 const getHasAuthHeaders = (req: Request): boolean =>
 	req.headers['api_key'] === apiKey;
@@ -47,7 +48,17 @@ const limiter = rateLimit({
 });
 
 export default function createUpRoutes(app: Express, knex: Knex): void {
-	async function createOrUpdateAccount(id: string, name: string) {
+	async function createOrUpdateAccount(
+		id: string,
+		accountName = 'Unnamed',
+		isChris: boolean,
+	) {
+		let name = accountName;
+
+		if (name === 'Spending') {
+			name = isChris ? 'Chris Spending' : 'Kate Spending';
+		}
+
 		let r = await knex
 			.table<Account>(TableNames.ACCOUNTS)
 			.where({ id })
@@ -73,7 +84,6 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 
 	async function createOrUpdateTransaction(
 		accountId: string,
-		eventType: AcceptedEventTypes,
 		txn: UpTransaction,
 	) {
 		const transaction: Omit<Transaction, 'id'> = {
@@ -87,15 +97,18 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 			isTransfer: !!txn.data.relationships.transferAccount.data?.id,
 		};
 
-		return eventType === 'TRANSACTION_CREATED'
-			? await knex
-					.table<Transaction>(TableNames.TRANSACTIONS)
-					.insert(transaction)
-					.returning('*')
-			: await knex
-					.table<Transaction>(TableNames.TRANSACTIONS)
-					.where({ transactionId: txn.data.id })
-					.update(transaction);
+		const r = await knex
+			.table<Transaction>(TableNames.TRANSACTIONS)
+			.where({ transactionId: txn.data.id })
+			.update(transaction)
+			.returning('*');
+
+		if (!r || r.length === 0) {
+			await knex
+				.table<Transaction>(TableNames.TRANSACTIONS)
+				.insert(transaction)
+				.returning('*');
+		}
 	}
 
 	app.set('trust proxy', 1);
@@ -104,7 +117,9 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 	// 	try {
 	// 		if (apiKey) {
 	// 			const id = req.params.id;
-	// 			await axios.post(urlBase + `/webhooks/${id}/ping`);
+	// 			await axios.post(urlBase + `/webhooks/${id}/ping`, {
+	// 				headers: { Authorization: `Bearer ${upApiKey}` },
+	// 			});
 	// 		}
 	// 		res.status(200).end();
 	// 	} catch (e) {
@@ -115,7 +130,9 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 	// app.get('/up/list', limiter, async (req, res, next) => {
 	// 	try {
 	// 		if (apiKey) {
-	// 			const fetchRes = await axios.get(urlBase + '/webhooks');
+	// 			const fetchRes = await axios.get(urlBase + '/webhooks', {
+	// 				headers: { Authorization: `Bearer ${upApiKey}` },
+	// 			});
 	// 			fetchRes.data?.data?.forEach(row => {
 	// 				console.log(row.id, row.attributes);
 	// 			});
@@ -138,6 +155,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 	// 						url,
 	// 					},
 	// 				},
+	// 				headers: { Authorization: `Bearer ${upApiKey}` },
 	// 			});
 	// 			console.log(fetchRes.data);
 	// 		}
@@ -155,6 +173,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 	// 		if (apiKey) {
 	// 			const fetchRes = await axios.delete(
 	// 				urlBase + '/webhooks/' + id,
+	// 				{ headers: { Authorization: `Bearer ${upApiKey}` } },
 	// 			);
 	// 			console.log(fetchRes.data);
 	// 		}
@@ -169,7 +188,9 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 	// app.get('/up/txns', limiter, async (req, res, next) => {
 	// 	try {
 	// 		if (apiKey) {
-	// 			const fetchRes = await axios.get(urlBase + '/transactions');
+	// 			const fetchRes = await axios.get(urlBase + '/transactions', {
+	// 				headers: { Authorization: `Bearer ${upApiKey}` },
+	// 			});
 	// 			console.log(fetchRes.data);
 	// 		}
 
@@ -184,15 +205,39 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 		try {
 			const hasAuthHeaders = getHasAuthHeaders(req);
 
-			if (upApiKey && hasAuthHeaders) {
-				const fetchRes = await axios.get(urlBase + '/accounts');
+			if (upApiKeyChris && hasAuthHeaders) {
+				const fetchRes = await axios.get(urlBase + '/accounts', {
+					headers: { Authorization: `Bearer ${upApiKeyChris}` },
+				});
 				const accounts = fetchRes.data as UpAccounts;
 
 				await Promise.all(
 					accounts.data.map(async account => {
 						await createOrUpdateAccount(
 							account.id,
-							account.attributes.displayName,
+							account?.attributes.displayName,
+							true,
+						);
+						await insertAccountBalance(
+							account.id,
+							account.attributes.balance.valueInBaseUnits,
+						);
+					}),
+				);
+			}
+
+			if (upApiKeyKate && hasAuthHeaders) {
+				const fetchRes = await axios.get(urlBase + '/accounts', {
+					headers: { Authorization: `Bearer ${upApiKeyKate}` },
+				});
+				const accounts = fetchRes.data as UpAccounts;
+
+				await Promise.all(
+					accounts.data.map(async account => {
+						await createOrUpdateAccount(
+							account.id,
+							account?.attributes.displayName,
+							false,
 						);
 						await insertAccountBalance(
 							account.id,
@@ -241,6 +286,13 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 			if (eventType && txnId && (isChris || isKate)) {
 				const txnData = await axios.get(
 					urlBase + '/transactions/' + txnId,
+					{
+						headers: {
+							Authorization: `Bearer ${
+								isChris ? upApiKeyChris : upApiKeyKate
+							}`,
+						},
+					},
 				);
 				const txn = txnData.data as UpTransaction;
 
@@ -248,15 +300,22 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 
 				const accountRes = await axios.get(
 					urlBase + '/accounts/' + accountId,
+					{
+						headers: {
+							Authorization: `Bearer ${
+								isChris ? upApiKeyChris : upApiKeyKate
+							}`,
+						},
+					},
 				);
 				const account = accountRes.data.data as UpAccount | undefined;
-				let accountName = account?.attributes.displayName || 'unnamed';
-				if (accountName === 'Spending') {
-					accountName = isChris ? 'Chris Spending' : 'Kate Spending';
-				}
-				await createOrUpdateAccount(accountId, accountName);
 
-				await createOrUpdateTransaction(accountId, eventType, txn);
+				await createOrUpdateAccount(
+					accountId,
+					account?.attributes.displayName,
+					isChris,
+				);
+				await createOrUpdateTransaction(accountId, txn);
 			} else {
 				console.log('hmac not matched', body);
 			}
@@ -273,7 +332,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 			const balance = req.body.balance || JSON.parse(req.body).balance;
 
 			if (hasAuthHeaders || typeof balance === 'number') {
-				await createOrUpdateAccount('stockspot', 'StockSpot');
+				await createOrUpdateAccount('stockspot', 'StockSpot', true);
 				await insertAccountBalance('stockspot', balance);
 				res.status(200).end();
 			} else {

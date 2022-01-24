@@ -64702,9 +64702,9 @@ var import_dotenv = __toESM(require_main());
 var import_date_fns = __toESM(require_date_fns());
 import_dotenv.default.config({ path: ".env.local" });
 var apiKey = process.env.API_KEY || "";
-var upApiKey = process.env.UP_API_KEY;
+var upApiKeyChris = process.env.UP_API_KEY;
+var upApiKeyKate = process.env.UP_API_KEY_KATE;
 var urlBase = "https://api.up.com.au/api/v1";
-import_axios.default.defaults.headers.common["Authorization"] = `Bearer ${upApiKey}`;
 var getHasAuthHeaders = (req) => req.headers["api_key"] === apiKey;
 var limiter = lib_default({
   windowMs: 1e3,
@@ -64713,8 +64713,12 @@ var limiter = lib_default({
   legacyHeaders: false
 });
 function createUpRoutes(app2, knex2) {
-  function createOrUpdateAccount(id, name) {
+  function createOrUpdateAccount(id, accountName = "Unnamed", isChris) {
     return __async(this, null, function* () {
+      let name = accountName;
+      if (name === "Spending") {
+        name = isChris ? "Chris Spending" : "Kate Spending";
+      }
       let r = yield knex2.table("accounts" /* ACCOUNTS */).where({ id }).update({ name }).returning("*");
       if (!r || r.length < 1) {
         r = yield knex2.table("accounts" /* ACCOUNTS */).insert({ id, name }).returning("*");
@@ -64727,7 +64731,7 @@ function createUpRoutes(app2, knex2) {
       yield knex2.table("account_balances" /* BALANCES */).insert({ accountId, balance });
     });
   }
-  function createOrUpdateTransaction(accountId, eventType, txn) {
+  function createOrUpdateTransaction(accountId, txn) {
     return __async(this, null, function* () {
       var _a, _b, _c;
       const transaction = {
@@ -64740,18 +64744,33 @@ function createUpRoutes(app2, knex2) {
         createdAt: txn.data.attributes.createdAt,
         isTransfer: !!((_c = txn.data.relationships.transferAccount.data) == null ? void 0 : _c.id)
       };
-      return eventType === "TRANSACTION_CREATED" ? yield knex2.table("account_transactions" /* TRANSACTIONS */).insert(transaction).returning("*") : yield knex2.table("account_transactions" /* TRANSACTIONS */).where({ transactionId: txn.data.id }).update(transaction);
+      const r = yield knex2.table("account_transactions" /* TRANSACTIONS */).where({ transactionId: txn.data.id }).update(transaction).returning("*");
+      if (!r || r.length === 0) {
+        yield knex2.table("account_transactions" /* TRANSACTIONS */).insert(transaction).returning("*");
+      }
     });
   }
   app2.set("trust proxy", 1);
   app2.get("/up/balances", limiter, (req, res, next) => __async(this, null, function* () {
     try {
       const hasAuthHeaders = getHasAuthHeaders(req);
-      if (upApiKey && hasAuthHeaders) {
-        const fetchRes = yield import_axios.default.get(urlBase + "/accounts");
+      if (upApiKeyChris && hasAuthHeaders) {
+        const fetchRes = yield import_axios.default.get(urlBase + "/accounts", {
+          headers: { Authorization: `Bearer ${upApiKeyChris}` }
+        });
         const accounts = fetchRes.data;
         yield Promise.all(accounts.data.map((account) => __async(this, null, function* () {
-          yield createOrUpdateAccount(account.id, account.attributes.displayName);
+          yield createOrUpdateAccount(account.id, account == null ? void 0 : account.attributes.displayName, true);
+          yield insertAccountBalance(account.id, account.attributes.balance.valueInBaseUnits);
+        })));
+      }
+      if (upApiKeyKate && hasAuthHeaders) {
+        const fetchRes = yield import_axios.default.get(urlBase + "/accounts", {
+          headers: { Authorization: `Bearer ${upApiKeyKate}` }
+        });
+        const accounts = fetchRes.data;
+        yield Promise.all(accounts.data.map((account) => __async(this, null, function* () {
+          yield createOrUpdateAccount(account.id, account == null ? void 0 : account.attributes.displayName, false);
           yield insertAccountBalance(account.id, account.attributes.balance.valueInBaseUnits);
         })));
       }
@@ -64778,17 +64797,21 @@ function createUpRoutes(app2, knex2) {
       const isKate = hashKate === upSignature;
       const eventType = isEventType(body.attributes.eventType) ? body.attributes.eventType : void 0;
       if (eventType && txnId && (isChris || isKate)) {
-        const txnData = yield import_axios.default.get(urlBase + "/transactions/" + txnId);
+        const txnData = yield import_axios.default.get(urlBase + "/transactions/" + txnId, {
+          headers: {
+            Authorization: `Bearer ${isChris ? upApiKeyChris : upApiKeyKate}`
+          }
+        });
         const txn = txnData.data;
         const accountId = txn.data.relationships.account.data.id;
-        const accountRes = yield import_axios.default.get(urlBase + "/accounts/" + accountId);
+        const accountRes = yield import_axios.default.get(urlBase + "/accounts/" + accountId, {
+          headers: {
+            Authorization: `Bearer ${isChris ? upApiKeyChris : upApiKeyKate}`
+          }
+        });
         const account = accountRes.data.data;
-        let accountName = (account == null ? void 0 : account.attributes.displayName) || "unnamed";
-        if (accountName === "Spending") {
-          accountName = isChris ? "Chris Spending" : "Kate Spending";
-        }
-        yield createOrUpdateAccount(accountId, accountName);
-        yield createOrUpdateTransaction(accountId, eventType, txn);
+        yield createOrUpdateAccount(accountId, account == null ? void 0 : account.attributes.displayName, isChris);
+        yield createOrUpdateTransaction(accountId, txn);
       } else {
         console.log("hmac not matched", body);
       }
@@ -64802,7 +64825,7 @@ function createUpRoutes(app2, knex2) {
       const hasAuthHeaders = getHasAuthHeaders(req);
       const balance = req.body.balance || JSON.parse(req.body).balance;
       if (hasAuthHeaders || typeof balance === "number") {
-        yield createOrUpdateAccount("stockspot", "StockSpot");
+        yield createOrUpdateAccount("stockspot", "StockSpot", true);
         yield insertAccountBalance("stockspot", balance);
         res.status(200).end();
       } else {
