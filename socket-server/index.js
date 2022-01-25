@@ -64797,15 +64797,16 @@ function createUpRoutes(app2, knex2) {
       const isKate = hashKate === upSignature;
       const eventType = isEventType(body.attributes.eventType) ? body.attributes.eventType : void 0;
       if (eventType && txnId && (isChris || isKate)) {
-        const txnData = yield import_axios.default.get(urlBase + "/transactions?page[size]=5", {
+        const txnData = yield import_axios.default.get(urlBase + "/transactions", {
           headers: {
             Authorization: `Bearer ${isChris ? upApiKeyChris : upApiKeyKate}`
           }
         });
         const txns = txnData.data.data;
-        console.log(txns);
-        txns.forEach((txn) => __async(this, null, function* () {
-          const accountId = txn.relationships.account.data.id;
+        const accountsIds = [
+          ...new Set(txns.map((txn) => txn.relationships.account.data.id))
+        ];
+        yield Promise.all(accountsIds.map((accountId) => __async(this, null, function* () {
           const accountRes = yield import_axios.default.get(urlBase + "/accounts/" + accountId, {
             headers: {
               Authorization: `Bearer ${isChris ? upApiKeyChris : upApiKeyKate}`
@@ -64813,6 +64814,9 @@ function createUpRoutes(app2, knex2) {
           });
           const account = accountRes.data.data;
           yield createOrUpdateAccount(accountId, account == null ? void 0 : account.attributes.displayName, isChris);
+        })));
+        txns.forEach((txn) => __async(this, null, function* () {
+          const accountId = txn.relationships.account.data.id;
           yield createOrUpdateTransaction(accountId, txn);
         }));
       } else {

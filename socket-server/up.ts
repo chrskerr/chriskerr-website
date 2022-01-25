@@ -284,42 +284,47 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 				: undefined;
 
 			if (eventType && txnId && (isChris || isKate)) {
-				const txnData = await axios.get(
-					urlBase + '/transactions?page[size]=5',
-					{
-						headers: {
-							Authorization: `Bearer ${
-								isChris ? upApiKeyChris : upApiKeyKate
-							}`,
-						},
+				const txnData = await axios.get(urlBase + '/transactions', {
+					headers: {
+						Authorization: `Bearer ${
+							isChris ? upApiKeyChris : upApiKeyKate
+						}`,
 					},
-				);
+				});
 				const txns = txnData.data.data as UpTransaction[];
 
-				console.log(txns);
+				const accountsIds = [
+					...new Set(
+						txns.map(txn => txn.relationships.account.data.id),
+					),
+				];
+
+				await Promise.all(
+					accountsIds.map(async accountId => {
+						const accountRes = await axios.get(
+							urlBase + '/accounts/' + accountId,
+							{
+								headers: {
+									Authorization: `Bearer ${
+										isChris ? upApiKeyChris : upApiKeyKate
+									}`,
+								},
+							},
+						);
+						const account = accountRes.data.data as
+							| UpAccount
+							| undefined;
+
+						await createOrUpdateAccount(
+							accountId,
+							account?.attributes.displayName,
+							isChris,
+						);
+					}),
+				);
 
 				txns.forEach(async txn => {
 					const accountId = txn.relationships.account.data.id;
-
-					const accountRes = await axios.get(
-						urlBase + '/accounts/' + accountId,
-						{
-							headers: {
-								Authorization: `Bearer ${
-									isChris ? upApiKeyChris : upApiKeyKate
-								}`,
-							},
-						},
-					);
-					const account = accountRes.data.data as
-						| UpAccount
-						| undefined;
-
-					await createOrUpdateAccount(
-						accountId,
-						account?.attributes.displayName,
-						isChris,
-					);
 					await createOrUpdateTransaction(accountId, txn);
 				});
 			} else {
