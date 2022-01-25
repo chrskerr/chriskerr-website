@@ -64802,7 +64802,7 @@ function createUpRoutes(app2, knex2) {
             Authorization: `Bearer ${isChris ? upApiKeyChris : upApiKeyKate}`
           }
         });
-        const txns = txnData.data;
+        const txns = txnData.data.data;
         console.log(txns);
         txns.forEach((txn) => __async(this, null, function* () {
           const accountId = txn.relationships.account.data.id;

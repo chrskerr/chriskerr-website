@@ -294,7 +294,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 						},
 					},
 				);
-				const txns = txnData.data as UpTransaction[];
+				const txns = txnData.data.data as UpTransaction[];
 
 				console.log(txns);
 
