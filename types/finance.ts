@@ -49,40 +49,38 @@ export type UpWebhook = {
 };
 
 export type UpTransaction = {
-	data: {
-		type: 'transactions';
-		id: string;
-		attributes: {
-			description: string;
-			message: null;
-			amount: {
-				currencyCode: string;
-				valueInBaseUnits: number;
-			};
-			/** ISO8601 date string */
-			settledAt: string;
-			/** ISO8601 date string */
-			createdAt: string;
+	type: 'transactions';
+	id: string;
+	attributes: {
+		description: string;
+		message: null;
+		amount: {
+			currencyCode: string;
+			valueInBaseUnits: number;
 		};
-		relationships: {
-			account: {
-				data: {
-					type: 'accounts';
-					id: string;
-				};
+		/** ISO8601 date string */
+		settledAt: string;
+		/** ISO8601 date string */
+		createdAt: string;
+	};
+	relationships: {
+		account: {
+			data: {
+				type: 'accounts';
+				id: string;
 			};
-			transferAccount: {
-				data: {
-					type: 'accounts';
-					id: string;
-				} | null;
-			};
-			category: {
-				data: null | { id: string };
-			};
-			parentCategory: {
-				data: null | { id: string };
-			};
+		};
+		transferAccount: {
+			data: {
+				type: 'accounts';
+				id: string;
+			} | null;
+		};
+		category: {
+			data: null | { id: string };
+		};
+		parentCategory: {
+			data: null | { id: string };
 		};
 	};
 };

@@ -64736,15 +64736,15 @@ function createUpRoutes(app2, knex2) {
       var _a, _b, _c;
       const transaction = {
         accountId,
-        transactionId: txn.data.id,
-        amount: txn.data.attributes.amount.valueInBaseUnits,
-        category: (_a = txn.data.relationships.category.data) == null ? void 0 : _a.id,
-        parentCategory: (_b = txn.data.relationships.parentCategory.data) == null ? void 0 : _b.id,
-        description: txn.data.attributes.description,
-        createdAt: txn.data.attributes.createdAt,
-        isTransfer: !!((_c = txn.data.relationships.transferAccount.data) == null ? void 0 : _c.id)
+        transactionId: txn.id,
+        amount: txn.attributes.amount.valueInBaseUnits,
+        category: (_a = txn.relationships.category.data) == null ? void 0 : _a.id,
+        parentCategory: (_b = txn.relationships.parentCategory.data) == null ? void 0 : _b.id,
+        description: txn.attributes.description,
+        createdAt: txn.attributes.createdAt,
+        isTransfer: !!((_c = txn.relationships.transferAccount.data) == null ? void 0 : _c.id)
       };
-      const r = yield knex2.table("account_transactions" /* TRANSACTIONS */).where({ transactionId: txn.data.id }).update(transaction).returning("*");
+      const r = yield knex2.table("account_transactions" /* TRANSACTIONS */).where({ transactionId: txn.id }).update(transaction).returning("*");
       if (!r || r.length === 0) {
         yield knex2.table("account_transactions" /* TRANSACTIONS */).insert(transaction).returning("*");
       }
@@ -64797,21 +64797,24 @@ function createUpRoutes(app2, knex2) {
       const isKate = hashKate === upSignature;
       const eventType = isEventType(body.attributes.eventType) ? body.attributes.eventType : void 0;
       if (eventType && txnId && (isChris || isKate)) {
-        const txnData = yield import_axios.default.get(urlBase + "/transactions/" + txnId, {
+        const txnData = yield import_axios.default.get(urlBase + "/transactions?page[size]=5", {
           headers: {
             Authorization: `Bearer ${isChris ? upApiKeyChris : upApiKeyKate}`
           }
         });
-        const txn = txnData.data;
-        const accountId = txn.data.relationships.account.data.id;
-        const accountRes = yield import_axios.default.get(urlBase + "/accounts/" + accountId, {
-          headers: {
-            Authorization: `Bearer ${isChris ? upApiKeyChris : upApiKeyKate}`
-          }
-        });
-        const account = accountRes.data.data;
-        yield createOrUpdateAccount(accountId, account == null ? void 0 : account.attributes.displayName, isChris);
-        yield createOrUpdateTransaction(accountId, txn);
+        const txns = txnData.data;
+        console.log(txns);
+        txns.forEach((txn) => __async(this, null, function* () {
+          const accountId = txn.relationships.account.data.id;
+          const accountRes = yield import_axios.default.get(urlBase + "/accounts/" + accountId, {
+            headers: {
+              Authorization: `Bearer ${isChris ? upApiKeyChris : upApiKeyKate}`
+            }
+          });
+          const account = accountRes.data.data;
+          yield createOrUpdateAccount(accountId, account == null ? void 0 : account.attributes.displayName, isChris);
+          yield createOrUpdateTransaction(accountId, txn);
+        }));
       } else {
         console.log("hmac not matched", body);
       }
@@ -64862,7 +64865,7 @@ function createUpRoutes(app2, knex2) {
   }));
 }
 var isEventType = (string) => {
-  return string === "TRANSACTION_CREATED" || string === "TRANSACTION_SETTLED";
+  return string === "TRANSACTION_CREATED";
 };
 function createWeeklyData({
   balances,

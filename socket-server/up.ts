@@ -88,18 +88,18 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 	) {
 		const transaction: Omit<Transaction, 'id'> = {
 			accountId,
-			transactionId: txn.data.id,
-			amount: txn.data.attributes.amount.valueInBaseUnits,
-			category: txn.data.relationships.category.data?.id,
-			parentCategory: txn.data.relationships.parentCategory.data?.id,
-			description: txn.data.attributes.description,
-			createdAt: txn.data.attributes.createdAt,
-			isTransfer: !!txn.data.relationships.transferAccount.data?.id,
+			transactionId: txn.id,
+			amount: txn.attributes.amount.valueInBaseUnits,
+			category: txn.relationships.category.data?.id,
+			parentCategory: txn.relationships.parentCategory.data?.id,
+			description: txn.attributes.description,
+			createdAt: txn.attributes.createdAt,
+			isTransfer: !!txn.relationships.transferAccount.data?.id,
 		};
 
 		const r = await knex
 			.table<Transaction>(TableNames.TRANSACTIONS)
-			.where({ transactionId: txn.data.id })
+			.where({ transactionId: txn.id })
 			.update(transaction)
 			.returning('*');
 
@@ -285,7 +285,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 
 			if (eventType && txnId && (isChris || isKate)) {
 				const txnData = await axios.get(
-					urlBase + '/transactions/' + txnId,
+					urlBase + '/transactions?page[size]=5',
 					{
 						headers: {
 							Authorization: `Bearer ${
@@ -294,28 +294,34 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 						},
 					},
 				);
-				const txn = txnData.data as UpTransaction;
+				const txns = txnData.data as UpTransaction[];
 
-				const accountId = txn.data.relationships.account.data.id;
+				console.log(txns);
 
-				const accountRes = await axios.get(
-					urlBase + '/accounts/' + accountId,
-					{
-						headers: {
-							Authorization: `Bearer ${
-								isChris ? upApiKeyChris : upApiKeyKate
-							}`,
+				txns.forEach(async txn => {
+					const accountId = txn.relationships.account.data.id;
+
+					const accountRes = await axios.get(
+						urlBase + '/accounts/' + accountId,
+						{
+							headers: {
+								Authorization: `Bearer ${
+									isChris ? upApiKeyChris : upApiKeyKate
+								}`,
+							},
 						},
-					},
-				);
-				const account = accountRes.data.data as UpAccount | undefined;
+					);
+					const account = accountRes.data.data as
+						| UpAccount
+						| undefined;
 
-				await createOrUpdateAccount(
-					accountId,
-					account?.attributes.displayName,
-					isChris,
-				);
-				await createOrUpdateTransaction(accountId, txn);
+					await createOrUpdateAccount(
+						accountId,
+						account?.attributes.displayName,
+						isChris,
+					);
+					await createOrUpdateTransaction(accountId, txn);
+				});
 			} else {
 				console.log('hmac not matched', body);
 			}
@@ -382,10 +388,10 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 	});
 }
 
-type AcceptedEventTypes = 'TRANSACTION_CREATED' | 'TRANSACTION_SETTLED';
+type AcceptedEventTypes = 'TRANSACTION_CREATED';
 
 const isEventType = (string: string): string is AcceptedEventTypes => {
-	return string === 'TRANSACTION_CREATED' || string === 'TRANSACTION_SETTLED';
+	return string === 'TRANSACTION_CREATED';
 };
 
 function createWeeklyData({
