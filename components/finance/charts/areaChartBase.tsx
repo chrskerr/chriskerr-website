@@ -96,32 +96,37 @@ const CustomTooltip: ContentType<ValueType, NameType> = ({
 			0,
 		);
 
+		console.log(payload);
+
 		return (
 			<div className="p-4 bg-white border rounded shadow-lg">
 				<h3 className="pb-4 text-lg">Week starting: {label}</h3>
-				{payload.map(item => (
-					<div
-						key={item.name}
-						className="grid grid-cols-3 justify-items-end"
-					>
-						<p
+				{payload
+					.filter(item => item.value)
+					.map(item => (
+						<div
 							key={item.name}
-							style={{ color: item.color }}
-							className="pb-1 justify-self-start"
+							className="grid grid-cols-3 justify-items-end"
 						>
-							{item.name}:
-						</p>
-						<p>{formatNumber.format(Number(item.value))}</p>
-						{item.name !== averageKey && (
-							<p>
-								{((Number(item.value) / total) * 100).toFixed(
-									1,
-								)}
-								%
+							<p
+								key={item.name}
+								style={{ color: item.color }}
+								className="pb-1 justify-self-start"
+							>
+								{item.name}:
 							</p>
-						)}
-					</div>
-				))}
+							<p>{formatNumber.format(Number(item.value))}</p>
+							{item.name !== averageKey && (
+								<p>
+									{(
+										(Number(item.value) / total) *
+										100
+									).toFixed(1)}
+									%
+								</p>
+							)}
+						</div>
+					))}
 				<p className="pt-3">Total: {formatNumber.format(total)}</p>
 			</div>
 		);

@@ -28,7 +28,7 @@ const ExpensesPerWeek = memo(function ExpensesPerWeek({
 	useEffect(() => {
 		const newCategories = data.reduce<string[]>((acc, curr) => {
 			const categories = Object.keys(curr)
-				.filter(key => key !== 'startDate')
+				.filter(key => key !== 'startDate' && curr[key])
 				.map(startCase);
 
 			return [...new Set([...acc, ...categories])];
@@ -83,8 +83,8 @@ const ExpensesPerWeek = memo(function ExpensesPerWeek({
 						}
 					>
 						<option value="all">All</option>
-						<option value="category">Category</option>
-						<option value="parent-category">Parent Category</option>
+						<option value="parent-category">Category</option>
+						<option value="category">Subcategory</option>
 					</select>
 				</label>
 			</div>
@@ -119,6 +119,38 @@ const ExpensesPerWeek = memo(function ExpensesPerWeek({
 								x
 							</span>
 							<div className="grid grid-cols-2">
+								<div className="flex items-center px-2">
+									<input
+										type="checkbox"
+										className="mr-4"
+										checked={
+											selectedCategories.length ===
+											categories.length
+										}
+										onChange={() => {
+											if (selectedCategories.length > 0) {
+												setSelectedCategories([]);
+											} else {
+												setSelectedCategories(
+													categories,
+												);
+											}
+										}}
+										ref={el => {
+											if (!el) return;
+											if (
+												selectedCategories.length > 0 &&
+												selectedCategories.length <
+													categories.length
+											) {
+												el.indeterminate = true;
+											} else {
+												el.indeterminate = false;
+											}
+										}}
+									/>
+									<label>All/None</label>
+								</div>
 								{categories &&
 									categories.map(category => {
 										const isChecked =
