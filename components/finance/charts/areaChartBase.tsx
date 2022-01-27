@@ -35,7 +35,26 @@ const AreaChartBase = memo(function AreaChartBase({
 	categories,
 	data,
 }: Props): ReactElement {
-	const dataWithTotals = createMovingAverage(data);
+	const dataWithTotals = createMovingAverage(
+		data.sort((a, b) => {
+			const splitA = a.startDate.split('/');
+			const splitB = b.startDate.split('/');
+
+			const dateA = new Date(
+				Number(splitA[2]),
+				Number(splitA[1]) - 1,
+				Number(splitA[0]),
+			).valueOf();
+			const dateB = new Date(
+				Number(splitB[2]),
+				Number(splitB[1]) - 1,
+				Number(splitB[0]),
+			).valueOf();
+
+			if (!dateA || !dateB) return 0;
+			return dateA - dateB;
+		}),
+	);
 
 	return (
 		<div className="h-[400px]">
