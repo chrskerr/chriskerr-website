@@ -48,6 +48,14 @@ export type UpWebhook = {
 	};
 };
 
+export type UpTransactions = {
+	data: UpTransaction[];
+	links: {
+		prev?: string;
+		next?: string;
+	};
+};
+
 export type UpTransaction = {
 	type: 'transactions';
 	id: string;
