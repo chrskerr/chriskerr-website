@@ -80,28 +80,6 @@ const processLoop = async (
 	});
 };
 
-const updateData = async (count: number): Promise<Data[]> => {
-	const emptyData = new Array(numDataGroups).fill(0).map<Data>((v, i) => ({
-		label: String(i),
-		math: 0,
-		mathRaw: 0,
-		crypto: 0,
-		cryptoRaw: 0,
-	}));
-
-	const numChunks = Math.ceil(count / chunkSize);
-	let updatedData = emptyData;
-
-	for (let i = 0; i < numChunks; i++) {
-		updatedData = await processLoop(
-			updatedData,
-			Math.min(count, chunkSize),
-		);
-	}
-
-	return updatedData;
-};
-
 const title = 'Javascript Random Number Generation';
 
 const sampleSizes = [
@@ -123,10 +101,34 @@ export default function JavascriptRandomness(): ReactElement {
 	const [samples, setSamples] = useState(1_000);
 
 	const [loading, setLoading] = useState(false);
+	const [loaded, setLoaded] = useState(0);
 
 	const generate = async (count: number) => {
 		setLoading(true);
-		setData(await updateData(count));
+		setLoaded(0);
+
+		const emptyData = new Array(numDataGroups)
+			.fill(0)
+			.map<Data>((v, i) => ({
+				label: String(i),
+				math: 0,
+				mathRaw: 0,
+				crypto: 0,
+				cryptoRaw: 0,
+			}));
+
+		const numChunks = Math.ceil(count / chunkSize);
+		let updatedData = emptyData;
+
+		for (let i = 0; i < numChunks; i++) {
+			updatedData = await processLoop(
+				updatedData,
+				Math.min(count, chunkSize),
+			);
+			setData(updatedData);
+			setLoaded((i + 1) * chunkSize);
+		}
+
 		setLoading(false);
 	};
 
@@ -183,7 +185,11 @@ export default function JavascriptRandomness(): ReactElement {
 						onClick={() => !loading && generate(samples)}
 						disabled={loading}
 					>
-						{loading ? 'Loading...' : 'Generate!'}
+						{loading
+							? `Processing: ${format(loaded)} / ${format(
+									samples,
+							  )}`
+							: 'Generate!'}
 					</button>
 				</div>
 			</div>
@@ -193,3 +199,5 @@ export default function JavascriptRandomness(): ReactElement {
 		</>
 	);
 }
+
+const { format } = Intl.NumberFormat('en-AU');
