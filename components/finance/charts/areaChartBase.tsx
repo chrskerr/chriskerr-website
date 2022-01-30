@@ -66,7 +66,13 @@ const AreaChartBase = memo(function AreaChartBase({
 					margin={{ right: 50, left: 50 }}
 				>
 					<XAxis dataKey="startDate" />
-					<YAxis tickFormatter={formatNumber.format} />
+					<YAxis
+						tickFormatter={formatNumber.format}
+						domain={[
+							(dataMin: number) => dataMin * 1.2,
+							(dataMax: number) => dataMax * 1.2,
+						]}
+					/>
 					<Tooltip content={CustomTooltip} />
 					{categories.map((category, i) => (
 						<Area
@@ -114,8 +120,6 @@ const CustomTooltip: ContentType<ValueType, NameType> = ({
 				curr.name === averageKey ? acc : acc + Number(curr.value),
 			0,
 		);
-
-		console.log(payload);
 
 		return (
 			<div className="p-4 bg-white border rounded shadow-lg">
