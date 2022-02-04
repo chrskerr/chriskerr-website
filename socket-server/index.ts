@@ -23,7 +23,11 @@ import { TableNames } from './up';
 import createUpRoutes from './up';
 
 const corsSettings: CorsOptions = {
-	origin: ['http://localhost:3000', 'https://www.chriskerr.com.au'],
+	origin: [
+		'http://localhost:3000',
+		'https://www.chriskerr.dev',
+		'https://www.chriskerr.com.au',
+	],
 	credentials: true,
 };
 

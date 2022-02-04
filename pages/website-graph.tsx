@@ -10,7 +10,7 @@ export default function WebsiteGraph(): ReactElement {
 			<NextSeo
 				title={title}
 				description="Visualise outbound connections from a particular website"
-				canonical="https://www.chriskerr.com.au/website-graph"
+				canonical="https://www.chriskerr.dev/website-graph"
 			/>
 			<div className="display-width">
 				<h2 className="mb-4 text-3xl">{title}</h2>

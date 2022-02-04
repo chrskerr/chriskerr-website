@@ -22,7 +22,7 @@ export default function BirdEatBird(): ReactElement {
 			<NextSeo
 				title="Bird Eat Bird"
 				description="A browser game where you attempt to eat as many others birds as you can, before getting eaten yourself!"
-				canonical="https://www.chriskerr.com.au/bird-eat-bird"
+				canonical={`${process.env.NEXT_PUBLIC_URL_BASE}/bird-eat-bird`}
 			/>
 			<canvas
 				ref={ref}

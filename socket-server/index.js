@@ -65005,7 +65005,11 @@ function createWeeklyData({
 
 // index.ts
 var corsSettings = {
-  origin: ["http://localhost:3000", "https://www.chriskerr.com.au"],
+  origin: [
+    "http://localhost:3000",
+    "https://www.chriskerr.dev",
+    "https://www.chriskerr.com.au"
+  ],
   credentials: true
 };
 var app = (0, import_express.default)();

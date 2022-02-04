@@ -17,7 +17,7 @@ export default function ISS(): ReactElement {
 			<NextSeo
 				title={title}
 				description="Just how busy is space"
-				canonical="https://www.chriskerr.com.au/space"
+				canonical="https://www.chriskerr.dev/space"
 			/>
 			<div className="display-width">
 				<h2 className="mb-4 text-3xl">{title}</h2>

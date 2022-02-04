@@ -141,7 +141,7 @@ export default function Editor({ id: propsId, initialData }: EditorProps) {
 		};
 	}, []);
 
-	const href = `https://www.chriskerr.com.au/editor/${id}`;
+	const href = `${process.env.NEXT_PUBLIC_URL_BASE}/editor/${id}`;
 
 	const classes = `
 		p-8 border-2 mt-2 w-full
@@ -154,7 +154,7 @@ export default function Editor({ id: propsId, initialData }: EditorProps) {
 				title={title}
 				noindex={id !== unsavedNoteId}
 				description="Collaborative, realtime, Markdown editing"
-				canonical="https://www.chriskerr.com.au/editor"
+				canonical={`${process.env.NEXT_PUBLIC_URL_BASE}/editor`}
 			/>
 			<div className="display-width">
 				<h2 className="mb-12 text-3xl">{title}</h2>

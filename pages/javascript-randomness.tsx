@@ -145,7 +145,7 @@ export default function JavascriptRandomness(): ReactElement {
 			<NextSeo
 				title={title}
 				description="A window into the various methods that Javascript can use to generate random numbers"
-				canonical="https://www.chriskerr.com.au/javascript-randomness"
+				canonical={`${process.env.NEXT_PUBLIC_URL_BASE}/javascript-randomness`}
 			/>
 			<div className="display-width">
 				<h2 className="mb-4 text-3xl">{title}</h2>

@@ -1,7 +1,7 @@
 import { ReactElement } from 'react';
 import { NextSeo } from 'next-seo';
 
-const url = process.env.NEXT_PUBLIC_URL_BASE || 'https://www.chriskerr.com.au';
+const url = process.env.NEXT_PUBLIC_URL_BASE;
 const description = 'Uncopyright declaration';
 const title = 'Uncopyright';
 
@@ -31,7 +31,7 @@ export default function UncopyrightDeclaration(): ReactElement {
 				</p>
 				<div className="w-full prose divider-before">
 					<p>
-						This blog is Uncopyrighted. Its author,{' '}
+						This website is Uncopyrighted. Its author,{' '}
 						<i>Chris Kerr</i>, has released all claims on copyright
 						and has put all the content of this blog into the public
 						domain.

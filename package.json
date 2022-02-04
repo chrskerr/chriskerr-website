@@ -1,8 +1,8 @@
 {
-	"name": "chriskerr.com.au",
+	"name": "chriskerr.dev",
 	"version": "1.0.0",
 	"private": false,
-	"homepage": "https://www.chriskerr.com.au",
+	"homepage": "https://www.chriskerr.dev",
 	"author": "Chris Kerr",
 	"license": "GPL-3.0",
 	"scripts": {
