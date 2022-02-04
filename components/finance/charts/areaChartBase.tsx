@@ -13,7 +13,6 @@ import {
 	NameType,
 	ValueType,
 } from 'recharts/types/component/DefaultTooltipContent';
-import { ContentType as LegendContentType } from 'recharts/types/component/DefaultLegendContent';
 import { ContentType } from 'recharts/types/component/Tooltip';
 
 import takeRight from 'lodash/takeRight';
