@@ -4,13 +4,16 @@ import { ChartData, UpApiReturn } from 'types/finance';
 import startCase from 'lodash/startCase';
 
 import AreaChartBase from './areaChartBase';
+import { DisplayModes } from '..';
 
 type TransactionCategories = 'all' | 'category' | 'parent-category';
 
 const ExpensesPerWeek = memo(function ExpensesPerWeek({
 	expenses,
+	displayMode,
 }: {
 	expenses: UpApiReturn['expenses'];
+	displayMode: DisplayModes;
 }): ReactElement {
 	const [summariseTransactionsBy, setSummariseTransactionsBy] =
 		useState<TransactionCategories>('parent-category');
@@ -105,6 +108,7 @@ const ExpensesPerWeek = memo(function ExpensesPerWeek({
 						<AreaChartBase
 							categories={selectedCategories}
 							data={filteredData}
+							displayMode={displayMode}
 						/>
 					</div>
 					{toggleCategoriesShown && (

@@ -13,15 +13,19 @@ import {
 	NameType,
 	ValueType,
 } from 'recharts/types/component/DefaultTooltipContent';
+import { ContentType as LegendContentType } from 'recharts/types/component/DefaultLegendContent';
 import { ContentType } from 'recharts/types/component/Tooltip';
 
 import takeRight from 'lodash/takeRight';
 
 import { ChartData } from 'types/finance';
+import { DisplayModes } from '..';
 
 type Props = {
 	data: ChartData[];
 	categories: string[];
+	shouldDisplayAverage?: boolean;
+	displayMode: DisplayModes;
 };
 
 const formatNumber = new Intl.NumberFormat('en-AU', {
@@ -34,26 +38,11 @@ const averageKey = 'Average';
 const AreaChartBase = memo(function AreaChartBase({
 	categories,
 	data,
+	shouldDisplayAverage = true,
+	displayMode,
 }: Props): ReactElement {
-	const dataWithTotals = createMovingAverage(
-		data.sort((a, b) => {
-			const splitA = a.startDate.split('/');
-			const splitB = b.startDate.split('/');
-
-			const dateA = new Date(
-				Number(splitA[2]),
-				Number(splitA[1]) - 1,
-				Number(splitA[0]),
-			).valueOf();
-			const dateB = new Date(
-				Number(splitB[2]),
-				Number(splitB[1]) - 1,
-				Number(splitB[0]),
-			).valueOf();
-
-			if (!dateA || !dateB) return 0;
-			return dateA - dateB;
-		}),
+	const preparedData = limitData(
+		createMovingAverage(sortData(data), shouldDisplayAverage),
 	);
 
 	return (
@@ -62,7 +51,7 @@ const AreaChartBase = memo(function AreaChartBase({
 				<ComposedChart
 					width={200}
 					height={400}
-					data={takeRight(dataWithTotals, 6)}
+					data={preparedData}
 					margin={{ right: 50, left: 50 }}
 				>
 					<XAxis dataKey="startDate" />
@@ -77,20 +66,21 @@ const AreaChartBase = memo(function AreaChartBase({
 					{categories.map((category, i) => (
 						<Area
 							key={category}
-							type="natural"
+							type={displayMode}
 							dataKey={category}
 							stackId={1}
 							stroke={getStroke(i, categories.length + 1)}
 							fill={getFill(i, categories.length + 1)}
 						/>
 					))}
-					<Legend />
+					{categories.length < 10 && <Legend />}
 					<Line
 						dataKey={averageKey}
 						stroke={getStroke(
 							categories.length + 1,
 							categories.length + 1,
 						)}
+						type="monotone"
 					/>
 				</ComposedChart>
 			</ResponsiveContainer>
@@ -122,7 +112,7 @@ const CustomTooltip: ContentType<ValueType, NameType> = ({
 		);
 
 		return (
-			<div className="p-4 bg-white border rounded shadow-lg">
+			<div className="hidden p-4 bg-white border rounded shadow-lg">
 				<h3 className="pb-4 text-lg">Week starting: {label}</h3>
 				{payload
 					.filter(item => item.value)
@@ -158,7 +148,33 @@ const CustomTooltip: ContentType<ValueType, NameType> = ({
 	return null;
 };
 
-const createMovingAverage = (data: ChartData[]): ChartData[] => {
+const sortData = (data: ChartData[]): ChartData[] => {
+	return data.sort((a, b) => {
+		const splitA = a.startDate.split('/');
+		const splitB = b.startDate.split('/');
+
+		const dateA = new Date(
+			Number(splitA[2]),
+			Number(splitA[1]) - 1,
+			Number(splitA[0]),
+		).valueOf();
+		const dateB = new Date(
+			Number(splitB[2]),
+			Number(splitB[1]) - 1,
+			Number(splitB[0]),
+		).valueOf();
+
+		if (!dateA || !dateB) return 0;
+		return dateA - dateB;
+	});
+};
+
+const createMovingAverage = (
+	data: ChartData[],
+	createMovingAverage: boolean,
+): ChartData[] => {
+	if (!createMovingAverage) return data;
+
 	const lookBack = 8;
 
 	return data.reduce<ChartData[]>((acc, curr, i) => {
@@ -171,13 +187,26 @@ const createMovingAverage = (data: ChartData[]): ChartData[] => {
 			}, 0),
 		};
 
-		const items = [...[...acc].splice(start, i), currWithTotal];
+		const items = [...[...acc].splice(start, i), currWithTotal].filter(
+			doesItemHaveData,
+		);
+
 		const average =
 			items.reduce<number>(
 				(averageAcc, item) => averageAcc + Number(item.total),
 				0,
 			) / items.length;
 
-		return [...acc, { ...currWithTotal, [averageKey]: average }];
+		return [...acc, { ...currWithTotal, [averageKey]: average || 0 }];
 	}, []);
+};
+
+const limitData = (data: ChartData[]): ChartData[] => {
+	return takeRight(data.filter(doesItemHaveData), 6);
+};
+
+const doesItemHaveData = (item: ChartData): boolean => {
+	return Object.values(item).some(
+		value => typeof value === 'number' && value !== 0,
+	);
 };

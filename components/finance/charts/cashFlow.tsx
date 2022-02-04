@@ -1,11 +1,14 @@
 import { memo, ReactElement } from 'react';
 import { UpApiReturn } from 'types/finance';
+import { DisplayModes } from '..';
 import AreaChartBase from './areaChartBase';
 
 const ExpensesPerWeek = memo(function ExpensesPerWeek({
 	cashFlow,
+	displayMode,
 }: {
 	cashFlow: UpApiReturn['cashFlow'];
+	displayMode: DisplayModes;
 }): ReactElement {
 	const categories = cashFlow.reduce<string[]>((acc, curr) => {
 		const categories = Object.keys(curr).filter(key => key !== 'startDate');
@@ -19,7 +22,11 @@ const ExpensesPerWeek = memo(function ExpensesPerWeek({
 				<h2 className="text-xl">Cash Flow</h2>
 			</div>
 			{categories && cashFlow && (
-				<AreaChartBase categories={categories} data={cashFlow} />
+				<AreaChartBase
+					categories={categories}
+					data={cashFlow}
+					displayMode={displayMode}
+				/>
 			)}
 		</div>
 	);
