@@ -28,7 +28,7 @@ type Props = {
 	thresholdLines?: ThresholdLine[];
 };
 
-type ThresholdLine = { label: string; level: number };
+type ThresholdLine = { label: string; value: number };
 
 const formatNumber = new Intl.NumberFormat('en-AU', {
 	style: 'currency',
@@ -239,7 +239,7 @@ const addThresholdLines = (
 		(acc, curr) => {
 			return {
 				...acc,
-				[curr.label]: curr.level,
+				[curr.label]: curr.value,
 			};
 		},
 		{},
