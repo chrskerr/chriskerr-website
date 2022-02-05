@@ -25,7 +25,10 @@ type Props = {
 	categories: string[];
 	shouldDisplayAverage?: boolean;
 	displayMode: DisplayModes;
+	thresholdLines?: ThresholdLine[];
 };
+
+type ThresholdLine = { label: string; level: number };
 
 const formatNumber = new Intl.NumberFormat('en-AU', {
 	style: 'currency',
@@ -39,10 +42,21 @@ const AreaChartBase = memo(function AreaChartBase({
 	data,
 	shouldDisplayAverage = true,
 	displayMode,
+	thresholdLines = [],
 }: Props): ReactElement {
 	const preparedData = limitData(
-		createMovingAverage(sortData(data), shouldDisplayAverage),
+		addThresholdLines(
+			createMovingAverage(sortData(data), shouldDisplayAverage),
+			thresholdLines,
+		),
 	);
+
+	const totalColours = categories.length + thresholdLines.length + 1;
+
+	const CustomTooltip = createCustomTooltip([
+		averageKey,
+		...thresholdLines.map(({ label }) => label),
+	]);
 
 	return (
 		<div className="h-[400px]">
@@ -68,19 +82,27 @@ const AreaChartBase = memo(function AreaChartBase({
 							type={displayMode}
 							dataKey={category}
 							stackId={1}
-							stroke={getStroke(i, categories.length + 1)}
-							fill={getFill(i, categories.length + 1)}
+							stroke={getStroke(i, totalColours)}
+							fill={getFill(i, totalColours)}
 						/>
 					))}
 					{categories.length < 10 && <Legend />}
 					<Line
 						dataKey={averageKey}
-						stroke={getStroke(
-							categories.length + 1,
-							categories.length + 1,
-						)}
+						stroke={getStroke(categories.length + 1, totalColours)}
 						type="monotone"
 					/>
+					{thresholdLines.map((line, i) => (
+						<Line
+							key={line.label}
+							dataKey={line.label}
+							stroke={getStroke(
+								categories.length + 1 + i + 1,
+								totalColours,
+							)}
+							legendType="none"
+						/>
+					))}
 				</ComposedChart>
 			</ResponsiveContainer>
 		</div>
@@ -98,53 +120,62 @@ const getFill = (i: number, of: number): string =>
 const calculateDegrees = (i: number, of: number): number =>
 	(202 + (360 * i) / (of + 1)) % 360;
 
-const CustomTooltip: ContentType<ValueType, NameType> = ({
-	active,
-	payload,
-	label,
-}) => {
-	if (active && payload && payload.length) {
-		const total = payload.reduce<number>(
-			(acc, curr) =>
-				curr.name === averageKey ? acc : acc + Number(curr.value),
-			0,
-		);
+const createCustomTooltip = (excludedKeys: string[]) => {
+	const CustomTooltip: ContentType<ValueType, NameType> = ({
+		active,
+		payload,
+		label,
+	}) => {
+		if (active && payload && payload.length) {
+			const total = payload.reduce<number>(
+				(acc, curr) =>
+					typeof curr.name === 'string' &&
+					excludedKeys.includes(curr.name)
+						? acc
+						: acc + Number(curr.value),
+				0,
+			);
 
-		return (
-			<div className="hidden p-4 bg-white border rounded shadow-lg">
-				<h3 className="pb-4 text-lg">Week starting: {label}</h3>
-				{payload
-					.filter(item => item.value)
-					.map(item => (
-						<div
-							key={item.name}
-							className="grid grid-cols-3 justify-items-end"
-						>
-							<p
+			return (
+				<div className="p-4 bg-white border rounded shadow-lg">
+					<h3 className="pb-4 text-lg">Week starting: {label}</h3>
+					{payload
+						.filter(item => item.value)
+						.map(item => (
+							<div
 								key={item.name}
-								style={{ color: item.color }}
-								className="pb-1 justify-self-start"
+								className="grid grid-cols-3 justify-items-end"
 							>
-								{item.name}:
-							</p>
-							<p>{formatNumber.format(Number(item.value))}</p>
-							{item.name !== averageKey && (
-								<p>
-									{(
-										(Number(item.value) / total) *
-										100
-									).toFixed(1)}
-									%
+								<p
+									key={item.name}
+									style={{ color: item.color }}
+									className="pb-1 justify-self-start"
+								>
+									{item.name}:
 								</p>
-							)}
-						</div>
-					))}
-				<p className="pt-3">Total: {formatNumber.format(total)}</p>
-			</div>
-		);
-	}
+								<p>{formatNumber.format(Number(item.value))}</p>
+								{!excludedKeys.includes(
+									item.name as string,
+								) && (
+									<p>
+										{(
+											(Number(item.value) / total) *
+											100
+										).toFixed(1)}
+										%
+									</p>
+								)}
+							</div>
+						))}
+					<p className="pt-3">Total: {formatNumber.format(total)}</p>
+				</div>
+			);
+		}
 
-	return null;
+		return null;
+	};
+
+	return CustomTooltip;
 };
 
 const sortData = (data: ChartData[]): ChartData[] => {
@@ -198,6 +229,26 @@ const createMovingAverage = (
 
 		return [...acc, { ...currWithTotal, [averageKey]: average || 0 }];
 	}, []);
+};
+
+const addThresholdLines = (
+	data: ChartData[],
+	thresholdLines: ThresholdLine[],
+): ChartData[] => {
+	const linesObject = thresholdLines.reduce<Record<string, number>>(
+		(acc, curr) => {
+			return {
+				...acc,
+				[curr.label]: curr.level,
+			};
+		},
+		{},
+	);
+
+	return data.map(curr => ({
+		...curr,
+		...linesObject,
+	}));
 };
 
 const limitData = (data: ChartData[]): ChartData[] => {

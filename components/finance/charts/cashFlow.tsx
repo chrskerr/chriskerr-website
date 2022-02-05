@@ -26,6 +26,7 @@ const ExpensesPerWeek = memo(function ExpensesPerWeek({
 					categories={categories}
 					data={cashFlow}
 					displayMode={displayMode}
+					thresholdLines={[{ label: 'Mortgage', level: 680 }]}
 				/>
 			)}
 		</div>

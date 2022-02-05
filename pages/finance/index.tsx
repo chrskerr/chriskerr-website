@@ -16,7 +16,7 @@ export default function FinancesPage({ initialData }: Props): ReactElement {
 	const [data, setData] = useState<UpApiReturn | null>(initialData);
 	const [loading, setLoading] = useState(false);
 
-	const [displayMode, setDisplayMode] = useState<DisplayModes>('step');
+	const [displayMode, setDisplayMode] = useState<DisplayModes>('monotone');
 
 	const handleLogin = async () => {
 		if (!password) return;
@@ -57,8 +57,8 @@ export default function FinancesPage({ initialData }: Props): ReactElement {
 							}
 							className="mt-2"
 						>
-							<option value="step">Stepped</option>
 							<option value="monotone">Curved</option>
+							<option value="step">Stepped</option>
 						</select>
 					</label>
 				</div>

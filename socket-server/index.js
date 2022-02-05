@@ -64733,7 +64733,7 @@ function createUpRoutes(app2, knex2) {
   }
   function createOrUpdateTransaction(accountId, txn) {
     return __async(this, null, function* () {
-      var _a, _b, _c;
+      var _a, _b;
       const transaction = {
         accountId,
         transactionId: txn.id,
@@ -64742,7 +64742,7 @@ function createUpRoutes(app2, knex2) {
         parentCategory: (_b = txn.relationships.parentCategory.data) == null ? void 0 : _b.id,
         description: txn.attributes.description,
         createdAt: txn.attributes.createdAt,
-        isTransfer: !!((_c = txn.relationships.transferAccount.data) == null ? void 0 : _c.id)
+        isTransfer: !!txn.relationships.transferAccount.data
       };
       const r = yield knex2.table("account_transactions" /* TRANSACTIONS */).where({ transactionId: txn.id }).update(transaction).returning("*");
       if (!r || r.length === 0) {

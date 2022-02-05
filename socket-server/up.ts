@@ -95,7 +95,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 			parentCategory: txn.relationships.parentCategory.data?.id,
 			description: txn.attributes.description,
 			createdAt: txn.attributes.createdAt,
-			isTransfer: !!txn.relationships.transferAccount.data?.id,
+			isTransfer: !!txn.relationships.transferAccount.data,
 		};
 
 		const r = await knex
