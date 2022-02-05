@@ -469,7 +469,9 @@ function createWeeklyData({
 	const allCategories: string[] = [];
 	const allParentCategories: string[] = [];
 
-	const transactionsWithStartDate = transactions.map(txn => {
+	const transactionsWithStartDate = transactions.map<
+		Transaction & { startDate: string }
+	>(txn => {
 		const startDate = format(
 			startOfWeek(new Date(txn.createdAt), {
 				weekStartsOn: 1,
@@ -522,8 +524,9 @@ function createWeeklyData({
 			const transactionsForStart = transactionsWithStartDate.filter(
 				txn =>
 					txn.amount < 0 &&
-					txn.category !== 'investments' &&
-					txn.startDate === startDate,
+					!isProbablyInvestment(txn) &&
+					txn.startDate === startDate &&
+					!isProbablyTransfer(txn),
 			);
 
 			const all: ChartData[] = [
@@ -577,7 +580,9 @@ function createWeeklyData({
 	const cashFlow = startDates.map<ChartData>(startDate => {
 		const transactionsForStart = transactionsWithStartDate.filter(
 			txn =>
-				txn.startDate === startDate && txn.category !== 'investments',
+				txn.startDate === startDate &&
+				!isProbablyInvestment(txn) &&
+				!isProbablyTransfer(txn),
 		);
 
 		const cashFlowKey = 'In/Out';
@@ -626,3 +631,13 @@ function createWeeklyData({
 		cashFlow,
 	};
 }
+
+const isProbablyTransfer = (transaction: Transaction): boolean =>
+	transaction.isTransfer ||
+	transaction.description.startsWith('Transfer from ') ||
+	transaction.description.startsWith('Transfer to ') ||
+	transaction.description.startsWith('Auto Transfer to ') ||
+	transaction.description === 'Round Up';
+
+const isProbablyInvestment = (transaction: Transaction): boolean =>
+	!!transaction.category?.includes('investment');

@@ -64941,7 +64941,7 @@ function createWeeklyData({
     startDate
   });
   const expenses = startDates.reduce((acc, startDate) => {
-    const transactionsForStart = transactionsWithStartDate.filter((txn) => txn.amount < 0 && txn.category !== "investments" && txn.startDate === startDate);
+    const transactionsForStart = transactionsWithStartDate.filter((txn) => txn.amount < 0 && !isProbablyInvestment(txn) && txn.startDate === startDate && !isProbablyTransfer(txn));
     const all = [
       ...acc.all,
       transactionsForStart.reduce((acc_2, curr) => __spreadProps(__spreadValues({}, acc_2), {
@@ -64977,7 +64977,7 @@ function createWeeklyData({
     byCategory: []
   });
   const cashFlow = startDates.map((startDate) => {
-    const transactionsForStart = transactionsWithStartDate.filter((txn) => txn.startDate === startDate && txn.category !== "investments");
+    const transactionsForStart = transactionsWithStartDate.filter((txn) => txn.startDate === startDate && !isProbablyInvestment(txn) && !isProbablyTransfer(txn));
     const cashFlowKey = "In/Out";
     return transactionsForStart.reduce((acc, curr) => __spreadProps(__spreadValues({}, acc), {
       [cashFlowKey]: curr.amount / 100 + Number(acc[cashFlowKey])
@@ -65002,6 +65002,11 @@ function createWeeklyData({
     cashFlow
   };
 }
+var isProbablyTransfer = (transaction) => transaction.isTransfer || transaction.description.startsWith("Transfer from ") || transaction.description.startsWith("Transfer to ") || transaction.description.startsWith("Auto Transfer to ") || transaction.description === "Round Up";
+var isProbablyInvestment = (transaction) => {
+  var _a;
+  return !!((_a = transaction.category) == null ? void 0 : _a.includes("investment"));
+};
 
 // index.ts
 var corsSettings = {
