@@ -95,7 +95,9 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 			parentCategory: txn.relationships.parentCategory.data?.id,
 			description: txn.attributes.description,
 			createdAt: txn.attributes.createdAt,
-			isTransfer: !!txn.relationships.transferAccount.data,
+			isTransfer:
+				!!txn.relationships.transferAccount.data ||
+				isDescriptionTransferLike(txn.attributes.description),
 		};
 
 		const r = await knex
@@ -634,10 +636,13 @@ function createWeeklyData({
 
 const isProbablyTransfer = (transaction: Transaction): boolean =>
 	transaction.isTransfer ||
-	transaction.description.startsWith('Transfer from ') ||
-	transaction.description.startsWith('Transfer to ') ||
-	transaction.description.startsWith('Auto Transfer to ') ||
-	transaction.description === 'Round Up';
+	isDescriptionTransferLike(transaction.description);
+
+const isDescriptionTransferLike = (description: string): boolean =>
+	description.startsWith('Transfer from ') ||
+	description.startsWith('Transfer to ') ||
+	description.startsWith('Auto Transfer to ') ||
+	description === 'Round Up';
 
 const isProbablyInvestment = (transaction: Transaction): boolean =>
 	!!transaction.category?.includes('investment');

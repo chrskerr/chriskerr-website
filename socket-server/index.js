@@ -64742,7 +64742,7 @@ function createUpRoutes(app2, knex2) {
         parentCategory: (_b = txn.relationships.parentCategory.data) == null ? void 0 : _b.id,
         description: txn.attributes.description,
         createdAt: txn.attributes.createdAt,
-        isTransfer: !!txn.relationships.transferAccount.data
+        isTransfer: !!txn.relationships.transferAccount.data || isDescriptionTransferLike(txn.attributes.description)
       };
       const r = yield knex2.table("account_transactions" /* TRANSACTIONS */).where({ transactionId: txn.id }).update(transaction).returning("*");
       if (!r || r.length === 0) {
@@ -65002,7 +65002,8 @@ function createWeeklyData({
     cashFlow
   };
 }
-var isProbablyTransfer = (transaction) => transaction.isTransfer || transaction.description.startsWith("Transfer from ") || transaction.description.startsWith("Transfer to ") || transaction.description.startsWith("Auto Transfer to ") || transaction.description === "Round Up";
+var isProbablyTransfer = (transaction) => transaction.isTransfer || isDescriptionTransferLike(transaction.description);
+var isDescriptionTransferLike = (description) => description.startsWith("Transfer from ") || description.startsWith("Transfer to ") || description.startsWith("Auto Transfer to ") || description === "Round Up";
 var isProbablyInvestment = (transaction) => {
   var _a;
   return !!((_a = transaction.category) == null ? void 0 : _a.includes("investment"));
