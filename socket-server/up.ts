@@ -9,7 +9,7 @@ import dotenv from 'dotenv';
 import { Knex } from 'knex';
 dotenv.config({ path: '.env.local' });
 
-import { differenceInSeconds, format, startOfWeek } from 'date-fns';
+import { differenceInSeconds, format, startOfWeek, subWeeks } from 'date-fns';
 
 import type {
 	Balance,
@@ -23,6 +23,7 @@ import type {
 	ChartData,
 	UpTransactions,
 } from '../types/finance';
+import { chartLookbackWeeks } from '../lib/constants';
 
 export enum TableNames {
 	NOTES = 'notes',
@@ -418,16 +419,24 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 			const hasAuth = getHasAuthHeaders(req);
 			const period = req.params.period;
 
+			const fromDate = subWeeks(
+				startOfWeek(new Date(), {
+					weekStartsOn: 1,
+				}),
+				chartLookbackWeeks,
+			);
+
 			if (hasAuth) {
 				const accounts = await knex
 					.table<Account>(TableNames.ACCOUNTS)
 					.select();
 				const balances = await knex
 					.table<Balance>(TableNames.BALANCES)
+					.where('createdAt', '>', fromDate)
 					.select();
 				const transactions = await knex
 					.table<Transaction>(TableNames.TRANSACTIONS)
-					.where({ isTransfer: false })
+					.where('createdAt', '>', fromDate)
 					.select();
 
 				let result: UpApiReturn | undefined = undefined;
@@ -581,10 +590,7 @@ function createWeeklyData({
 
 	const cashFlow = startDates.map<ChartData>(startDate => {
 		const transactionsForStart = transactionsWithStartDate.filter(
-			txn =>
-				txn.startDate === startDate &&
-				!isProbablyInvestment(txn) &&
-				!isProbablyTransfer(txn),
+			txn => txn.startDate === startDate && !isProbablyInvestment(txn),
 		);
 
 		const cashFlowKey = 'In/Out';

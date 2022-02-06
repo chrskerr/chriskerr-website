@@ -19,6 +19,7 @@ import takeRight from 'lodash/takeRight';
 
 import { ChartData } from 'types/finance';
 import { DisplayModes } from '..';
+import { chartLookbackWeeks } from 'lib/constants';
 
 type Props = {
 	data: ChartData[];
@@ -205,7 +206,7 @@ const createMovingAverage = (
 ): ChartData[] => {
 	if (!createMovingAverage) return data;
 
-	const lookBack = 8;
+	const lookBack = chartLookbackWeeks;
 
 	return data.reduce<ChartData[]>((acc, curr, i) => {
 		const start = Math.max(0, i - lookBack);

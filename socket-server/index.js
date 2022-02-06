@@ -62358,14 +62358,14 @@ var require_subWeeks = __commonJS({
     Object.defineProperty(exports2, "__esModule", {
       value: true
     });
-    exports2.default = subWeeks;
+    exports2.default = subWeeks2;
     var _index = _interopRequireDefault(require_toInteger2());
     var _index2 = _interopRequireDefault(require_addWeeks());
     var _index3 = _interopRequireDefault(require_requiredArgs());
     function _interopRequireDefault(obj) {
       return obj && obj.__esModule ? obj : { default: obj };
     }
-    function subWeeks(dirtyDate, dirtyAmount) {
+    function subWeeks2(dirtyDate, dirtyAmount) {
       (0, _index3.default)(2, arguments);
       var amount = (0, _index.default)(dirtyAmount);
       return (0, _index2.default)(dirtyDate, -amount);
@@ -64501,6 +64501,7 @@ var import_random_word_slugs = __toESM(require_dist6());
 
 // ../lib/constants.ts
 var unsavedNoteId = "n";
+var chartLookbackWeeks = 8;
 
 // up.ts
 var import_crypto2 = __toESM(require("crypto"));
@@ -64881,10 +64882,13 @@ function createUpRoutes(app2, knex2) {
     try {
       const hasAuth = getHasAuthHeaders(req);
       const period = req.params.period;
+      const fromDate = (0, import_date_fns.subWeeks)((0, import_date_fns.startOfWeek)(new Date(), {
+        weekStartsOn: 1
+      }), chartLookbackWeeks);
       if (hasAuth) {
         const accounts = yield knex2.table("accounts" /* ACCOUNTS */).select();
-        const balances = yield knex2.table("account_balances" /* BALANCES */).select();
-        const transactions = yield knex2.table("account_transactions" /* TRANSACTIONS */).where({ isTransfer: false }).select();
+        const balances = yield knex2.table("account_balances" /* BALANCES */).where("createdAt", ">", fromDate).select();
+        const transactions = yield knex2.table("account_transactions" /* TRANSACTIONS */).where("createdAt", ">", fromDate).select();
         let result = void 0;
         if (period === "week") {
           result = createWeeklyData({
@@ -64977,7 +64981,7 @@ function createWeeklyData({
     byCategory: []
   });
   const cashFlow = startDates.map((startDate) => {
-    const transactionsForStart = transactionsWithStartDate.filter((txn) => txn.startDate === startDate && !isProbablyInvestment(txn) && !isProbablyTransfer(txn));
+    const transactionsForStart = transactionsWithStartDate.filter((txn) => txn.startDate === startDate && !isProbablyInvestment(txn));
     const cashFlowKey = "In/Out";
     return transactionsForStart.reduce((acc, curr) => __spreadProps(__spreadValues({}, acc), {
       [cashFlowKey]: curr.amount / 100 + Number(acc[cashFlowKey])
