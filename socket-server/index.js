@@ -64501,7 +64501,7 @@ var import_random_word_slugs = __toESM(require_dist6());
 
 // ../lib/constants.ts
 var unsavedNoteId = "n";
-var chartLookbackWeeks = 8;
+var chartLookbackWeeks = 9;
 
 // up.ts
 var import_crypto2 = __toESM(require("crypto"));
@@ -64997,7 +64997,7 @@ function createWeeklyData({
         accountName: account.name
       };
     }).reduce((acc, curr) => __spreadProps(__spreadValues({}, acc), {
-      [curr.accountName]: curr.balance / 100
+      [curr.accountName]: curr.balance / 100 + (Number(acc[curr.accountName]) || 0)
     }), { startDate });
   });
   return {

@@ -627,7 +627,9 @@ function createWeeklyData({
 			.reduce<ChartData>(
 				(acc, curr) => ({
 					...acc,
-					[curr.accountName]: curr.balance / 100,
+					[curr.accountName]:
+						curr.balance / 100 +
+						(Number(acc[curr.accountName]) || 0),
 				}),
 				{ startDate },
 			);
