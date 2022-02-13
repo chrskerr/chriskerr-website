@@ -64869,7 +64869,7 @@ function createUpRoutes(app2, knex2) {
       const balance = req.body.balance || JSON.parse(req.body).balance;
       if (hasAuthHeaders || typeof balance === "number") {
         yield createOrUpdateAccount("stockspot", "StockSpot", true);
-        yield insertAccountBalance("stockspot", balance);
+        yield insertAccountBalance("stockspot", Math.round(balance));
         res.status(200).end();
       } else {
         res.status(500).end();

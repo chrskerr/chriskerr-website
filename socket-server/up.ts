@@ -404,7 +404,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 
 			if (hasAuthHeaders || typeof balance === 'number') {
 				await createOrUpdateAccount('stockspot', 'StockSpot', true);
-				await insertAccountBalance('stockspot', balance);
+				await insertAccountBalance('stockspot', Math.round(balance));
 				res.status(200).end();
 			} else {
 				res.status(500).end();
