@@ -16,7 +16,7 @@ export default function FinancesPage({ initialData }: Props): ReactElement {
 	const [data, setData] = useState<UpApiReturn | null>(initialData);
 	const [loading, setLoading] = useState(false);
 
-	const [displayMode, setDisplayMode] = useState<DisplayModes>('monotone');
+	const [displayMode, setDisplayMode] = useState<DisplayModes>('step');
 
 	const handleLogin = async () => {
 		if (!password) return;
@@ -63,7 +63,7 @@ export default function FinancesPage({ initialData }: Props): ReactElement {
 					</label>
 				</div>
 			</div>
-			<div className="display-width divider-before">
+			<div className="px-4 sm:px-16 divider-before">
 				{loading ? (
 					<p>Loading</p>
 				) : data ? (

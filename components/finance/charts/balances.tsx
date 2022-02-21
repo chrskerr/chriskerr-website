@@ -26,7 +26,7 @@ const BalancesPerWeek = memo(function BalancessPerWeek({
 	}, [balances]);
 
 	return (
-		<div>
+		<div className="w-full">
 			<div className="flex items-center justify-between pb-6">
 				<h2 className="text-xl">Balances</h2>
 			</div>

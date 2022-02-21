@@ -23,7 +23,8 @@ import type {
 	ChartData,
 	UpTransactions,
 } from '../types/finance';
-import { chartLookbackWeeks } from '../lib/constants';
+// import { chartLookbackWeeks } from '../lib/constants';
+const chartLookbackWeeks = 16;
 
 export enum TableNames {
 	NOTES = 'notes',

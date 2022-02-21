@@ -17,7 +17,7 @@ const ExpensesPerWeek = memo(function ExpensesPerWeek({
 	}, []);
 
 	return (
-		<div>
+		<div className="w-full">
 			<div className="flex items-center justify-between pb-6">
 				<h2 className="text-xl">Cash Flow</h2>
 			</div>
@@ -26,7 +26,7 @@ const ExpensesPerWeek = memo(function ExpensesPerWeek({
 					categories={categories}
 					data={cashFlow}
 					displayMode={displayMode}
-					thresholdLines={[{ label: 'Mortgage', value: 620 }]}
+					thresholdLines={[{ label: 'Target', value: 750 }]}
 				/>
 			)}
 		</div>

@@ -1,4 +1,4 @@
-import { memo, ReactElement } from 'react';
+import { memo, ReactElement, useEffect, useRef, useState } from 'react';
 import {
 	Area,
 	ComposedChart,
@@ -16,6 +16,7 @@ import {
 import { ContentType } from 'recharts/types/component/Tooltip';
 
 import takeRight from 'lodash/takeRight';
+import debounce from 'lodash/debounce';
 
 import { ChartData } from 'types/finance';
 import { DisplayModes } from '..';
@@ -45,11 +46,32 @@ const AreaChartBase = memo(function AreaChartBase({
 	displayMode,
 	thresholdLines = [],
 }: Props): ReactElement {
+	const $_div = useRef(null);
+	const [dataLimit, setDataLimit] = useState(0);
+	const [innerWidth, setInnerWidth] = useState(0);
+
+	useEffect(() => {
+		const _set = debounce(() => {
+			if (!$_div.current) return;
+			const { clientWidth } = $_div.current;
+			setDataLimit(Math.max(Math.floor(clientWidth / 100), 0));
+			setInnerWidth(clientWidth);
+		}, 200);
+		window.addEventListener('resize', _set);
+
+		setTimeout(_set, 10);
+
+		return () => {
+			window.removeEventListener('resize', _set);
+		};
+	}, []);
+
 	const preparedData = limitData(
 		addThresholdLines(
 			createMovingAverage(sortData(data), shouldDisplayAverage),
 			thresholdLines,
 		),
+		dataLimit,
 	);
 
 	const totalColours = categories.length + thresholdLines.length + 1;
@@ -60,52 +82,55 @@ const AreaChartBase = memo(function AreaChartBase({
 	]);
 
 	return (
-		<div className="h-[400px]">
-			<ResponsiveContainer width="100%" height="100%">
-				<ComposedChart
-					width={200}
-					height={400}
-					data={preparedData}
-					margin={{ right: 50, left: 50 }}
-				>
-					<XAxis dataKey="startDate" />
-					<YAxis
-						tickFormatter={formatNumber.format}
-						domain={[
-							(dataMin: number) => dataMin * 1.2,
-							(dataMax: number) => dataMax * 1.2,
-						]}
-					/>
-					<Tooltip content={CustomTooltip} />
-					{categories.map((category, i) => (
-						<Area
-							key={category}
-							type={displayMode}
-							dataKey={category}
-							stackId={1}
-							stroke={getStroke(i, totalColours)}
-							fill={getFill(i, totalColours)}
+		<div ref={$_div} className="h-[400px] w-full">
+			{!!dataLimit && !!innerWidth && (
+				<ResponsiveContainer width={innerWidth} height="100%">
+					<ComposedChart
+						data={preparedData}
+						margin={{ right: 50, left: 50 }}
+					>
+						<XAxis dataKey="startDate" />
+						<YAxis
+							tickFormatter={formatNumber.format}
+							domain={[
+								(dataMin: number) => dataMin * 1.2,
+								(dataMax: number) => dataMax * 1.2,
+							]}
 						/>
-					))}
-					{categories.length < 10 && <Legend />}
-					<Line
-						dataKey={averageKey}
-						stroke={getStroke(categories.length + 1, totalColours)}
-						type="monotone"
-					/>
-					{thresholdLines.map((line, i) => (
+						<Tooltip content={CustomTooltip} />
+						{categories.map((category, i) => (
+							<Area
+								key={category}
+								type={displayMode}
+								dataKey={category}
+								stackId={1}
+								stroke={getStroke(i, totalColours)}
+								fill={getFill(i, totalColours)}
+							/>
+						))}
+						{categories.length < 10 && <Legend />}
 						<Line
-							key={line.label}
-							dataKey={line.label}
+							dataKey={averageKey}
 							stroke={getStroke(
-								categories.length + 1 + i + 1,
+								categories.length + 1,
 								totalColours,
 							)}
-							legendType="none"
+							type="monotone"
 						/>
-					))}
-				</ComposedChart>
-			</ResponsiveContainer>
+						{thresholdLines.map((line, i) => (
+							<Line
+								key={line.label}
+								dataKey={line.label}
+								stroke={getStroke(
+									categories.length + 1 + i + 1,
+									totalColours,
+								)}
+								legendType="none"
+							/>
+						))}
+					</ComposedChart>
+				</ResponsiveContainer>
+			)}
 		</div>
 	);
 });
@@ -222,11 +247,12 @@ const createMovingAverage = (
 			doesItemHaveData,
 		);
 
-		const average =
-			items.reduce<number>(
-				(averageAcc, item) => averageAcc + Number(item.total),
-				0,
-			) / items.length;
+		const total = items.reduce<number>(
+			(averageAcc, item) => averageAcc + Number(item.total),
+			0,
+		);
+
+		const average = total / items.length;
 
 		return [...acc, { ...currWithTotal, [averageKey]: average || 0 }];
 	}, []);
@@ -252,8 +278,8 @@ const addThresholdLines = (
 	}));
 };
 
-const limitData = (data: ChartData[]): ChartData[] => {
-	return takeRight(data.filter(doesItemHaveData), 6);
+const limitData = (data: ChartData[], limit: number): ChartData[] => {
+	return takeRight(data.filter(doesItemHaveData), Math.max(0, limit));
 };
 
 const doesItemHaveData = (item: ChartData): boolean => {

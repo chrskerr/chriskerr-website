@@ -14,16 +14,16 @@ interface Props {
 export default function Finance({ data, displayMode }: Props): ReactElement {
 	return (
 		<>
-			<div>
+			<div className="w-full">
 				<CashFlow cashFlow={data.cashFlow} displayMode={displayMode} />
 			</div>
-			<div className="mt-20">
+			<div className="w-full mt-20">
 				<ExpensesPerWeek
 					expenses={data.expenses}
 					displayMode={displayMode}
 				/>
 			</div>
-			<div className="mt-20">
+			<div className="w-full mt-20">
 				<BalancessPerWeek
 					balances={data.balances}
 					displayMode={displayMode}

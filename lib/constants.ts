@@ -2,4 +2,4 @@
 export const socketServerUrl = 'https://chrskerr-sockets.herokuapp.com';
 export const unsavedNoteId = 'n';
 
-export const chartLookbackWeeks = 12;
+export const chartLookbackWeeks = 6;

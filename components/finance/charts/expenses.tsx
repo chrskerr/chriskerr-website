@@ -71,7 +71,7 @@ const ExpensesPerWeek = memo(function ExpensesPerWeek({
 	}, []);
 
 	return (
-		<div className="relative">
+		<div className="relative w-full">
 			<div className="flex items-end justify-between pb-6">
 				<h2 className="text-xl">Expenses</h2>
 				<label>
@@ -93,7 +93,7 @@ const ExpensesPerWeek = memo(function ExpensesPerWeek({
 			</div>
 			{categories && filteredData ? (
 				<>
-					<div>
+					<div className="w-full">
 						<div className="flex justify-end w-full">
 							<button
 								className="mb-8 button small"
