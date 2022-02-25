@@ -3,7 +3,7 @@ import type { Blog } from 'types/writing';
 
 import { ReactElement, useMemo } from 'react';
 import Head from 'next/head';
-import { NextSeo, BlogJsonLd } from 'next-seo';
+import { NextSeo, ArticleJsonLd } from 'next-seo';
 import { marked } from 'marked';
 import hljs from 'highlight.js';
 
@@ -48,7 +48,7 @@ export default function AsyncFunctionSerialiser(blog: Blog): ReactElement {
 					},
 				}}
 			/>
-			<BlogJsonLd
+			<ArticleJsonLd
 				url={url}
 				title={`${trimmedTitle} - Chris Kerr`}
 				images={[
