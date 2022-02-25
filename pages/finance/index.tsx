@@ -5,7 +5,6 @@ import { UpApiReturn } from 'types/finance';
 import Finance, { DisplayModes } from 'components/finance';
 import { GetServerSideProps } from 'next';
 import { fetchTransactionsHelper } from 'components/finance/helpers';
-import Link from 'next/link';
 
 interface Props {
 	initialData: UpApiReturn | null;
@@ -41,11 +40,6 @@ export default function FinancesPage({ initialData }: Props): ReactElement {
 			<div className="flex items-center justify-between display-width">
 				<div>
 					<h2 className="mb-4 text-3xl">Our Finances</h2>
-					<Link href="/finance/stockspot" passHref>
-						<a className="hover:underline text-brand">
-							Report Stockspot balance
-						</a>
-					</Link>
 				</div>
 				<div>
 					<label className="flex flex-col">
