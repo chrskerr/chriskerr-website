@@ -232,10 +232,9 @@ const createMovingAverage = (
 	if (!createMovingAverage) return data;
 
 	const lookBack = chartLookbackWeeks;
+	const smoothing = 2;
 
-	return data.reduce<ChartData[]>((acc, curr, i) => {
-		const start = Math.max(0, i - lookBack);
-
+	return data.reduce<ChartData[]>((acc, curr) => {
 		const currWithTotal = {
 			...curr,
 			total: Object.values(curr).reduce<number>((totalAcc, value) => {
@@ -243,16 +242,12 @@ const createMovingAverage = (
 			}, 0),
 		};
 
-		const items = [...[...acc].splice(start, i), currWithTotal].filter(
-			doesItemHaveData,
-		);
+		const previousPeriod = acc[acc.length - 1];
 
-		const total = items.reduce<number>(
-			(averageAcc, item) => averageAcc + Number(item.total),
-			0,
-		);
-
-		const average = total / items.length;
+		const average =
+			Number(currWithTotal.total) * (smoothing / (1 + lookBack)) +
+			Number(previousPeriod?.[averageKey] || currWithTotal.total) *
+				(1 - smoothing / (1 + lookBack));
 
 		return [...acc, { ...currWithTotal, [averageKey]: average || 0 }];
 	}, []);
