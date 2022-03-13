@@ -109,14 +109,16 @@ const AreaChartBase = memo(function AreaChartBase({
 							/>
 						))}
 						{categories.length < 10 && <Legend />}
-						<Line
-							dataKey={averageKey}
-							stroke={getStroke(
-								categories.length + 1,
-								totalColours,
-							)}
-							type="monotone"
-						/>
+						{shouldDisplayAverage && (
+							<Line
+								dataKey={averageKey}
+								stroke={getStroke(
+									categories.length + 1,
+									totalColours,
+								)}
+								type="monotone"
+							/>
+						)}
 						{thresholdLines.map((line, i) => (
 							<Line
 								key={line.label}
