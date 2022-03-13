@@ -31,10 +31,11 @@ export const confirmCookieAuth = (
 	);
 };
 
-export const fetchTransactionsHelper = async (
+export const withAuth = async <T>(
 	req: NextApiRequest | GetServerSidePropsContext['req'],
 	res: NextApiResponse | GetServerSidePropsContext['res'],
-): Promise<UpApiReturn | null> => {
+	callback: () => Promise<T>,
+): Promise<T | null> => {
 	const headersApiKey = req.headers['api_key'];
 
 	const cookies = cookieKey && new Cookies(req, res, { keys: [cookieKey] });
@@ -45,19 +46,34 @@ export const fetchTransactionsHelper = async (
 	const hasAuth = authCookie || (!!apiKey && headersApiKey === apiKey);
 
 	if (hasAuth) {
-		const response = await fetch(socketServerUrl + '/up/week', {
-			headers: apiKey ? new Headers({ api_key: apiKey }) : {},
-		});
+		const result = await callback();
 
-		if (response.ok) {
-			const data = (await response.json()) as UpApiReturn;
+		if (result) {
 			cookies && cookies.set(cookieName, cookieTrue, cookieSetSettings);
 
-			return data;
+			return result;
 		}
 	} else {
 		cookies && cookies.set(cookieName, 'no', cookieSetSettings);
 	}
 
 	return null;
+};
+
+export const fetchTransactionsHelper = async (
+	req: NextApiRequest | GetServerSidePropsContext['req'],
+	res: NextApiResponse | GetServerSidePropsContext['res'],
+): Promise<UpApiReturn | null> => {
+	return withAuth(req, res, async () => {
+		const response = await fetch(socketServerUrl + '/up/week', {
+			headers: apiKey ? new Headers({ api_key: apiKey }) : {},
+		});
+
+		if (response.ok) {
+			const data = (await response.json()) as UpApiReturn;
+			return data;
+		}
+
+		return null;
+	});
 };

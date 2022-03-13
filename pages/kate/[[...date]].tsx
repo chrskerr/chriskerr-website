@@ -1,0 +1,163 @@
+import { withAuth } from 'components/finance/helpers';
+import { addDays, format, formatISO, parseISO, subDays } from 'date-fns';
+import { utcToZonedTime } from 'date-fns-tz';
+import { firestore } from 'lib/firebase-admin';
+import { GetServerSideProps } from 'next';
+import { ChangeEvent, Fragment, useEffect, useState } from 'react';
+import {
+	addMissingKeys,
+	collectionName,
+	getLabel,
+	IData,
+	saveUpdate,
+} from 'lib/kate';
+import Link from 'next/link';
+
+interface IKateFoodIndex {
+	data: IData;
+}
+
+export default function KateFoodIndex({ data }: IKateFoodIndex) {
+	const { id, ...initialValues } = data;
+
+	const yesterday = formatISO(subDays(parseISO(id), 1), {
+		representation: 'date',
+	});
+	const isToday = formatISO(new Date(), { representation: 'date' }) === id;
+	const tomorrow = formatISO(addDays(parseISO(id), 1), {
+		representation: 'date',
+	});
+
+	const [values, setValues] = useState<Omit<IData, 'id'>>(initialValues);
+	const [wasError, setWasError] = useState(false);
+
+	const updateValue = (key: string) => {
+		return async (e: ChangeEvent<HTMLInputElement>) => {
+			setValues(v => {
+				const newValues = { ...v, [key]: Number(e.target.value) };
+				(async () => {
+					const { error } = await saveUpdate({ id, ...newValues });
+					setWasError(error);
+				})();
+				return newValues;
+			});
+		};
+	};
+
+	useEffect(() => {
+		setValues(initialValues);
+	}, [id]);
+
+	return (
+		<>
+			<div className="display-width">
+				<h2 className="mb-4 text-3xl">Kate&apos;s Food Journal</h2>
+				<div className="flex items-center">
+					<Link href={`/kate/${yesterday}`} passHref>
+						<a className="mr-4 cursor-pointer">&larr;</a>
+					</Link>
+					<p className="text-2xl">
+						{format(parseISO(id), 'dd MMMM yyyy')}
+					</p>
+					{!isToday && (
+						<Link href={`/kate/${tomorrow}`} passHref>
+							<a className="ml-4 cursor-pointer">&rarr;</a>
+						</Link>
+					)}
+				</div>
+				{wasError && (
+					<p className="mt-4 text-red-500">
+						Something went wrong while saving
+					</p>
+				)}
+			</div>
+			<div className="display-width divider-before">
+				<div className="grid w-full grid-cols-[2fr_1fr_1fr_1fr_1fr] gap-4 justify-items-center items-center">
+					<p className="font-bold">Label</p>
+					<p className="font-bold">None</p>
+					<p className="font-bold">Not much</p>
+					<p className="font-bold">Some</p>
+					<p className="font-bold">Lots</p>
+					{Object.entries(values).map(([key, value]) => {
+						return (
+							<Fragment key={key}>
+								<p>{getLabel(Number(key))}</p>
+								{[0, 1, 2, 3].map(i => (
+									<input
+										id={`${key}-${i}`}
+										key={`${key}-${i}`}
+										className="cursor-pointer"
+										type="radio"
+										name={key}
+										value={i}
+										checked={value === i}
+										onChange={updateValue(key)}
+									/>
+								))}
+							</Fragment>
+						);
+					})}
+				</div>
+			</div>
+		</>
+	);
+}
+
+export const getServerSideProps: GetServerSideProps<IKateFoodIndex> = async ({
+	req,
+	res,
+	query,
+}) => {
+	let dateStr = formatISO(utcToZonedTime(new Date(), 'Australia/Sydney'), {
+		representation: 'date',
+	});
+
+	if (query.date?.[0]) {
+		try {
+			dateStr = formatISO(parseISO(query.date[0]), {
+				representation: 'date',
+			});
+		} catch {
+			//
+		}
+	}
+
+	if (query.date?.[0] && query.date?.[0] !== dateStr) {
+		return {
+			redirect: {
+				destination: `/kate/${dateStr}`,
+				permanent: true,
+			},
+		};
+	}
+
+	const data = await withAuth(req, res, async () => {
+		const docs = await firestore
+			.collection(collectionName)
+			.where('id', '==', dateStr)
+			.get();
+
+		if (docs.docs[0]) {
+			const docData = docs.docs[0]?.data();
+			return docData as Partial<IData>;
+		}
+
+		await firestore.collection(collectionName).add({ id: dateStr });
+		return { id: dateStr } as Partial<IData>;
+	});
+
+	if (!data) {
+		return {
+			redirect: {
+				destination: `/finance`,
+				permanent: false,
+			},
+		};
+	}
+
+	return {
+		props: {
+			data: addMissingKeys(data),
+		},
+	};
+};
