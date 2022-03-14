@@ -1,14 +1,72 @@
 import { IKateSaveBody } from 'pages/api/kate';
 
+type Tags = 'wellbeing' | 'wheat' | 'milk' | 'sugar';
+
 export const config: Record<
 	number,
-	{ label: string; category: 'general' | 'food' | 'drink' }
+	{ label: string; tags: Tags[]; isArchived?: true }
 > = {
 	// once you've allocated a number to a data type, never change it
 	// history is saved against the number, so that the label can be changed any time
 	1: {
-		label: 'Tummy upsetness',
-		category: 'general',
+		label: 'Tummy upset',
+		tags: ['wellbeing'],
+	},
+	2: {
+		label: 'Stress',
+		tags: ['wellbeing'],
+	},
+	3: {
+		label: 'Sleep',
+		tags: ['wellbeing'],
+	},
+	4: {
+		label: 'Alcohol',
+		tags: [],
+	},
+	5: {
+		label: 'Sugar',
+		tags: ['sugar'],
+	},
+	6: {
+		label: 'Chocolate',
+		tags: ['sugar', 'milk'],
+	},
+	7: {
+		label: 'Ice cream',
+		tags: ['sugar', 'milk'],
+	},
+	8: {
+		label: 'Milk',
+		tags: ['milk'],
+	},
+	9: {
+		label: 'Wraps',
+		tags: ['wheat'],
+	},
+	10: {
+		label: 'Pastry',
+		tags: ['wheat'],
+	},
+	11: {
+		label: 'Bread',
+		tags: ['wheat'],
+	},
+	12: {
+		label: 'Beans',
+		tags: [],
+	},
+	13: {
+		label: 'Yoghurt',
+		tags: ['milk'],
+	},
+	14: {
+		label: 'Soft Cheese',
+		tags: ['milk'],
+	},
+	15: {
+		label: 'Hard Cheese',
+		tags: ['milk'],
 	},
 };
 
