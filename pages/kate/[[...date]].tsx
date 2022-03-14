@@ -17,6 +17,9 @@ interface IKateFoodIndex {
 	data: IData;
 }
 
+const gridClasses =
+	'grid w-full grid-cols-[2fr_1fr_1fr_1fr_1fr] gap-4 justify-items-center items-center';
+
 export default function KateFoodIndex({ data }: IKateFoodIndex) {
 	const { id, ...initialValues } = data;
 
@@ -72,32 +75,32 @@ export default function KateFoodIndex({ data }: IKateFoodIndex) {
 				)}
 			</div>
 			<div className="display-width divider-before">
-				<div className="grid w-full grid-cols-[2fr_1fr_1fr_1fr_1fr] gap-4 justify-items-center items-center">
+				<div className={gridClasses}>
 					<p className="font-bold">Label</p>
 					<p className="font-bold">None</p>
 					<p className="font-bold">Not much</p>
 					<p className="font-bold">Some</p>
 					<p className="font-bold">Lots</p>
-					{Object.entries(values).map(([key, value]) => {
-						return (
-							<Fragment key={key}>
-								<p>{getLabel(Number(key))}</p>
-								{[0, 1, 2, 3].map(i => (
-									<input
-										id={`${key}-${i}`}
-										key={`${key}-${i}`}
-										className="cursor-pointer"
-										type="radio"
-										name={key}
-										value={i}
-										checked={value === i}
-										onChange={updateValue(key)}
-									/>
-								))}
-							</Fragment>
-						);
-					})}
 				</div>
+				{Object.entries(values).map(([key, value]) => {
+					return (
+						<div key={key} className={`${gridClasses} mt-4`}>
+							<p>{getLabel(Number(key))}</p>
+							{[0, 1, 2, 3].map(i => (
+								<input
+									id={`${key}-${i}`}
+									key={`${key}-${i}`}
+									className="cursor-pointer"
+									type="radio"
+									name={key}
+									value={i}
+									checked={value === i}
+									onChange={updateValue(key)}
+								/>
+							))}
+						</div>
+					);
+				})}
 			</div>
 		</>
 	);
