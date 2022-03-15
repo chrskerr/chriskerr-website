@@ -3,7 +3,7 @@ import { addDays, format, formatISO, parseISO, subDays } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
 import { firestore } from 'lib/firebase-admin';
 import { GetServerSideProps } from 'next';
-import { ChangeEvent, Fragment, useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import {
 	addMissingKeys,
 	collectionName,
@@ -37,7 +37,15 @@ export default function KateFoodIndex({ data }: IKateFoodIndex) {
 	const updateValue = (key: string) => {
 		return async (e: ChangeEvent<HTMLInputElement>) => {
 			setValues(v => {
-				const newValues = { ...v, [key]: Number(e.target.value) };
+				const newValues = Object.entries(v).reduce<Omit<IData, 'id'>>(
+					(acc, [currKey, currValue]) => ({
+						...acc,
+						[currKey]: Number(
+							currKey == key ? e.target.value : currValue || 0,
+						),
+					}),
+					v,
+				);
 				(async () => {
 					const { error } = await saveUpdate({ id, ...newValues });
 					setWasError(error);
@@ -85,7 +93,9 @@ export default function KateFoodIndex({ data }: IKateFoodIndex) {
 				{Object.entries(values).map(([key, value]) => {
 					return (
 						<div key={key} className={`${gridClasses} mt-4`}>
-							<p>{getLabel(Number(key))}</p>
+							<p className="text-center">
+								{getLabel(Number(key))}
+							</p>
 							{[0, 1, 2, 3].map(i => (
 								<input
 									id={`${key}-${i}`}
