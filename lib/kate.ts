@@ -68,6 +68,10 @@ export const config: Record<
 		label: 'Hard Cheese',
 		tags: ['milk'],
 	},
+	16: {
+		label: 'Coffee',
+		tags: [],
+	},
 };
 
 const defaultData = Object.keys(config).reduce<IData>(
