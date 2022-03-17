@@ -23,8 +23,7 @@ import type {
 	ChartData,
 	UpTransactions,
 } from '../types/finance';
-// import { chartLookbackWeeks } from '../lib/constants';
-const chartLookbackWeeks = 16;
+import { chartLookbackWeeks } from '../lib/constants';
 
 export enum TableNames {
 	NOTES = 'notes',
@@ -424,7 +423,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 				startOfWeek(new Date(), {
 					weekStartsOn: 1,
 				}),
-				chartLookbackWeeks,
+				chartLookbackWeeks * 2,
 			);
 
 			if (hasAuth) {

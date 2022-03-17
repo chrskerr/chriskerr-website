@@ -64501,6 +64501,7 @@ var import_random_word_slugs = __toESM(require_dist6());
 
 // ../lib/constants.ts
 var unsavedNoteId = "n";
+var chartLookbackWeeks = 12;
 
 // up.ts
 var import_crypto2 = __toESM(require("crypto"));
@@ -64701,7 +64702,6 @@ var import_axios = __toESM(require_axios2());
 var import_dotenv = __toESM(require_main());
 var import_date_fns = __toESM(require_date_fns());
 import_dotenv.default.config({ path: ".env.local" });
-var chartLookbackWeeks = 16;
 var apiKey = process.env.API_KEY || "";
 var upApiKeyChris = process.env.UP_API_KEY;
 var upApiKeyKate = process.env.UP_API_KEY_KATE;
@@ -64884,7 +64884,7 @@ function createUpRoutes(app2, knex2) {
       const period = req.params.period;
       const fromDate = (0, import_date_fns.subWeeks)((0, import_date_fns.startOfWeek)(new Date(), {
         weekStartsOn: 1
-      }), chartLookbackWeeks);
+      }), chartLookbackWeeks * 2);
       if (hasAuth) {
         const accounts = yield knex2.table("accounts" /* ACCOUNTS */).select();
         const balances = yield knex2.table("account_balances" /* BALANCES */).where("createdAt", ">", fromDate).select();
