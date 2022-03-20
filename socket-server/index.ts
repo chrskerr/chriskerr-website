@@ -244,4 +244,14 @@ server.listen(port, () => {
 			table.boolean('isTransfer').defaultTo(false).index();
 		});
 	}
+
+	const hasBankNameColumn = await knex.schema.hasColumn(
+		TableNames.ACCOUNTS,
+		'bankName',
+	);
+	if (!hasBankNameColumn) {
+		await knex.schema.alterTable(TableNames.ACCOUNTS, table => {
+			table.text('bankName').defaultTo('up').notNullable();
+		});
+	}
 })();

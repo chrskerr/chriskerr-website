@@ -53,6 +53,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 	async function createOrUpdateAccount(
 		id: string,
 		accountName = 'Unnamed',
+		bankName: Account['bankName'],
 		isChris: boolean,
 	) {
 		let name = accountName;
@@ -64,12 +65,12 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 		let r = await knex
 			.table<Account>(TableNames.ACCOUNTS)
 			.where({ id })
-			.update({ name })
+			.update({ name, bankName })
 			.returning('*');
 		if (!r || r.length < 1) {
 			r = await knex
 				.table<Account>(TableNames.ACCOUNTS)
-				.insert({ id, name })
+				.insert({ id, name, bankName })
 				.returning('*');
 		}
 		return r;
@@ -188,6 +189,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 					await createOrUpdateAccount(
 						accountId,
 						account?.attributes.displayName,
+						'up',
 						isChris,
 					);
 				} catch (e) {
@@ -318,6 +320,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 						await createOrUpdateAccount(
 							account.id,
 							account?.attributes.displayName,
+							'up',
 							true,
 						);
 						await insertAccountBalance(
@@ -339,6 +342,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 						await createOrUpdateAccount(
 							account.id,
 							account?.attributes.displayName,
+							'up',
 							false,
 						);
 						await insertAccountBalance(
@@ -397,22 +401,22 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 		}
 	});
 
-	app.post('/up/report', limiter, async (req, res, next) => {
-		try {
-			const hasAuthHeaders = getHasAuthHeaders(req);
-			const balance = req.body.balance || JSON.parse(req.body).balance;
+	// app.post('/up/report', limiter, async (req, res, next) => {
+	// 	try {
+	// 		const hasAuthHeaders = getHasAuthHeaders(req);
+	// 		const balance = req.body.balance || JSON.parse(req.body).balance;
 
-			if (hasAuthHeaders || typeof balance === 'number') {
-				await createOrUpdateAccount('stockspot', 'StockSpot', true);
-				await insertAccountBalance('stockspot', Math.round(balance));
-				res.status(200).end();
-			} else {
-				res.status(500).end();
-			}
-		} catch (e) {
-			next(e);
-		}
-	});
+	// 		if (hasAuthHeaders || typeof balance === 'number') {
+	// 			await createOrUpdateAccount('stockspot', 'StockSpot', '' true);
+	// 			await insertAccountBalance('stockspot', Math.round(balance));
+	// 			res.status(200).end();
+	// 		} else {
+	// 			res.status(500).end();
+	// 		}
+	// 	} catch (e) {
+	// 		next(e);
+	// 	}
+	// });
 
 	app.get('/up/:period', limiter, async (req, res, next) => {
 		try {

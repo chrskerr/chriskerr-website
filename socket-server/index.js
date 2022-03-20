@@ -64714,15 +64714,15 @@ var limiter = lib_default({
   legacyHeaders: false
 });
 function createUpRoutes(app2, knex2) {
-  function createOrUpdateAccount(id, accountName = "Unnamed", isChris) {
+  function createOrUpdateAccount(id, accountName = "Unnamed", bankName, isChris) {
     return __async(this, null, function* () {
       let name = accountName;
       if (name === "Spending") {
         name = isChris ? "Chris Spending" : "Kate Spending";
       }
-      let r = yield knex2.table("accounts" /* ACCOUNTS */).where({ id }).update({ name }).returning("*");
+      let r = yield knex2.table("accounts" /* ACCOUNTS */).where({ id }).update({ name, bankName }).returning("*");
       if (!r || r.length < 1) {
-        r = yield knex2.table("accounts" /* ACCOUNTS */).insert({ id, name }).returning("*");
+        r = yield knex2.table("accounts" /* ACCOUNTS */).insert({ id, name, bankName }).returning("*");
       }
       return r;
     });
@@ -64789,7 +64789,7 @@ function createUpRoutes(app2, knex2) {
           }
         });
         const account = accountRes.data.data;
-        yield createOrUpdateAccount(accountId, account == null ? void 0 : account.attributes.displayName, isChris);
+        yield createOrUpdateAccount(accountId, account == null ? void 0 : account.attributes.displayName, "up", isChris);
       } catch (e) {
         failedAccounts.push(accountId);
       }
@@ -64817,7 +64817,7 @@ function createUpRoutes(app2, knex2) {
         });
         const accounts = fetchRes.data;
         yield Promise.all(accounts.data.map((account) => __async(this, null, function* () {
-          yield createOrUpdateAccount(account.id, account == null ? void 0 : account.attributes.displayName, true);
+          yield createOrUpdateAccount(account.id, account == null ? void 0 : account.attributes.displayName, "up", true);
           yield insertAccountBalance(account.id, account.attributes.balance.valueInBaseUnits);
         })));
       }
@@ -64827,7 +64827,7 @@ function createUpRoutes(app2, knex2) {
         });
         const accounts = fetchRes.data;
         yield Promise.all(accounts.data.map((account) => __async(this, null, function* () {
-          yield createOrUpdateAccount(account.id, account == null ? void 0 : account.attributes.displayName, false);
+          yield createOrUpdateAccount(account.id, account == null ? void 0 : account.attributes.displayName, "up", false);
           yield insertAccountBalance(account.id, account.attributes.balance.valueInBaseUnits);
         })));
       }
@@ -64859,21 +64859,6 @@ function createUpRoutes(app2, knex2) {
         console.log("hmac not matched", body);
       }
       res.status(200).end();
-    } catch (e) {
-      next(e);
-    }
-  }));
-  app2.post("/up/report", limiter, (req, res, next) => __async(this, null, function* () {
-    try {
-      const hasAuthHeaders = getHasAuthHeaders(req);
-      const balance = req.body.balance || JSON.parse(req.body).balance;
-      if (hasAuthHeaders || typeof balance === "number") {
-        yield createOrUpdateAccount("stockspot", "StockSpot", true);
-        yield insertAccountBalance("stockspot", Math.round(balance));
-        res.status(200).end();
-      } else {
-        res.status(500).end();
-      }
     } catch (e) {
       next(e);
     }
@@ -65163,6 +65148,12 @@ server.listen(port, () => {
   if (!hasTransactionIsTransfer) {
     yield knex.schema.alterTable("account_transactions" /* TRANSACTIONS */, (table) => {
       table.boolean("isTransfer").defaultTo(false).index();
+    });
+  }
+  const hasBankNameColumn = yield knex.schema.hasColumn("accounts" /* ACCOUNTS */, "bankName");
+  if (!hasBankNameColumn) {
+    yield knex.schema.alterTable("accounts" /* ACCOUNTS */, (table) => {
+      table.text("bankName").defaultTo("up").notNullable();
     });
   }
 }))();

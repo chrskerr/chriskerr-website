@@ -11,6 +11,7 @@ export type UpApiReturn = {
 export type Account = {
 	id: string;
 	name: string;
+	bankName: 'up' | 'nab';
 };
 
 export type Balance = {
