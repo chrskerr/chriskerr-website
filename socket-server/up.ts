@@ -22,6 +22,7 @@ import type {
 	UpAccount,
 	ChartData,
 	UpTransactions,
+	ReportNabBody,
 } from '../types/finance';
 import { chartLookbackWeeks } from '../lib/constants';
 
@@ -50,15 +51,20 @@ const limiter = rateLimit({
 });
 
 export default function createUpRoutes(app: Express, knex: Knex): void {
-	async function createOrUpdateAccount(
-		id: string,
+	async function createOrUpdateAccount({
+		id,
 		accountName = 'Unnamed',
-		bankName: Account['bankName'],
-		isChris: boolean,
-	) {
+		bankName,
+		isChris,
+	}: {
+		id: string;
+		accountName?: string;
+		bankName: Account['bankName'];
+		isChris: boolean;
+	}) {
 		let name = accountName;
 
-		if (name === 'Spending') {
+		if (name === 'Spending' && bankName === 'up') {
 			name = isChris ? 'Chris Spending' : 'Kate Spending';
 		}
 
@@ -186,12 +192,12 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 						| UpAccount
 						| undefined;
 
-					await createOrUpdateAccount(
-						accountId,
-						account?.attributes.displayName,
-						'up',
+					await createOrUpdateAccount({
+						id: accountId,
+						accountName: account?.attributes.displayName,
+						bankName: 'up',
 						isChris,
-					);
+					});
 				} catch (e) {
 					failedAccounts.push(accountId);
 				}
@@ -317,12 +323,12 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 
 				await Promise.all(
 					accounts.data.map(async account => {
-						await createOrUpdateAccount(
-							account.id,
-							account?.attributes.displayName,
-							'up',
-							true,
-						);
+						await createOrUpdateAccount({
+							id: account.id,
+							accountName: account?.attributes.displayName,
+							bankName: 'up',
+							isChris: true,
+						});
 						await insertAccountBalance(
 							account.id,
 							account.attributes.balance.valueInBaseUnits,
@@ -339,12 +345,12 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 
 				await Promise.all(
 					accounts.data.map(async account => {
-						await createOrUpdateAccount(
-							account.id,
-							account?.attributes.displayName,
-							'up',
-							false,
-						);
+						await createOrUpdateAccount({
+							id: account.id,
+							accountName: account?.attributes.displayName,
+							bankName: 'up',
+							isChris: false,
+						});
 						await insertAccountBalance(
 							account.id,
 							account.attributes.balance.valueInBaseUnits,
@@ -401,22 +407,46 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 		}
 	});
 
-	// app.post('/up/report', limiter, async (req, res, next) => {
-	// 	try {
-	// 		const hasAuthHeaders = getHasAuthHeaders(req);
-	// 		const balance = req.body.balance || JSON.parse(req.body).balance;
+	app.post('/nab/report', limiter, async (req, res, next) => {
+		try {
+			const hasAuthHeaders = getHasAuthHeaders(req);
+			const body = req.body as ReportNabBody | undefined;
 
-	// 		if (hasAuthHeaders || typeof balance === 'number') {
-	// 			await createOrUpdateAccount('stockspot', 'StockSpot', '' true);
-	// 			await insertAccountBalance('stockspot', Math.round(balance));
-	// 			res.status(200).end();
-	// 		} else {
-	// 			res.status(500).end();
-	// 		}
-	// 	} catch (e) {
-	// 		next(e);
-	// 	}
-	// });
+			if (hasAuthHeaders && typeof body === 'object') {
+				const { loanDollars, savingsDollars } = body;
+
+				const mortgageAccountId = '753061668';
+				await createOrUpdateAccount({
+					id: mortgageAccountId,
+					accountName: 'Mortgage',
+					bankName: 'nab',
+					isChris: true,
+				});
+				await insertAccountBalance(
+					mortgageAccountId,
+					Math.round(loanDollars),
+				);
+
+				const savingsAccountId = '753037756';
+				await createOrUpdateAccount({
+					id: savingsAccountId,
+					accountName: 'NAB Savings',
+					bankName: 'nab',
+					isChris: true,
+				});
+				await insertAccountBalance(
+					savingsAccountId,
+					Math.round(savingsDollars),
+				);
+
+				res.status(200).end();
+			} else {
+				res.status(500).end();
+			}
+		} catch (e) {
+			next(e);
+		}
+	});
 
 	app.get('/up/:period', limiter, async (req, res, next) => {
 		try {

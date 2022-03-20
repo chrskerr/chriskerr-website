@@ -113,3 +113,8 @@ export type ChartData = {
 	startDate: string;
 	[key: string]: number | string;
 };
+
+export type ReportNabBody = {
+	savingsDollars: number;
+	loanDollars: number;
+};

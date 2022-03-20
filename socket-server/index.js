@@ -64714,10 +64714,15 @@ var limiter = lib_default({
   legacyHeaders: false
 });
 function createUpRoutes(app2, knex2) {
-  function createOrUpdateAccount(id, accountName = "Unnamed", bankName, isChris) {
-    return __async(this, null, function* () {
+  function createOrUpdateAccount(_0) {
+    return __async(this, arguments, function* ({
+      id,
+      accountName = "Unnamed",
+      bankName,
+      isChris
+    }) {
       let name = accountName;
-      if (name === "Spending") {
+      if (name === "Spending" && bankName === "up") {
         name = isChris ? "Chris Spending" : "Kate Spending";
       }
       let r = yield knex2.table("accounts" /* ACCOUNTS */).where({ id }).update({ name, bankName }).returning("*");
@@ -64789,7 +64794,12 @@ function createUpRoutes(app2, knex2) {
           }
         });
         const account = accountRes.data.data;
-        yield createOrUpdateAccount(accountId, account == null ? void 0 : account.attributes.displayName, "up", isChris);
+        yield createOrUpdateAccount({
+          id: accountId,
+          accountName: account == null ? void 0 : account.attributes.displayName,
+          bankName: "up",
+          isChris
+        });
       } catch (e) {
         failedAccounts.push(accountId);
       }
@@ -64817,7 +64827,12 @@ function createUpRoutes(app2, knex2) {
         });
         const accounts = fetchRes.data;
         yield Promise.all(accounts.data.map((account) => __async(this, null, function* () {
-          yield createOrUpdateAccount(account.id, account == null ? void 0 : account.attributes.displayName, "up", true);
+          yield createOrUpdateAccount({
+            id: account.id,
+            accountName: account == null ? void 0 : account.attributes.displayName,
+            bankName: "up",
+            isChris: true
+          });
           yield insertAccountBalance(account.id, account.attributes.balance.valueInBaseUnits);
         })));
       }
@@ -64827,7 +64842,12 @@ function createUpRoutes(app2, knex2) {
         });
         const accounts = fetchRes.data;
         yield Promise.all(accounts.data.map((account) => __async(this, null, function* () {
-          yield createOrUpdateAccount(account.id, account == null ? void 0 : account.attributes.displayName, "up", false);
+          yield createOrUpdateAccount({
+            id: account.id,
+            accountName: account == null ? void 0 : account.attributes.displayName,
+            bankName: "up",
+            isChris: false
+          });
           yield insertAccountBalance(account.id, account.attributes.balance.valueInBaseUnits);
         })));
       }
@@ -64859,6 +64879,36 @@ function createUpRoutes(app2, knex2) {
         console.log("hmac not matched", body);
       }
       res.status(200).end();
+    } catch (e) {
+      next(e);
+    }
+  }));
+  app2.post("/nab/report", limiter, (req, res, next) => __async(this, null, function* () {
+    try {
+      const hasAuthHeaders = getHasAuthHeaders(req);
+      const body = req.body;
+      if (hasAuthHeaders && typeof body === "object") {
+        const { loanDollars, savingsDollars } = body;
+        const mortgageAccountId = "753061668";
+        yield createOrUpdateAccount({
+          id: mortgageAccountId,
+          accountName: "Mortgage",
+          bankName: "nab",
+          isChris: true
+        });
+        yield insertAccountBalance(mortgageAccountId, Math.round(loanDollars));
+        const savingsAccountId = "753037756";
+        yield createOrUpdateAccount({
+          id: savingsAccountId,
+          accountName: "NAB Savings",
+          bankName: "nab",
+          isChris: true
+        });
+        yield insertAccountBalance(savingsAccountId, Math.round(savingsDollars));
+        res.status(200).end();
+      } else {
+        res.status(500).end();
+      }
     } catch (e) {
       next(e);
     }
