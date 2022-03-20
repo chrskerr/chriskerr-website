@@ -175,6 +175,7 @@ h6 {
 
 button.button {
 	@apply px-3 py-2 text-white transition rounded shadow-lg bg-brand hover:bg-brand-dark;
+	@apply disabled:bg-gray-500 disabled:hover:bg-gray-500 disabled:cursor-not-allowed;
 }
 
 button.small {

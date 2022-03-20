@@ -424,7 +424,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 				});
 				await insertAccountBalance(
 					mortgageAccountId,
-					Math.round(loanDollars),
+					Math.round(loanDollars * 100),
 				);
 
 				const savingsAccountId = '753037756';
@@ -436,7 +436,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 				});
 				await insertAccountBalance(
 					savingsAccountId,
-					Math.round(savingsDollars),
+					Math.round(savingsDollars * 100),
 				);
 
 				res.status(200).end();

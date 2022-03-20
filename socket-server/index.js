@@ -64896,7 +64896,7 @@ function createUpRoutes(app2, knex2) {
           bankName: "nab",
           isChris: true
         });
-        yield insertAccountBalance(mortgageAccountId, Math.round(loanDollars));
+        yield insertAccountBalance(mortgageAccountId, Math.round(loanDollars * 100));
         const savingsAccountId = "753037756";
         yield createOrUpdateAccount({
           id: savingsAccountId,
@@ -64904,7 +64904,7 @@ function createUpRoutes(app2, knex2) {
           bankName: "nab",
           isChris: true
         });
-        yield insertAccountBalance(savingsAccountId, Math.round(savingsDollars));
+        yield insertAccountBalance(savingsAccountId, Math.round(savingsDollars * 100));
         res.status(200).end();
       } else {
         res.status(500).end();

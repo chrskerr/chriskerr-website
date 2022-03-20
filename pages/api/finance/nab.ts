@@ -14,13 +14,12 @@ const handler: NextApiHandler = async (req, res) => {
 	});
 
 	const isAuthed = confirmCookieAuth(req, res);
-	const balance = req.body?.balance;
 
-	if (!isAuthed || typeof balance !== 'number') {
+	if (!isAuthed) {
 		return res.status(500).end();
 	}
 
-	await fetch(socketServerUrl + '/up/report', {
+	const result = await fetch(socketServerUrl + '/nab/report', {
 		headers: apiKey
 			? new Headers({
 					api_key: apiKey,
@@ -28,10 +27,15 @@ const handler: NextApiHandler = async (req, res) => {
 			  })
 			: {},
 		method: 'POST',
-		body: JSON.stringify({ balance: balance * 100 }),
+		body: JSON.stringify(req.body),
 	});
 
-	res.status(200).end();
+	if (result.ok) {
+		res.status(200).end();
+	} else {
+		console.log('error', result);
+		res.status(500).end();
+	}
 };
 
 export default handler;
