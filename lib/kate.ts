@@ -1,6 +1,6 @@
 import { IKateSaveBody } from 'pages/api/kate';
 
-type Tags = 'wellbeing' | 'wheat' | 'milk' | 'sugar';
+type Tags = 'wellbeing' | 'wheat' | 'milk' | 'sugar' | 'stress';
 
 export const config: Record<
 	number,
@@ -14,7 +14,7 @@ export const config: Record<
 	},
 	2: {
 		label: 'Stress',
-		tags: ['wellbeing'],
+		tags: ['wellbeing', 'stress'],
 	},
 	3: {
 		label: 'Sleep',
@@ -84,8 +84,10 @@ const defaultData = Object.keys(config).reduce<IData>(
 	{ id: '' },
 );
 
+type ISODate = string;
+
 export interface IData {
-	id: string;
+	id: ISODate;
 	[k: keyof typeof config]: undefined | 0 | 1 | 2 | 3;
 }
 
@@ -118,4 +120,120 @@ export async function saveUpdate(data: IData): Promise<{ error: boolean }> {
 	});
 	if (!res.ok) return { error: true };
 	return { error: false };
+}
+
+type CreateSummaryByLabelReturn = Record<
+	string,
+	{ 1: number; 2: number; 3: number }
+>;
+
+export function createSummaryByLabel(
+	data: IData[],
+): CreateSummaryByLabelReturn {
+	return data.reduce<CreateSummaryByLabelReturn>((acc, curr) => {
+		Object.entries(curr).forEach(([key, value]) => {
+			if (!acc[key]) {
+				acc[key] = { 1: 0, 2: 0, 3: 0 };
+			}
+			if (value >= 1) {
+				acc[key][1] += 1;
+			}
+			if (value >= 2) {
+				acc[key][2] += 1;
+			}
+			if (value === 3) {
+				acc[key][3] += 1;
+			}
+		});
+		return acc;
+	}, {});
+}
+
+type CreateSummaryByUpsetAndLabelReturn = Record<
+	string,
+	{ hadUpset: number; notUpset: number }
+>;
+
+export function createSummaryByUpsetAndLabel(
+	data: IData[],
+	threshold: 1 | 2 | 3,
+): CreateSummaryByUpsetAndLabelReturn {
+	return data.reduce<CreateSummaryByUpsetAndLabelReturn>((acc, curr) => {
+		Object.entries(curr).forEach(([key, value]) => {
+			if (Number(key) === 1) return;
+
+			const unitConfig = config[Number(key)];
+			if (!unitConfig) return;
+
+			if (unitConfig.label === 'Sleep') {
+				value = 3 - value;
+			}
+
+			const tummyUpset = curr[1];
+			if (typeof tummyUpset !== 'number') return;
+
+			const hasUpset = tummyUpset > threshold;
+
+			if (!acc[key]) {
+				acc[key] = { hadUpset: 0, notUpset: 0 };
+			}
+
+			if (hasUpset) {
+				acc[key].hadUpset += value;
+			} else {
+				acc[key].notUpset += value;
+			}
+		});
+		return acc;
+	}, {});
+}
+
+type CreateSummaryByTagReturn = Record<
+	Tags,
+	{ hadUpset: number; notUpset: number }
+>;
+
+export const tags: Tags[] = ['wellbeing', 'wheat', 'milk', 'sugar', 'stress'];
+
+export function createSummaryByTag(
+	data: IData[],
+	threshold: 1 | 2 | 3,
+): CreateSummaryByTagReturn {
+	return data.reduce<CreateSummaryByTagReturn>(
+		(acc, curr) => {
+			Object.entries(curr).forEach(([key, value]) => {
+				if (Number(key) === 1) return;
+
+				const unitConfig = config[Number(key)];
+				if (!unitConfig) return;
+
+				if (unitConfig.label === 'Sleep') {
+					value = 3 - value;
+				}
+
+				const tummyUpset = curr[1];
+				if (typeof tummyUpset !== 'number') return;
+
+				const hasUpset = tummyUpset > threshold;
+
+				tags.forEach(tag => {
+					if (unitConfig.tags.includes(tag)) {
+						if (hasUpset) {
+							acc[tag].hadUpset += value;
+						} else {
+							acc[tag].notUpset += value;
+						}
+					}
+				});
+			});
+			return acc;
+		},
+		{
+			wellbeing: { hadUpset: 0, notUpset: 0 },
+			wheat: { hadUpset: 0, notUpset: 0 },
+			milk: { hadUpset: 0, notUpset: 0 },
+			sugar: { hadUpset: 0, notUpset: 0 },
+			stress: { hadUpset: 0, notUpset: 0 },
+		},
+	);
 }

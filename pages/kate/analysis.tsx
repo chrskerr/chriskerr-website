@@ -1,0 +1,207 @@
+import { withAuth } from 'components/finance/helpers';
+import { formatISO } from 'date-fns';
+import { firestore } from 'lib/firebase-admin';
+import { GetServerSideProps } from 'next';
+import {
+	addMissingKeys,
+	collectionName,
+	IData,
+	config,
+	createSummaryByLabel,
+	createSummaryByTag,
+	tags,
+	createSummaryByUpsetAndLabel,
+	getLabel,
+} from 'lib/kate';
+import Link from 'next/link';
+import startCase from 'lodash/startCase';
+
+interface IKateFoodAnalyse {
+	data: IData[];
+}
+
+const keys = Object.keys(config);
+
+function toPercentage(input: number): string {
+	return `${Math.floor(input * 100) || 0}%`;
+}
+
+function createRatios(input: { hadUpset: number; notUpset: number }): {
+	has: number;
+	not: number;
+} {
+	return {
+		has: input.hadUpset / (input.hadUpset + input.notUpset) || 0,
+		not: input.notUpset / (input.hadUpset + input.notUpset) || 0,
+	};
+}
+
+const hasThreshold = 0.75;
+
+export default function KateFoodAnalyse({ data }: IKateFoodAnalyse) {
+	const today = formatISO(new Date(), { representation: 'date' });
+
+	const summaryByLabel = createSummaryByLabel(data);
+	const summaryByTag = createSummaryByTag(data, 2);
+	const summaryByUpsetAndLabel = createSummaryByUpsetAndLabel(data, 2);
+
+	return (
+		<>
+			<div className="display-width">
+				<h2 className="mb-4 text-3xl">Kate&apos;s Food Journal</h2>
+				<div className="flex items-center justify-between w-full">
+					<div className="flex items-center">
+						<Link href={`/kate/${today}`} passHref>
+							<a className="mr-4 text-xl transition-colors cursor-pointer hover:text-brand">
+								Today
+							</a>
+						</Link>
+					</div>
+				</div>
+			</div>
+			<div className="display-width divider-before">
+				<div className="grid grid-cols-4 mb-12">
+					<p className="text-xl">Days of data</p>
+					<span className="text-3xl">{data.length}</span>
+				</div>
+				<div className="grid grid-cols-4 mb-12">
+					<div />
+					<p className="font-bold">Not much, or more</p>
+					<p className="font-bold">Some, or more</p>
+					<p className="font-bold">Lots</p>
+					<p className="text-xl">Upset Tummy Days</p>
+					<p className="text-3xl">
+						{summaryByLabel[1][1]}
+						<span className="ml-4 text-xl">
+							{toPercentage(summaryByLabel[1][1] / data.length)}
+						</span>
+					</p>
+					<p className="text-3xl">
+						{summaryByLabel[1][2]}
+						<span className="ml-4 text-xl">
+							{toPercentage(summaryByLabel[1][2] / data.length)}
+						</span>
+					</p>
+					<p className="text-3xl">
+						{summaryByLabel[1][3]}
+						<span className="ml-4 text-xl">
+							{toPercentage(summaryByLabel[1][3] / data.length)}
+						</span>
+					</p>
+				</div>
+				<table className="w-full mb-12 text-center table-fixed">
+					<thead>
+						<tr>
+							<th className="pb-4 text-xl font-normal text-left">
+								By Type
+							</th>
+							<th className="align-bottom">Days upset</th>
+							<th className="align-bottom">Days not upset</th>
+						</tr>
+					</thead>
+					<tbody>
+						{tags.map(tag => {
+							if (tag === 'wellbeing') return false;
+
+							const tagData = summaryByTag[tag];
+
+							const { has, not } = createRatios(tagData);
+
+							return (
+								<tr key={tag}>
+									<td className="text-left">
+										{startCase(tag)}
+									</td>
+									<td>
+										<span
+											className={`px-2 ${
+												has >= hasThreshold
+													? 'bg-red-400'
+													: ''
+											}`}
+										>
+											{toPercentage(has)}
+										</span>
+									</td>
+									<td>{toPercentage(not)}</td>
+								</tr>
+							);
+						})}
+					</tbody>
+				</table>
+				<table className="w-full text-center table-fixed">
+					<thead>
+						<tr>
+							<th className="pb-4 text-xl font-normal text-left">
+								By Tag
+							</th>
+							<th className="align-bottom">Days upset</th>
+							<th className="align-bottom">Days not upset</th>
+						</tr>
+					</thead>
+					<tbody>
+						{keys.map(key => {
+							const label = getLabel(Number(key));
+							if (label === 'wellbeing') return false;
+
+							const unitData = summaryByUpsetAndLabel[key];
+							if (!unitData) return;
+
+							const { has, not } = createRatios(unitData);
+
+							return (
+								<tr key={key}>
+									<td className="text-left">
+										{startCase(label)}
+									</td>
+									<td>
+										<span
+											className={`px-2 ${
+												has >= hasThreshold
+													? 'bg-red-400'
+													: ''
+											}`}
+										>
+											{toPercentage(has)}
+										</span>
+									</td>
+									<td>{toPercentage(not)}</td>
+								</tr>
+							);
+						})}
+					</tbody>
+				</table>
+			</div>
+		</>
+	);
+}
+
+export const getServerSideProps: GetServerSideProps<IKateFoodAnalyse> = async ({
+	req,
+	res,
+}) => {
+	const data = await withAuth(req, res, async () => {
+		const docs = await firestore.collection(collectionName).get();
+
+		return docs.docs
+			.map(doc => {
+				return addMissingKeys(doc.data());
+			})
+			.sort((a, b) => a.id.localeCompare(b.id));
+	});
+
+	if (!data) {
+		return {
+			redirect: {
+				destination: `/finance`,
+				permanent: false,
+			},
+		};
+	}
+
+	return {
+		props: {
+			data,
+		},
+	};
+};

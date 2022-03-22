@@ -63,18 +63,31 @@ export default function KateFoodIndex({ data }: IKateFoodIndex) {
 		<>
 			<div className="display-width">
 				<h2 className="mb-4 text-3xl">Kate&apos;s Food Journal</h2>
-				<div className="flex items-center">
-					<Link href={`/kate/${yesterday}`} passHref>
-						<a className="mr-4 cursor-pointer">&larr;</a>
-					</Link>
-					<p className="text-2xl">
-						{format(parseISO(id), 'dd MMMM yyyy')}
-					</p>
-					{!isToday && (
-						<Link href={`/kate/${tomorrow}`} passHref>
-							<a className="ml-4 cursor-pointer">&rarr;</a>
+				<div className="flex items-center justify-between w-full">
+					<div className="flex items-center">
+						<Link href={`/kate/${yesterday}`} passHref>
+							<a className="mr-4 transition-colors cursor-pointer hover:text-brand">
+								&larr;
+							</a>
 						</Link>
-					)}
+						<p className="text-2xl">
+							{format(parseISO(id), 'dd MMMM yyyy')}
+						</p>
+						{!isToday && (
+							<Link href={`/kate/${tomorrow}`} passHref>
+								<a className="ml-4 transition-colors cursor-pointer hover:text-brand">
+									&rarr;
+								</a>
+							</Link>
+						)}
+					</div>
+					<div className="flex items-center">
+						<Link href="/kate/analysis" passHref>
+							<a className="text-xl transition-colors cursor-pointer hover:text-brand">
+								Analysis
+							</a>
+						</Link>
+					</div>
 				</div>
 				{wasError && (
 					<p className="mt-4 text-red-500">
