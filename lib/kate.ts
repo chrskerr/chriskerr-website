@@ -156,9 +156,13 @@ type CreateSummaryByUpsetAndLabelReturn = Record<
 
 export function createSummaryByUpsetAndLabel(
 	data: IData[],
+	upsetThreshold: 1 | 2 | 3,
 	threshold: 1 | 2 | 3,
 ): CreateSummaryByUpsetAndLabelReturn {
 	return data.reduce<CreateSummaryByUpsetAndLabelReturn>((acc, curr) => {
+		const tummyUpset = curr[1];
+		if (typeof tummyUpset !== 'number') return acc;
+
 		Object.entries(curr).forEach(([key, value]) => {
 			if (Number(key) === 1) return;
 
@@ -169,19 +173,18 @@ export function createSummaryByUpsetAndLabel(
 				value = 3 - value;
 			}
 
-			const tummyUpset = curr[1];
-			if (typeof tummyUpset !== 'number') return;
-
-			const hasUpset = tummyUpset > threshold;
+			const hasUpset = tummyUpset >= upsetThreshold;
 
 			if (!acc[key]) {
 				acc[key] = { hadUpset: 0, notUpset: 0 };
 			}
 
+			const change = value >= threshold ? 1 : 0;
+
 			if (hasUpset) {
-				acc[key].hadUpset += value;
+				acc[key].hadUpset += change;
 			} else {
-				acc[key].notUpset += value;
+				acc[key].notUpset += change;
 			}
 		});
 		return acc;
@@ -197,35 +200,46 @@ export const tags: Tags[] = ['wellbeing', 'wheat', 'milk', 'sugar', 'stress'];
 
 export function createSummaryByTag(
 	data: IData[],
+	upsetThreshold: 1 | 2 | 3,
 	threshold: 1 | 2 | 3,
 ): CreateSummaryByTagReturn {
 	return data.reduce<CreateSummaryByTagReturn>(
-		(acc, curr) => {
-			Object.entries(curr).forEach(([key, value]) => {
-				if (Number(key) === 1) return;
+		(acc, curr, i, arry) => {
+			const tummyUpset = curr[1];
+			if (typeof tummyUpset !== 'number') return acc;
+			const hasUpset = tummyUpset >= upsetThreshold;
 
-				const unitConfig = config[Number(key)];
-				if (!unitConfig) return;
+			const seenTags = new Set<Tags>();
 
-				if (unitConfig.label === 'Sleep') {
-					value = 3 - value;
-				}
+			Object.entries(curr)
+				.concat(Object.entries(arry[Math.max(i - 1, 0)]))
+				.forEach(([key, value]) => {
+					if (Number(key) === 1) return;
 
-				const tummyUpset = curr[1];
-				if (typeof tummyUpset !== 'number') return;
+					const unitConfig = config[Number(key)];
+					if (!unitConfig) return;
 
-				const hasUpset = tummyUpset > threshold;
-
-				tags.forEach(tag => {
-					if (unitConfig.tags.includes(tag)) {
-						if (hasUpset) {
-							acc[tag].hadUpset += value;
-						} else {
-							acc[tag].notUpset += value;
-						}
+					if (unitConfig.label === 'Sleep') {
+						value = 3 - value;
 					}
+
+					if (value < threshold) return;
+
+					tags.forEach(tag => {
+						if (unitConfig.tags.includes(tag)) {
+							seenTags.add(tag);
+						}
+					});
 				});
+
+			[...seenTags].forEach(tag => {
+				if (hasUpset) {
+					acc[tag].hadUpset += 1;
+				} else {
+					acc[tag].notUpset += 1;
+				}
 			});
+
 			return acc;
 		},
 		{

@@ -15,24 +15,32 @@ import {
 } from 'lib/kate';
 import Link from 'next/link';
 import startCase from 'lodash/startCase';
+import { useState } from 'react';
 
 interface IKateFoodAnalyse {
 	data: IData[];
 }
 
-const keys = Object.keys(config);
+const keys = Object.keys(config).sort((a, b) =>
+	getLabel(Number(a)).localeCompare(getLabel(Number(b))),
+);
 
 function toPercentage(input: number): string {
 	return `${Math.floor(input * 100) || 0}%`;
 }
 
-function createRatios(input: { hadUpset: number; notUpset: number }): {
+function createRatios(input: {
+	hadUpset: number;
+	notUpset: number;
+	tummyDays: number;
+	totalDays: number;
+}): {
 	has: number;
 	not: number;
 } {
 	return {
-		has: input.hadUpset / (input.hadUpset + input.notUpset) || 0,
-		not: input.notUpset / (input.hadUpset + input.notUpset) || 0,
+		has: input.hadUpset / input.tummyDays || 0,
+		not: input.notUpset / (input.totalDays - input.tummyDays) || 0,
 	};
 }
 
@@ -41,9 +49,16 @@ const hasThreshold = 0.75;
 export default function KateFoodAnalyse({ data }: IKateFoodAnalyse) {
 	const today = formatISO(new Date(), { representation: 'date' });
 
+	const [tummyThreshold, setTummyThreshold] = useState<1 | 2 | 3>(2);
+	const [threshold, setThreshold] = useState<1 | 2 | 3>(3);
+
 	const summaryByLabel = createSummaryByLabel(data);
-	const summaryByTag = createSummaryByTag(data, 2);
-	const summaryByUpsetAndLabel = createSummaryByUpsetAndLabel(data, 2);
+	const summaryByTag = createSummaryByTag(data, tummyThreshold, threshold);
+	const summaryByUpsetAndLabel = createSummaryByUpsetAndLabel(
+		data,
+		tummyThreshold,
+		threshold,
+	);
 
 	return (
 		<>
@@ -79,64 +94,96 @@ export default function KateFoodAnalyse({ data }: IKateFoodAnalyse) {
 					<p className="text-3xl">
 						{summaryByLabel[1][2]}
 						<span className="ml-4 text-xl">
-							{toPercentage(summaryByLabel[1][2] / data.length)}
+							{toPercentage(summaryByLabel[1][1] / data.length)}
 						</span>
 					</p>
 					<p className="text-3xl">
 						{summaryByLabel[1][3]}
 						<span className="ml-4 text-xl">
-							{toPercentage(summaryByLabel[1][3] / data.length)}
+							{toPercentage(summaryByLabel[1][1] / data.length)}
 						</span>
 					</p>
 				</div>
-				<table className="w-full mb-12 text-center table-fixed">
+				<p className="pb-4 text-xl">Settings</p>
+				<div className="grid items-center grid-cols-2 gap-1 mb-12">
+					<label>Tummy Upset Threshold</label>
+					<select
+						value={String(tummyThreshold)}
+						onChange={e =>
+							setTummyThreshold(
+								Number(e.target.value) as 1 | 2 | 3,
+							)
+						}
+					>
+						<option value="1">Not much</option>
+						<option value="2">Some</option>
+						<option value="3">Lots</option>
+					</select>
+					<label>Type Threshold</label>
+					<select
+						value={String(threshold)}
+						onChange={e =>
+							setThreshold(Number(e.target.value) as 1 | 2 | 3)
+						}
+					>
+						<option value="1">Not much</option>
+						<option value="2">Some</option>
+						<option value="3">Lots</option>
+					</select>
+				</div>
+				<p className="pb-4 text-xl">By Type</p>
+				<table className="w-full mb-12 text-left table-fixed">
 					<thead>
 						<tr>
-							<th className="pb-4 text-xl font-normal text-left">
-								By Type
-							</th>
-							<th className="align-bottom">Days upset</th>
-							<th className="align-bottom">Days not upset</th>
+							<th className="text-left">Day or day before</th>
+							<th>Days upset</th>
+							<th>Days not upset</th>
 						</tr>
 					</thead>
 					<tbody>
-						{tags.map(tag => {
-							if (tag === 'wellbeing') return false;
+						{tags
+							.sort((a, b) => a.localeCompare(b))
+							.map(tag => {
+								if (tag === 'wellbeing') return false;
 
-							const tagData = summaryByTag[tag];
+								const tagData = summaryByTag[tag];
 
-							const { has, not } = createRatios(tagData);
+								const { has, not } = createRatios({
+									...tagData,
+									tummyDays:
+										summaryByLabel[1][tummyThreshold],
+									totalDays: data.length,
+								});
 
-							return (
-								<tr key={tag}>
-									<td className="text-left">
-										{startCase(tag)}
-									</td>
-									<td>
-										<span
-											className={`px-2 ${
-												has >= hasThreshold
-													? 'bg-red-400'
-													: ''
-											}`}
-										>
-											{toPercentage(has)}
-										</span>
-									</td>
-									<td>{toPercentage(not)}</td>
-								</tr>
-							);
-						})}
+								return (
+									<tr key={tag}>
+										<td className="text-left">
+											{startCase(tag)}
+										</td>
+										<td>
+											<span
+												className={`px-2 ${
+													has >= hasThreshold
+														? 'bg-red-400'
+														: ''
+												}`}
+											>
+												{toPercentage(has)}
+											</span>
+										</td>
+										<td>{toPercentage(not)}</td>
+									</tr>
+								);
+							})}
 					</tbody>
 				</table>
-				<table className="w-full text-center table-fixed">
+				<p className="pb-4 text-xl">By Tag</p>
+				<table className="w-full text-left table-fixed">
 					<thead>
 						<tr>
-							<th className="pb-4 text-xl font-normal text-left">
-								By Tag
-							</th>
-							<th className="align-bottom">Days upset</th>
-							<th className="align-bottom">Days not upset</th>
+							<th className="text-left">Day or day before</th>
+							<th>Days upset</th>
+							<th>Days not upset</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -147,7 +194,11 @@ export default function KateFoodAnalyse({ data }: IKateFoodAnalyse) {
 							const unitData = summaryByUpsetAndLabel[key];
 							if (!unitData) return;
 
-							const { has, not } = createRatios(unitData);
+							const { has, not } = createRatios({
+								...unitData,
+								tummyDays: summaryByLabel[1][tummyThreshold],
+								totalDays: data.length,
+							});
 
 							return (
 								<tr key={key}>
