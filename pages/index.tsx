@@ -74,8 +74,8 @@ export default function Landing(): ReactElement {
 						image="/images/tiles/blob-scatter.png"
 					/>
 					<Tile
-						url="/space"
-						title="Just how busy is space"
+						url="/leo"
+						title="Low Earth Orbit"
 						image="/images/tiles/stars.png"
 					/>
 				</div>

@@ -28,6 +28,10 @@ export default function useSpaceXData({
 			setChosenIds(processedData.map(({ id }) => id));
 		});
 
+		fetchData().then(data => {
+			setCoords(processData(data));
+		});
+
 		const interval = setInterval(() => {
 			fetchData().then(data => {
 				setCoords(processData(data));

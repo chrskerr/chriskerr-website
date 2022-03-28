@@ -7,7 +7,7 @@ const ISSRender = dynamic(() => import('components/iss'), {
 	ssr: false,
 	loading: () => <p className="font-mono text-2xl text-center">Loading</p>,
 });
-const title = 'Just how busy is space';
+const title = 'Low Earth Orbit';
 
 export default function ISS(): ReactElement {
 	const [isGrabbing, setIsGrabbing] = useState(false);
@@ -16,8 +16,8 @@ export default function ISS(): ReactElement {
 		<>
 			<NextSeo
 				title={title}
-				description="Just how busy is space"
-				canonical="https://www.chriskerr.dev/space"
+				description="Low Earth Orbit"
+				canonical="https://www.chriskerr.dev/leo"
 			/>
 			<div className="display-width">
 				<h2 className="mb-4 text-3xl">{title}</h2>
