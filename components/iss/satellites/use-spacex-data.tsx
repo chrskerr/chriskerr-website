@@ -20,16 +20,14 @@ export default function useSpaceXData({
 
 	useEffect(() => {
 		fetchData().then(data => {
-			const processedData = sampleSize(
-				processData(data),
-				displayedSatellites,
-			);
-			setCoords(processedData);
-			setChosenIds(processedData.map(({ id }) => id));
-		});
+			const processedData = processData(data);
 
-		fetchData().then(data => {
-			setCoords(processData(data));
+			setCoords(processedData);
+			setChosenIds(
+				sampleSize(processedData, displayedSatellites).map(
+					({ id }) => id,
+				),
+			);
 		});
 
 		const interval = setInterval(() => {
@@ -80,7 +78,7 @@ export default function useSpaceXData({
 	}, [displayedSatellites]);
 
 	useEffect(() => {
-		if (coords.length > 0) setTotalSatellites(coords.length);
+		setTotalSatellites(coords.length ?? 0);
 	}, [coords]);
 
 	return coords.filter(({ id }) => chosenIds?.includes(id));

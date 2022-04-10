@@ -28,6 +28,8 @@ type Props = {
 	shouldDisplayAverage?: boolean;
 	displayMode: DisplayModes;
 	thresholdLines?: ThresholdLine[];
+	yMax?: number;
+	yMin?: number;
 };
 
 type ThresholdLine = { label: string; value: number };
@@ -45,6 +47,8 @@ const AreaChartBase = memo(function AreaChartBase({
 	shouldDisplayAverage = true,
 	displayMode,
 	thresholdLines = [],
+	yMax = Infinity,
+	yMin = -Infinity,
 }: Props): ReactElement {
 	const $_div = useRef(null);
 	const [dataLimit, setDataLimit] = useState(0);
@@ -93,9 +97,12 @@ const AreaChartBase = memo(function AreaChartBase({
 						<YAxis
 							tickFormatter={formatNumber.format}
 							domain={[
-								(dataMin: number) => dataMin * 1.2,
-								(dataMax: number) => dataMax * 1.2,
+								(dataMin: number) =>
+									Math.max(dataMin * 1.05, yMin),
+								(dataMax: number) =>
+									Math.min(dataMax * 1.05, yMax),
 							]}
+							allowDataOverflow
 						/>
 						<Tooltip content={CustomTooltip} />
 						{categories.map((category, i) => (

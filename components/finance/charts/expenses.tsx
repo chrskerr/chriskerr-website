@@ -109,6 +109,7 @@ const ExpensesPerWeek = memo(function ExpensesPerWeek({
 							categories={selectedCategories}
 							data={filteredData}
 							displayMode={displayMode}
+							yMin={-5_000}
 						/>
 					</div>
 					{toggleCategoriesShown && (
