@@ -28,6 +28,7 @@ const Satellite = memo(function Satellite({ coords }: { coords: Coords }) {
 
 	return (
 		<animated.group
+			// @ts-ignore
 			ref={group}
 			dispose={null}
 			position={position as unknown as Vector3}
