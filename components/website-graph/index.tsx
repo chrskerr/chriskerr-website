@@ -15,7 +15,7 @@ const maxDepth = 4;
 export default function WebsiteGrapher(): ReactElement {
 	const $div = useRef<HTMLDivElement>(null);
 
-	const [url, setUrl] = useState('https://www.chriskerr.dev');
+	const [url, setUrl] = useState('https://news.ycombinator.com');
 	const [loading, setLoading] = useState(false);
 
 	const [data, setData] = useState<Node[]>([]);

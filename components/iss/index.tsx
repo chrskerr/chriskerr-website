@@ -38,7 +38,7 @@ export default function ISSRender(): ReactElement {
 					onChange={updateDisplayedSatellites}
 				/>
 			</label>
-			<Canvas className="flex-1 w-full bg-gray-50 ">
+			<Canvas className="flex-1 w-full bg-white">
 				<OrbitControls
 					target={[0, 0, 0]}
 					dampingFactor={0.1}

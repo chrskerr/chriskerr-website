@@ -53,16 +53,21 @@ export async function initClouds(canvas: HTMLCanvasElement) {
 	return (timeStampGap: number): (Element | false)[] => {
 		if (getProbability(2, timeStampGap)) {
 			clouds.push(getRandomValue(cloudEls)());
-			clouds = clouds.filter(Boolean);
 		}
 
 		const canvasWidth = canvas.width;
 
-		clouds = clouds.map(cloud => {
-			if (!cloud) return false;
-			const updatedCloud = moveElement(cloud, timeStampGap, canvasWidth);
-			return cloud.x + cloud.width > 0 ? updatedCloud : false;
-		});
+		clouds = clouds
+			.map(cloud => {
+				if (!cloud) return false;
+				const updatedCloud = moveElement(
+					cloud,
+					timeStampGap,
+					canvasWidth,
+				);
+				return cloud.x + cloud.width > 0 ? updatedCloud : false;
+			})
+			.filter(Boolean);
 
 		return clouds;
 	};

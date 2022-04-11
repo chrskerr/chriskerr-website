@@ -32,14 +32,14 @@ export async function init({ ref }: InitProps) {
 	if (!ctx) return;
 
 	const userPromise = getUser(canvas);
-	const updateCloudsPromise = initClouds(canvas);
-	const updateBirdsPromise = initBirds(canvas);
 
-	const backgroundImg = await getImage('background.svg');
+	const [updateClouds, updateBirds, backgroundImg] = await Promise.all([
+		initClouds(canvas),
+		initBirds(canvas),
+		getImage('background.svg'),
+	]);
+
 	const memoizedGetBackgroundSize = memoize(getBackgroundSize(backgroundImg));
-
-	const updateClouds = await updateCloudsPromise;
-	const updateBirds = await updateBirdsPromise;
 
 	let user = await userPromise;
 
@@ -129,5 +129,9 @@ export async function init({ ref }: InitProps) {
 	canvas.addEventListener('mousemove', onMouseMove, { passive: true });
 	window.addEventListener('resize', windowResize, { passive: true });
 
-	return () => (isRunning = false);
+	return () => {
+		isRunning = false;
+		canvas?.removeEventListener('mousemove', onMouseMove);
+		window.removeEventListener('resize', windowResize);
+	};
 }

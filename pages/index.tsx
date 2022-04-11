@@ -50,7 +50,7 @@ export default function Landing(): ReactElement {
 					/>
 					<Tile
 						url="/bird-eat-bird"
-						title="Bird Eat Bird"
+						title="Bird Eat Bird (WIP)"
 						image="/images/tiles/bird-eat-bird.png"
 					/>
 					<Tile

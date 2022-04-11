@@ -64501,7 +64501,7 @@ var import_random_word_slugs = __toESM(require_dist6());
 
 // ../lib/constants.ts
 var unsavedNoteId = "n";
-var chartLookbackWeeks = 12;
+var chartLookbackWeeks = 4;
 
 // up.ts
 var import_crypto2 = __toESM(require("crypto"));

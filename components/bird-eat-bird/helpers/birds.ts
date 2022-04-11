@@ -79,7 +79,6 @@ export async function initBirds(canvas: HTMLCanvasElement) {
 	} => {
 		if (getProbability(1.5, timeStampGap)) {
 			birds.push(getRandomValue(birdEls)(user));
-			birds = birds.filter(Boolean);
 		}
 
 		const canvasWidth = canvas.width;
@@ -92,29 +91,43 @@ export async function initBirds(canvas: HTMLCanvasElement) {
 		const userBottom = user.y;
 		const userTop = userBottom + user.height;
 
-		birds = birds.map(bird => {
-			if (!bird) return false;
-			const updatedBird = moveElement(bird, timeStampGap, canvasWidth);
+		birds = birds
+			.map(bird => {
+				if (!bird) return false;
+				const updatedBird = moveElement(
+					bird,
+					timeStampGap,
+					canvasWidth,
+				);
 
-			if (updatedBird.x + updatedBird.width < 0) return false;
-			if (bird.x > userRight) return updatedBird;
-			if (bird.y > userTop) return updatedBird;
-			if (bird.y + bird.height < userBottom) return updatedBird;
-			if (bird.x + bird.width < userLeft) return updatedBird;
+				if (
+					bird.xVelocity < 0 &&
+					updatedBird.x + updatedBird.width < 0
+				) {
+					return false;
+				}
+				if (bird.xVelocity > 0 && updatedBird.x > canvasWidth) {
+					return false;
+				}
+				if (bird.x > userRight) return updatedBird;
+				if (bird.y > userTop) return updatedBird;
+				if (bird.y + bird.height < userBottom) return updatedBird;
+				if (bird.x + bird.width < userLeft) return updatedBird;
 
-			if (bird.width > user.width) {
-				updatedHealth -= 10;
-			} else {
-				updatedPoints++;
+				if (bird.width > user.width) {
+					updatedHealth -= 10;
+				} else {
+					updatedPoints++;
 
-				updatedHealth = Math.min(30, updatedHealth + 1);
-			}
+					updatedHealth = Math.min(30, updatedHealth + 1);
+				}
 
-			user.width = initialWidth + updatedPoints * 5;
-			user.height = getHeightFromTargetWidth(user.img, user.width);
+				user.width = initialWidth + updatedPoints * 5;
+				user.height = getHeightFromTargetWidth(user.img, user.width);
 
-			return false;
-		});
+				return false;
+			})
+			.filter(Boolean);
 
 		return { birds, updatedPoints, updatedHealth };
 	};

@@ -457,7 +457,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 				startOfWeek(new Date(), {
 					weekStartsOn: 1,
 				}),
-				chartLookbackWeeks * 2,
+				Math.max(chartLookbackWeeks, 20),
 			);
 
 			if (hasAuth) {
