@@ -45,6 +45,7 @@ function createRatios(input: {
 }
 
 const hasThreshold = 0.75;
+const differenceThreshold = 0.15;
 
 export default function KateFoodAnalyse({ data }: IKateFoodAnalyse) {
 	const today = formatISO(new Date(), { representation: 'date' });
@@ -94,13 +95,13 @@ export default function KateFoodAnalyse({ data }: IKateFoodAnalyse) {
 					<p className="text-3xl">
 						{summaryByLabel[1][2]}
 						<span className="ml-4 text-xl">
-							{toPercentage(summaryByLabel[1][1] / data.length)}
+							{toPercentage(summaryByLabel[1][2] / data.length)}
 						</span>
 					</p>
 					<p className="text-3xl">
 						{summaryByLabel[1][3]}
 						<span className="ml-4 text-xl">
-							{toPercentage(summaryByLabel[1][1] / data.length)}
+							{toPercentage(summaryByLabel[1][3] / data.length)}
 						</span>
 					</p>
 				</div>
@@ -135,9 +136,10 @@ export default function KateFoodAnalyse({ data }: IKateFoodAnalyse) {
 				<table className="w-full mb-12 text-left table-fixed">
 					<thead>
 						<tr>
-							<th className="text-left">Day or day before</th>
+							<th className="text-left">Stimuli *</th>
 							<th>Days upset</th>
 							<th>Days not upset</th>
+							<th>Difference **</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -155,6 +157,8 @@ export default function KateFoodAnalyse({ data }: IKateFoodAnalyse) {
 									totalDays: data.length,
 								});
 
+								const difference = Math.max(has - not, 0);
+
 								return (
 									<tr key={tag}>
 										<td className="text-left">
@@ -171,19 +175,42 @@ export default function KateFoodAnalyse({ data }: IKateFoodAnalyse) {
 												{toPercentage(has)}
 											</span>
 										</td>
-										<td>{toPercentage(not)}</td>
+										<td>
+											<span
+												className={`px-2 ${
+													not >= hasThreshold
+														? 'bg-green-400'
+														: ''
+												}`}
+											>
+												{toPercentage(not)}
+											</span>
+										</td>
+										<td>
+											<span
+												className={`px-2 ${
+													difference >=
+													differenceThreshold
+														? 'bg-blue-400'
+														: ''
+												}`}
+											>
+												{toPercentage(difference)}
+											</span>
+										</td>
 									</tr>
 								);
 							})}
 					</tbody>
 				</table>
 				<p className="pb-4 text-xl">By Tag</p>
-				<table className="w-full text-left table-fixed">
+				<table className="w-full mb-4 text-left table-fixed">
 					<thead>
 						<tr>
-							<th className="text-left">Day or day before</th>
+							<th className="text-left">Stimuli *</th>
 							<th>Days upset</th>
 							<th>Days not upset</th>
+							<th>Difference **</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -199,6 +226,8 @@ export default function KateFoodAnalyse({ data }: IKateFoodAnalyse) {
 								tummyDays: summaryByLabel[1][tummyThreshold],
 								totalDays: data.length,
 							});
+
+							const difference = Math.max(has - not, 0);
 
 							return (
 								<tr key={key}>
@@ -216,12 +245,45 @@ export default function KateFoodAnalyse({ data }: IKateFoodAnalyse) {
 											{toPercentage(has)}
 										</span>
 									</td>
-									<td>{toPercentage(not)}</td>
+									<td>
+										<span
+											className={`px-2 ${
+												not >= hasThreshold
+													? 'bg-green-400'
+													: ''
+											}`}
+										>
+											{toPercentage(not)}
+										</span>
+									</td>
+									<td>
+										<span
+											className={`px-2 ${
+												difference >=
+												differenceThreshold
+													? 'bg-blue-400'
+													: ''
+											}`}
+										>
+											{toPercentage(difference)}
+										</span>
+									</td>
 								</tr>
 							);
 						})}
 					</tbody>
 				</table>
+				<p className="pb-2 text-sm">
+					* For each stiumuli, the percentage of days which Kate had
+					an upset tummy (or not upset tummy) after having experienced
+					it on that same day or the day before.
+				</p>
+				<p className="pb-2 text-sm">
+					** The percentage of days which experienced that stimuli,
+					minus the percentage of days not upset. Intended to
+					highlight rows which had a larger impact on upsetness than
+					not-upsetness.
+				</p>
 			</div>
 		</>
 	);
