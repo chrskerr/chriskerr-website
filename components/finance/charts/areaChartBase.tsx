@@ -146,10 +146,10 @@ const AreaChartBase = memo(function AreaChartBase({
 
 export default AreaChartBase;
 
-const getStroke = (i: number, of: number): string =>
+export const getStroke = (i: number, of: number): string =>
 	`hsl(${calculateDegrees(i, of)}, 100%, 37%)`;
 
-const getFill = (i: number, of: number): string =>
+export const getFill = (i: number, of: number): string =>
 	`hsl(${calculateDegrees(i, of)}, 100%, 70%)`;
 
 const calculateDegrees = (i: number, of: number): number =>

@@ -16,6 +16,7 @@ import {
 import Link from 'next/link';
 import startCase from 'lodash/startCase';
 import { useState } from 'react';
+import ComparisonGraph from 'components/kate/comparison-graph';
 
 interface IKateFoodAnalyse {
 	data: IData[];
@@ -284,6 +285,8 @@ export default function KateFoodAnalyse({ data }: IKateFoodAnalyse) {
 					highlight rows which had a larger impact on upsetness than
 					not-upsetness.
 				</p>
+
+				<ComparisonGraph data={data} />
 			</div>
 		</>
 	);
