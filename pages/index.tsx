@@ -6,7 +6,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { BlogPostSlugs, BlogPostTitles } from 'types/writing';
 
-export const description = "Stuff I've built, things that I like.";
+export const description =
+	"My site features a jumble of hobby projects where I play around with some technologies & tools that I'm interested to learn.";
 const url = `${process.env.NEXT_PUBLIC_URL_BASE}`;
 
 export default function Landing(): ReactElement {
@@ -38,6 +39,7 @@ export default function Landing(): ReactElement {
 			/>
 			<section className="w-full">
 				<div className="text-center display-width">
+					<p className="pb-8 mx-6 text-2xl">Welcome!</p>
 					<p className="mx-6 text-2xl">{description}</p>
 				</div>
 			</section>
