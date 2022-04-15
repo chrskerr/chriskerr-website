@@ -5,7 +5,7 @@ const createdAt = new Date(2021, 11, 19);
 const modifiedAt = new Date(2021, 11, 24);
 
 const markdown = `
-So it turns out that I am way less versed in Javascript packages than I thought that I was, and didn't realise that [Aync](https://www.npmjs.com/package/async) existed...
+So it turns out that I am way less versed in Javascript packages than I thought that I was, and didn't realise that [Async](https://www.npmjs.com/package/async) existed...
 
 So instead of using their queue function I created my own.
 
@@ -21,7 +21,7 @@ type Queue<InputType, ResultType> = {
 	input: InputType,
 }[]
 
-export function serialise<InputType, ResultType>( 
+function serialise<InputType, ResultType>( 
 	functionToSerialise: ( input: InputType ) => ResultType, 
 ): ( input: InputType ) => Promise<ResultType> {
 

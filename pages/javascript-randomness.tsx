@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useEffect, useRef, useState } from 'react';
 import { NextSeo } from 'next-seo';
 import dynamic from 'next/dynamic';
 
@@ -103,7 +103,7 @@ export default function JavascriptRandomness(): ReactElement {
 	const [loading, setLoading] = useState(false);
 	const [loaded, setLoaded] = useState(0);
 
-	const [shouldBreak, setShouldBreak] = useState(false);
+	const shouldBreak = useRef(false);
 
 	const generate = async (count: number) => {
 		setLoading(true);
@@ -130,15 +130,18 @@ export default function JavascriptRandomness(): ReactElement {
 			setData(updatedData);
 			setLoaded((i + 1) * chunkSize);
 
-			if (shouldBreak) break;
+			if (shouldBreak.current) break;
 		}
 
 		setLoading(false);
 	};
 
 	useEffect(() => {
-		return () => setShouldBreak(true);
-	});
+		shouldBreak.current = false;
+		return () => {
+			shouldBreak.current = true;
+		};
+	}, []);
 
 	return (
 		<>

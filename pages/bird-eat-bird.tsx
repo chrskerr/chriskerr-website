@@ -28,13 +28,14 @@ export default function BirdEatBird(): ReactElement {
 				<h2 className="text-3xl">Bird Eat Bird</h2>
 				<h3 className="mb-4 text-xl">A work in progress</h3>
 				<p className="mb-4">
-					I&apos;ve never tried to make a game before, so this is a
-					start which my partner and I played around with.
+					I&apos;ve never tried to make a game before, so this is the
+					start of one, which my partner and I played around with.
 				</p>
 				<p className="mb-4">
 					The eagle follows your mouse (sorry mobile users) and you
-					gain points for eating (colliding) with smaller birds than
-					you. You lose health by being eaten by a larger bird.
+					gain points for eating (colliding) with smaller birds. As
+					you gain points, you grow. You lose health by being eaten by
+					a larger bird.
 				</p>
 			</div>
 			<div className="display-width divider-before" />

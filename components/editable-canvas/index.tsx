@@ -162,15 +162,23 @@ export default function Editor({ id: propsId, initialData }: EditorProps) {
 					As part of exploring my weaknesses as a programmer, I
 					decided to take on the challenge of writing a text editor
 					from scratch and exploring a Notion-style live editing data
-					schema.
+					schema. Its a{' '}
+					<a
+						className="hover:underline text-brand"
+						href="https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type"
+					>
+						semi-CRDT
+					</a>
+					.
 				</p>
 				<p className="mb-4">
 					I know TypeScript and web development, so I wrote it from
 					scratch using HTML Canvas.
 				</p>
 				<p>
-					The core functionality works, at least on desktop (mobiles
-					are a bit shakey), and more features to come.
+					The core functionality works pretty well on desktop, though
+					some of the spacing is non-perfect. Open the permanent link
+					a new tab and see how well the collaboration performs 😎
 				</p>
 			</div>
 			<div className="w-full text-center display-width divider-before">

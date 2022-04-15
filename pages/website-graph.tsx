@@ -21,8 +21,8 @@ export default function WebsiteGraph(): ReactElement {
 				</p>
 				<p className="mb-4">
 					Enter a URL and it will grab connections out to a distance
-					of 4. To limited runtime, only the first 5 urls found on
-					each page are crawled.
+					of 4. To limit runtime, only the first 5 urls found on each
+					page are crawled.
 				</p>
 			</div>
 			<WebsiteGrapher />
