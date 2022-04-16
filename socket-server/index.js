@@ -64412,7 +64412,7 @@ var fillPool = (bytes) => {
   poolOffset += bytes;
 };
 var nanoid = (size = 21) => {
-  fillPool(size);
+  fillPool(size -= 0);
   let id = "";
   for (let i = poolOffset - size; i < poolOffset; i++) {
     id += urlAlphabet[pool[i] & 63];

@@ -1,100 +1,16 @@
-import { ReactElement, useEffect, useRef, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { NextSeo } from 'next-seo';
 import dynamic from 'next/dynamic';
+import {
+	chunkSize,
+	numDataGroups,
+	Data,
+	sampleSizes,
+} from 'components/javascript-randomness/helpers';
 
 const Chart = dynamic(() => import('components/javascript-randomness/chart'));
 
-export type Data = {
-	label: string;
-	mathRaw: number;
-	math: number;
-	cryptoRaw: number;
-	crypto: number;
-};
-
-const numDataGroups = 20;
-
-const getCryptoRandomNumbers = (count: number): number[] => {
-	return Array.from(crypto.getRandomValues(new Uint8Array(count))).map(curr =>
-		Math.floor((curr / 256) * numDataGroups),
-	);
-};
-
-const getMathRandomNumbers = (count: number): number[] => {
-	return new Array(count)
-		.fill(0)
-		.map(() => Math.floor(Math.random() * numDataGroups));
-};
-
-const newDataSummary = (
-	mode: 'math' | 'crypto',
-	count: number,
-): Record<string, number> => {
-	const numbers =
-		mode === 'math'
-			? getMathRandomNumbers(count)
-			: getCryptoRandomNumbers(count);
-
-	return numbers.reduce<Record<string, number>>((acc, curr) => {
-		return {
-			...acc,
-			[curr]: (acc[curr] || 0) + 1,
-		};
-	}, {});
-};
-
-const chunkSize = 1_000;
-
-const processLoop = async (
-	data: Data[],
-	numSamples: number,
-): Promise<Data[]> => {
-	return await new Promise(resolve => {
-		setTimeout(() => {
-			const newMathSummary = newDataSummary('math', numSamples);
-			const newCryptoSummary = newDataSummary('crypto', numSamples);
-
-			let totalMathRaw = 0;
-			let totalCryptoRaw = 0;
-
-			const normalisedData: Data[] = data
-				.map(datum => {
-					const mathRaw =
-						datum.mathRaw + (newMathSummary[datum.label] || 0);
-					const cryptoRaw =
-						datum.cryptoRaw + (newCryptoSummary[datum.label] || 0);
-
-					totalMathRaw += mathRaw;
-					totalCryptoRaw += cryptoRaw;
-
-					return { ...datum, mathRaw, cryptoRaw };
-				})
-				.map(datum => ({
-					...datum,
-					math: (datum.mathRaw / totalMathRaw) * 100,
-					crypto: (datum.cryptoRaw / totalCryptoRaw) * 100,
-				}));
-
-			resolve(normalisedData);
-		}, 0);
-	});
-};
-
 const title = 'Javascript Random Number Generation';
-
-const sampleSizes = [
-	{ label: 'Ten', value: 10 },
-	{ label: 'One Hundred', value: 100 },
-	{ label: 'One Thousand', value: 1_000 },
-	{ label: 'Ten Thousand', value: 10_000 },
-	{ label: "One Hundred Thousand (this'll take a sec)", value: 100_000 },
-	{ label: "One Million (this'll take a while)", value: 1_000_000 },
-	{ label: 'Ten Million (this might not finish...)', value: 10_000_000 },
-	{
-		label: "One Hundred Million (don't choose this one)",
-		value: 100_000_000,
-	},
-];
 
 export default function JavascriptRandomness(): ReactElement {
 	const [data, setData] = useState<Data[]>();
@@ -103,13 +19,60 @@ export default function JavascriptRandomness(): ReactElement {
 	const [loading, setLoading] = useState(false);
 	const [loaded, setLoaded] = useState(0);
 
+	const worker = useRef<undefined | Worker>();
+
 	const shouldBreak = useRef(false);
 
+	const processLoop = useCallback(
+		async (
+			updatedData: Data[],
+			count: number,
+			i: number,
+		): Promise<Data[]> => {
+			console.log(!!worker);
+			return await new Promise<Data[]>(resolve => {
+				if (!worker.current) {
+					worker.current = new Worker(
+						new URL(
+							'../components/javascript-randomness/create-data.worker.ts',
+							import.meta.url,
+						),
+					);
+				}
+				worker.current.addEventListener(
+					'message',
+					({ data }) => {
+						setData(data);
+						setLoaded((i + 1) * chunkSize);
+
+						resolve(data);
+					},
+					{ once: true },
+				);
+
+				worker.current.addEventListener('error', () => {
+					shouldBreak.current = true;
+					resolve([]);
+				});
+
+				worker.current.postMessage({
+					updatedData,
+					count: Math.min(count, chunkSize),
+				});
+			});
+		},
+		[],
+	);
+
 	const generate = async (count: number) => {
+		if (!worker) return;
+
 		setLoading(true);
 		setLoaded(0);
 
-		const emptyData = new Array(numDataGroups)
+		shouldBreak.current = false;
+
+		let updatedData = new Array(numDataGroups)
 			.fill(0)
 			.map<Data>((v, i) => ({
 				label: String(i),
@@ -120,15 +83,9 @@ export default function JavascriptRandomness(): ReactElement {
 			}));
 
 		const numChunks = Math.ceil(count / chunkSize);
-		let updatedData = emptyData;
 
 		for (let i = 0; i < numChunks; i++) {
-			updatedData = await processLoop(
-				updatedData,
-				Math.min(count, chunkSize),
-			);
-			setData(updatedData);
-			setLoaded((i + 1) * chunkSize);
+			updatedData = await processLoop(updatedData, count, i);
 
 			if (shouldBreak.current) break;
 		}
@@ -137,7 +94,6 @@ export default function JavascriptRandomness(): ReactElement {
 	};
 
 	useEffect(() => {
-		shouldBreak.current = false;
 		return () => {
 			shouldBreak.current = true;
 		};
@@ -162,6 +118,10 @@ export default function JavascriptRandomness(): ReactElement {
 					very small number of results (less than 10), I created this
 					comparison of the distribution of the various methods that
 					Javascript can use to generate random numbers.
+				</p>
+				<p className="mb-4">
+					Runs in a Web Worker, because it seemed like an interesting
+					way to approach it.
 				</p>
 			</div>
 			<div className="display-width divider-before">
@@ -197,10 +157,19 @@ export default function JavascriptRandomness(): ReactElement {
 						disabled={loading}
 					>
 						{loading
-							? `Processing: ${format(loaded)} / ${format(
-									samples,
-							  )}`
+							? `Processing: ${Math.floor(
+									(loaded / samples) * 100,
+							  )}%`
 							: 'Generate!'}
+					</button>
+				</div>
+				<div>
+					<button
+						className="mt-4 button"
+						onClick={() => (shouldBreak.current = true)}
+						disabled={!loading}
+					>
+						Stop
 					</button>
 				</div>
 			</div>
@@ -210,5 +179,3 @@ export default function JavascriptRandomness(): ReactElement {
 		</>
 	);
 }
-
-const { format } = Intl.NumberFormat('en-AU');
