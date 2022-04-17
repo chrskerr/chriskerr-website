@@ -15,14 +15,11 @@ onmessage = async e => {
 
 	const midPoint = Math.floor(targetNumber / 2);
 
-	const result: IWorkerResult = new Array(midPoint)
-		.fill(0)
-		.map((_v, i) => {
-			const valueToTest = i + 1;
-			const result = targetNumber / valueToTest;
-			return result % 1 === 0 ? valueToTest : false;
-		})
-		.filter((value): value is number => !!value);
+	const results: IWorkerResult = [];
+	for (let i = 1; i <= midPoint; i++) {
+		const result = targetNumber / i;
+		if (result % 1 === 0) results.push(i);
+	}
 
-	return postMessage(result);
+	return postMessage(results);
 };
