@@ -8,7 +8,6 @@ import {
 import { NextSeo } from 'next-seo';
 
 import { IWorkerReturn, CustomWorker } from './worker';
-import Script from 'next/script';
 
 const title = 'Finding Factors, the hard way';
 
@@ -20,9 +19,6 @@ export default function BadFactors(): ReactElement {
 	const [loading, setLoading] = useState(false);
 
 	const webWorker = useRef<undefined | CustomWorker>();
-	const goWorker = useRef<
-		undefined | WebAssembly.WebAssemblyInstantiatedSource
-	>();
 
 	const handleChange: ChangeEventHandler<HTMLInputElement> = e => {
 		try {
@@ -69,44 +65,15 @@ export default function BadFactors(): ReactElement {
 		return { result, durationMs: new Date().valueOf() - start };
 	}
 
-	async function getGoFactors(input: BigInt): Promise<Result> {
-		const goInstance = await initGoWorker();
-
-		console.log(input);
-		console.log(goInstance.exports.run);
-
-		const start = new Date().valueOf();
-
-		const result = [1];
-
-		return { result, durationMs: new Date().valueOf() - start };
-	}
-
 	const generate = async (input: BigInt) => {
 		setLoading(true);
 
-		const [workerFactors, goFactors] = await Promise.all([
-			getWorkerFactors(input),
-			getGoFactors(input),
-		]);
+		const [workerFactors] = await Promise.all([getWorkerFactors(input)]);
 
-		console.log(workerFactors, goFactors);
+		console.log(workerFactors);
 
 		setLoading(false);
 	};
-
-	async function initGoWorker() {
-		if (!goWorker.current) {
-			// eslint-disable-next-line no-undef
-			const go = new Go();
-			goWorker.current = await WebAssembly.instantiateStreaming(
-				fetch('./worker.wasm'),
-				go.importObject,
-			);
-		}
-
-		return goWorker.current.instance;
-	}
 
 	useEffect(() => {
 		if (!webWorker.current) {
@@ -123,7 +90,6 @@ export default function BadFactors(): ReactElement {
 				description="A speed comparison of a few JS tools on a badly written number factoring algorithm"
 				canonical={`${process.env.NEXT_PUBLIC_URL_BASE}/bad-factors`}
 			/>
-			<Script src="./wasm_exec.js" onLoad={initGoWorker} />
 			<div className="display-width">
 				<h2 className="mb-4 text-3xl">{title}</h2>
 				<p className="mb-4">
