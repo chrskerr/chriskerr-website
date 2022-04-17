@@ -9,7 +9,7 @@ import {
 	YAxis,
 } from 'recharts';
 
-import type { Data } from 'pages/javascript-randomness';
+import type { Data } from './helpers';
 
 const Chart = memo(function Chart({ data }: { data: Data[] }): ReactElement {
 	return (

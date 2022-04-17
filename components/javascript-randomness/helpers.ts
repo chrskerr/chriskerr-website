@@ -51,39 +51,31 @@ const newDataSummary = (
 	}, {});
 };
 
-export const chunkSize = 5_000;
+export const chunkSize = 25_000;
 
-export const processLoop = async (
-	data: Data[],
-	numSamples: number,
-): Promise<Data[]> => {
-	return await new Promise(resolve => {
-		setTimeout(() => {
-			const newMathSummary = newDataSummary('math', numSamples);
-			const newCryptoSummary = newDataSummary('crypto', numSamples);
+export const processLoop = (data: Data[], numSamples: number): Data[] => {
+	const newMathSummary = newDataSummary('math', numSamples);
+	const newCryptoSummary = newDataSummary('crypto', numSamples);
 
-			let totalMathRaw = 0;
-			let totalCryptoRaw = 0;
+	let totalMathRaw = 0;
+	let totalCryptoRaw = 0;
 
-			const normalisedData: Data[] = data
-				.map(datum => {
-					const mathRaw =
-						datum.mathRaw + (newMathSummary[datum.label] || 0);
-					const cryptoRaw =
-						datum.cryptoRaw + (newCryptoSummary[datum.label] || 0);
+	const normalisedData: Data[] = data
+		.map(datum => {
+			const mathRaw = datum.mathRaw + (newMathSummary[datum.label] || 0);
+			const cryptoRaw =
+				datum.cryptoRaw + (newCryptoSummary[datum.label] || 0);
 
-					totalMathRaw += mathRaw;
-					totalCryptoRaw += cryptoRaw;
+			totalMathRaw += mathRaw;
+			totalCryptoRaw += cryptoRaw;
 
-					return { ...datum, mathRaw, cryptoRaw };
-				})
-				.map(datum => ({
-					...datum,
-					math: (datum.mathRaw / totalMathRaw) * 100,
-					crypto: (datum.cryptoRaw / totalCryptoRaw) * 100,
-				}));
+			return { ...datum, mathRaw, cryptoRaw };
+		})
+		.map(datum => ({
+			...datum,
+			math: (datum.mathRaw / totalMathRaw) * 100,
+			crypto: (datum.cryptoRaw / totalCryptoRaw) * 100,
+		}));
 
-			resolve(normalisedData);
-		}, 0);
-	});
+	return normalisedData;
 };
