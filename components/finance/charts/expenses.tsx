@@ -110,6 +110,7 @@ const ExpensesPerWeek = memo(function ExpensesPerWeek({
 							data={filteredData}
 							displayMode={displayMode}
 							yMin={-5_000}
+							thresholdLines={[{ value: -1200, label: 'Target' }]}
 						/>
 					</div>
 					{toggleCategoriesShown && (
