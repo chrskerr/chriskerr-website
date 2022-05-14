@@ -42,11 +42,11 @@ export default function Document(): ReactElement {
 					rel="stylesheet"
 				/>
 				<link
-					href="https://fonts.googleapis.com/css2?family=family=Source+Code+Proo&display=swap"
+					href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap"
 					rel="stylesheet"
 				/>
 				<link
-					href="https://fonts.googleapis.com/css2?family=family=IBM+Plex+Mono&display=swap"
+					href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap"
 					rel="stylesheet"
 				/>
 			</Head>
