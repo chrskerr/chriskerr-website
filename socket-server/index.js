@@ -64988,7 +64988,7 @@ function createPeriodicData({
   const expenses = startDates.reduce((acc, startDate) => {
     const transactionsForStart = transactionsWithStartDate.filter((txn) => txn.amount < 0 && !isProbablyInvestment(txn) && txn.startDate === startDate && !isProbablyTransfer(txn));
     if (startDate === "21/09/21") {
-      console.log(expenses);
+      console.log(transactionsForStart);
     }
     const all = [
       ...acc.all,
