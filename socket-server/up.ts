@@ -641,14 +641,6 @@ function createPeriodicData({
 			txn => txn.startDate === startDate && !isProbablyInvestment(txn),
 		);
 
-		if (startDate.includes('04/22')) {
-			console.log(
-				transactionsWithStartDate.filter(
-					txn => txn.startDate === startDate && txn.amount > 0,
-				),
-			);
-		}
-
 		const cashFlowKey = 'In/Out';
 
 		return transactionsForStart.reduce<ChartData>(
