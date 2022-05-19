@@ -11,13 +11,15 @@ interface Props {
 	initialData: UpApiReturn | null;
 }
 
+const defaultPeriod = 'month';
+
 export default function FinancesPage({ initialData }: Props): ReactElement {
 	const [password, setPassword] = useState('');
 	const [data, setData] = useState<UpApiReturn | null>(initialData);
 	const [loading, setLoading] = useState(false);
 
 	const [displayMode, setDisplayMode] = useState<DisplayModes>('monotone');
-	const [period, setPeriod] = useState<'week' | 'month'>('month');
+	const [period, setPeriod] = useState<'week' | 'month'>(defaultPeriod);
 
 	async function fetchAndSetData(period: 'week' | 'month') {
 		setLoading(true);
@@ -120,7 +122,7 @@ export const getServerSideProps: GetServerSideProps = async context => {
 	const initialData = await fetchTransactionsHelper(
 		context.req,
 		context.res,
-		'month',
+		defaultPeriod,
 	);
 
 	const props: Props = {
