@@ -64961,7 +64961,7 @@ function createPeriodicData({
   function formattedStartOfDate(date) {
     return (0, import_date_fns.format)(period === "week" ? (0, import_date_fns.startOfWeek)(new Date(date), {
       weekStartsOn: 1
-    }) : (0, import_date_fns.subDays)((0, import_date_fns.startOfMonth)(new Date(date)), 10), "dd/MM/yy");
+    }) : (0, import_date_fns.subDays)((0, import_date_fns.startOfMonth)(new Date(date)), 5), "dd/MM/yy");
   }
   const transactionsWithStartDate = transactions.map((txn) => {
     const startDate = formattedStartOfDate(txn.createdAt);
@@ -64986,10 +64986,7 @@ function createPeriodicData({
     startDate
   });
   const expenses = startDates.reduce((acc, startDate) => {
-    const transactionsForStart = transactionsWithStartDate.filter((txn) => txn.amount < 0 && !isProbablyInvestment(txn) && txn.startDate === startDate && !isProbablyTransfer(txn));
-    if (startDate === "21/09/21") {
-      console.log(transactionsForStart);
-    }
+    const transactionsForStart = transactionsWithStartDate.filter((txn) => txn.amount < 0 && txn.startDate === startDate && !isProbablyInvestment(txn) && !isProbablyTransfer(txn));
     const all = [
       ...acc.all,
       transactionsForStart.reduce((acc_2, curr) => __spreadProps(__spreadValues({}, acc_2), {
@@ -65026,6 +65023,9 @@ function createPeriodicData({
   });
   const cashFlow = startDates.map((startDate) => {
     const transactionsForStart = transactionsWithStartDate.filter((txn) => txn.startDate === startDate && !isProbablyInvestment(txn));
+    if (startDate.includes("04/22")) {
+      console.log(transactionsForStart);
+    }
     const cashFlowKey = "In/Out";
     return transactionsForStart.reduce((acc, curr) => __spreadProps(__spreadValues({}, acc), {
       [cashFlowKey]: curr.amount / 100 + Number(acc[cashFlowKey])

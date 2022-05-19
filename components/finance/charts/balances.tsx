@@ -1,15 +1,17 @@
 import { ReactElement, useEffect, useState, memo } from 'react';
 import { ChartData } from 'types/finance';
-import { DisplayModes } from '..';
+import { DisplayModes, Period } from '..';
 
 import AreaChartBase from './areaChartBase';
 
 const BalancesPerWeek = memo(function BalancessPerWeek({
 	balances,
 	displayMode,
+	period,
 }: {
 	balances: ChartData[];
 	displayMode: DisplayModes;
+	period: Period;
 }): ReactElement {
 	const [categories, setCategories] = useState<string[]>([]);
 
@@ -36,6 +38,7 @@ const BalancesPerWeek = memo(function BalancessPerWeek({
 					data={balances}
 					shouldDisplayAverage={false}
 					displayMode={displayMode}
+					period={period}
 				/>
 			) : (
 				<></>

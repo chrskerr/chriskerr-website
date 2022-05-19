@@ -533,7 +533,7 @@ function createPeriodicData({
 				? startOfWeek(new Date(date), {
 						weekStartsOn: 1,
 				  })
-				: subDays(startOfMonth(new Date(date)), 10),
+				: subDays(startOfMonth(new Date(date)), 5),
 			'dd/MM/yy',
 		);
 	}
@@ -583,14 +583,10 @@ function createPeriodicData({
 			const transactionsForStart = transactionsWithStartDate.filter(
 				txn =>
 					txn.amount < 0 &&
-					!isProbablyInvestment(txn) &&
 					txn.startDate === startDate &&
+					!isProbablyInvestment(txn) &&
 					!isProbablyTransfer(txn),
 			);
-
-			if (startDate === '21/09/21') {
-				console.log(transactionsForStart);
-			}
 
 			const all: ChartData[] = [
 				...acc.all,
@@ -644,6 +640,10 @@ function createPeriodicData({
 		const transactionsForStart = transactionsWithStartDate.filter(
 			txn => txn.startDate === startDate && !isProbablyInvestment(txn),
 		);
+
+		if (startDate.includes('04/22')) {
+			console.log(transactionsForStart);
+		}
 
 		const cashFlowKey = 'In/Out';
 

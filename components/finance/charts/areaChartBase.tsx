@@ -19,7 +19,7 @@ import takeRight from 'lodash/takeRight';
 import debounce from 'lodash/debounce';
 
 import { ChartData } from 'types/finance';
-import { DisplayModes } from '..';
+import { DisplayModes, Period } from '..';
 import { chartLookbackWeeks } from 'lib/constants';
 
 type Props = {
@@ -30,6 +30,7 @@ type Props = {
 	thresholdLines?: ThresholdLine[];
 	yMax?: number;
 	yMin?: number;
+	period: Period;
 };
 
 type ThresholdLine = { label: string; value: number };
@@ -49,6 +50,7 @@ const AreaChartBase = memo(function AreaChartBase({
 	thresholdLines = [],
 	yMax = Infinity,
 	yMin = -Infinity,
+	period,
 }: Props): ReactElement {
 	const $_div = useRef(null);
 	const [dataLimit, setDataLimit] = useState(0);
@@ -80,10 +82,10 @@ const AreaChartBase = memo(function AreaChartBase({
 
 	const totalColours = categories.length + thresholdLines.length + 1;
 
-	const CustomTooltip = createCustomTooltip([
-		averageKey,
-		...thresholdLines.map(({ label }) => label),
-	]);
+	const CustomTooltip = createCustomTooltip(
+		[averageKey, ...thresholdLines.map(({ label }) => label)],
+		period,
+	);
 
 	return (
 		<div ref={$_div} className="h-[400px] w-full">
@@ -155,7 +157,7 @@ export const getFill = (i: number, of: number): string =>
 const calculateDegrees = (i: number, of: number): number =>
 	(202 + (360 * i) / (of + 1)) % 360;
 
-const createCustomTooltip = (excludedKeys: string[]) => {
+const createCustomTooltip = (excludedKeys: string[], period: Period) => {
 	const CustomTooltip: ContentType<ValueType, NameType> = ({
 		active,
 		payload,
@@ -173,7 +175,9 @@ const createCustomTooltip = (excludedKeys: string[]) => {
 
 			return (
 				<div className="p-4 bg-white border rounded shadow-lg">
-					<h3 className="pb-4 text-lg">Week starting: {label}</h3>
+					<h3 className="pb-4 text-lg">
+						${period} starting: {label}
+					</h3>
 					{payload
 						.filter(item => item.value)
 						.map(item => (

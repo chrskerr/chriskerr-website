@@ -30,6 +30,7 @@ const ExpensesPerWeek = memo(function ExpensesPerWeek({
 					displayMode={displayMode}
 					thresholdLines={[{ label: 'Target', value: 1330 }]}
 					yMin={period === 'week' ? -5_000 : -20_000}
+					period={period}
 				/>
 			)}
 		</div>
