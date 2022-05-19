@@ -589,7 +589,7 @@ function createPeriodicData({
 			);
 
 			if (startDate === '21/09/21') {
-				console.log(expenses);
+				console.log(transactionsForStart);
 			}
 
 			const all: ChartData[] = [
