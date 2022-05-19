@@ -63,9 +63,10 @@ export const withAuth = async <T>(
 export const fetchTransactionsHelper = async (
 	req: NextApiRequest | GetServerSidePropsContext['req'],
 	res: NextApiResponse | GetServerSidePropsContext['res'],
+	period: string,
 ): Promise<UpApiReturn | null> => {
 	return withAuth(req, res, async () => {
-		const response = await fetch(socketServerUrl + '/up/week', {
+		const response = await fetch(`${socketServerUrl}/up/${period}`, {
 			headers: apiKey ? new Headers({ api_key: apiKey }) : {},
 		});
 

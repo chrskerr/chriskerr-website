@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import { NextSeo } from 'next-seo';
 
 import { UpApiReturn } from 'types/finance';
@@ -17,12 +17,12 @@ export default function FinancesPage({ initialData }: Props): ReactElement {
 	const [loading, setLoading] = useState(false);
 
 	const [displayMode, setDisplayMode] = useState<DisplayModes>('monotone');
+	const [period, setPeriod] = useState<'week' | 'month'>('month');
 
-	const handleLogin = async () => {
-		if (!password) return;
+	async function fetchAndSetData(period: 'week' | 'month') {
 		setLoading(true);
 		try {
-			const res = await fetch('/api/finance/fetch', {
+			const res = await fetch(`/api/finance/${period}`, {
 				headers: new Headers({ api_key: password }),
 				credentials: 'include',
 			});
@@ -33,7 +33,18 @@ export default function FinancesPage({ initialData }: Props): ReactElement {
 			console.error(e);
 		}
 		setLoading(false);
+	}
+
+	const handleLogin = async () => {
+		if (!password) return;
+		fetchAndSetData(period);
 	};
+
+	useEffect(() => {
+		if (data) {
+			fetchAndSetData(period);
+		}
+	}, [period]);
 
 	return (
 		<>
@@ -47,7 +58,20 @@ export default function FinancesPage({ initialData }: Props): ReactElement {
 						</a>
 					</Link>
 				</div>
-				<div>
+				<div className="flex">
+					<label className="flex flex-col mr-4">
+						Period:
+						<select
+							value={displayMode}
+							onChange={e =>
+								setPeriod(e.target.value as 'week' | 'month')
+							}
+							className="mt-2"
+						>
+							<option value="week">Weekly</option>
+							<option value="month">Monthly</option>
+						</select>
+					</label>
 					<label className="flex flex-col">
 						Chart display mode:
 						<select

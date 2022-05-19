@@ -9,7 +9,13 @@ import dotenv from 'dotenv';
 import { Knex } from 'knex';
 dotenv.config({ path: '.env.local' });
 
-import { differenceInSeconds, format, startOfWeek, subWeeks } from 'date-fns';
+import {
+	differenceInSeconds,
+	format,
+	startOfMonth,
+	startOfWeek,
+	subWeeks,
+} from 'date-fns';
 
 import type {
 	Balance,
@@ -475,8 +481,9 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 
 				let result: UpApiReturn | undefined = undefined;
 
-				if (period === 'week') {
-					result = createWeeklyData({
+				if (period === 'week' || period === 'month') {
+					result = createPeriodicData({
+						period,
 						balances,
 						accounts,
 						transactions,
@@ -501,11 +508,13 @@ const isEventType = (string: string): string is AcceptedEventTypes => {
 	return string === 'TRANSACTION_CREATED';
 };
 
-function createWeeklyData({
+function createPeriodicData({
+	period,
 	balances,
 	accounts,
 	transactions,
 }: {
+	period: 'week' | 'month';
 	balances: Balance[];
 	accounts: Account[];
 	transactions: Transaction[];
@@ -518,9 +527,11 @@ function createWeeklyData({
 		Transaction & { startDate: string }
 	>(txn => {
 		const startDate = format(
-			startOfWeek(new Date(txn.createdAt), {
-				weekStartsOn: 1,
-			}),
+			period === 'week'
+				? startOfWeek(new Date(txn.createdAt), {
+						weekStartsOn: 1,
+				  })
+				: startOfMonth(new Date(txn.createdAt)),
 			'dd/MM/yy',
 		);
 		allStartDates.push(startDate);
@@ -535,9 +546,11 @@ function createWeeklyData({
 	const balancesWithStartDate = balances.map<Balance & { startDate: string }>(
 		txn => {
 			const startDate = format(
-				startOfWeek(new Date(txn.createdAt), {
-					weekStartsOn: 1,
-				}),
+				period === 'week'
+					? startOfWeek(new Date(txn.createdAt), {
+							weekStartsOn: 1,
+					  })
+					: startOfMonth(new Date(txn.createdAt)),
 				'dd/MM/yy',
 			);
 			allStartDates.push(startDate);

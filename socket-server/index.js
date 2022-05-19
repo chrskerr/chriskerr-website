@@ -54382,13 +54382,13 @@ var require_startOfMonth = __commonJS({
     Object.defineProperty(exports2, "__esModule", {
       value: true
     });
-    exports2.default = startOfMonth;
+    exports2.default = startOfMonth2;
     var _index = _interopRequireDefault(require_toDate());
     var _index2 = _interopRequireDefault(require_requiredArgs());
     function _interopRequireDefault(obj) {
       return obj && obj.__esModule ? obj : { default: obj };
     }
-    function startOfMonth(dirtyDate) {
+    function startOfMonth2(dirtyDate) {
       (0, _index2.default)(1, arguments);
       var date = (0, _index.default)(dirtyDate);
       date.setDate(1);
@@ -64925,8 +64925,9 @@ function createUpRoutes(app2, knex2) {
         const balances = yield knex2.table("account_balances" /* BALANCES */).where("createdAt", ">", fromDate).select();
         const transactions = yield knex2.table("account_transactions" /* TRANSACTIONS */).where("createdAt", ">", fromDate).select();
         let result = void 0;
-        if (period === "week") {
-          result = createWeeklyData({
+        if (period === "week" || period === "month") {
+          result = createPeriodicData({
+            period,
             balances,
             accounts,
             transactions
@@ -64945,7 +64946,8 @@ function createUpRoutes(app2, knex2) {
 var isEventType = (string) => {
   return string === "TRANSACTION_CREATED";
 };
-function createWeeklyData({
+function createPeriodicData({
+  period,
   balances,
   accounts,
   transactions
@@ -64954,9 +64956,9 @@ function createWeeklyData({
   const allCategories = [];
   const allParentCategories = [];
   const transactionsWithStartDate = transactions.map((txn) => {
-    const startDate = (0, import_date_fns.format)((0, import_date_fns.startOfWeek)(new Date(txn.createdAt), {
+    const startDate = (0, import_date_fns.format)(period === "week" ? (0, import_date_fns.startOfWeek)(new Date(txn.createdAt), {
       weekStartsOn: 1
-    }), "dd/MM/yy");
+    }) : (0, import_date_fns.startOfMonth)(new Date(txn.createdAt)), "dd/MM/yy");
     allStartDates.push(startDate);
     allCategories.push(txn.category || "Uncategorised");
     allParentCategories.push(txn.parentCategory || "Uncategorised");
@@ -64965,9 +64967,9 @@ function createWeeklyData({
     });
   });
   const balancesWithStartDate = balances.map((txn) => {
-    const startDate = (0, import_date_fns.format)((0, import_date_fns.startOfWeek)(new Date(txn.createdAt), {
+    const startDate = (0, import_date_fns.format)(period === "week" ? (0, import_date_fns.startOfWeek)(new Date(txn.createdAt), {
       weekStartsOn: 1
-    }), "dd/MM/yy");
+    }) : (0, import_date_fns.startOfMonth)(new Date(txn.createdAt)), "dd/MM/yy");
     allStartDates.push(startDate);
     return __spreadProps(__spreadValues({}, txn), {
       startDate

@@ -10,7 +10,13 @@ const handler: NextApiHandler = async (req, res) => {
 		credentials: true,
 	});
 
-	const result = await fetchTransactionsHelper(req, res);
+	const period = req.query.period;
+
+	const result = await fetchTransactionsHelper(
+		req,
+		res,
+		Array.isArray(period) ? period[0] : period,
+	);
 
 	if (result) {
 		res.status(200).json(result);
