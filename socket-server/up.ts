@@ -637,9 +637,20 @@ function createPeriodicData({
 	);
 
 	const cashFlow = startDates.map<ChartData>(startDate => {
-		const transactionsForStart = transactionsWithStartDate.filter(
-			txn => txn.startDate === startDate && !isProbablyInvestment(txn),
-		);
+		const transactionsForStart = transactionsWithStartDate.filter(txn => {
+			if (txn.id === 2715) {
+				console.log(
+					txn,
+					isProbablyInvestment(txn),
+					isProbablyTransfer(txn),
+				);
+			}
+			return (
+				txn.startDate === startDate &&
+				!isProbablyInvestment(txn) &&
+				!isProbablyTransfer(txn)
+			);
+		});
 
 		const cashFlowKey = 'In/Out';
 

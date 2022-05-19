@@ -17,6 +17,7 @@ import { ContentType } from 'recharts/types/component/Tooltip';
 
 import takeRight from 'lodash/takeRight';
 import debounce from 'lodash/debounce';
+import startCase from 'lodash/startCase';
 
 import { ChartData } from 'types/finance';
 import { DisplayModes, Period } from '..';
@@ -176,7 +177,7 @@ const createCustomTooltip = (excludedKeys: string[], period: Period) => {
 			return (
 				<div className="p-4 bg-white border rounded shadow-lg">
 					<h3 className="pb-4 text-lg">
-						${period} starting: {label}
+						{startCase(period)} starting: {label}
 					</h3>
 					{payload
 						.filter(item => item.value)
