@@ -117,7 +117,11 @@ export default function FinancesPage({ initialData }: Props): ReactElement {
 }
 
 export const getServerSideProps: GetServerSideProps = async context => {
-	const initialData = await fetchTransactionsHelper(context.req, context.res);
+	const initialData = await fetchTransactionsHelper(
+		context.req,
+		context.res,
+		'month',
+	);
 
 	const props: Props = {
 		initialData,
