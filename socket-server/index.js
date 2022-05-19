@@ -58035,14 +58035,14 @@ var require_subDays = __commonJS({
     Object.defineProperty(exports2, "__esModule", {
       value: true
     });
-    exports2.default = subDays;
+    exports2.default = subDays2;
     var _index = _interopRequireDefault(require_toInteger2());
     var _index2 = _interopRequireDefault(require_addDays());
     var _index3 = _interopRequireDefault(require_requiredArgs());
     function _interopRequireDefault(obj) {
       return obj && obj.__esModule ? obj : { default: obj };
     }
-    function subDays(dirtyDate, dirtyAmount) {
+    function subDays2(dirtyDate, dirtyAmount) {
       (0, _index3.default)(2, arguments);
       var amount = (0, _index.default)(dirtyAmount);
       return (0, _index2.default)(dirtyDate, -amount);
@@ -64777,7 +64777,7 @@ function createUpRoutes(app2, knex2) {
       }) : []
     ];
   });
-  const updateAllTranctions = (isChris, shouldFetchAll) => __async(this, null, function* () {
+  const updateAllTransactions = (isChris, shouldFetchAll) => __async(this, null, function* () {
     const allTransactions = yield fetchTransactions({
       isChris,
       shouldFetchAll
@@ -64819,8 +64819,8 @@ function createUpRoutes(app2, knex2) {
   app2.get("/up/balances", limiter, (req, res, next) => __async(this, null, function* () {
     try {
       const hasAuthHeaders = getHasAuthHeaders(req);
-      updateAllTranctions(true, true);
-      updateAllTranctions(false, true);
+      updateAllTransactions(true, true);
+      updateAllTransactions(false, true);
       if (upApiKeyChris && hasAuthHeaders) {
         const fetchRes = yield import_axios.default.get(urlBase + "/accounts", {
           headers: { Authorization: `Bearer ${upApiKeyChris}` }
@@ -64874,7 +64874,7 @@ function createUpRoutes(app2, knex2) {
       const isKate = hashKate === upSignature;
       const eventType = isEventType(body.attributes.eventType) ? body.attributes.eventType : void 0;
       if (eventType && txnId && (isChris || isKate)) {
-        yield updateAllTranctions(isChris, false);
+        yield updateAllTransactions(isChris, false);
       } else {
         console.log("hmac not matched", body);
       }
@@ -64958,10 +64958,13 @@ function createPeriodicData({
   const allStartDates = [];
   const allCategories = [];
   const allParentCategories = [];
-  const transactionsWithStartDate = transactions.map((txn) => {
-    const startDate = (0, import_date_fns.format)(period === "week" ? (0, import_date_fns.startOfWeek)(new Date(txn.createdAt), {
+  function formattedStartOfDate(date) {
+    return (0, import_date_fns.format)(period === "week" ? (0, import_date_fns.startOfWeek)(new Date(date), {
       weekStartsOn: 1
-    }) : (0, import_date_fns.startOfMonth)(new Date(txn.createdAt)), "dd/MM/yy");
+    }) : (0, import_date_fns.subDays)((0, import_date_fns.startOfMonth)(new Date(date)), 5), "dd/MM/yy");
+  }
+  const transactionsWithStartDate = transactions.map((txn) => {
+    const startDate = formattedStartOfDate(txn.createdAt);
     allStartDates.push(startDate);
     allCategories.push(txn.category || "Uncategorised");
     allParentCategories.push(txn.parentCategory || "Uncategorised");
@@ -64970,9 +64973,7 @@ function createPeriodicData({
     });
   });
   const balancesWithStartDate = balances.map((txn) => {
-    const startDate = (0, import_date_fns.format)(period === "week" ? (0, import_date_fns.startOfWeek)(new Date(txn.createdAt), {
-      weekStartsOn: 1
-    }) : (0, import_date_fns.startOfMonth)(new Date(txn.createdAt)), "dd/MM/yy");
+    const startDate = formattedStartOfDate(txn.createdAt);
     allStartDates.push(startDate);
     return __spreadProps(__spreadValues({}, txn), {
       startDate

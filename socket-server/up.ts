@@ -14,6 +14,7 @@ import {
 	format,
 	startOfMonth,
 	startOfWeek,
+	subDays,
 	subWeeks,
 } from 'date-fns';
 
@@ -164,7 +165,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 		];
 	};
 
-	const updateAllTranctions = async (
+	const updateAllTransactions = async (
 		isChris: boolean,
 		shouldFetchAll: boolean,
 	): Promise<void> => {
@@ -318,8 +319,8 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 		try {
 			const hasAuthHeaders = getHasAuthHeaders(req);
 
-			updateAllTranctions(true, true);
-			updateAllTranctions(false, true);
+			updateAllTransactions(true, true);
+			updateAllTransactions(false, true);
 
 			if (upApiKeyChris && hasAuthHeaders) {
 				const fetchRes = await axios.get(urlBase + '/accounts', {
@@ -402,7 +403,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 				: undefined;
 
 			if (eventType && txnId && (isChris || isKate)) {
-				await updateAllTranctions(isChris, false);
+				await updateAllTransactions(isChris, false);
 			} else {
 				console.log('hmac not matched', body);
 			}
@@ -526,17 +527,21 @@ function createPeriodicData({
 	const allCategories: string[] = [];
 	const allParentCategories: string[] = [];
 
+	function formattedStartOfDate(date: string | Date): string {
+		return format(
+			period === 'week'
+				? startOfWeek(new Date(date), {
+						weekStartsOn: 1,
+				  })
+				: subDays(startOfMonth(new Date(date)), 5),
+			'dd/MM/yy',
+		);
+	}
+
 	const transactionsWithStartDate = transactions.map<
 		Transaction & { startDate: string }
 	>(txn => {
-		const startDate = format(
-			period === 'week'
-				? startOfWeek(new Date(txn.createdAt), {
-						weekStartsOn: 1,
-				  })
-				: startOfMonth(new Date(txn.createdAt)),
-			'dd/MM/yy',
-		);
+		const startDate = formattedStartOfDate(txn.createdAt);
 		allStartDates.push(startDate);
 		allCategories.push(txn.category || 'Uncategorised');
 		allParentCategories.push(txn.parentCategory || 'Uncategorised');
@@ -548,14 +553,7 @@ function createPeriodicData({
 
 	const balancesWithStartDate = balances.map<Balance & { startDate: string }>(
 		txn => {
-			const startDate = format(
-				period === 'week'
-					? startOfWeek(new Date(txn.createdAt), {
-							weekStartsOn: 1,
-					  })
-					: startOfMonth(new Date(txn.createdAt)),
-				'dd/MM/yy',
-			);
+			const startDate = formattedStartOfDate(txn.createdAt);
 			allStartDates.push(startDate);
 			return {
 				...txn,
