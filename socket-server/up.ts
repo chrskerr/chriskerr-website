@@ -533,7 +533,7 @@ function createPeriodicData({
 				? startOfWeek(new Date(date), {
 						weekStartsOn: 1,
 				  })
-				: subDays(startOfMonth(new Date(date)), 5),
+				: subDays(startOfMonth(new Date(date)), 10),
 			'dd/MM/yy',
 		);
 	}
@@ -587,6 +587,10 @@ function createPeriodicData({
 					txn.startDate === startDate &&
 					!isProbablyTransfer(txn),
 			);
+
+			if (startDate === '21/09/21') {
+				console.log(expenses);
+			}
 
 			const all: ChartData[] = [
 				...acc.all,
