@@ -64961,7 +64961,7 @@ function createPeriodicData({
   function formattedStartOfDate(date) {
     return (0, import_date_fns.format)(period === "week" ? (0, import_date_fns.startOfWeek)(new Date(date), {
       weekStartsOn: 1
-    }) : (0, import_date_fns.subDays)((0, import_date_fns.startOfMonth)(new Date(date)), 5), "dd/MM/yy");
+    }) : (0, import_date_fns.subDays)((0, import_date_fns.startOfMonth)(new Date(date)), 10), "dd/MM/yy");
   }
   const transactionsWithStartDate = transactions.map((txn) => {
     const startDate = formattedStartOfDate(txn.createdAt);
@@ -64987,6 +64987,9 @@ function createPeriodicData({
   });
   const expenses = startDates.reduce((acc, startDate) => {
     const transactionsForStart = transactionsWithStartDate.filter((txn) => txn.amount < 0 && !isProbablyInvestment(txn) && txn.startDate === startDate && !isProbablyTransfer(txn));
+    if (startDate === "21/09/21") {
+      console.log(expenses);
+    }
     const all = [
       ...acc.all,
       transactionsForStart.reduce((acc_2, curr) => __spreadProps(__spreadValues({}, acc_2), {
