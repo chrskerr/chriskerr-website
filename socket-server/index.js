@@ -65051,7 +65051,7 @@ function createPeriodicData({
   };
 }
 var isProbablyTransfer = (transaction) => transaction.isTransfer || isDescriptionTransferLike(transaction.description);
-var isDescriptionTransferLike = (description) => description.startsWith("Transfer from ") || description.startsWith("Transfer to ") || description.startsWith("Auto Transfer to ") || description === "Round Up";
+var isDescriptionTransferLike = (description) => description.startsWith("Transfer from ") || description.startsWith("Transfer to ") || description.startsWith("Forward from ") || description.startsWith("Forward to ") || description === "Chris Kerr" || description.startsWith("Auto Transfer to ") || description === "Round Up";
 var isProbablyInvestment = (transaction) => {
   var _a;
   return !!((_a = transaction.category) == null ? void 0 : _a.includes("investment"));

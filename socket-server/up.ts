@@ -701,6 +701,9 @@ const isProbablyTransfer = (transaction: Transaction): boolean =>
 const isDescriptionTransferLike = (description: string): boolean =>
 	description.startsWith('Transfer from ') ||
 	description.startsWith('Transfer to ') ||
+	description.startsWith('Forward from ') ||
+	description.startsWith('Forward to ') ||
+	description === 'Chris Kerr' ||
 	description.startsWith('Auto Transfer to ') ||
 	description === 'Round Up';
 
