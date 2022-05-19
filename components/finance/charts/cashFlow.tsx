@@ -1,14 +1,16 @@
 import { memo, ReactElement } from 'react';
 import { UpApiReturn } from 'types/finance';
-import { DisplayModes } from '..';
+import { DisplayModes, Period } from '..';
 import AreaChartBase from './areaChartBase';
 
 const ExpensesPerWeek = memo(function ExpensesPerWeek({
 	cashFlow,
 	displayMode,
+	period,
 }: {
 	cashFlow: UpApiReturn['cashFlow'];
 	displayMode: DisplayModes;
+	period: Period;
 }): ReactElement {
 	const categories = cashFlow.reduce<string[]>((acc, curr) => {
 		const categories = Object.keys(curr).filter(key => key !== 'startDate');
@@ -27,7 +29,7 @@ const ExpensesPerWeek = memo(function ExpensesPerWeek({
 					data={cashFlow}
 					displayMode={displayMode}
 					thresholdLines={[{ label: 'Target', value: 1330 }]}
-					yMin={-5_000}
+					yMin={period === 'week' ? -5_000 : -20_000}
 				/>
 			)}
 		</div>

@@ -2,7 +2,7 @@ import { ReactElement, useEffect, useState } from 'react';
 import { NextSeo } from 'next-seo';
 
 import { UpApiReturn } from 'types/finance';
-import Finance, { DisplayModes } from 'components/finance';
+import Finance, { DisplayModes, Period } from 'components/finance';
 import { GetServerSideProps } from 'next';
 import { fetchTransactionsHelper } from 'components/finance/helpers';
 import Link from 'next/link';
@@ -19,9 +19,9 @@ export default function FinancesPage({ initialData }: Props): ReactElement {
 	const [loading, setLoading] = useState(false);
 
 	const [displayMode, setDisplayMode] = useState<DisplayModes>('monotone');
-	const [period, setPeriod] = useState<'week' | 'month'>(defaultPeriod);
+	const [period, setPeriod] = useState<Period>(defaultPeriod);
 
-	async function fetchAndSetData(period: 'week' | 'month') {
+	async function fetchAndSetData(period: Period) {
 		setLoading(true);
 		try {
 			const res = await fetch(`/api/finance/${period}`, {
@@ -64,10 +64,8 @@ export default function FinancesPage({ initialData }: Props): ReactElement {
 					<label className="flex flex-col mr-4">
 						Period:
 						<select
-							value={displayMode}
-							onChange={e =>
-								setPeriod(e.target.value as 'week' | 'month')
-							}
+							value={period}
+							onChange={e => setPeriod(e.target.value as Period)}
 							className="mt-2"
 						>
 							<option value="week">Weekly</option>
@@ -93,7 +91,11 @@ export default function FinancesPage({ initialData }: Props): ReactElement {
 				{loading ? (
 					<p>Loading</p>
 				) : data ? (
-					<Finance data={data} displayMode={displayMode} />
+					<Finance
+						data={data}
+						displayMode={displayMode}
+						period={period}
+					/>
 				) : (
 					<>
 						<input

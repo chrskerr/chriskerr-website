@@ -64917,9 +64917,12 @@ function createUpRoutes(app2, knex2) {
     try {
       const hasAuth = getHasAuthHeaders(req);
       const period = req.params.period;
+      let weeksLookback = Math.max(chartLookbackWeeks, 20);
+      if (period === "month")
+        weeksLookback = weeksLookback * 3;
       const fromDate = (0, import_date_fns.subWeeks)((0, import_date_fns.startOfWeek)(new Date(), {
         weekStartsOn: 1
-      }), Math.max(chartLookbackWeeks, 20));
+      }), weeksLookback);
       if (hasAuth) {
         const accounts = yield knex2.table("accounts" /* ACCOUNTS */).select();
         const balances = yield knex2.table("account_balances" /* BALANCES */).where("createdAt", ">", fromDate).select();
