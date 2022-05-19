@@ -65024,7 +65024,7 @@ function createPeriodicData({
   const cashFlow = startDates.map((startDate) => {
     const transactionsForStart = transactionsWithStartDate.filter((txn) => txn.startDate === startDate && !isProbablyInvestment(txn));
     if (startDate.includes("04/22")) {
-      console.log(transactionsForStart);
+      console.log(transactionsWithStartDate.filter((txn) => txn.startDate === startDate && txn.amount > 0));
     }
     const cashFlowKey = "In/Out";
     return transactionsForStart.reduce((acc, curr) => __spreadProps(__spreadValues({}, acc), {

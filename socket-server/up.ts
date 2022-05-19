@@ -642,7 +642,11 @@ function createPeriodicData({
 		);
 
 		if (startDate.includes('04/22')) {
-			console.log(transactionsForStart);
+			console.log(
+				transactionsWithStartDate.filter(
+					txn => txn.startDate === startDate && txn.amount > 0,
+				),
+			);
 		}
 
 		const cashFlowKey = 'In/Out';

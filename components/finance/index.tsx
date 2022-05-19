@@ -38,6 +38,7 @@ export default function Finance({
 				<BalancessPerWeek
 					balances={data.balances}
 					displayMode={displayMode}
+					period={period}
 				/>
 			</div>
 		</>
