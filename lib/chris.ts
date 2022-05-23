@@ -37,11 +37,19 @@ export const config: Record<
 		tags: ['wellbeing'],
 	},
 	8: {
-		label: 'Mental busyness / boredom',
+		label: 'Avoidance behaviour',
 		tags: ['wellbeing'],
 	},
 	9: {
-		label: 'Playing with phone',
+		label: 'Doom-scrolling',
+		tags: ['wellbeing'],
+	},
+	10: {
+		label: 'Snackiness',
+		tags: ['wellbeing'],
+	},
+	11: {
+		label: 'Craving for Alcohol',
 		tags: ['wellbeing'],
 	},
 };
