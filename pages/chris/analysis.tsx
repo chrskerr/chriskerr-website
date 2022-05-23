@@ -86,7 +86,7 @@ export default function ChrisAnalyse({ data }: IChrisNeckAnalyse) {
 					<p className="font-bold">Not much, or more</p>
 					<p className="font-bold">Some, or more</p>
 					<p className="font-bold">Lots</p>
-					<p className="text-xl">Upset Tummy Days</p>
+					<p className="text-xl">Sore Neck Days</p>
 					<p className="text-3xl">
 						{summaryByLabel[1][1]}
 						<span className="ml-4 text-xl">
@@ -108,7 +108,7 @@ export default function ChrisAnalyse({ data }: IChrisNeckAnalyse) {
 				</div>
 				<p className="pb-4 text-xl">Settings</p>
 				<div className="grid items-center grid-cols-2 gap-1 mb-12">
-					<label>Neck Upset Threshold</label>
+					<label>Neck Sore Threshold</label>
 					<select
 						value={String(neckThreshold)}
 						onChange={e =>
@@ -138,8 +138,8 @@ export default function ChrisAnalyse({ data }: IChrisNeckAnalyse) {
 					<thead>
 						<tr>
 							<th className="text-left">Stimuli *</th>
-							<th>Days upset</th>
-							<th>Days not upset</th>
+							<th>Days sore</th>
+							<th>Days not sore</th>
 							<th>Difference **</th>
 						</tr>
 					</thead>
@@ -280,8 +280,8 @@ export default function ChrisAnalyse({ data }: IChrisNeckAnalyse) {
 				</p>
 				<p className="pb-2 text-sm">
 					** The percentage of days which experienced that stimuli,
-					minus the percentage of days not upset. Intended to
-					highlight rows which had a larger impact on soreness than
+					minus the percentage of days not sore. Intended to highlight
+					rows which had a larger impact on soreness than
 					not-soreness.
 				</p>
 
