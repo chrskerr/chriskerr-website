@@ -52405,14 +52405,14 @@ var require_addDays = __commonJS({
     Object.defineProperty(exports2, "__esModule", {
       value: true
     });
-    exports2.default = addDays;
+    exports2.default = addDays2;
     var _index = _interopRequireDefault(require_toInteger2());
     var _index2 = _interopRequireDefault(require_toDate());
     var _index3 = _interopRequireDefault(require_requiredArgs());
     function _interopRequireDefault(obj) {
       return obj && obj.__esModule ? obj : { default: obj };
     }
-    function addDays(dirtyDate, dirtyAmount) {
+    function addDays2(dirtyDate, dirtyAmount) {
       (0, _index3.default)(2, arguments);
       var date = (0, _index2.default)(dirtyDate);
       var amount = (0, _index.default)(dirtyAmount);
@@ -64958,10 +64958,11 @@ function createPeriodicData({
   const allStartDates = [];
   const allCategories = [];
   const allParentCategories = [];
+  const monthlyDaysOffset = 5;
   function formattedStartOfDate(date) {
     return (0, import_date_fns.format)(period === "week" ? (0, import_date_fns.startOfWeek)(new Date(date), {
       weekStartsOn: 1
-    }) : (0, import_date_fns.subDays)((0, import_date_fns.startOfMonth)(new Date(date)), 5), "dd/MM/yy");
+    }) : (0, import_date_fns.subDays)((0, import_date_fns.startOfMonth)((0, import_date_fns.addDays)(new Date(date), monthlyDaysOffset)), monthlyDaysOffset), "dd/MM/yy");
   }
   const transactionsWithStartDate = transactions.map((txn) => {
     const startDate = formattedStartOfDate(txn.createdAt);

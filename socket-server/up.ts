@@ -10,6 +10,7 @@ import { Knex } from 'knex';
 dotenv.config({ path: '.env.local' });
 
 import {
+	addDays,
 	differenceInSeconds,
 	format,
 	startOfMonth,
@@ -527,13 +528,20 @@ function createPeriodicData({
 	const allCategories: string[] = [];
 	const allParentCategories: string[] = [];
 
+	const monthlyDaysOffset = 5;
+
 	function formattedStartOfDate(date: string | Date): string {
 		return format(
 			period === 'week'
 				? startOfWeek(new Date(date), {
 						weekStartsOn: 1,
 				  })
-				: subDays(startOfMonth(new Date(date)), 5),
+				: subDays(
+						startOfMonth(
+							addDays(new Date(date), monthlyDaysOffset),
+						),
+						monthlyDaysOffset,
+				  ),
 			'dd/MM/yy',
 		);
 	}
