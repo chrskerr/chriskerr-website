@@ -11,8 +11,6 @@ import bodyParser from 'body-parser';
 import cors, { CorsOptions } from 'cors';
 
 import Knex from 'knex';
-// @ts-ignore
-import KnexPostgres from 'knex/lib/dialects/postgres';
 
 import { processAllChanges } from '../components/editable-canvas/helpers';
 import { generateSlug, RandomWordOptions } from 'random-word-slugs';
@@ -58,7 +56,7 @@ interface INote {
 }
 
 const knex = Knex({
-	client: KnexPostgres,
+	client: 'pg',
 	connection: {
 		connectionString:
 			process.env.DATABASE_URL || 'postgres://127.0.0.1:5432/postgres',

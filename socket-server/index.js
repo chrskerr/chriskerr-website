@@ -21,21 +21,18 @@ var __spreadValues = (a, b) => {
   return a;
 };
 var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
-var __markAsModule = (target) => __defProp(target, "__esModule", { value: true });
 var __commonJS = (cb, mod) => function __require() {
   return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
-var __reExport = (target, module2, copyDefault, desc) => {
-  if (module2 && typeof module2 === "object" || typeof module2 === "function") {
-    for (let key of __getOwnPropNames(module2))
-      if (!__hasOwnProp.call(target, key) && (copyDefault || key !== "default"))
-        __defProp(target, key, { get: () => module2[key], enumerable: !(desc = __getOwnPropDesc(module2, key)) || desc.enumerable });
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
   }
-  return target;
+  return to;
 };
-var __toESM = (module2, isNodeMode) => {
-  return __reExport(__markAsModule(__defProp(module2 != null ? __create(__getProtoOf(module2)) : {}, "default", !isNodeMode && module2 && module2.__esModule ? { get: () => module2.default, enumerable: true } : { value: module2, enumerable: true })), module2);
-};
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target, mod));
 var __async = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -57,141 +54,11 @@ var __async = (__this, __arguments, generator) => {
   });
 };
 
-// node_modules/depd/lib/compat/callsite-tostring.js
-var require_callsite_tostring = __commonJS({
-  "node_modules/depd/lib/compat/callsite-tostring.js"(exports2, module2) {
-    "use strict";
-    module2.exports = callSiteToString2;
-    function callSiteFileLocation(callSite) {
-      var fileName;
-      var fileLocation = "";
-      if (callSite.isNative()) {
-        fileLocation = "native";
-      } else if (callSite.isEval()) {
-        fileName = callSite.getScriptNameOrSourceURL();
-        if (!fileName) {
-          fileLocation = callSite.getEvalOrigin();
-        }
-      } else {
-        fileName = callSite.getFileName();
-      }
-      if (fileName) {
-        fileLocation += fileName;
-        var lineNumber = callSite.getLineNumber();
-        if (lineNumber != null) {
-          fileLocation += ":" + lineNumber;
-          var columnNumber = callSite.getColumnNumber();
-          if (columnNumber) {
-            fileLocation += ":" + columnNumber;
-          }
-        }
-      }
-      return fileLocation || "unknown source";
-    }
-    function callSiteToString2(callSite) {
-      var addSuffix = true;
-      var fileLocation = callSiteFileLocation(callSite);
-      var functionName = callSite.getFunctionName();
-      var isConstructor = callSite.isConstructor();
-      var isMethodCall = !(callSite.isToplevel() || isConstructor);
-      var line = "";
-      if (isMethodCall) {
-        var methodName = callSite.getMethodName();
-        var typeName = getConstructorName(callSite);
-        if (functionName) {
-          if (typeName && functionName.indexOf(typeName) !== 0) {
-            line += typeName + ".";
-          }
-          line += functionName;
-          if (methodName && functionName.lastIndexOf("." + methodName) !== functionName.length - methodName.length - 1) {
-            line += " [as " + methodName + "]";
-          }
-        } else {
-          line += typeName + "." + (methodName || "<anonymous>");
-        }
-      } else if (isConstructor) {
-        line += "new " + (functionName || "<anonymous>");
-      } else if (functionName) {
-        line += functionName;
-      } else {
-        addSuffix = false;
-        line += fileLocation;
-      }
-      if (addSuffix) {
-        line += " (" + fileLocation + ")";
-      }
-      return line;
-    }
-    function getConstructorName(obj) {
-      var receiver = obj.receiver;
-      return receiver.constructor && receiver.constructor.name || null;
-    }
-  }
-});
-
-// node_modules/depd/lib/compat/event-listener-count.js
-var require_event_listener_count = __commonJS({
-  "node_modules/depd/lib/compat/event-listener-count.js"(exports2, module2) {
-    "use strict";
-    module2.exports = eventListenerCount2;
-    function eventListenerCount2(emitter, type) {
-      return emitter.listeners(type).length;
-    }
-  }
-});
-
-// node_modules/depd/lib/compat/index.js
-var require_compat = __commonJS({
-  "node_modules/depd/lib/compat/index.js"(exports2, module2) {
-    "use strict";
-    var EventEmitter = require("events").EventEmitter;
-    lazyProperty(module2.exports, "callSiteToString", function callSiteToString2() {
-      var limit = Error.stackTraceLimit;
-      var obj = {};
-      var prep = Error.prepareStackTrace;
-      function prepareObjectStackTrace2(obj2, stack3) {
-        return stack3;
-      }
-      Error.prepareStackTrace = prepareObjectStackTrace2;
-      Error.stackTraceLimit = 2;
-      Error.captureStackTrace(obj);
-      var stack2 = obj.stack.slice();
-      Error.prepareStackTrace = prep;
-      Error.stackTraceLimit = limit;
-      return stack2[0].toString ? toString : require_callsite_tostring();
-    });
-    lazyProperty(module2.exports, "eventListenerCount", function eventListenerCount2() {
-      return EventEmitter.listenerCount || require_event_listener_count();
-    });
-    function lazyProperty(obj, prop, getter) {
-      function get() {
-        var val = getter();
-        Object.defineProperty(obj, prop, {
-          configurable: true,
-          enumerable: true,
-          value: val
-        });
-        return val;
-      }
-      Object.defineProperty(obj, prop, {
-        configurable: true,
-        enumerable: true,
-        get
-      });
-    }
-    function toString(obj) {
-      return obj.toString();
-    }
-  }
-});
-
 // node_modules/depd/index.js
 var require_depd = __commonJS({
-  "node_modules/depd/index.js"(exports, module) {
-    var callSiteToString = require_compat().callSiteToString;
-    var eventListenerCount = require_compat().eventListenerCount;
+  "node_modules/depd/index.js"(exports2, module2) {
     var relative = require("path").relative;
-    module.exports = depd;
+    module2.exports = depd;
     var basePath = process.cwd();
     function containsNamespace(str, namespace) {
       var vals = str.split(/[ ,]+/);
@@ -204,7 +71,7 @@ var require_depd = __commonJS({
       }
       return false;
     }
-    function convertDataDescriptorToAccessor(obj, prop, message2) {
+    function convertDataDescriptorToAccessor(obj, prop, message) {
       var descriptor = Object.getOwnPropertyDescriptor(obj, prop);
       var value = descriptor.value;
       descriptor.get = function getter() {
@@ -227,13 +94,13 @@ var require_depd = __commonJS({
       }
       return str.substr(2);
     }
-    function createStackString(stack2) {
+    function createStackString(stack) {
       var str = this.name + ": " + this.namespace;
       if (this.message) {
         str += " deprecated " + this.message;
       }
-      for (var i = 0; i < stack2.length; i++) {
-        str += "\n    at " + callSiteToString(stack2[i]);
+      for (var i = 0; i < stack.length; i++) {
+        str += "\n    at " + stack[i].toString();
       }
       return str;
     }
@@ -241,20 +108,24 @@ var require_depd = __commonJS({
       if (!namespace) {
         throw new TypeError("argument namespace is required");
       }
-      var stack2 = getStack();
-      var site2 = callSiteLocation(stack2[1]);
-      var file = site2[0];
-      function deprecate2(message2) {
-        log.call(deprecate2, message2);
+      var stack = getStack();
+      var site = callSiteLocation(stack[1]);
+      var file = site[0];
+      function deprecate(message) {
+        log.call(deprecate, message);
       }
-      deprecate2._file = file;
-      deprecate2._ignored = isignored(namespace);
-      deprecate2._namespace = namespace;
-      deprecate2._traced = istraced(namespace);
-      deprecate2._warned = Object.create(null);
-      deprecate2.function = wrapfunction;
-      deprecate2.property = wrapproperty;
-      return deprecate2;
+      deprecate._file = file;
+      deprecate._ignored = isignored(namespace);
+      deprecate._namespace = namespace;
+      deprecate._traced = istraced(namespace);
+      deprecate._warned = /* @__PURE__ */ Object.create(null);
+      deprecate.function = wrapfunction;
+      deprecate.property = wrapproperty;
+      return deprecate;
+    }
+    function eehaslisteners(emitter, type) {
+      var count = typeof emitter.listenerCount !== "function" ? emitter.listeners(type).length : emitter.listenerCount(type);
+      return count > 0;
     }
     function isignored(namespace) {
       if (process.noDeprecation) {
@@ -270,8 +141,8 @@ var require_depd = __commonJS({
       var str = process.env.TRACE_DEPRECATION || "";
       return containsNamespace(str, namespace);
     }
-    function log(message2, site2) {
-      var haslisteners = eventListenerCount(process, "deprecation") !== 0;
+    function log(message, site) {
+      var haslisteners = eehaslisteners(process, "deprecation");
       if (!haslisteners && this._ignored) {
         return;
       }
@@ -281,20 +152,20 @@ var require_depd = __commonJS({
       var depSite;
       var i = 0;
       var seen = false;
-      var stack2 = getStack();
+      var stack = getStack();
       var file = this._file;
-      if (site2) {
-        depSite = site2;
-        callSite = callSiteLocation(stack2[1]);
+      if (site) {
+        depSite = site;
+        callSite = callSiteLocation(stack[1]);
         callSite.name = depSite.name;
         file = callSite[0];
       } else {
         i = 2;
-        depSite = callSiteLocation(stack2[i]);
+        depSite = callSiteLocation(stack[i]);
         callSite = depSite;
       }
-      for (; i < stack2.length; i++) {
-        caller = callSiteLocation(stack2[i]);
+      for (; i < stack.length; i++) {
+        caller = callSiteLocation(stack[i]);
         callFile = caller[0];
         if (callFile === file) {
           seen = true;
@@ -309,17 +180,17 @@ var require_depd = __commonJS({
         return;
       }
       this._warned[key] = true;
-      var msg = message2;
+      var msg = message;
       if (!msg) {
         msg = callSite === depSite || !callSite.name ? defaultMessage(depSite) : defaultMessage(callSite);
       }
       if (haslisteners) {
-        var err = DeprecationError(this._namespace, msg, stack2.slice(i));
+        var err = DeprecationError(this._namespace, msg, stack.slice(i));
         process.emit("deprecation", err);
         return;
       }
       var format2 = process.stderr.isTTY ? formatColor : formatPlain;
-      var output = format2.call(this, msg, caller, stack2.slice(i));
+      var output = format2.call(this, msg, caller, stack.slice(i));
       process.stderr.write(output + "\n", "utf8");
     }
     function callSiteLocation(callSite) {
@@ -329,16 +200,16 @@ var require_depd = __commonJS({
       if (callSite.isEval()) {
         file = callSite.getEvalOrigin() + ", " + file;
       }
-      var site2 = [file, line, colm];
-      site2.callSite = callSite;
-      site2.name = callSite.getFunctionName();
-      return site2;
+      var site = [file, line, colm];
+      site.callSite = callSite;
+      site.name = callSite.getFunctionName();
+      return site;
     }
-    function defaultMessage(site2) {
-      var callSite = site2.callSite;
-      var funcName = site2.name;
+    function defaultMessage(site) {
+      var callSite = site.callSite;
+      var funcName = site.name;
       if (!funcName) {
-        funcName = "<anonymous@" + formatLocation(site2) + ">";
+        funcName = "<anonymous@" + formatLocation(site) + ">";
       }
       var context = callSite.getThis();
       var typeName = context && callSite.getTypeName();
@@ -350,12 +221,12 @@ var require_depd = __commonJS({
       }
       return typeName && callSite.getMethodName() ? typeName + "." + funcName : funcName;
     }
-    function formatPlain(msg, caller, stack2) {
+    function formatPlain(msg, caller, stack) {
       var timestamp = new Date().toUTCString();
       var formatted = timestamp + " " + this._namespace + " deprecated " + msg;
       if (this._traced) {
-        for (var i = 0; i < stack2.length; i++) {
-          formatted += "\n    at " + callSiteToString(stack2[i]);
+        for (var i = 0; i < stack.length; i++) {
+          formatted += "\n    at " + stack[i].toString();
         }
         return formatted;
       }
@@ -364,16 +235,16 @@ var require_depd = __commonJS({
       }
       return formatted;
     }
-    function formatColor(msg, caller, stack2) {
-      var formatted = "[36;1m" + this._namespace + "[22;39m [33;1mdeprecated[22;39m [0m" + msg + "[39m";
+    function formatColor(msg, caller, stack) {
+      var formatted = "\x1B[36;1m" + this._namespace + "\x1B[22;39m \x1B[33;1mdeprecated\x1B[22;39m \x1B[0m" + msg + "\x1B[39m";
       if (this._traced) {
-        for (var i = 0; i < stack2.length; i++) {
-          formatted += "\n    [36mat " + callSiteToString(stack2[i]) + "[39m";
+        for (var i = 0; i < stack.length; i++) {
+          formatted += "\n    \x1B[36mat " + stack[i].toString() + "\x1B[39m";
         }
         return formatted;
       }
       if (caller) {
-        formatted += " [36m" + formatLocation(caller) + "[39m";
+        formatted += " \x1B[36m" + formatLocation(caller) + "\x1B[39m";
       }
       return formatted;
     }
@@ -387,27 +258,26 @@ var require_depd = __commonJS({
       Error.prepareStackTrace = prepareObjectStackTrace;
       Error.stackTraceLimit = Math.max(10, limit);
       Error.captureStackTrace(obj);
-      var stack2 = obj.stack.slice(1);
+      var stack = obj.stack.slice(1);
       Error.prepareStackTrace = prep;
       Error.stackTraceLimit = limit;
-      return stack2;
+      return stack;
     }
-    function prepareObjectStackTrace(obj, stack2) {
-      return stack2;
+    function prepareObjectStackTrace(obj, stack) {
+      return stack;
     }
     function wrapfunction(fn, message) {
       if (typeof fn !== "function") {
         throw new TypeError("argument fn must be a function");
       }
       var args = createArgumentsString(fn.length);
-      var deprecate = this;
       var stack = getStack();
       var site = callSiteLocation(stack[1]);
       site.name = fn.name;
-      var deprecatedfn = eval("(function (" + args + ') {\n"use strict"\nlog.call(deprecate, message, site)\nreturn fn.apply(this, arguments)\n})');
+      var deprecatedfn = new Function("fn", "log", "deprecate", "message", "site", '"use strict"\nreturn function (' + args + ") {log.call(deprecate, message, site)\nreturn fn.apply(this, arguments)\n}")(fn, log, this, message, site);
       return deprecatedfn;
     }
-    function wrapproperty(obj, prop, message2) {
+    function wrapproperty(obj, prop, message) {
       if (!obj || typeof obj !== "object" && typeof obj !== "function") {
         throw new TypeError("argument obj must be object");
       }
@@ -418,30 +288,30 @@ var require_depd = __commonJS({
       if (!descriptor.configurable) {
         throw new TypeError("property must be configurable");
       }
-      var deprecate2 = this;
-      var stack2 = getStack();
-      var site2 = callSiteLocation(stack2[1]);
-      site2.name = prop;
+      var deprecate = this;
+      var stack = getStack();
+      var site = callSiteLocation(stack[1]);
+      site.name = prop;
       if ("value" in descriptor) {
-        descriptor = convertDataDescriptorToAccessor(obj, prop, message2);
+        descriptor = convertDataDescriptorToAccessor(obj, prop, message);
       }
       var get = descriptor.get;
       var set = descriptor.set;
       if (typeof get === "function") {
         descriptor.get = function getter() {
-          log.call(deprecate2, message2, site2);
+          log.call(deprecate, message, site);
           return get.apply(this, arguments);
         };
       }
       if (typeof set === "function") {
         descriptor.set = function setter() {
-          log.call(deprecate2, message2, site2);
+          log.call(deprecate, message, site);
           return set.apply(this, arguments);
         };
       }
       Object.defineProperty(obj, prop, descriptor);
     }
-    function DeprecationError(namespace, message2, stack2) {
+    function DeprecationError(namespace, message, stack) {
       var error = new Error();
       var stackString;
       Object.defineProperty(error, "constructor", {
@@ -450,7 +320,7 @@ var require_depd = __commonJS({
       Object.defineProperty(error, "message", {
         configurable: true,
         enumerable: false,
-        value: message2,
+        value: message,
         writable: true
       });
       Object.defineProperty(error, "name", {
@@ -472,7 +342,7 @@ var require_depd = __commonJS({
           if (stackString !== void 0) {
             return stackString;
           }
-          return stackString = createStackString.call(this, stack2);
+          return stackString = createStackString.call(this, stack);
         },
         set: function setter(val) {
           stackString = val;
@@ -541,7 +411,9 @@ var require_bytes = __commonJS({
         str = str.replace(formatDecimalsRegExp, "$1");
       }
       if (thousandsSeparator) {
-        str = str.replace(formatThousandsRegExp, thousandsSeparator);
+        str = str.split(".").map(function(s, i) {
+          return i === 0 ? s.replace(formatThousandsRegExp, thousandsSeparator) : s;
+        }).join(".");
       }
       return str + unitSeparator + unit;
     }
@@ -561,6 +433,9 @@ var require_bytes = __commonJS({
       } else {
         floatValue = parseFloat(results[1]);
         unit = results[4].toLowerCase();
+      }
+      if (isNaN(floatValue)) {
+        return null;
       }
       return Math.floor(map[unit] * floatValue);
     }
@@ -662,7 +537,7 @@ var require_content_type = __commonJS({
       return '"' + str.replace(QUOTE_REGEXP, "\\$1") + '"';
     }
     function ContentType(type) {
-      this.parameters = Object.create(null);
+      this.parameters = /* @__PURE__ */ Object.create(null);
       this.type = type;
     }
   }
@@ -679,7 +554,7 @@ var require_setprototypeof = __commonJS({
     }
     function mixinProperties(obj, proto) {
       for (var prop in proto) {
-        if (!obj.hasOwnProperty(prop)) {
+        if (!Object.prototype.hasOwnProperty.call(obj, prop)) {
           obj[prop] = proto[prop];
         }
       }
@@ -712,7 +587,6 @@ var require_codes = __commonJS({
       "303": "See Other",
       "304": "Not Modified",
       "305": "Use Proxy",
-      "306": "(Unused)",
       "307": "Temporary Redirect",
       "308": "Permanent Redirect",
       "400": "Bad Request",
@@ -733,12 +607,12 @@ var require_codes = __commonJS({
       "415": "Unsupported Media Type",
       "416": "Range Not Satisfiable",
       "417": "Expectation Failed",
-      "418": "I'm a teapot",
+      "418": "I'm a Teapot",
       "421": "Misdirected Request",
       "422": "Unprocessable Entity",
       "423": "Locked",
       "424": "Failed Dependency",
-      "425": "Unordered Collection",
+      "425": "Too Early",
       "426": "Upgrade Required",
       "428": "Precondition Required",
       "429": "Too Many Requests",
@@ -766,8 +640,9 @@ var require_statuses = __commonJS({
     "use strict";
     var codes = require_codes();
     module2.exports = status;
-    status.STATUS_CODES = codes;
-    status.codes = populateStatusesMap(status, codes);
+    status.message = codes;
+    status.code = createMessageToStatusCodeMap(codes);
+    status.codes = createStatusCodeList(codes);
     status.redirect = {
       300: true,
       301: true,
@@ -787,37 +662,45 @@ var require_statuses = __commonJS({
       503: true,
       504: true
     };
-    function populateStatusesMap(statuses, codes2) {
-      var arr = [];
+    function createMessageToStatusCodeMap(codes2) {
+      var map = {};
       Object.keys(codes2).forEach(function forEachCode(code) {
-        var message2 = codes2[code];
+        var message = codes2[code];
         var status2 = Number(code);
-        statuses[status2] = message2;
-        statuses[message2] = status2;
-        statuses[message2.toLowerCase()] = status2;
-        arr.push(status2);
+        map[message.toLowerCase()] = status2;
       });
-      return arr;
+      return map;
+    }
+    function createStatusCodeList(codes2) {
+      return Object.keys(codes2).map(function mapCode(code) {
+        return Number(code);
+      });
+    }
+    function getStatusCode(message) {
+      var msg = message.toLowerCase();
+      if (!Object.prototype.hasOwnProperty.call(status.code, msg)) {
+        throw new Error('invalid status message: "' + message + '"');
+      }
+      return status.code[msg];
+    }
+    function getStatusMessage(code) {
+      if (!Object.prototype.hasOwnProperty.call(status.message, code)) {
+        throw new Error("invalid status code: " + code);
+      }
+      return status.message[code];
     }
     function status(code) {
       if (typeof code === "number") {
-        if (!status[code])
-          throw new Error("invalid status code: " + code);
-        return code;
+        return getStatusMessage(code);
       }
       if (typeof code !== "string") {
         throw new TypeError("code must be a number or string");
       }
       var n = parseInt(code, 10);
       if (!isNaN(n)) {
-        if (!status[n])
-          throw new Error("invalid status code: " + n);
-        return n;
+        return getStatusMessage(n);
       }
-      n = status[code.toLowerCase()];
-      if (!n)
-        throw new Error('invalid status message: "' + code + '"');
-      return n;
+      return getStatusCode(code);
     }
   }
 });
@@ -827,24 +710,28 @@ var require_inherits_browser = __commonJS({
   "node_modules/inherits/inherits_browser.js"(exports2, module2) {
     if (typeof Object.create === "function") {
       module2.exports = function inherits(ctor, superCtor) {
-        ctor.super_ = superCtor;
-        ctor.prototype = Object.create(superCtor.prototype, {
-          constructor: {
-            value: ctor,
-            enumerable: false,
-            writable: true,
-            configurable: true
-          }
-        });
+        if (superCtor) {
+          ctor.super_ = superCtor;
+          ctor.prototype = Object.create(superCtor.prototype, {
+            constructor: {
+              value: ctor,
+              enumerable: false,
+              writable: true,
+              configurable: true
+            }
+          });
+        }
       };
     } else {
       module2.exports = function inherits(ctor, superCtor) {
-        ctor.super_ = superCtor;
-        var TempCtor = function() {
-        };
-        TempCtor.prototype = superCtor.prototype;
-        ctor.prototype = new TempCtor();
-        ctor.prototype.constructor = ctor;
+        if (superCtor) {
+          ctor.super_ = superCtor;
+          var TempCtor = function() {
+          };
+          TempCtor.prototype = superCtor.prototype;
+          ctor.prototype = new TempCtor();
+          ctor.prototype.constructor = ctor;
+        }
       };
     }
   }
@@ -868,6 +755,7 @@ var require_inherits = __commonJS({
 // node_modules/toidentifier/index.js
 var require_toidentifier = __commonJS({
   "node_modules/toidentifier/index.js"(exports2, module2) {
+    "use strict";
     module2.exports = toIdentifier;
     function toIdentifier(str) {
       return str.split(" ").map(function(token) {
@@ -881,13 +769,14 @@ var require_toidentifier = __commonJS({
 var require_http_errors = __commonJS({
   "node_modules/http-errors/index.js"(exports2, module2) {
     "use strict";
-    var deprecate2 = require_depd()("http-errors");
+    var deprecate = require_depd()("http-errors");
     var setPrototypeOf = require_setprototypeof();
     var statuses = require_statuses();
     var inherits = require_inherits();
     var toIdentifier = require_toidentifier();
     module2.exports = createError;
     module2.exports.HttpError = createHttpErrorConstructor();
+    module2.exports.isHttpError = createIsHttpErrorFunction(module2.exports.HttpError);
     populateConstructorExports(module2.exports, statuses.codes, module2.exports.HttpError);
     function codeClass(status) {
       return Number(String(status).charAt(0) + "00");
@@ -899,35 +788,29 @@ var require_http_errors = __commonJS({
       var props = {};
       for (var i = 0; i < arguments.length; i++) {
         var arg = arguments[i];
-        if (arg instanceof Error) {
+        var type = typeof arg;
+        if (type === "object" && arg instanceof Error) {
           err = arg;
           status = err.status || err.statusCode || status;
-          continue;
-        }
-        switch (typeof arg) {
-          case "string":
-            msg = arg;
-            break;
-          case "number":
-            status = arg;
-            if (i !== 0) {
-              deprecate2("non-first-argument status code; replace with createError(" + arg + ", ...)");
-            }
-            break;
-          case "object":
-            props = arg;
-            break;
+        } else if (type === "number" && i === 0) {
+          status = arg;
+        } else if (type === "string") {
+          msg = arg;
+        } else if (type === "object") {
+          props = arg;
+        } else {
+          throw new TypeError("argument #" + (i + 1) + " unsupported type " + type);
         }
       }
       if (typeof status === "number" && (status < 400 || status >= 600)) {
-        deprecate2("non-error status code; use only 4xx or 5xx status codes");
+        deprecate("non-error status code; use only 4xx or 5xx status codes");
       }
-      if (typeof status !== "number" || !statuses[status] && (status < 400 || status >= 600)) {
+      if (typeof status !== "number" || !statuses.message[status] && (status < 400 || status >= 600)) {
         status = 500;
       }
       var HttpError = createError[status] || createError[codeClass(status)];
       if (!err) {
-        err = HttpError ? new HttpError(msg) : new Error(msg || statuses[status]);
+        err = HttpError ? new HttpError(msg) : new Error(msg || statuses.message[status]);
         Error.captureStackTrace(err, createError);
       }
       if (!HttpError || !(err instanceof HttpError) || err.status !== status) {
@@ -949,9 +832,9 @@ var require_http_errors = __commonJS({
       return HttpError;
     }
     function createClientErrorConstructor(HttpError, name, code) {
-      var className = name.match(/Error$/) ? name : name + "Error";
-      function ClientError(message2) {
-        var msg = message2 != null ? message2 : statuses[code];
+      var className = toClassName(name);
+      function ClientError(message) {
+        var msg = message != null ? message : statuses.message[code];
         var err = new Error(msg);
         Error.captureStackTrace(err, ClientError);
         setPrototypeOf(err, ClientError.prototype);
@@ -976,10 +859,21 @@ var require_http_errors = __commonJS({
       ClientError.prototype.expose = true;
       return ClientError;
     }
+    function createIsHttpErrorFunction(HttpError) {
+      return function isHttpError(val) {
+        if (!val || typeof val !== "object") {
+          return false;
+        }
+        if (val instanceof HttpError) {
+          return true;
+        }
+        return val instanceof Error && typeof val.expose === "boolean" && typeof val.statusCode === "number" && val.status === val.statusCode;
+      };
+    }
     function createServerErrorConstructor(HttpError, name, code) {
-      var className = name.match(/Error$/) ? name : name + "Error";
-      function ServerError(message2) {
-        var msg = message2 != null ? message2 : statuses[code];
+      var className = toClassName(name);
+      function ServerError(message) {
+        var msg = message != null ? message : statuses.message[code];
         var err = new Error(msg);
         Error.captureStackTrace(err, ServerError);
         setPrototypeOf(err, ServerError.prototype);
@@ -1014,7 +908,7 @@ var require_http_errors = __commonJS({
     function populateConstructorExports(exports3, codes, HttpError) {
       codes.forEach(function forEachCode(code) {
         var CodeError;
-        var name = toIdentifier(statuses[code]);
+        var name = toIdentifier(statuses.message[code]);
         switch (codeClass(code)) {
           case 400:
             CodeError = createClientErrorConstructor(HttpError, name, code);
@@ -1028,7 +922,9 @@ var require_http_errors = __commonJS({
           exports3[name] = CodeError;
         }
       });
-      exports3["I'mateapot"] = deprecate2.function(exports3.ImATeapot, `"I'mateapot"; use "ImATeapot" instead`);
+    }
+    function toClassName(name) {
+      return name.substr(-5) !== "Error" ? name + "Error" : name;
     }
   }
 });
@@ -1163,31 +1059,31 @@ var require_debug = __commonJS({
         self2.prev = prevTime;
         self2.curr = curr;
         prevTime = curr;
-        var args2 = new Array(arguments.length);
-        for (var i = 0; i < args2.length; i++) {
-          args2[i] = arguments[i];
+        var args = new Array(arguments.length);
+        for (var i = 0; i < args.length; i++) {
+          args[i] = arguments[i];
         }
-        args2[0] = exports2.coerce(args2[0]);
-        if (typeof args2[0] !== "string") {
-          args2.unshift("%O");
+        args[0] = exports2.coerce(args[0]);
+        if (typeof args[0] !== "string") {
+          args.unshift("%O");
         }
         var index = 0;
-        args2[0] = args2[0].replace(/%([a-zA-Z%])/g, function(match, format2) {
+        args[0] = args[0].replace(/%([a-zA-Z%])/g, function(match, format2) {
           if (match === "%%")
             return match;
           index++;
           var formatter = exports2.formatters[format2];
           if (typeof formatter === "function") {
-            var val = args2[index];
+            var val = args[index];
             match = formatter.call(self2, val);
-            args2.splice(index, 1);
+            args.splice(index, 1);
             index--;
           }
           return match;
         });
-        exports2.formatArgs.call(self2, args2);
+        exports2.formatArgs.call(self2, args);
         var logFn = debug.log || exports2.log || console.log.bind(console);
-        logFn.apply(self2, args2);
+        logFn.apply(self2, args);
       }
       debug.namespace = namespace;
       debug.enabled = exports2.enabled(namespace);
@@ -1244,7 +1140,7 @@ var require_debug = __commonJS({
 var require_browser = __commonJS({
   "node_modules/debug/src/browser.js"(exports2, module2) {
     exports2 = module2.exports = require_debug();
-    exports2.log = log2;
+    exports2.log = log;
     exports2.formatArgs = formatArgs;
     exports2.save = save;
     exports2.load = load;
@@ -1271,16 +1167,16 @@ var require_browser = __commonJS({
         return "[UnexpectedJSONParseError]: " + err.message;
       }
     };
-    function formatArgs(args2) {
+    function formatArgs(args) {
       var useColors2 = this.useColors;
-      args2[0] = (useColors2 ? "%c" : "") + this.namespace + (useColors2 ? " %c" : " ") + args2[0] + (useColors2 ? "%c " : " ") + "+" + exports2.humanize(this.diff);
+      args[0] = (useColors2 ? "%c" : "") + this.namespace + (useColors2 ? " %c" : " ") + args[0] + (useColors2 ? "%c " : " ") + "+" + exports2.humanize(this.diff);
       if (!useColors2)
         return;
       var c = "color: " + this.color;
-      args2.splice(1, 0, c, "color: inherit");
+      args.splice(1, 0, c, "color: inherit");
       var index = 0;
       var lastC = 0;
-      args2[0].replace(/%[a-zA-Z%]/g, function(match) {
+      args[0].replace(/%[a-zA-Z%]/g, function(match) {
         if (match === "%%")
           return;
         index++;
@@ -1288,9 +1184,9 @@ var require_browser = __commonJS({
           lastC = index;
         }
       });
-      args2.splice(lastC, 0, c);
+      args.splice(lastC, 0, c);
     }
-    function log2() {
+    function log() {
       return typeof console === "object" && console.log && Function.prototype.apply.call(console.log, console, arguments);
     }
     function save(namespaces) {
@@ -1331,7 +1227,7 @@ var require_node = __commonJS({
     var util = require("util");
     exports2 = module2.exports = require_debug();
     exports2.init = init;
-    exports2.log = log2;
+    exports2.log = log;
     exports2.formatArgs = formatArgs;
     exports2.save = save;
     exports2.load = load;
@@ -1374,19 +1270,19 @@ var require_node = __commonJS({
       this.inspectOpts.colors = this.useColors;
       return util.inspect(v, this.inspectOpts);
     };
-    function formatArgs(args2) {
+    function formatArgs(args) {
       var name = this.namespace;
       var useColors2 = this.useColors;
       if (useColors2) {
         var c = this.color;
-        var prefix = "  [3" + c + ";1m" + name + " [0m";
-        args2[0] = prefix + args2[0].split("\n").join("\n" + prefix);
-        args2.push("[3" + c + "m+" + exports2.humanize(this.diff) + "[0m");
+        var prefix = "  \x1B[3" + c + ";1m" + name + " \x1B[0m";
+        args[0] = prefix + args[0].split("\n").join("\n" + prefix);
+        args.push("\x1B[3" + c + "m+" + exports2.humanize(this.diff) + "\x1B[0m");
       } else {
-        args2[0] = new Date().toUTCString() + " " + name + " " + args2[0];
+        args[0] = new Date().toUTCString() + " " + name + " " + args[0];
       }
     }
-    function log2() {
+    function log() {
       return stream.write(util.format.apply(util, arguments) + "\n");
     }
     function save(namespaces) {
@@ -1455,6 +1351,93 @@ var require_src = __commonJS({
       module2.exports = require_browser();
     } else {
       module2.exports = require_node();
+    }
+  }
+});
+
+// node_modules/destroy/index.js
+var require_destroy = __commonJS({
+  "node_modules/destroy/index.js"(exports2, module2) {
+    "use strict";
+    var EventEmitter = require("events").EventEmitter;
+    var ReadStream = require("fs").ReadStream;
+    var Stream = require("stream");
+    var Zlib = require("zlib");
+    module2.exports = destroy;
+    function destroy(stream, suppress) {
+      if (isFsReadStream(stream)) {
+        destroyReadStream(stream);
+      } else if (isZlibStream(stream)) {
+        destroyZlibStream(stream);
+      } else if (hasDestroy(stream)) {
+        stream.destroy();
+      }
+      if (isEventEmitter(stream) && suppress) {
+        stream.removeAllListeners("error");
+        stream.addListener("error", noop);
+      }
+      return stream;
+    }
+    function destroyReadStream(stream) {
+      stream.destroy();
+      if (typeof stream.close === "function") {
+        stream.on("open", onOpenClose);
+      }
+    }
+    function closeZlibStream(stream) {
+      if (stream._hadError === true) {
+        var prop = stream._binding === null ? "_binding" : "_handle";
+        stream[prop] = {
+          close: function() {
+            this[prop] = null;
+          }
+        };
+      }
+      stream.close();
+    }
+    function destroyZlibStream(stream) {
+      if (typeof stream.destroy === "function") {
+        if (stream._binding) {
+          stream.destroy();
+          if (stream._processing) {
+            stream._needDrain = true;
+            stream.once("drain", onDrainClearBinding);
+          } else {
+            stream._binding.clear();
+          }
+        } else if (stream._destroy && stream._destroy !== Stream.Transform.prototype._destroy) {
+          stream.destroy();
+        } else if (stream._destroy && typeof stream.close === "function") {
+          stream.destroyed = true;
+          stream.close();
+        } else {
+          stream.destroy();
+        }
+      } else if (typeof stream.close === "function") {
+        closeZlibStream(stream);
+      }
+    }
+    function hasDestroy(stream) {
+      return stream instanceof Stream && typeof stream.destroy === "function";
+    }
+    function isEventEmitter(val) {
+      return val instanceof EventEmitter;
+    }
+    function isFsReadStream(stream) {
+      return stream instanceof ReadStream;
+    }
+    function isZlibStream(stream) {
+      return stream instanceof Zlib.Gzip || stream instanceof Zlib.Gunzip || stream instanceof Zlib.Deflate || stream instanceof Zlib.DeflateRaw || stream instanceof Zlib.Inflate || stream instanceof Zlib.InflateRaw || stream instanceof Zlib.Unzip;
+    }
+    function noop() {
+    }
+    function onDrainClearBinding() {
+      this._binding.clear();
+    }
+    function onOpenClose() {
+      if (typeof this.fd === "number") {
+        this.close();
+      }
     }
   }
 });
@@ -2510,7 +2493,7 @@ var require_sbcs_data_generated = __commonJS({
       "csibm863": "cp863",
       "cp864": {
         "type": "_sbcs",
-        "chars": "\0\x07\b	\n\v\f\r !\"#$\u066A&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\x7F\xB0\xB7\u2219\u221A\u2592\u2500\u2502\u253C\u2524\u252C\u251C\u2534\u2510\u250C\u2514\u2518\u03B2\u221E\u03C6\xB1\xBD\xBC\u2248\xAB\xBB\uFEF7\uFEF8\uFFFD\uFFFD\uFEFB\uFEFC\uFFFD\xA0\xAD\uFE82\xA3\xA4\uFE84\uFFFD\uFFFD\uFE8E\uFE8F\uFE95\uFE99\u060C\uFE9D\uFEA1\uFEA5\u0660\u0661\u0662\u0663\u0664\u0665\u0666\u0667\u0668\u0669\uFED1\u061B\uFEB1\uFEB5\uFEB9\u061F\xA2\uFE80\uFE81\uFE83\uFE85\uFECA\uFE8B\uFE8D\uFE91\uFE93\uFE97\uFE9B\uFE9F\uFEA3\uFEA7\uFEA9\uFEAB\uFEAD\uFEAF\uFEB3\uFEB7\uFEBB\uFEBF\uFEC1\uFEC5\uFECB\uFECF\xA6\xAC\xF7\xD7\uFEC9\u0640\uFED3\uFED7\uFEDB\uFEDF\uFEE3\uFEE7\uFEEB\uFEED\uFEEF\uFEF3\uFEBD\uFECC\uFECE\uFECD\uFEE1\uFE7D\u0651\uFEE5\uFEE9\uFEEC\uFEF0\uFEF2\uFED0\uFED5\uFEF5\uFEF6\uFEDD\uFED9\uFEF1\u25A0\uFFFD"
+        "chars": "\0\x07\b	\n\v\f\r\x1B !\"#$\u066A&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\x7F\xB0\xB7\u2219\u221A\u2592\u2500\u2502\u253C\u2524\u252C\u251C\u2534\u2510\u250C\u2514\u2518\u03B2\u221E\u03C6\xB1\xBD\xBC\u2248\xAB\xBB\uFEF7\uFEF8\uFFFD\uFFFD\uFEFB\uFEFC\uFFFD\xA0\xAD\uFE82\xA3\xA4\uFE84\uFFFD\uFFFD\uFE8E\uFE8F\uFE95\uFE99\u060C\uFE9D\uFEA1\uFEA5\u0660\u0661\u0662\u0663\u0664\u0665\u0666\u0667\u0668\u0669\uFED1\u061B\uFEB1\uFEB5\uFEB9\u061F\xA2\uFE80\uFE81\uFE83\uFE85\uFECA\uFE8B\uFE8D\uFE91\uFE93\uFE97\uFE9B\uFE9F\uFEA3\uFEA7\uFEA9\uFEAB\uFEAD\uFEAF\uFEB3\uFEB7\uFEBB\uFEBF\uFEC1\uFEC5\uFECB\uFECF\xA6\xAC\xF7\xD7\uFEC9\u0640\uFED3\uFED7\uFEDB\uFEDF\uFEE3\uFEE7\uFEEB\uFEED\uFEEF\uFEF3\uFEBD\uFECC\uFECE\uFECD\uFEE1\uFE7D\u0651\uFEE5\uFEE9\uFEEC\uFEF0\uFEF2\uFED0\uFED5\uFEF5\uFEF6\uFEDD\uFED9\uFEF1\u25A0\uFFFD"
       },
       "ibm864": "cp864",
       "csibm864": "cp864",
@@ -2648,7 +2631,7 @@ var require_sbcs_data_generated = __commonJS({
       },
       "tcvn": {
         "type": "_sbcs",
-        "chars": "\0\xDA\u1EE4\u1EEA\u1EEC\u1EEE\x07\b	\n\v\f\r\u1EE8\u1EF0\u1EF2\u1EF6\u1EF8\xDD\u1EF4 !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\x7F\xC0\u1EA2\xC3\xC1\u1EA0\u1EB6\u1EAC\xC8\u1EBA\u1EBC\xC9\u1EB8\u1EC6\xCC\u1EC8\u0128\xCD\u1ECA\xD2\u1ECE\xD5\xD3\u1ECC\u1ED8\u1EDC\u1EDE\u1EE0\u1EDA\u1EE2\xD9\u1EE6\u0168\xA0\u0102\xC2\xCA\xD4\u01A0\u01AF\u0110\u0103\xE2\xEA\xF4\u01A1\u01B0\u0111\u1EB0\u0300\u0309\u0303\u0301\u0323\xE0\u1EA3\xE3\xE1\u1EA1\u1EB2\u1EB1\u1EB3\u1EB5\u1EAF\u1EB4\u1EAE\u1EA6\u1EA8\u1EAA\u1EA4\u1EC0\u1EB7\u1EA7\u1EA9\u1EAB\u1EA5\u1EAD\xE8\u1EC2\u1EBB\u1EBD\xE9\u1EB9\u1EC1\u1EC3\u1EC5\u1EBF\u1EC7\xEC\u1EC9\u1EC4\u1EBE\u1ED2\u0129\xED\u1ECB\xF2\u1ED4\u1ECF\xF5\xF3\u1ECD\u1ED3\u1ED5\u1ED7\u1ED1\u1ED9\u1EDD\u1EDF\u1EE1\u1EDB\u1EE3\xF9\u1ED6\u1EE7\u0169\xFA\u1EE5\u1EEB\u1EED\u1EEF\u1EE9\u1EF1\u1EF3\u1EF7\u1EF9\xFD\u1EF5\u1ED0"
+        "chars": "\0\xDA\u1EE4\u1EEA\u1EEC\u1EEE\x07\b	\n\v\f\r\u1EE8\u1EF0\u1EF2\u1EF6\u1EF8\xDD\u1EF4\x1B !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\x7F\xC0\u1EA2\xC3\xC1\u1EA0\u1EB6\u1EAC\xC8\u1EBA\u1EBC\xC9\u1EB8\u1EC6\xCC\u1EC8\u0128\xCD\u1ECA\xD2\u1ECE\xD5\xD3\u1ECC\u1ED8\u1EDC\u1EDE\u1EE0\u1EDA\u1EE2\xD9\u1EE6\u0168\xA0\u0102\xC2\xCA\xD4\u01A0\u01AF\u0110\u0103\xE2\xEA\xF4\u01A1\u01B0\u0111\u1EB0\u0300\u0309\u0303\u0301\u0323\xE0\u1EA3\xE3\xE1\u1EA1\u1EB2\u1EB1\u1EB3\u1EB5\u1EAF\u1EB4\u1EAE\u1EA6\u1EA8\u1EAA\u1EA4\u1EC0\u1EB7\u1EA7\u1EA9\u1EAB\u1EA5\u1EAD\xE8\u1EC2\u1EBB\u1EBD\xE9\u1EB9\u1EC1\u1EC3\u1EC5\u1EBF\u1EC7\xEC\u1EC9\u1EC4\u1EBE\u1ED2\u0129\xED\u1ECB\xF2\u1ED4\u1ECF\xF5\xF3\u1ECD\u1ED3\u1ED5\u1ED7\u1ED1\u1ED9\u1EDD\u1EDF\u1EE1\u1EDB\u1EE3\xF9\u1ED6\u1EE7\u0169\xFA\u1EE5\u1EEB\u1EED\u1EEF\u1EE9\u1EF1\u1EF3\u1EF7\u1EF9\xFD\u1EF5\u1ED0"
       },
       "georgianacademy": {
         "type": "_sbcs",
@@ -2664,15 +2647,15 @@ var require_sbcs_data_generated = __commonJS({
       },
       "viscii": {
         "type": "_sbcs",
-        "chars": "\0\u1EB2\u1EB4\u1EAA\x07\b	\n\v\f\r\u1EF6\u1EF8\u1EF4 !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\x7F\u1EA0\u1EAE\u1EB0\u1EB6\u1EA4\u1EA6\u1EA8\u1EAC\u1EBC\u1EB8\u1EBE\u1EC0\u1EC2\u1EC4\u1EC6\u1ED0\u1ED2\u1ED4\u1ED6\u1ED8\u1EE2\u1EDA\u1EDC\u1EDE\u1ECA\u1ECE\u1ECC\u1EC8\u1EE6\u0168\u1EE4\u1EF2\xD5\u1EAF\u1EB1\u1EB7\u1EA5\u1EA7\u1EA9\u1EAD\u1EBD\u1EB9\u1EBF\u1EC1\u1EC3\u1EC5\u1EC7\u1ED1\u1ED3\u1ED5\u1ED7\u1EE0\u01A0\u1ED9\u1EDD\u1EDF\u1ECB\u1EF0\u1EE8\u1EEA\u1EEC\u01A1\u1EDB\u01AF\xC0\xC1\xC2\xC3\u1EA2\u0102\u1EB3\u1EB5\xC8\xC9\xCA\u1EBA\xCC\xCD\u0128\u1EF3\u0110\u1EE9\xD2\xD3\xD4\u1EA1\u1EF7\u1EEB\u1EED\xD9\xDA\u1EF9\u1EF5\xDD\u1EE1\u01B0\xE0\xE1\xE2\xE3\u1EA3\u0103\u1EEF\u1EAB\xE8\xE9\xEA\u1EBB\xEC\xED\u0129\u1EC9\u0111\u1EF1\xF2\xF3\xF4\xF5\u1ECF\u1ECD\u1EE5\xF9\xFA\u0169\u1EE7\xFD\u1EE3\u1EEE"
+        "chars": "\0\u1EB2\u1EB4\u1EAA\x07\b	\n\v\f\r\u1EF6\u1EF8\x1B\u1EF4 !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\x7F\u1EA0\u1EAE\u1EB0\u1EB6\u1EA4\u1EA6\u1EA8\u1EAC\u1EBC\u1EB8\u1EBE\u1EC0\u1EC2\u1EC4\u1EC6\u1ED0\u1ED2\u1ED4\u1ED6\u1ED8\u1EE2\u1EDA\u1EDC\u1EDE\u1ECA\u1ECE\u1ECC\u1EC8\u1EE6\u0168\u1EE4\u1EF2\xD5\u1EAF\u1EB1\u1EB7\u1EA5\u1EA7\u1EA9\u1EAD\u1EBD\u1EB9\u1EBF\u1EC1\u1EC3\u1EC5\u1EC7\u1ED1\u1ED3\u1ED5\u1ED7\u1EE0\u01A0\u1ED9\u1EDD\u1EDF\u1ECB\u1EF0\u1EE8\u1EEA\u1EEC\u01A1\u1EDB\u01AF\xC0\xC1\xC2\xC3\u1EA2\u0102\u1EB3\u1EB5\xC8\xC9\xCA\u1EBA\xCC\xCD\u0128\u1EF3\u0110\u1EE9\xD2\xD3\xD4\u1EA1\u1EF7\u1EEB\u1EED\xD9\xDA\u1EF9\u1EF5\xDD\u1EE1\u01B0\xE0\xE1\xE2\xE3\u1EA3\u0103\u1EEF\u1EAB\xE8\xE9\xEA\u1EBB\xEC\xED\u0129\u1EC9\u0111\u1EF1\xF2\xF3\xF4\xF5\u1ECF\u1ECD\u1EE5\xF9\xFA\u0169\u1EE7\xFD\u1EE3\u1EEE"
       },
       "iso646cn": {
         "type": "_sbcs",
-        "chars": "\0\x07\b	\n\v\f\r !\"#\xA5%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}\u203E\x7F\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD"
+        "chars": "\0\x07\b	\n\v\f\r\x1B !\"#\xA5%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}\u203E\x7F\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD"
       },
       "iso646jp": {
         "type": "_sbcs",
-        "chars": "\0\x07\b	\n\v\f\r !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\xA5]^_`abcdefghijklmnopqrstuvwxyz{|}\u203E\x7F\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD"
+        "chars": "\0\x07\b	\n\v\f\r\x1B !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\xA5]^_`abcdefghijklmnopqrstuvwxyz{|}\u203E\x7F\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD"
       },
       "hproman8": {
         "type": "_sbcs",
@@ -4877,6 +4860,7 @@ var require_unpipe = __commonJS({
 var require_raw_body = __commonJS({
   "node_modules/raw-body/index.js"(exports2, module2) {
     "use strict";
+    var asyncHooks = tryRequireAsyncHooks();
     var bytes = require_bytes();
     var createError = require_http_errors();
     var iconv = require_lib();
@@ -4919,7 +4903,7 @@ var require_raw_body = __commonJS({
       var limit = bytes.parse(opts.limit);
       var length = opts.length != null && !isNaN(opts.length) ? parseInt(opts.length, 10) : null;
       if (done) {
-        return readStream(stream, encoding, length, limit, done);
+        return readStream(stream, encoding, length, limit, wrap(done));
       }
       return new Promise(function executor(resolve, reject) {
         readStream(stream, encoding, length, limit, function onRead(err, buf) {
@@ -4952,6 +4936,11 @@ var require_raw_body = __commonJS({
           type: "stream.encoding.set"
         }));
       }
+      if (typeof stream.readable !== "undefined" && !stream.readable) {
+        return done(createError(500, "stream is not readable", {
+          type: "stream.not.readable"
+        }));
+      }
       var received = 0;
       var decoder;
       try {
@@ -4967,9 +4956,9 @@ var require_raw_body = __commonJS({
       stream.on("error", onEnd);
       sync = false;
       function done() {
-        var args2 = new Array(arguments.length);
-        for (var i = 0; i < args2.length; i++) {
-          args2[i] = arguments[i];
+        var args = new Array(arguments.length);
+        for (var i = 0; i < args.length; i++) {
+          args[i] = arguments[i];
         }
         complete = true;
         if (sync) {
@@ -4979,10 +4968,10 @@ var require_raw_body = __commonJS({
         }
         function invokeCallback() {
           cleanup();
-          if (args2[0]) {
+          if (args[0]) {
             halt(stream);
           }
-          callback.apply(null, args2);
+          callback.apply(null, args);
         }
       }
       function onAborted() {
@@ -5038,6 +5027,23 @@ var require_raw_body = __commonJS({
         stream.removeListener("close", cleanup);
       }
     }
+    function tryRequireAsyncHooks() {
+      try {
+        return require("async_hooks");
+      } catch (e) {
+        return {};
+      }
+    }
+    function wrap(fn) {
+      var res;
+      if (asyncHooks.AsyncResource) {
+        res = new asyncHooks.AsyncResource(fn.name || "bound-anonymous-fn");
+      }
+      if (!res || !res.runInAsyncScope) {
+        return fn;
+      }
+      return res.runInAsyncScope.bind(res, fn, null);
+    }
   }
 });
 
@@ -5057,12 +5063,12 @@ var require_ee_first = __commonJS({
         var ee = arr[0];
         for (var j = 1; j < arr.length; j++) {
           var event = arr[j];
-          var fn2 = listener(event, callback);
-          ee.on(event, fn2);
+          var fn = listener(event, callback);
+          ee.on(event, fn);
           cleanups.push({
             ee,
             event,
-            fn: fn2
+            fn
           });
         }
       }
@@ -5077,21 +5083,21 @@ var require_ee_first = __commonJS({
           x.ee.removeListener(x.event, x.fn);
         }
       }
-      function thunk(fn3) {
-        done = fn3;
+      function thunk(fn2) {
+        done = fn2;
       }
       thunk.cancel = cleanup;
       return thunk;
     }
     function listener(event, done) {
       return function onevent(arg1) {
-        var args2 = new Array(arguments.length);
+        var args = new Array(arguments.length);
         var ee = this;
         var err = event === "error" ? arg1 : null;
-        for (var i = 0; i < args2.length; i++) {
-          args2[i] = arguments[i];
+        for (var i = 0; i < args.length; i++) {
+          args[i] = arguments[i];
         }
-        done(err, ee, event, args2);
+        done(err, ee, event, args);
       };
     }
   }
@@ -5103,16 +5109,17 @@ var require_on_finished = __commonJS({
     "use strict";
     module2.exports = onFinished;
     module2.exports.isFinished = isFinished;
+    var asyncHooks = tryRequireAsyncHooks();
     var first = require_ee_first();
-    var defer = typeof setImmediate === "function" ? setImmediate : function(fn2) {
-      process.nextTick(fn2.bind.apply(fn2, arguments));
+    var defer = typeof setImmediate === "function" ? setImmediate : function(fn) {
+      process.nextTick(fn.bind.apply(fn, arguments));
     };
     function onFinished(msg, listener) {
       if (isFinished(msg) !== false) {
         defer(listener, null, msg);
         return msg;
       }
-      attachListener(msg, listener);
+      attachListener(msg, wrap(listener));
       return msg;
     }
     function isFinished(msg) {
@@ -5185,6 +5192,23 @@ var require_on_finished = __commonJS({
         callback(socket);
       };
     }
+    function tryRequireAsyncHooks() {
+      try {
+        return require("async_hooks");
+      } catch (e) {
+        return {};
+      }
+    }
+    function wrap(fn) {
+      var res;
+      if (asyncHooks.AsyncResource) {
+        res = new asyncHooks.AsyncResource(fn.name || "bound-anonymous-fn");
+      }
+      if (!res || !res.runInAsyncScope) {
+        return fn;
+      }
+      return res.runInAsyncScope.bind(res, fn, null);
+    }
   }
 });
 
@@ -5193,9 +5217,11 @@ var require_read = __commonJS({
   "node_modules/body-parser/lib/read.js"(exports2, module2) {
     "use strict";
     var createError = require_http_errors();
+    var destroy = require_destroy();
     var getBody = require_raw_body();
     var iconv = require_lib();
     var onFinished = require_on_finished();
+    var unpipe = require_unpipe();
     var zlib = require("zlib");
     module2.exports = read;
     function read(req, res, next, parse, debug, options) {
@@ -5232,8 +5258,11 @@ var require_read = __commonJS({
           } else {
             _error = createError(400, error);
           }
-          stream.resume();
-          onFinished(req, function onfinished() {
+          if (stream !== req) {
+            unpipe(req);
+            destroy(stream, true);
+          }
+          dump(req, function onfinished() {
             next(createError(400, _error));
           });
           return;
@@ -5298,6 +5327,14 @@ var require_read = __commonJS({
           });
       }
       return stream;
+    }
+    function dump(req, callback) {
+      if (onFinished.isFinished(req)) {
+        callback(null);
+      } else {
+        onFinished(req, callback);
+        req.resume();
+      }
     }
   }
 });
@@ -13922,9 +13959,9 @@ var require_mime_types = __commonJS({
     exports2.charsets = { lookup: charset };
     exports2.contentType = contentType;
     exports2.extension = extension;
-    exports2.extensions = Object.create(null);
+    exports2.extensions = /* @__PURE__ */ Object.create(null);
     exports2.lookup = lookup;
-    exports2.types = Object.create(null);
+    exports2.types = /* @__PURE__ */ Object.create(null);
     populateMaps(exports2.extensions, exports2.types);
     function charset(type) {
       if (!type || typeof type !== "string") {
@@ -14117,7 +14154,7 @@ var require_json = __commonJS({
     var read = require_read();
     var typeis = require_type_is();
     module2.exports = json;
-    var FIRST_CHAR_REGEXP = /^[\x20\x09\x0a\x0d]*(.)/;
+    var FIRST_CHAR_REGEXP = /^[\x20\x09\x0a\x0d]*([^\x20\x09\x0a\x0d])/;
     function json(options) {
       var opts = options || {};
       var limit = typeof opts.limit !== "number" ? bytes.parse(opts.limit || "100kb") : opts.limit;
@@ -14170,7 +14207,7 @@ var require_json = __commonJS({
           return;
         }
         var charset = getCharset(req) || "utf-8";
-        if (charset.substr(0, 4) !== "utf-") {
+        if (charset.slice(0, 4) !== "utf-") {
           debug("invalid charset");
           next(createError(415, 'unsupported charset "' + charset.toUpperCase() + '"', {
             charset,
@@ -14188,7 +14225,7 @@ var require_json = __commonJS({
     }
     function createStrictSyntaxError(str, char) {
       var index = str.indexOf(char);
-      var partial = str.substring(0, index) + "#";
+      var partial = index !== -1 ? str.substring(0, index) + "#" : "";
       try {
         JSON.parse(partial);
         throw new SyntaxError("strict violation");
@@ -14200,7 +14237,8 @@ var require_json = __commonJS({
       }
     }
     function firstchar(str) {
-      return FIRST_CHAR_REGEXP.exec(str)[1];
+      var match = FIRST_CHAR_REGEXP.exec(str);
+      return match ? match[1] : void 0;
     }
     function getCharset(req) {
       try {
@@ -14351,10 +14389,1148 @@ var require_text = __commonJS({
   }
 });
 
+// node_modules/has-symbols/shams.js
+var require_shams = __commonJS({
+  "node_modules/has-symbols/shams.js"(exports2, module2) {
+    "use strict";
+    module2.exports = function hasSymbols() {
+      if (typeof Symbol !== "function" || typeof Object.getOwnPropertySymbols !== "function") {
+        return false;
+      }
+      if (typeof Symbol.iterator === "symbol") {
+        return true;
+      }
+      var obj = {};
+      var sym = Symbol("test");
+      var symObj = Object(sym);
+      if (typeof sym === "string") {
+        return false;
+      }
+      if (Object.prototype.toString.call(sym) !== "[object Symbol]") {
+        return false;
+      }
+      if (Object.prototype.toString.call(symObj) !== "[object Symbol]") {
+        return false;
+      }
+      var symVal = 42;
+      obj[sym] = symVal;
+      for (sym in obj) {
+        return false;
+      }
+      if (typeof Object.keys === "function" && Object.keys(obj).length !== 0) {
+        return false;
+      }
+      if (typeof Object.getOwnPropertyNames === "function" && Object.getOwnPropertyNames(obj).length !== 0) {
+        return false;
+      }
+      var syms = Object.getOwnPropertySymbols(obj);
+      if (syms.length !== 1 || syms[0] !== sym) {
+        return false;
+      }
+      if (!Object.prototype.propertyIsEnumerable.call(obj, sym)) {
+        return false;
+      }
+      if (typeof Object.getOwnPropertyDescriptor === "function") {
+        var descriptor = Object.getOwnPropertyDescriptor(obj, sym);
+        if (descriptor.value !== symVal || descriptor.enumerable !== true) {
+          return false;
+        }
+      }
+      return true;
+    };
+  }
+});
+
+// node_modules/has-symbols/index.js
+var require_has_symbols = __commonJS({
+  "node_modules/has-symbols/index.js"(exports2, module2) {
+    "use strict";
+    var origSymbol = typeof Symbol !== "undefined" && Symbol;
+    var hasSymbolSham = require_shams();
+    module2.exports = function hasNativeSymbols() {
+      if (typeof origSymbol !== "function") {
+        return false;
+      }
+      if (typeof Symbol !== "function") {
+        return false;
+      }
+      if (typeof origSymbol("foo") !== "symbol") {
+        return false;
+      }
+      if (typeof Symbol("bar") !== "symbol") {
+        return false;
+      }
+      return hasSymbolSham();
+    };
+  }
+});
+
+// node_modules/function-bind/implementation.js
+var require_implementation = __commonJS({
+  "node_modules/function-bind/implementation.js"(exports2, module2) {
+    "use strict";
+    var ERROR_MESSAGE = "Function.prototype.bind called on incompatible ";
+    var slice = Array.prototype.slice;
+    var toStr = Object.prototype.toString;
+    var funcType = "[object Function]";
+    module2.exports = function bind(that) {
+      var target = this;
+      if (typeof target !== "function" || toStr.call(target) !== funcType) {
+        throw new TypeError(ERROR_MESSAGE + target);
+      }
+      var args = slice.call(arguments, 1);
+      var bound;
+      var binder = function() {
+        if (this instanceof bound) {
+          var result = target.apply(this, args.concat(slice.call(arguments)));
+          if (Object(result) === result) {
+            return result;
+          }
+          return this;
+        } else {
+          return target.apply(that, args.concat(slice.call(arguments)));
+        }
+      };
+      var boundLength = Math.max(0, target.length - args.length);
+      var boundArgs = [];
+      for (var i = 0; i < boundLength; i++) {
+        boundArgs.push("$" + i);
+      }
+      bound = Function("binder", "return function (" + boundArgs.join(",") + "){ return binder.apply(this,arguments); }")(binder);
+      if (target.prototype) {
+        var Empty = function Empty2() {
+        };
+        Empty.prototype = target.prototype;
+        bound.prototype = new Empty();
+        Empty.prototype = null;
+      }
+      return bound;
+    };
+  }
+});
+
+// node_modules/function-bind/index.js
+var require_function_bind = __commonJS({
+  "node_modules/function-bind/index.js"(exports2, module2) {
+    "use strict";
+    var implementation = require_implementation();
+    module2.exports = Function.prototype.bind || implementation;
+  }
+});
+
+// node_modules/has/src/index.js
+var require_src2 = __commonJS({
+  "node_modules/has/src/index.js"(exports2, module2) {
+    "use strict";
+    var bind = require_function_bind();
+    module2.exports = bind.call(Function.call, Object.prototype.hasOwnProperty);
+  }
+});
+
+// node_modules/get-intrinsic/index.js
+var require_get_intrinsic = __commonJS({
+  "node_modules/get-intrinsic/index.js"(exports2, module2) {
+    "use strict";
+    var undefined2;
+    var $SyntaxError = SyntaxError;
+    var $Function = Function;
+    var $TypeError = TypeError;
+    var getEvalledConstructor = function(expressionSyntax) {
+      try {
+        return $Function('"use strict"; return (' + expressionSyntax + ").constructor;")();
+      } catch (e) {
+      }
+    };
+    var $gOPD = Object.getOwnPropertyDescriptor;
+    if ($gOPD) {
+      try {
+        $gOPD({}, "");
+      } catch (e) {
+        $gOPD = null;
+      }
+    }
+    var throwTypeError = function() {
+      throw new $TypeError();
+    };
+    var ThrowTypeError = $gOPD ? function() {
+      try {
+        arguments.callee;
+        return throwTypeError;
+      } catch (calleeThrows) {
+        try {
+          return $gOPD(arguments, "callee").get;
+        } catch (gOPDthrows) {
+          return throwTypeError;
+        }
+      }
+    }() : throwTypeError;
+    var hasSymbols = require_has_symbols()();
+    var getProto = Object.getPrototypeOf || function(x) {
+      return x.__proto__;
+    };
+    var needsEval = {};
+    var TypedArray = typeof Uint8Array === "undefined" ? undefined2 : getProto(Uint8Array);
+    var INTRINSICS = {
+      "%AggregateError%": typeof AggregateError === "undefined" ? undefined2 : AggregateError,
+      "%Array%": Array,
+      "%ArrayBuffer%": typeof ArrayBuffer === "undefined" ? undefined2 : ArrayBuffer,
+      "%ArrayIteratorPrototype%": hasSymbols ? getProto([][Symbol.iterator]()) : undefined2,
+      "%AsyncFromSyncIteratorPrototype%": undefined2,
+      "%AsyncFunction%": needsEval,
+      "%AsyncGenerator%": needsEval,
+      "%AsyncGeneratorFunction%": needsEval,
+      "%AsyncIteratorPrototype%": needsEval,
+      "%Atomics%": typeof Atomics === "undefined" ? undefined2 : Atomics,
+      "%BigInt%": typeof BigInt === "undefined" ? undefined2 : BigInt,
+      "%Boolean%": Boolean,
+      "%DataView%": typeof DataView === "undefined" ? undefined2 : DataView,
+      "%Date%": Date,
+      "%decodeURI%": decodeURI,
+      "%decodeURIComponent%": decodeURIComponent,
+      "%encodeURI%": encodeURI,
+      "%encodeURIComponent%": encodeURIComponent,
+      "%Error%": Error,
+      "%eval%": eval,
+      "%EvalError%": EvalError,
+      "%Float32Array%": typeof Float32Array === "undefined" ? undefined2 : Float32Array,
+      "%Float64Array%": typeof Float64Array === "undefined" ? undefined2 : Float64Array,
+      "%FinalizationRegistry%": typeof FinalizationRegistry === "undefined" ? undefined2 : FinalizationRegistry,
+      "%Function%": $Function,
+      "%GeneratorFunction%": needsEval,
+      "%Int8Array%": typeof Int8Array === "undefined" ? undefined2 : Int8Array,
+      "%Int16Array%": typeof Int16Array === "undefined" ? undefined2 : Int16Array,
+      "%Int32Array%": typeof Int32Array === "undefined" ? undefined2 : Int32Array,
+      "%isFinite%": isFinite,
+      "%isNaN%": isNaN,
+      "%IteratorPrototype%": hasSymbols ? getProto(getProto([][Symbol.iterator]())) : undefined2,
+      "%JSON%": typeof JSON === "object" ? JSON : undefined2,
+      "%Map%": typeof Map === "undefined" ? undefined2 : Map,
+      "%MapIteratorPrototype%": typeof Map === "undefined" || !hasSymbols ? undefined2 : getProto((/* @__PURE__ */ new Map())[Symbol.iterator]()),
+      "%Math%": Math,
+      "%Number%": Number,
+      "%Object%": Object,
+      "%parseFloat%": parseFloat,
+      "%parseInt%": parseInt,
+      "%Promise%": typeof Promise === "undefined" ? undefined2 : Promise,
+      "%Proxy%": typeof Proxy === "undefined" ? undefined2 : Proxy,
+      "%RangeError%": RangeError,
+      "%ReferenceError%": ReferenceError,
+      "%Reflect%": typeof Reflect === "undefined" ? undefined2 : Reflect,
+      "%RegExp%": RegExp,
+      "%Set%": typeof Set === "undefined" ? undefined2 : Set,
+      "%SetIteratorPrototype%": typeof Set === "undefined" || !hasSymbols ? undefined2 : getProto((/* @__PURE__ */ new Set())[Symbol.iterator]()),
+      "%SharedArrayBuffer%": typeof SharedArrayBuffer === "undefined" ? undefined2 : SharedArrayBuffer,
+      "%String%": String,
+      "%StringIteratorPrototype%": hasSymbols ? getProto(""[Symbol.iterator]()) : undefined2,
+      "%Symbol%": hasSymbols ? Symbol : undefined2,
+      "%SyntaxError%": $SyntaxError,
+      "%ThrowTypeError%": ThrowTypeError,
+      "%TypedArray%": TypedArray,
+      "%TypeError%": $TypeError,
+      "%Uint8Array%": typeof Uint8Array === "undefined" ? undefined2 : Uint8Array,
+      "%Uint8ClampedArray%": typeof Uint8ClampedArray === "undefined" ? undefined2 : Uint8ClampedArray,
+      "%Uint16Array%": typeof Uint16Array === "undefined" ? undefined2 : Uint16Array,
+      "%Uint32Array%": typeof Uint32Array === "undefined" ? undefined2 : Uint32Array,
+      "%URIError%": URIError,
+      "%WeakMap%": typeof WeakMap === "undefined" ? undefined2 : WeakMap,
+      "%WeakRef%": typeof WeakRef === "undefined" ? undefined2 : WeakRef,
+      "%WeakSet%": typeof WeakSet === "undefined" ? undefined2 : WeakSet
+    };
+    var doEval = function doEval2(name) {
+      var value;
+      if (name === "%AsyncFunction%") {
+        value = getEvalledConstructor("async function () {}");
+      } else if (name === "%GeneratorFunction%") {
+        value = getEvalledConstructor("function* () {}");
+      } else if (name === "%AsyncGeneratorFunction%") {
+        value = getEvalledConstructor("async function* () {}");
+      } else if (name === "%AsyncGenerator%") {
+        var fn = doEval2("%AsyncGeneratorFunction%");
+        if (fn) {
+          value = fn.prototype;
+        }
+      } else if (name === "%AsyncIteratorPrototype%") {
+        var gen = doEval2("%AsyncGenerator%");
+        if (gen) {
+          value = getProto(gen.prototype);
+        }
+      }
+      INTRINSICS[name] = value;
+      return value;
+    };
+    var LEGACY_ALIASES = {
+      "%ArrayBufferPrototype%": ["ArrayBuffer", "prototype"],
+      "%ArrayPrototype%": ["Array", "prototype"],
+      "%ArrayProto_entries%": ["Array", "prototype", "entries"],
+      "%ArrayProto_forEach%": ["Array", "prototype", "forEach"],
+      "%ArrayProto_keys%": ["Array", "prototype", "keys"],
+      "%ArrayProto_values%": ["Array", "prototype", "values"],
+      "%AsyncFunctionPrototype%": ["AsyncFunction", "prototype"],
+      "%AsyncGenerator%": ["AsyncGeneratorFunction", "prototype"],
+      "%AsyncGeneratorPrototype%": ["AsyncGeneratorFunction", "prototype", "prototype"],
+      "%BooleanPrototype%": ["Boolean", "prototype"],
+      "%DataViewPrototype%": ["DataView", "prototype"],
+      "%DatePrototype%": ["Date", "prototype"],
+      "%ErrorPrototype%": ["Error", "prototype"],
+      "%EvalErrorPrototype%": ["EvalError", "prototype"],
+      "%Float32ArrayPrototype%": ["Float32Array", "prototype"],
+      "%Float64ArrayPrototype%": ["Float64Array", "prototype"],
+      "%FunctionPrototype%": ["Function", "prototype"],
+      "%Generator%": ["GeneratorFunction", "prototype"],
+      "%GeneratorPrototype%": ["GeneratorFunction", "prototype", "prototype"],
+      "%Int8ArrayPrototype%": ["Int8Array", "prototype"],
+      "%Int16ArrayPrototype%": ["Int16Array", "prototype"],
+      "%Int32ArrayPrototype%": ["Int32Array", "prototype"],
+      "%JSONParse%": ["JSON", "parse"],
+      "%JSONStringify%": ["JSON", "stringify"],
+      "%MapPrototype%": ["Map", "prototype"],
+      "%NumberPrototype%": ["Number", "prototype"],
+      "%ObjectPrototype%": ["Object", "prototype"],
+      "%ObjProto_toString%": ["Object", "prototype", "toString"],
+      "%ObjProto_valueOf%": ["Object", "prototype", "valueOf"],
+      "%PromisePrototype%": ["Promise", "prototype"],
+      "%PromiseProto_then%": ["Promise", "prototype", "then"],
+      "%Promise_all%": ["Promise", "all"],
+      "%Promise_reject%": ["Promise", "reject"],
+      "%Promise_resolve%": ["Promise", "resolve"],
+      "%RangeErrorPrototype%": ["RangeError", "prototype"],
+      "%ReferenceErrorPrototype%": ["ReferenceError", "prototype"],
+      "%RegExpPrototype%": ["RegExp", "prototype"],
+      "%SetPrototype%": ["Set", "prototype"],
+      "%SharedArrayBufferPrototype%": ["SharedArrayBuffer", "prototype"],
+      "%StringPrototype%": ["String", "prototype"],
+      "%SymbolPrototype%": ["Symbol", "prototype"],
+      "%SyntaxErrorPrototype%": ["SyntaxError", "prototype"],
+      "%TypedArrayPrototype%": ["TypedArray", "prototype"],
+      "%TypeErrorPrototype%": ["TypeError", "prototype"],
+      "%Uint8ArrayPrototype%": ["Uint8Array", "prototype"],
+      "%Uint8ClampedArrayPrototype%": ["Uint8ClampedArray", "prototype"],
+      "%Uint16ArrayPrototype%": ["Uint16Array", "prototype"],
+      "%Uint32ArrayPrototype%": ["Uint32Array", "prototype"],
+      "%URIErrorPrototype%": ["URIError", "prototype"],
+      "%WeakMapPrototype%": ["WeakMap", "prototype"],
+      "%WeakSetPrototype%": ["WeakSet", "prototype"]
+    };
+    var bind = require_function_bind();
+    var hasOwn = require_src2();
+    var $concat = bind.call(Function.call, Array.prototype.concat);
+    var $spliceApply = bind.call(Function.apply, Array.prototype.splice);
+    var $replace = bind.call(Function.call, String.prototype.replace);
+    var $strSlice = bind.call(Function.call, String.prototype.slice);
+    var $exec = bind.call(Function.call, RegExp.prototype.exec);
+    var rePropName = /[^%.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|%$))/g;
+    var reEscapeChar = /\\(\\)?/g;
+    var stringToPath = function stringToPath2(string) {
+      var first = $strSlice(string, 0, 1);
+      var last = $strSlice(string, -1);
+      if (first === "%" && last !== "%") {
+        throw new $SyntaxError("invalid intrinsic syntax, expected closing `%`");
+      } else if (last === "%" && first !== "%") {
+        throw new $SyntaxError("invalid intrinsic syntax, expected opening `%`");
+      }
+      var result = [];
+      $replace(string, rePropName, function(match, number, quote, subString) {
+        result[result.length] = quote ? $replace(subString, reEscapeChar, "$1") : number || match;
+      });
+      return result;
+    };
+    var getBaseIntrinsic = function getBaseIntrinsic2(name, allowMissing) {
+      var intrinsicName = name;
+      var alias;
+      if (hasOwn(LEGACY_ALIASES, intrinsicName)) {
+        alias = LEGACY_ALIASES[intrinsicName];
+        intrinsicName = "%" + alias[0] + "%";
+      }
+      if (hasOwn(INTRINSICS, intrinsicName)) {
+        var value = INTRINSICS[intrinsicName];
+        if (value === needsEval) {
+          value = doEval(intrinsicName);
+        }
+        if (typeof value === "undefined" && !allowMissing) {
+          throw new $TypeError("intrinsic " + name + " exists, but is not available. Please file an issue!");
+        }
+        return {
+          alias,
+          name: intrinsicName,
+          value
+        };
+      }
+      throw new $SyntaxError("intrinsic " + name + " does not exist!");
+    };
+    module2.exports = function GetIntrinsic(name, allowMissing) {
+      if (typeof name !== "string" || name.length === 0) {
+        throw new $TypeError("intrinsic name must be a non-empty string");
+      }
+      if (arguments.length > 1 && typeof allowMissing !== "boolean") {
+        throw new $TypeError('"allowMissing" argument must be a boolean');
+      }
+      if ($exec(/^%?[^%]*%?$/g, name) === null) {
+        throw new $SyntaxError("`%` may not be present anywhere but at the beginning and end of the intrinsic name");
+      }
+      var parts = stringToPath(name);
+      var intrinsicBaseName = parts.length > 0 ? parts[0] : "";
+      var intrinsic = getBaseIntrinsic("%" + intrinsicBaseName + "%", allowMissing);
+      var intrinsicRealName = intrinsic.name;
+      var value = intrinsic.value;
+      var skipFurtherCaching = false;
+      var alias = intrinsic.alias;
+      if (alias) {
+        intrinsicBaseName = alias[0];
+        $spliceApply(parts, $concat([0, 1], alias));
+      }
+      for (var i = 1, isOwn = true; i < parts.length; i += 1) {
+        var part = parts[i];
+        var first = $strSlice(part, 0, 1);
+        var last = $strSlice(part, -1);
+        if ((first === '"' || first === "'" || first === "`" || (last === '"' || last === "'" || last === "`")) && first !== last) {
+          throw new $SyntaxError("property names with quotes must have matching quotes");
+        }
+        if (part === "constructor" || !isOwn) {
+          skipFurtherCaching = true;
+        }
+        intrinsicBaseName += "." + part;
+        intrinsicRealName = "%" + intrinsicBaseName + "%";
+        if (hasOwn(INTRINSICS, intrinsicRealName)) {
+          value = INTRINSICS[intrinsicRealName];
+        } else if (value != null) {
+          if (!(part in value)) {
+            if (!allowMissing) {
+              throw new $TypeError("base intrinsic for " + name + " exists, but the property is not available.");
+            }
+            return void 0;
+          }
+          if ($gOPD && i + 1 >= parts.length) {
+            var desc = $gOPD(value, part);
+            isOwn = !!desc;
+            if (isOwn && "get" in desc && !("originalValue" in desc.get)) {
+              value = desc.get;
+            } else {
+              value = value[part];
+            }
+          } else {
+            isOwn = hasOwn(value, part);
+            value = value[part];
+          }
+          if (isOwn && !skipFurtherCaching) {
+            INTRINSICS[intrinsicRealName] = value;
+          }
+        }
+      }
+      return value;
+    };
+  }
+});
+
+// node_modules/call-bind/index.js
+var require_call_bind = __commonJS({
+  "node_modules/call-bind/index.js"(exports2, module2) {
+    "use strict";
+    var bind = require_function_bind();
+    var GetIntrinsic = require_get_intrinsic();
+    var $apply = GetIntrinsic("%Function.prototype.apply%");
+    var $call = GetIntrinsic("%Function.prototype.call%");
+    var $reflectApply = GetIntrinsic("%Reflect.apply%", true) || bind.call($call, $apply);
+    var $gOPD = GetIntrinsic("%Object.getOwnPropertyDescriptor%", true);
+    var $defineProperty = GetIntrinsic("%Object.defineProperty%", true);
+    var $max = GetIntrinsic("%Math.max%");
+    if ($defineProperty) {
+      try {
+        $defineProperty({}, "a", { value: 1 });
+      } catch (e) {
+        $defineProperty = null;
+      }
+    }
+    module2.exports = function callBind(originalFunction) {
+      var func = $reflectApply(bind, $call, arguments);
+      if ($gOPD && $defineProperty) {
+        var desc = $gOPD(func, "length");
+        if (desc.configurable) {
+          $defineProperty(func, "length", { value: 1 + $max(0, originalFunction.length - (arguments.length - 1)) });
+        }
+      }
+      return func;
+    };
+    var applyBind = function applyBind2() {
+      return $reflectApply(bind, $apply, arguments);
+    };
+    if ($defineProperty) {
+      $defineProperty(module2.exports, "apply", { value: applyBind });
+    } else {
+      module2.exports.apply = applyBind;
+    }
+  }
+});
+
+// node_modules/call-bind/callBound.js
+var require_callBound = __commonJS({
+  "node_modules/call-bind/callBound.js"(exports2, module2) {
+    "use strict";
+    var GetIntrinsic = require_get_intrinsic();
+    var callBind = require_call_bind();
+    var $indexOf = callBind(GetIntrinsic("String.prototype.indexOf"));
+    module2.exports = function callBoundIntrinsic(name, allowMissing) {
+      var intrinsic = GetIntrinsic(name, !!allowMissing);
+      if (typeof intrinsic === "function" && $indexOf(name, ".prototype.") > -1) {
+        return callBind(intrinsic);
+      }
+      return intrinsic;
+    };
+  }
+});
+
+// node_modules/object-inspect/util.inspect.js
+var require_util_inspect = __commonJS({
+  "node_modules/object-inspect/util.inspect.js"(exports2, module2) {
+    module2.exports = require("util").inspect;
+  }
+});
+
+// node_modules/object-inspect/index.js
+var require_object_inspect = __commonJS({
+  "node_modules/object-inspect/index.js"(exports2, module2) {
+    var hasMap = typeof Map === "function" && Map.prototype;
+    var mapSizeDescriptor = Object.getOwnPropertyDescriptor && hasMap ? Object.getOwnPropertyDescriptor(Map.prototype, "size") : null;
+    var mapSize = hasMap && mapSizeDescriptor && typeof mapSizeDescriptor.get === "function" ? mapSizeDescriptor.get : null;
+    var mapForEach = hasMap && Map.prototype.forEach;
+    var hasSet = typeof Set === "function" && Set.prototype;
+    var setSizeDescriptor = Object.getOwnPropertyDescriptor && hasSet ? Object.getOwnPropertyDescriptor(Set.prototype, "size") : null;
+    var setSize = hasSet && setSizeDescriptor && typeof setSizeDescriptor.get === "function" ? setSizeDescriptor.get : null;
+    var setForEach = hasSet && Set.prototype.forEach;
+    var hasWeakMap = typeof WeakMap === "function" && WeakMap.prototype;
+    var weakMapHas = hasWeakMap ? WeakMap.prototype.has : null;
+    var hasWeakSet = typeof WeakSet === "function" && WeakSet.prototype;
+    var weakSetHas = hasWeakSet ? WeakSet.prototype.has : null;
+    var hasWeakRef = typeof WeakRef === "function" && WeakRef.prototype;
+    var weakRefDeref = hasWeakRef ? WeakRef.prototype.deref : null;
+    var booleanValueOf = Boolean.prototype.valueOf;
+    var objectToString = Object.prototype.toString;
+    var functionToString = Function.prototype.toString;
+    var $match = String.prototype.match;
+    var $slice = String.prototype.slice;
+    var $replace = String.prototype.replace;
+    var $toUpperCase = String.prototype.toUpperCase;
+    var $toLowerCase = String.prototype.toLowerCase;
+    var $test = RegExp.prototype.test;
+    var $concat = Array.prototype.concat;
+    var $join = Array.prototype.join;
+    var $arrSlice = Array.prototype.slice;
+    var $floor = Math.floor;
+    var bigIntValueOf = typeof BigInt === "function" ? BigInt.prototype.valueOf : null;
+    var gOPS = Object.getOwnPropertySymbols;
+    var symToString = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? Symbol.prototype.toString : null;
+    var hasShammedSymbols = typeof Symbol === "function" && typeof Symbol.iterator === "object";
+    var toStringTag = typeof Symbol === "function" && Symbol.toStringTag && (typeof Symbol.toStringTag === hasShammedSymbols ? "object" : "symbol") ? Symbol.toStringTag : null;
+    var isEnumerable = Object.prototype.propertyIsEnumerable;
+    var gPO = (typeof Reflect === "function" ? Reflect.getPrototypeOf : Object.getPrototypeOf) || ([].__proto__ === Array.prototype ? function(O) {
+      return O.__proto__;
+    } : null);
+    function addNumericSeparator(num, str) {
+      if (num === Infinity || num === -Infinity || num !== num || num && num > -1e3 && num < 1e3 || $test.call(/e/, str)) {
+        return str;
+      }
+      var sepRegex = /[0-9](?=(?:[0-9]{3})+(?![0-9]))/g;
+      if (typeof num === "number") {
+        var int = num < 0 ? -$floor(-num) : $floor(num);
+        if (int !== num) {
+          var intStr = String(int);
+          var dec = $slice.call(str, intStr.length + 1);
+          return $replace.call(intStr, sepRegex, "$&_") + "." + $replace.call($replace.call(dec, /([0-9]{3})/g, "$&_"), /_$/, "");
+        }
+      }
+      return $replace.call(str, sepRegex, "$&_");
+    }
+    var utilInspect = require_util_inspect();
+    var inspectCustom = utilInspect.custom;
+    var inspectSymbol = isSymbol(inspectCustom) ? inspectCustom : null;
+    module2.exports = function inspect_(obj, options, depth, seen) {
+      var opts = options || {};
+      if (has(opts, "quoteStyle") && (opts.quoteStyle !== "single" && opts.quoteStyle !== "double")) {
+        throw new TypeError('option "quoteStyle" must be "single" or "double"');
+      }
+      if (has(opts, "maxStringLength") && (typeof opts.maxStringLength === "number" ? opts.maxStringLength < 0 && opts.maxStringLength !== Infinity : opts.maxStringLength !== null)) {
+        throw new TypeError('option "maxStringLength", if provided, must be a positive integer, Infinity, or `null`');
+      }
+      var customInspect = has(opts, "customInspect") ? opts.customInspect : true;
+      if (typeof customInspect !== "boolean" && customInspect !== "symbol") {
+        throw new TypeError("option \"customInspect\", if provided, must be `true`, `false`, or `'symbol'`");
+      }
+      if (has(opts, "indent") && opts.indent !== null && opts.indent !== "	" && !(parseInt(opts.indent, 10) === opts.indent && opts.indent > 0)) {
+        throw new TypeError('option "indent" must be "\\t", an integer > 0, or `null`');
+      }
+      if (has(opts, "numericSeparator") && typeof opts.numericSeparator !== "boolean") {
+        throw new TypeError('option "numericSeparator", if provided, must be `true` or `false`');
+      }
+      var numericSeparator = opts.numericSeparator;
+      if (typeof obj === "undefined") {
+        return "undefined";
+      }
+      if (obj === null) {
+        return "null";
+      }
+      if (typeof obj === "boolean") {
+        return obj ? "true" : "false";
+      }
+      if (typeof obj === "string") {
+        return inspectString(obj, opts);
+      }
+      if (typeof obj === "number") {
+        if (obj === 0) {
+          return Infinity / obj > 0 ? "0" : "-0";
+        }
+        var str = String(obj);
+        return numericSeparator ? addNumericSeparator(obj, str) : str;
+      }
+      if (typeof obj === "bigint") {
+        var bigIntStr = String(obj) + "n";
+        return numericSeparator ? addNumericSeparator(obj, bigIntStr) : bigIntStr;
+      }
+      var maxDepth = typeof opts.depth === "undefined" ? 5 : opts.depth;
+      if (typeof depth === "undefined") {
+        depth = 0;
+      }
+      if (depth >= maxDepth && maxDepth > 0 && typeof obj === "object") {
+        return isArray(obj) ? "[Array]" : "[Object]";
+      }
+      var indent = getIndent(opts, depth);
+      if (typeof seen === "undefined") {
+        seen = [];
+      } else if (indexOf(seen, obj) >= 0) {
+        return "[Circular]";
+      }
+      function inspect(value, from, noIndent) {
+        if (from) {
+          seen = $arrSlice.call(seen);
+          seen.push(from);
+        }
+        if (noIndent) {
+          var newOpts = {
+            depth: opts.depth
+          };
+          if (has(opts, "quoteStyle")) {
+            newOpts.quoteStyle = opts.quoteStyle;
+          }
+          return inspect_(value, newOpts, depth + 1, seen);
+        }
+        return inspect_(value, opts, depth + 1, seen);
+      }
+      if (typeof obj === "function" && !isRegExp(obj)) {
+        var name = nameOf(obj);
+        var keys = arrObjKeys(obj, inspect);
+        return "[Function" + (name ? ": " + name : " (anonymous)") + "]" + (keys.length > 0 ? " { " + $join.call(keys, ", ") + " }" : "");
+      }
+      if (isSymbol(obj)) {
+        var symString = hasShammedSymbols ? $replace.call(String(obj), /^(Symbol\(.*\))_[^)]*$/, "$1") : symToString.call(obj);
+        return typeof obj === "object" && !hasShammedSymbols ? markBoxed(symString) : symString;
+      }
+      if (isElement(obj)) {
+        var s = "<" + $toLowerCase.call(String(obj.nodeName));
+        var attrs = obj.attributes || [];
+        for (var i = 0; i < attrs.length; i++) {
+          s += " " + attrs[i].name + "=" + wrapQuotes(quote(attrs[i].value), "double", opts);
+        }
+        s += ">";
+        if (obj.childNodes && obj.childNodes.length) {
+          s += "...";
+        }
+        s += "</" + $toLowerCase.call(String(obj.nodeName)) + ">";
+        return s;
+      }
+      if (isArray(obj)) {
+        if (obj.length === 0) {
+          return "[]";
+        }
+        var xs = arrObjKeys(obj, inspect);
+        if (indent && !singleLineValues(xs)) {
+          return "[" + indentedJoin(xs, indent) + "]";
+        }
+        return "[ " + $join.call(xs, ", ") + " ]";
+      }
+      if (isError(obj)) {
+        var parts = arrObjKeys(obj, inspect);
+        if (!("cause" in Error.prototype) && "cause" in obj && !isEnumerable.call(obj, "cause")) {
+          return "{ [" + String(obj) + "] " + $join.call($concat.call("[cause]: " + inspect(obj.cause), parts), ", ") + " }";
+        }
+        if (parts.length === 0) {
+          return "[" + String(obj) + "]";
+        }
+        return "{ [" + String(obj) + "] " + $join.call(parts, ", ") + " }";
+      }
+      if (typeof obj === "object" && customInspect) {
+        if (inspectSymbol && typeof obj[inspectSymbol] === "function" && utilInspect) {
+          return utilInspect(obj, { depth: maxDepth - depth });
+        } else if (customInspect !== "symbol" && typeof obj.inspect === "function") {
+          return obj.inspect();
+        }
+      }
+      if (isMap(obj)) {
+        var mapParts = [];
+        mapForEach.call(obj, function(value, key) {
+          mapParts.push(inspect(key, obj, true) + " => " + inspect(value, obj));
+        });
+        return collectionOf("Map", mapSize.call(obj), mapParts, indent);
+      }
+      if (isSet(obj)) {
+        var setParts = [];
+        setForEach.call(obj, function(value) {
+          setParts.push(inspect(value, obj));
+        });
+        return collectionOf("Set", setSize.call(obj), setParts, indent);
+      }
+      if (isWeakMap(obj)) {
+        return weakCollectionOf("WeakMap");
+      }
+      if (isWeakSet(obj)) {
+        return weakCollectionOf("WeakSet");
+      }
+      if (isWeakRef(obj)) {
+        return weakCollectionOf("WeakRef");
+      }
+      if (isNumber(obj)) {
+        return markBoxed(inspect(Number(obj)));
+      }
+      if (isBigInt(obj)) {
+        return markBoxed(inspect(bigIntValueOf.call(obj)));
+      }
+      if (isBoolean(obj)) {
+        return markBoxed(booleanValueOf.call(obj));
+      }
+      if (isString(obj)) {
+        return markBoxed(inspect(String(obj)));
+      }
+      if (!isDate(obj) && !isRegExp(obj)) {
+        var ys = arrObjKeys(obj, inspect);
+        var isPlainObject = gPO ? gPO(obj) === Object.prototype : obj instanceof Object || obj.constructor === Object;
+        var protoTag = obj instanceof Object ? "" : "null prototype";
+        var stringTag = !isPlainObject && toStringTag && Object(obj) === obj && toStringTag in obj ? $slice.call(toStr(obj), 8, -1) : protoTag ? "Object" : "";
+        var constructorTag = isPlainObject || typeof obj.constructor !== "function" ? "" : obj.constructor.name ? obj.constructor.name + " " : "";
+        var tag = constructorTag + (stringTag || protoTag ? "[" + $join.call($concat.call([], stringTag || [], protoTag || []), ": ") + "] " : "");
+        if (ys.length === 0) {
+          return tag + "{}";
+        }
+        if (indent) {
+          return tag + "{" + indentedJoin(ys, indent) + "}";
+        }
+        return tag + "{ " + $join.call(ys, ", ") + " }";
+      }
+      return String(obj);
+    };
+    function wrapQuotes(s, defaultStyle, opts) {
+      var quoteChar = (opts.quoteStyle || defaultStyle) === "double" ? '"' : "'";
+      return quoteChar + s + quoteChar;
+    }
+    function quote(s) {
+      return $replace.call(String(s), /"/g, "&quot;");
+    }
+    function isArray(obj) {
+      return toStr(obj) === "[object Array]" && (!toStringTag || !(typeof obj === "object" && toStringTag in obj));
+    }
+    function isDate(obj) {
+      return toStr(obj) === "[object Date]" && (!toStringTag || !(typeof obj === "object" && toStringTag in obj));
+    }
+    function isRegExp(obj) {
+      return toStr(obj) === "[object RegExp]" && (!toStringTag || !(typeof obj === "object" && toStringTag in obj));
+    }
+    function isError(obj) {
+      return toStr(obj) === "[object Error]" && (!toStringTag || !(typeof obj === "object" && toStringTag in obj));
+    }
+    function isString(obj) {
+      return toStr(obj) === "[object String]" && (!toStringTag || !(typeof obj === "object" && toStringTag in obj));
+    }
+    function isNumber(obj) {
+      return toStr(obj) === "[object Number]" && (!toStringTag || !(typeof obj === "object" && toStringTag in obj));
+    }
+    function isBoolean(obj) {
+      return toStr(obj) === "[object Boolean]" && (!toStringTag || !(typeof obj === "object" && toStringTag in obj));
+    }
+    function isSymbol(obj) {
+      if (hasShammedSymbols) {
+        return obj && typeof obj === "object" && obj instanceof Symbol;
+      }
+      if (typeof obj === "symbol") {
+        return true;
+      }
+      if (!obj || typeof obj !== "object" || !symToString) {
+        return false;
+      }
+      try {
+        symToString.call(obj);
+        return true;
+      } catch (e) {
+      }
+      return false;
+    }
+    function isBigInt(obj) {
+      if (!obj || typeof obj !== "object" || !bigIntValueOf) {
+        return false;
+      }
+      try {
+        bigIntValueOf.call(obj);
+        return true;
+      } catch (e) {
+      }
+      return false;
+    }
+    var hasOwn = Object.prototype.hasOwnProperty || function(key) {
+      return key in this;
+    };
+    function has(obj, key) {
+      return hasOwn.call(obj, key);
+    }
+    function toStr(obj) {
+      return objectToString.call(obj);
+    }
+    function nameOf(f) {
+      if (f.name) {
+        return f.name;
+      }
+      var m = $match.call(functionToString.call(f), /^function\s*([\w$]+)/);
+      if (m) {
+        return m[1];
+      }
+      return null;
+    }
+    function indexOf(xs, x) {
+      if (xs.indexOf) {
+        return xs.indexOf(x);
+      }
+      for (var i = 0, l = xs.length; i < l; i++) {
+        if (xs[i] === x) {
+          return i;
+        }
+      }
+      return -1;
+    }
+    function isMap(x) {
+      if (!mapSize || !x || typeof x !== "object") {
+        return false;
+      }
+      try {
+        mapSize.call(x);
+        try {
+          setSize.call(x);
+        } catch (s) {
+          return true;
+        }
+        return x instanceof Map;
+      } catch (e) {
+      }
+      return false;
+    }
+    function isWeakMap(x) {
+      if (!weakMapHas || !x || typeof x !== "object") {
+        return false;
+      }
+      try {
+        weakMapHas.call(x, weakMapHas);
+        try {
+          weakSetHas.call(x, weakSetHas);
+        } catch (s) {
+          return true;
+        }
+        return x instanceof WeakMap;
+      } catch (e) {
+      }
+      return false;
+    }
+    function isWeakRef(x) {
+      if (!weakRefDeref || !x || typeof x !== "object") {
+        return false;
+      }
+      try {
+        weakRefDeref.call(x);
+        return true;
+      } catch (e) {
+      }
+      return false;
+    }
+    function isSet(x) {
+      if (!setSize || !x || typeof x !== "object") {
+        return false;
+      }
+      try {
+        setSize.call(x);
+        try {
+          mapSize.call(x);
+        } catch (m) {
+          return true;
+        }
+        return x instanceof Set;
+      } catch (e) {
+      }
+      return false;
+    }
+    function isWeakSet(x) {
+      if (!weakSetHas || !x || typeof x !== "object") {
+        return false;
+      }
+      try {
+        weakSetHas.call(x, weakSetHas);
+        try {
+          weakMapHas.call(x, weakMapHas);
+        } catch (s) {
+          return true;
+        }
+        return x instanceof WeakSet;
+      } catch (e) {
+      }
+      return false;
+    }
+    function isElement(x) {
+      if (!x || typeof x !== "object") {
+        return false;
+      }
+      if (typeof HTMLElement !== "undefined" && x instanceof HTMLElement) {
+        return true;
+      }
+      return typeof x.nodeName === "string" && typeof x.getAttribute === "function";
+    }
+    function inspectString(str, opts) {
+      if (str.length > opts.maxStringLength) {
+        var remaining = str.length - opts.maxStringLength;
+        var trailer = "... " + remaining + " more character" + (remaining > 1 ? "s" : "");
+        return inspectString($slice.call(str, 0, opts.maxStringLength), opts) + trailer;
+      }
+      var s = $replace.call($replace.call(str, /(['\\])/g, "\\$1"), /[\x00-\x1f]/g, lowbyte);
+      return wrapQuotes(s, "single", opts);
+    }
+    function lowbyte(c) {
+      var n = c.charCodeAt(0);
+      var x = {
+        8: "b",
+        9: "t",
+        10: "n",
+        12: "f",
+        13: "r"
+      }[n];
+      if (x) {
+        return "\\" + x;
+      }
+      return "\\x" + (n < 16 ? "0" : "") + $toUpperCase.call(n.toString(16));
+    }
+    function markBoxed(str) {
+      return "Object(" + str + ")";
+    }
+    function weakCollectionOf(type) {
+      return type + " { ? }";
+    }
+    function collectionOf(type, size, entries, indent) {
+      var joinedEntries = indent ? indentedJoin(entries, indent) : $join.call(entries, ", ");
+      return type + " (" + size + ") {" + joinedEntries + "}";
+    }
+    function singleLineValues(xs) {
+      for (var i = 0; i < xs.length; i++) {
+        if (indexOf(xs[i], "\n") >= 0) {
+          return false;
+        }
+      }
+      return true;
+    }
+    function getIndent(opts, depth) {
+      var baseIndent;
+      if (opts.indent === "	") {
+        baseIndent = "	";
+      } else if (typeof opts.indent === "number" && opts.indent > 0) {
+        baseIndent = $join.call(Array(opts.indent + 1), " ");
+      } else {
+        return null;
+      }
+      return {
+        base: baseIndent,
+        prev: $join.call(Array(depth + 1), baseIndent)
+      };
+    }
+    function indentedJoin(xs, indent) {
+      if (xs.length === 0) {
+        return "";
+      }
+      var lineJoiner = "\n" + indent.prev + indent.base;
+      return lineJoiner + $join.call(xs, "," + lineJoiner) + "\n" + indent.prev;
+    }
+    function arrObjKeys(obj, inspect) {
+      var isArr = isArray(obj);
+      var xs = [];
+      if (isArr) {
+        xs.length = obj.length;
+        for (var i = 0; i < obj.length; i++) {
+          xs[i] = has(obj, i) ? inspect(obj[i], obj) : "";
+        }
+      }
+      var syms = typeof gOPS === "function" ? gOPS(obj) : [];
+      var symMap;
+      if (hasShammedSymbols) {
+        symMap = {};
+        for (var k = 0; k < syms.length; k++) {
+          symMap["$" + syms[k]] = syms[k];
+        }
+      }
+      for (var key in obj) {
+        if (!has(obj, key)) {
+          continue;
+        }
+        if (isArr && String(Number(key)) === key && key < obj.length) {
+          continue;
+        }
+        if (hasShammedSymbols && symMap["$" + key] instanceof Symbol) {
+          continue;
+        } else if ($test.call(/[^\w$]/, key)) {
+          xs.push(inspect(key, obj) + ": " + inspect(obj[key], obj));
+        } else {
+          xs.push(key + ": " + inspect(obj[key], obj));
+        }
+      }
+      if (typeof gOPS === "function") {
+        for (var j = 0; j < syms.length; j++) {
+          if (isEnumerable.call(obj, syms[j])) {
+            xs.push("[" + inspect(syms[j]) + "]: " + inspect(obj[syms[j]], obj));
+          }
+        }
+      }
+      return xs;
+    }
+  }
+});
+
+// node_modules/side-channel/index.js
+var require_side_channel = __commonJS({
+  "node_modules/side-channel/index.js"(exports2, module2) {
+    "use strict";
+    var GetIntrinsic = require_get_intrinsic();
+    var callBound = require_callBound();
+    var inspect = require_object_inspect();
+    var $TypeError = GetIntrinsic("%TypeError%");
+    var $WeakMap = GetIntrinsic("%WeakMap%", true);
+    var $Map = GetIntrinsic("%Map%", true);
+    var $weakMapGet = callBound("WeakMap.prototype.get", true);
+    var $weakMapSet = callBound("WeakMap.prototype.set", true);
+    var $weakMapHas = callBound("WeakMap.prototype.has", true);
+    var $mapGet = callBound("Map.prototype.get", true);
+    var $mapSet = callBound("Map.prototype.set", true);
+    var $mapHas = callBound("Map.prototype.has", true);
+    var listGetNode = function(list, key) {
+      for (var prev = list, curr; (curr = prev.next) !== null; prev = curr) {
+        if (curr.key === key) {
+          prev.next = curr.next;
+          curr.next = list.next;
+          list.next = curr;
+          return curr;
+        }
+      }
+    };
+    var listGet = function(objects, key) {
+      var node = listGetNode(objects, key);
+      return node && node.value;
+    };
+    var listSet = function(objects, key, value) {
+      var node = listGetNode(objects, key);
+      if (node) {
+        node.value = value;
+      } else {
+        objects.next = {
+          key,
+          next: objects.next,
+          value
+        };
+      }
+    };
+    var listHas = function(objects, key) {
+      return !!listGetNode(objects, key);
+    };
+    module2.exports = function getSideChannel() {
+      var $wm;
+      var $m;
+      var $o;
+      var channel = {
+        assert: function(key) {
+          if (!channel.has(key)) {
+            throw new $TypeError("Side channel does not contain " + inspect(key));
+          }
+        },
+        get: function(key) {
+          if ($WeakMap && key && (typeof key === "object" || typeof key === "function")) {
+            if ($wm) {
+              return $weakMapGet($wm, key);
+            }
+          } else if ($Map) {
+            if ($m) {
+              return $mapGet($m, key);
+            }
+          } else {
+            if ($o) {
+              return listGet($o, key);
+            }
+          }
+        },
+        has: function(key) {
+          if ($WeakMap && key && (typeof key === "object" || typeof key === "function")) {
+            if ($wm) {
+              return $weakMapHas($wm, key);
+            }
+          } else if ($Map) {
+            if ($m) {
+              return $mapHas($m, key);
+            }
+          } else {
+            if ($o) {
+              return listHas($o, key);
+            }
+          }
+          return false;
+        },
+        set: function(key, value) {
+          if ($WeakMap && key && (typeof key === "object" || typeof key === "function")) {
+            if (!$wm) {
+              $wm = new $WeakMap();
+            }
+            $weakMapSet($wm, key, value);
+          } else if ($Map) {
+            if (!$m) {
+              $m = new $Map();
+            }
+            $mapSet($m, key, value);
+          } else {
+            if (!$o) {
+              $o = { key: {}, next: null };
+            }
+            listSet($o, key, value);
+          }
+        }
+      };
+      return channel;
+    };
+  }
+});
+
+// node_modules/qs/lib/formats.js
+var require_formats = __commonJS({
+  "node_modules/qs/lib/formats.js"(exports2, module2) {
+    "use strict";
+    var replace = String.prototype.replace;
+    var percentTwenties = /%20/g;
+    var Format = {
+      RFC1738: "RFC1738",
+      RFC3986: "RFC3986"
+    };
+    module2.exports = {
+      "default": Format.RFC3986,
+      formatters: {
+        RFC1738: function(value) {
+          return replace.call(value, percentTwenties, "+");
+        },
+        RFC3986: function(value) {
+          return String(value);
+        }
+      },
+      RFC1738: Format.RFC1738,
+      RFC3986: Format.RFC3986
+    };
+  }
+});
+
 // node_modules/qs/lib/utils.js
 var require_utils = __commonJS({
   "node_modules/qs/lib/utils.js"(exports2, module2) {
     "use strict";
+    var formats = require_formats();
     var has = Object.prototype.hasOwnProperty;
     var isArray = Array.isArray;
     var hexTable = function() {
@@ -14380,7 +15556,7 @@ var require_utils = __commonJS({
       }
     };
     var arrayToObject = function arrayToObject2(source, options) {
-      var obj = options && options.plainObjects ? Object.create(null) : {};
+      var obj = options && options.plainObjects ? /* @__PURE__ */ Object.create(null) : {};
       for (var i = 0; i < source.length; ++i) {
         if (typeof source[i] !== "undefined") {
           obj[i] = source[i];
@@ -14453,11 +15629,16 @@ var require_utils = __commonJS({
         return strWithoutPlus;
       }
     };
-    var encode = function encode2(str, defaultEncoder, charset) {
+    var encode = function encode2(str, defaultEncoder, charset, kind, format2) {
       if (str.length === 0) {
         return str;
       }
-      var string = typeof str === "string" ? str : String(str);
+      var string = str;
+      if (typeof str === "symbol") {
+        string = Symbol.prototype.toString.call(str);
+      } else if (typeof str !== "string") {
+        string = String(str);
+      }
       if (charset === "iso-8859-1") {
         return escape(string).replace(/%u[0-9a-f]{4}/gi, function($0) {
           return "%26%23" + parseInt($0.slice(2), 16) + "%3B";
@@ -14466,7 +15647,7 @@ var require_utils = __commonJS({
       var out = "";
       for (var i = 0; i < string.length; ++i) {
         var c = string.charCodeAt(i);
-        if (c === 45 || c === 46 || c === 95 || c === 126 || c >= 48 && c <= 57 || c >= 65 && c <= 90 || c >= 97 && c <= 122) {
+        if (c === 45 || c === 46 || c === 95 || c === 126 || c >= 48 && c <= 57 || c >= 65 && c <= 90 || c >= 97 && c <= 122 || format2 === formats.RFC1738 && (c === 40 || c === 41)) {
           out += string.charAt(i);
           continue;
         }
@@ -14519,6 +15700,16 @@ var require_utils = __commonJS({
     var combine = function combine2(a, b) {
       return [].concat(a, b);
     };
+    var maybeMap = function maybeMap2(val, fn) {
+      if (isArray(val)) {
+        var mapped = [];
+        for (var i = 0; i < val.length; i += 1) {
+          mapped.push(fn(val[i]));
+        }
+        return mapped;
+      }
+      return fn(val);
+    };
     module2.exports = {
       arrayToObject,
       assign,
@@ -14528,29 +15719,8 @@ var require_utils = __commonJS({
       encode,
       isBuffer,
       isRegExp,
+      maybeMap,
       merge
-    };
-  }
-});
-
-// node_modules/qs/lib/formats.js
-var require_formats = __commonJS({
-  "node_modules/qs/lib/formats.js"(exports2, module2) {
-    "use strict";
-    var replace = String.prototype.replace;
-    var percentTwenties = /%20/g;
-    module2.exports = {
-      "default": "RFC3986",
-      formatters: {
-        RFC1738: function(value) {
-          return replace.call(value, percentTwenties, "+");
-        },
-        RFC3986: function(value) {
-          return value;
-        }
-      },
-      RFC1738: "RFC1738",
-      RFC3986: "RFC3986"
     };
   }
 });
@@ -14559,6 +15729,7 @@ var require_formats = __commonJS({
 var require_stringify = __commonJS({
   "node_modules/qs/lib/stringify.js"(exports2, module2) {
     "use strict";
+    var getSideChannel = require_side_channel();
     var utils = require_utils();
     var formats = require_formats();
     var has = Object.prototype.hasOwnProperty;
@@ -14575,11 +15746,13 @@ var require_stringify = __commonJS({
       }
     };
     var isArray = Array.isArray;
+    var split = String.prototype.split;
     var push = Array.prototype.push;
     var pushToArray = function(arr, valueOrArray) {
       push.apply(arr, isArray(valueOrArray) ? valueOrArray : [valueOrArray]);
     };
     var toISO = Date.prototype.toISOString;
+    var defaultFormat = formats["default"];
     var defaults = {
       addQueryPrefix: false,
       allowDots: false,
@@ -14589,7 +15762,8 @@ var require_stringify = __commonJS({
       encode: true,
       encoder: utils.encode,
       encodeValuesOnly: false,
-      formatter: formats.formatters[formats["default"]],
+      format: defaultFormat,
+      formatter: formats.formatters[defaultFormat],
       indices: false,
       serializeDate: function serializeDate(date) {
         return toISO.call(date);
@@ -14597,25 +15771,59 @@ var require_stringify = __commonJS({
       skipNulls: false,
       strictNullHandling: false
     };
-    var stringify = function stringify2(object, prefix, generateArrayPrefix, strictNullHandling, skipNulls, encoder, filter, sort, allowDots, serializeDate, formatter, encodeValuesOnly, charset) {
+    var isNonNullishPrimitive = function isNonNullishPrimitive2(v) {
+      return typeof v === "string" || typeof v === "number" || typeof v === "boolean" || typeof v === "symbol" || typeof v === "bigint";
+    };
+    var sentinel = {};
+    var stringify = function stringify2(object, prefix, generateArrayPrefix, strictNullHandling, skipNulls, encoder, filter, sort, allowDots, serializeDate, format2, formatter, encodeValuesOnly, charset, sideChannel) {
       var obj = object;
+      var tmpSc = sideChannel;
+      var step = 0;
+      var findFlag = false;
+      while ((tmpSc = tmpSc.get(sentinel)) !== void 0 && !findFlag) {
+        var pos = tmpSc.get(object);
+        step += 1;
+        if (typeof pos !== "undefined") {
+          if (pos === step) {
+            throw new RangeError("Cyclic object value");
+          } else {
+            findFlag = true;
+          }
+        }
+        if (typeof tmpSc.get(sentinel) === "undefined") {
+          step = 0;
+        }
+      }
       if (typeof filter === "function") {
         obj = filter(prefix, obj);
       } else if (obj instanceof Date) {
         obj = serializeDate(obj);
       } else if (generateArrayPrefix === "comma" && isArray(obj)) {
-        obj = obj.join(",");
+        obj = utils.maybeMap(obj, function(value2) {
+          if (value2 instanceof Date) {
+            return serializeDate(value2);
+          }
+          return value2;
+        });
       }
       if (obj === null) {
         if (strictNullHandling) {
-          return encoder && !encodeValuesOnly ? encoder(prefix, defaults.encoder, charset) : prefix;
+          return encoder && !encodeValuesOnly ? encoder(prefix, defaults.encoder, charset, "key", format2) : prefix;
         }
         obj = "";
       }
-      if (typeof obj === "string" || typeof obj === "number" || typeof obj === "boolean" || utils.isBuffer(obj)) {
+      if (isNonNullishPrimitive(obj) || utils.isBuffer(obj)) {
         if (encoder) {
-          var keyValue = encodeValuesOnly ? prefix : encoder(prefix, defaults.encoder, charset);
-          return [formatter(keyValue) + "=" + formatter(encoder(obj, defaults.encoder, charset))];
+          var keyValue = encodeValuesOnly ? prefix : encoder(prefix, defaults.encoder, charset, "key", format2);
+          if (generateArrayPrefix === "comma" && encodeValuesOnly) {
+            var valuesArray = split.call(String(obj), ",");
+            var valuesJoined = "";
+            for (var i = 0; i < valuesArray.length; ++i) {
+              valuesJoined += (i === 0 ? "" : ",") + formatter(encoder(valuesArray[i], defaults.encoder, charset, "value", format2));
+            }
+            return [formatter(keyValue) + "=" + valuesJoined];
+          }
+          return [formatter(keyValue) + "=" + formatter(encoder(obj, defaults.encoder, charset, "value", format2))];
         }
         return [formatter(prefix) + "=" + formatter(String(obj))];
       }
@@ -14624,22 +15832,25 @@ var require_stringify = __commonJS({
         return values;
       }
       var objKeys;
-      if (isArray(filter)) {
+      if (generateArrayPrefix === "comma" && isArray(obj)) {
+        objKeys = [{ value: obj.length > 0 ? obj.join(",") || null : void 0 }];
+      } else if (isArray(filter)) {
         objKeys = filter;
       } else {
         var keys = Object.keys(obj);
         objKeys = sort ? keys.sort(sort) : keys;
       }
-      for (var i = 0; i < objKeys.length; ++i) {
-        var key = objKeys[i];
-        if (skipNulls && obj[key] === null) {
+      for (var j = 0; j < objKeys.length; ++j) {
+        var key = objKeys[j];
+        var value = typeof key === "object" && typeof key.value !== "undefined" ? key.value : obj[key];
+        if (skipNulls && value === null) {
           continue;
         }
-        if (isArray(obj)) {
-          pushToArray(values, stringify2(obj[key], typeof generateArrayPrefix === "function" ? generateArrayPrefix(prefix, key) : prefix, generateArrayPrefix, strictNullHandling, skipNulls, encoder, filter, sort, allowDots, serializeDate, formatter, encodeValuesOnly, charset));
-        } else {
-          pushToArray(values, stringify2(obj[key], prefix + (allowDots ? "." + key : "[" + key + "]"), generateArrayPrefix, strictNullHandling, skipNulls, encoder, filter, sort, allowDots, serializeDate, formatter, encodeValuesOnly, charset));
-        }
+        var keyPrefix = isArray(obj) ? typeof generateArrayPrefix === "function" ? generateArrayPrefix(prefix, key) : prefix : prefix + (allowDots ? "." + key : "[" + key + "]");
+        sideChannel.set(object, step);
+        var valueSideChannel = getSideChannel();
+        valueSideChannel.set(sentinel, sideChannel);
+        pushToArray(values, stringify2(value, keyPrefix, generateArrayPrefix, strictNullHandling, skipNulls, encoder, filter, sort, allowDots, serializeDate, format2, formatter, encodeValuesOnly, charset, valueSideChannel));
       }
       return values;
     };
@@ -14647,7 +15858,7 @@ var require_stringify = __commonJS({
       if (!opts) {
         return defaults;
       }
-      if (opts.encoder !== null && opts.encoder !== void 0 && typeof opts.encoder !== "function") {
+      if (opts.encoder !== null && typeof opts.encoder !== "undefined" && typeof opts.encoder !== "function") {
         throw new TypeError("Encoder has to be a function.");
       }
       var charset = opts.charset || defaults.charset;
@@ -14676,6 +15887,7 @@ var require_stringify = __commonJS({
         encoder: typeof opts.encoder === "function" ? opts.encoder : defaults.encoder,
         encodeValuesOnly: typeof opts.encodeValuesOnly === "boolean" ? opts.encodeValuesOnly : defaults.encodeValuesOnly,
         filter,
+        format: format2,
         formatter,
         serializeDate: typeof opts.serializeDate === "function" ? opts.serializeDate : defaults.serializeDate,
         skipNulls: typeof opts.skipNulls === "boolean" ? opts.skipNulls : defaults.skipNulls,
@@ -14714,12 +15926,13 @@ var require_stringify = __commonJS({
       if (options.sort) {
         objKeys.sort(options.sort);
       }
+      var sideChannel = getSideChannel();
       for (var i = 0; i < objKeys.length; ++i) {
         var key = objKeys[i];
         if (options.skipNulls && obj[key] === null) {
           continue;
         }
-        pushToArray(keys, stringify(obj[key], key, generateArrayPrefix, options.strictNullHandling, options.skipNulls, options.encode ? options.encoder : null, options.filter, options.sort, options.allowDots, options.serializeDate, options.formatter, options.encodeValuesOnly, options.charset));
+        pushToArray(keys, stringify(obj[key], key, generateArrayPrefix, options.strictNullHandling, options.skipNulls, options.encode ? options.encoder : null, options.filter, options.sort, options.allowDots, options.serializeDate, options.format, options.formatter, options.encodeValuesOnly, options.charset, sideChannel));
       }
       var joined = keys.join(options.delimiter);
       var prefix = options.addQueryPrefix === true ? "?" : "";
@@ -14741,9 +15954,11 @@ var require_parse = __commonJS({
     "use strict";
     var utils = require_utils();
     var has = Object.prototype.hasOwnProperty;
+    var isArray = Array.isArray;
     var defaults = {
       allowDots: false,
       allowPrototypes: false,
+      allowSparse: false,
       arrayLimit: 20,
       charset: "utf-8",
       charsetSentinel: false,
@@ -14762,6 +15977,12 @@ var require_parse = __commonJS({
       return str.replace(/&#(\d+);/g, function($0, numberStr) {
         return String.fromCharCode(parseInt(numberStr, 10));
       });
+    };
+    var parseArrayValue = function(val, options) {
+      if (val && typeof val === "string" && options.comma && val.indexOf(",") > -1) {
+        return val.split(",");
+      }
+      return val;
     };
     var isoSentinel = "utf8=%26%2310003%3B";
     var charsetSentinel = "utf8=%E2%9C%93";
@@ -14795,17 +16016,19 @@ var require_parse = __commonJS({
         var pos = bracketEqualsPos === -1 ? part.indexOf("=") : bracketEqualsPos + 1;
         var key, val;
         if (pos === -1) {
-          key = options.decoder(part, defaults.decoder, charset);
+          key = options.decoder(part, defaults.decoder, charset, "key");
           val = options.strictNullHandling ? null : "";
         } else {
-          key = options.decoder(part.slice(0, pos), defaults.decoder, charset);
-          val = options.decoder(part.slice(pos + 1), defaults.decoder, charset);
+          key = options.decoder(part.slice(0, pos), defaults.decoder, charset, "key");
+          val = utils.maybeMap(parseArrayValue(part.slice(pos + 1), options), function(encodedVal) {
+            return options.decoder(encodedVal, defaults.decoder, charset, "value");
+          });
         }
         if (val && options.interpretNumericEntities && charset === "iso-8859-1") {
           val = interpretNumericEntities(val);
         }
-        if (val && options.comma && val.indexOf(",") > -1) {
-          val = val.split(",");
+        if (part.indexOf("[]=") > -1) {
+          val = isArray(val) ? [val] : val;
         }
         if (has.call(obj, key)) {
           obj[key] = utils.combine(obj[key], val);
@@ -14815,15 +16038,15 @@ var require_parse = __commonJS({
       }
       return obj;
     };
-    var parseObject = function(chain, val, options) {
-      var leaf = val;
+    var parseObject = function(chain, val, options, valuesParsed) {
+      var leaf = valuesParsed ? val : parseArrayValue(val, options);
       for (var i = chain.length - 1; i >= 0; --i) {
         var obj;
         var root = chain[i];
         if (root === "[]" && options.parseArrays) {
           obj = [].concat(leaf);
         } else {
-          obj = options.plainObjects ? Object.create(null) : {};
+          obj = options.plainObjects ? /* @__PURE__ */ Object.create(null) : {};
           var cleanRoot = root.charAt(0) === "[" && root.charAt(root.length - 1) === "]" ? root.slice(1, -1) : root;
           var index = parseInt(cleanRoot, 10);
           if (!options.parseArrays && cleanRoot === "") {
@@ -14831,7 +16054,7 @@ var require_parse = __commonJS({
           } else if (!isNaN(index) && root !== cleanRoot && String(index) === cleanRoot && index >= 0 && (options.parseArrays && index <= options.arrayLimit)) {
             obj = [];
             obj[index] = leaf;
-          } else {
+          } else if (cleanRoot !== "__proto__") {
             obj[cleanRoot] = leaf;
           }
         }
@@ -14839,14 +16062,14 @@ var require_parse = __commonJS({
       }
       return leaf;
     };
-    var parseKeys = function parseQueryStringKeys(givenKey, val, options) {
+    var parseKeys = function parseQueryStringKeys(givenKey, val, options, valuesParsed) {
       if (!givenKey) {
         return;
       }
       var key = options.allowDots ? givenKey.replace(/\.([^.[]+)/g, "[$1]") : givenKey;
       var brackets = /(\[[^[\]]*])/;
       var child = /(\[[^[\]]*])/g;
-      var segment = brackets.exec(key);
+      var segment = options.depth > 0 && brackets.exec(key);
       var parent = segment ? key.slice(0, segment.index) : key;
       var keys = [];
       if (parent) {
@@ -14858,7 +16081,7 @@ var require_parse = __commonJS({
         keys.push(parent);
       }
       var i = 0;
-      while ((segment = child.exec(key)) !== null && i < options.depth) {
+      while (options.depth > 0 && (segment = child.exec(key)) !== null && i < options.depth) {
         i += 1;
         if (!options.plainObjects && has.call(Object.prototype, segment[1].slice(1, -1))) {
           if (!options.allowPrototypes) {
@@ -14870,7 +16093,7 @@ var require_parse = __commonJS({
       if (segment) {
         keys.push("[" + key.slice(segment.index) + "]");
       }
-      return parseObject(keys, val, options);
+      return parseObject(keys, val, options, valuesParsed);
     };
     var normalizeParseOptions = function normalizeParseOptions2(opts) {
       if (!opts) {
@@ -14880,19 +16103,20 @@ var require_parse = __commonJS({
         throw new TypeError("Decoder has to be a function.");
       }
       if (typeof opts.charset !== "undefined" && opts.charset !== "utf-8" && opts.charset !== "iso-8859-1") {
-        throw new Error("The charset option must be either utf-8, iso-8859-1, or undefined");
+        throw new TypeError("The charset option must be either utf-8, iso-8859-1, or undefined");
       }
       var charset = typeof opts.charset === "undefined" ? defaults.charset : opts.charset;
       return {
         allowDots: typeof opts.allowDots === "undefined" ? defaults.allowDots : !!opts.allowDots,
         allowPrototypes: typeof opts.allowPrototypes === "boolean" ? opts.allowPrototypes : defaults.allowPrototypes,
+        allowSparse: typeof opts.allowSparse === "boolean" ? opts.allowSparse : defaults.allowSparse,
         arrayLimit: typeof opts.arrayLimit === "number" ? opts.arrayLimit : defaults.arrayLimit,
         charset,
         charsetSentinel: typeof opts.charsetSentinel === "boolean" ? opts.charsetSentinel : defaults.charsetSentinel,
         comma: typeof opts.comma === "boolean" ? opts.comma : defaults.comma,
         decoder: typeof opts.decoder === "function" ? opts.decoder : defaults.decoder,
         delimiter: typeof opts.delimiter === "string" || utils.isRegExp(opts.delimiter) ? opts.delimiter : defaults.delimiter,
-        depth: typeof opts.depth === "number" ? opts.depth : defaults.depth,
+        depth: typeof opts.depth === "number" || opts.depth === false ? +opts.depth : defaults.depth,
         ignoreQueryPrefix: opts.ignoreQueryPrefix === true,
         interpretNumericEntities: typeof opts.interpretNumericEntities === "boolean" ? opts.interpretNumericEntities : defaults.interpretNumericEntities,
         parameterLimit: typeof opts.parameterLimit === "number" ? opts.parameterLimit : defaults.parameterLimit,
@@ -14904,15 +16128,18 @@ var require_parse = __commonJS({
     module2.exports = function(str, opts) {
       var options = normalizeParseOptions(opts);
       if (str === "" || str === null || typeof str === "undefined") {
-        return options.plainObjects ? Object.create(null) : {};
+        return options.plainObjects ? /* @__PURE__ */ Object.create(null) : {};
       }
       var tempObj = typeof str === "string" ? parseValues(str, options) : str;
-      var obj = options.plainObjects ? Object.create(null) : {};
+      var obj = options.plainObjects ? /* @__PURE__ */ Object.create(null) : {};
       var keys = Object.keys(tempObj);
       for (var i = 0; i < keys.length; ++i) {
         var key = keys[i];
-        var newObj = parseKeys(key, tempObj[key], options);
+        var newObj = parseKeys(key, tempObj[key], options, typeof str === "string");
         obj = utils.merge(obj, newObj, options);
+      }
+      if (options.allowSparse === true) {
+        return obj;
       }
       return utils.compact(obj);
     };
@@ -14942,15 +16169,15 @@ var require_urlencoded = __commonJS({
     var contentType = require_content_type();
     var createError = require_http_errors();
     var debug = require_src()("body-parser:urlencoded");
-    var deprecate2 = require_depd()("body-parser");
+    var deprecate = require_depd()("body-parser");
     var read = require_read();
     var typeis = require_type_is();
     module2.exports = urlencoded;
-    var parsers = Object.create(null);
+    var parsers = /* @__PURE__ */ Object.create(null);
     function urlencoded(options) {
       var opts = options || {};
       if (opts.extended === void 0) {
-        deprecate2("undefined extended: provide extended option");
+        deprecate("undefined extended: provide extended option");
       }
       var extended = opts.extended !== false;
       var inflate = opts.inflate !== false;
@@ -15096,9 +16323,9 @@ var require_urlencoded = __commonJS({
 var require_body_parser = __commonJS({
   "node_modules/body-parser/index.js"(exports2, module2) {
     "use strict";
-    var deprecate2 = require_depd()("body-parser");
-    var parsers = Object.create(null);
-    exports2 = module2.exports = deprecate2.function(bodyParser2, "bodyParser: use individual json/urlencoded middlewares");
+    var deprecate = require_depd()("body-parser");
+    var parsers = /* @__PURE__ */ Object.create(null);
+    exports2 = module2.exports = deprecate.function(bodyParser2, "bodyParser: use individual json/urlencoded middlewares");
     Object.defineProperty(exports2, "json", {
       configurable: true,
       enumerable: true,
@@ -15347,12 +16574,12 @@ var require_finalhandler = __commonJS({
     var unpipe = require_unpipe();
     var DOUBLE_SPACE_REGEXP = /\x20{2}/g;
     var NEWLINE_REGEXP = /\n/g;
-    var defer = typeof setImmediate === "function" ? setImmediate : function(fn2) {
-      process.nextTick(fn2.bind.apply(fn2, arguments));
+    var defer = typeof setImmediate === "function" ? setImmediate : function(fn) {
+      process.nextTick(fn.bind.apply(fn, arguments));
     };
     var isFinished = onFinished.isFinished;
-    function createHtmlDocument(message2) {
-      var body = escapeHtml(message2).replace(NEWLINE_REGEXP, "<br>").replace(DOUBLE_SPACE_REGEXP, " &nbsp;");
+    function createHtmlDocument(message) {
+      var body = escapeHtml(message).replace(NEWLINE_REGEXP, "<br>").replace(DOUBLE_SPACE_REGEXP, " &nbsp;");
       return '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<title>Error</title>\n</head>\n<body>\n<pre>' + body + "</pre>\n</body>\n</html>\n";
     }
     module2.exports = finalhandler;
@@ -15396,7 +16623,7 @@ var require_finalhandler = __commonJS({
       if (!err.headers || typeof err.headers !== "object") {
         return void 0;
       }
-      var headers = Object.create(null);
+      var headers = /* @__PURE__ */ Object.create(null);
       var keys = Object.keys(err.headers);
       for (var i = 0; i < keys.length; i++) {
         var key = keys[i];
@@ -15412,7 +16639,7 @@ var require_finalhandler = __commonJS({
           msg = err.toString();
         }
       }
-      return msg || statuses[status];
+      return msg || statuses.message[status];
     }
     function getErrorStatusCode(err) {
       if (typeof err.status === "number" && err.status >= 400 && err.status < 600) {
@@ -15440,11 +16667,14 @@ var require_finalhandler = __commonJS({
     function headersSent(res) {
       return typeof res.headersSent !== "boolean" ? Boolean(res._header) : res.headersSent;
     }
-    function send(req, res, status, headers, message2) {
+    function send(req, res, status, headers, message) {
       function write() {
-        var body = createHtmlDocument(message2);
+        var body = createHtmlDocument(message);
         res.statusCode = status;
-        res.statusMessage = statuses[status];
+        res.statusMessage = statuses.message[status];
+        res.removeHeader("Content-Encoding");
+        res.removeHeader("Content-Language");
+        res.removeHeader("Content-Range");
         setHeaders(res, headers);
         res.setHeader("Content-Security-Policy", "default-src 'none'");
         res.setHeader("X-Content-Type-Options", "nosniff");
@@ -15597,14 +16827,14 @@ var require_layer = __commonJS({
     var debug = require_src()("express:router:layer");
     var hasOwnProperty = Object.prototype.hasOwnProperty;
     module2.exports = Layer;
-    function Layer(path, options, fn2) {
+    function Layer(path, options, fn) {
       if (!(this instanceof Layer)) {
-        return new Layer(path, options, fn2);
+        return new Layer(path, options, fn);
       }
       debug("new %o", path);
       var opts = options || {};
-      this.handle = fn2;
-      this.name = fn2.name || "<anonymous>";
+      this.handle = fn;
+      this.name = fn.name || "<anonymous>";
       this.params = void 0;
       this.path = void 0;
       this.regexp = pathRegexp(path, this.keys = [], opts);
@@ -15612,23 +16842,23 @@ var require_layer = __commonJS({
       this.regexp.fast_slash = path === "/" && opts.end === false;
     }
     Layer.prototype.handle_error = function handle_error(error, req, res, next) {
-      var fn2 = this.handle;
-      if (fn2.length !== 4) {
+      var fn = this.handle;
+      if (fn.length !== 4) {
         return next(error);
       }
       try {
-        fn2(error, req, res, next);
+        fn(error, req, res, next);
       } catch (err) {
         next(err);
       }
     };
     Layer.prototype.handle_request = function handle(req, res, next) {
-      var fn2 = this.handle;
-      if (fn2.length > 3) {
+      var fn = this.handle;
+      if (fn.length > 3) {
         return next();
       }
       try {
-        fn2(req, res, next);
+        fn(req, res, next);
       } catch (err) {
         next(err);
       }
@@ -15767,8 +16997,9 @@ var require_route = __commonJS({
     };
     Route.prototype.dispatch = function dispatch(req, res, done) {
       var idx = 0;
-      var stack2 = this.stack;
-      if (stack2.length === 0) {
+      var stack = this.stack;
+      var sync = 0;
+      if (stack.length === 0) {
         return done();
       }
       var method = req.method.toLowerCase();
@@ -15784,9 +17015,12 @@ var require_route = __commonJS({
         if (err && err === "router") {
           return done(err);
         }
-        var layer = stack2[idx++];
+        var layer = stack[idx++];
         if (!layer) {
           return done(err);
+        }
+        if (++sync > 100) {
+          return setImmediate(next, err);
         }
         if (layer.method && layer.method !== method) {
           return next(err);
@@ -15796,6 +17030,7 @@ var require_route = __commonJS({
         } else {
           layer.handle_request(req, res, next);
         }
+        sync = 0;
       }
     };
     Route.prototype.all = function all() {
@@ -15859,7 +17094,7 @@ var require_router = __commonJS({
     var methods = require_methods();
     var mixin = require_utils_merge();
     var debug = require_src()("express:router");
-    var deprecate2 = require_depd()("express");
+    var deprecate = require_depd()("express");
     var flatten = require_array_flatten();
     var parseUrl = require_parseurl();
     var setPrototypeOf = require_setprototypeof();
@@ -15880,9 +17115,9 @@ var require_router = __commonJS({
       router.stack = [];
       return router;
     };
-    proto.param = function param(name, fn2) {
+    proto.param = function param(name, fn) {
       if (typeof name === "function") {
-        deprecate2("router.param(fn): Refactor to use path params");
+        deprecate("router.param(fn): Refactor to use path params");
         this._params.push(name);
         return;
       }
@@ -15890,18 +17125,18 @@ var require_router = __commonJS({
       var len = params.length;
       var ret;
       if (name[0] === ":") {
-        deprecate2("router.param(" + JSON.stringify(name) + ", fn): Use router.param(" + JSON.stringify(name.substr(1)) + ", fn) instead");
-        name = name.substr(1);
+        deprecate("router.param(" + JSON.stringify(name) + ", fn): Use router.param(" + JSON.stringify(name.slice(1)) + ", fn) instead");
+        name = name.slice(1);
       }
       for (var i = 0; i < len; ++i) {
-        if (ret = params[i](name, fn2)) {
-          fn2 = ret;
+        if (ret = params[i](name, fn)) {
+          fn = ret;
         }
       }
-      if (typeof fn2 !== "function") {
-        throw new Error("invalid param() call for " + name + ", got " + fn2);
+      if (typeof fn !== "function") {
+        throw new Error("invalid param() call for " + name + ", got " + fn);
       }
-      (this.params[name] = this.params[name] || []).push(fn2);
+      (this.params[name] = this.params[name] || []).push(fn);
       return this;
     };
     proto.handle = function handle(req, res, out) {
@@ -15911,9 +17146,10 @@ var require_router = __commonJS({
       var protohost = getProtohost(req.url) || "";
       var removed = "";
       var slashAdded = false;
+      var sync = 0;
       var paramcalled = {};
       var options = [];
-      var stack2 = self2.stack;
+      var stack = self2.stack;
       var parentParams = req.params;
       var parentUrl = req.baseUrl || "";
       var done = restore(out, req, "baseUrl", "next", "params");
@@ -15931,21 +17167,24 @@ var require_router = __commonJS({
       function next(err) {
         var layerError = err === "route" ? null : err;
         if (slashAdded) {
-          req.url = req.url.substr(1);
+          req.url = req.url.slice(1);
           slashAdded = false;
         }
         if (removed.length !== 0) {
           req.baseUrl = parentUrl;
-          req.url = protohost + removed + req.url.substr(protohost.length);
+          req.url = protohost + removed + req.url.slice(protohost.length);
           removed = "";
         }
         if (layerError === "router") {
           setImmediate(done, null);
           return;
         }
-        if (idx >= stack2.length) {
+        if (idx >= stack.length) {
           setImmediate(done, layerError);
           return;
+        }
+        if (++sync > 100) {
+          return setImmediate(next, err);
         }
         var path = getPathname(req);
         if (path == null) {
@@ -15954,8 +17193,8 @@ var require_router = __commonJS({
         var layer;
         var match;
         var route;
-        while (match !== true && idx < stack2.length) {
-          layer = stack2[idx++];
+        while (match !== true && idx < stack.length) {
+          layer = stack[idx++];
           match = matchLayer(layer, path);
           route = layer.route;
           if (typeof match !== "boolean") {
@@ -15978,7 +17217,6 @@ var require_router = __commonJS({
           }
           if (!has_method && method !== "HEAD") {
             match = false;
-            continue;
           }
         }
         if (match !== true) {
@@ -15991,22 +17229,27 @@ var require_router = __commonJS({
         var layerPath = layer.path;
         self2.process_params(layer, paramcalled, req, res, function(err2) {
           if (err2) {
-            return next(layerError || err2);
+            next(layerError || err2);
+          } else if (route) {
+            layer.handle_request(req, res, next);
+          } else {
+            trim_prefix(layer, layerError, layerPath, path);
           }
-          if (route) {
-            return layer.handle_request(req, res, next);
-          }
-          trim_prefix(layer, layerError, layerPath, path);
+          sync = 0;
         });
       }
       function trim_prefix(layer, layerError, layerPath, path) {
         if (layerPath.length !== 0) {
+          if (layerPath !== path.slice(0, layerPath.length)) {
+            next(layerError);
+            return;
+          }
           var c = path[layerPath.length];
           if (c && c !== "/" && c !== ".")
             return next(layerError);
           debug("trim prefix (%s) from url %s", layerPath, req.url);
           removed = layerPath;
-          req.url = protohost + req.url.substr(protohost.length + removed.length);
+          req.url = protohost + req.url.slice(protohost.length + removed.length);
           if (!protohost && req.url[0] !== "/") {
             req.url = "/" + req.url;
             slashAdded = true;
@@ -16062,34 +17305,34 @@ var require_router = __commonJS({
         paramCallback();
       }
       function paramCallback(err) {
-        var fn2 = paramCallbacks[paramIndex++];
+        var fn = paramCallbacks[paramIndex++];
         paramCalled.value = req.params[key.name];
         if (err) {
           paramCalled.error = err;
           param(err);
           return;
         }
-        if (!fn2)
+        if (!fn)
           return param();
         try {
-          fn2(req, res, paramCallback, paramVal, key.name);
+          fn(req, res, paramCallback, paramVal, key.name);
         } catch (e) {
           paramCallback(e);
         }
       }
       param();
     };
-    proto.use = function use(fn2) {
+    proto.use = function use(fn) {
       var offset = 0;
       var path = "/";
-      if (typeof fn2 !== "function") {
-        var arg = fn2;
+      if (typeof fn !== "function") {
+        var arg = fn;
         while (Array.isArray(arg) && arg.length !== 0) {
           arg = arg[0];
         }
         if (typeof arg !== "function") {
           offset = 1;
-          path = fn2;
+          path = fn;
         }
       }
       var callbacks = flatten(slice.call(arguments, offset));
@@ -16097,16 +17340,16 @@ var require_router = __commonJS({
         throw new TypeError("Router.use() requires a middleware function");
       }
       for (var i = 0; i < callbacks.length; i++) {
-        var fn2 = callbacks[i];
-        if (typeof fn2 !== "function") {
-          throw new TypeError("Router.use() requires a middleware function but got a " + gettype(fn2));
+        var fn = callbacks[i];
+        if (typeof fn !== "function") {
+          throw new TypeError("Router.use() requires a middleware function but got a " + gettype(fn));
         }
-        debug("use %o %s", path, fn2.name || "<anonymous>");
+        debug("use %o %s", path, fn.name || "<anonymous>");
         var layer = new Layer(path, {
           sensitive: this.caseSensitive,
           strict: false,
           end: false
-        }, fn2);
+        }, fn);
         layer.route = void 0;
         this.stack.push(layer);
       }
@@ -16151,8 +17394,8 @@ var require_router = __commonJS({
       }
       var searchIndex = url.indexOf("?");
       var pathLength = searchIndex !== -1 ? searchIndex : url.length;
-      var fqdnIndex = url.substr(0, pathLength).indexOf("://");
-      return fqdnIndex !== -1 ? url.substr(0, url.indexOf("/", 3 + fqdnIndex)) : void 0;
+      var fqdnIndex = url.slice(0, pathLength).indexOf("://");
+      return fqdnIndex !== -1 ? url.substring(0, url.indexOf("/", 3 + fqdnIndex)) : void 0;
     }
     function gettype(obj) {
       var type = typeof obj;
@@ -16192,7 +17435,7 @@ var require_router = __commonJS({
       }
       return mixin(obj, params);
     }
-    function restore(fn2, obj) {
+    function restore(fn, obj) {
       var props = new Array(arguments.length - 2);
       var vals = new Array(arguments.length - 2);
       for (var i = 0; i < props.length; i++) {
@@ -16203,7 +17446,7 @@ var require_router = __commonJS({
         for (var i2 = 0; i2 < props.length; i2++) {
           obj[props[i2]] = vals[i2];
         }
-        return fn2.apply(this, arguments);
+        return fn.apply(this, arguments);
       };
     }
     function sendOptionsResponse(res, options, next) {
@@ -16215,14 +17458,14 @@ var require_router = __commonJS({
         next(err);
       }
     }
-    function wrap(old, fn2) {
+    function wrap(old, fn) {
       return function proxy() {
-        var args2 = new Array(arguments.length + 1);
-        args2[0] = old;
+        var args = new Array(arguments.length + 1);
+        args[0] = old;
         for (var i = 0, len = arguments.length; i < len; i++) {
-          args2[i + 1] = arguments[i];
+          args[i + 1] = arguments[i];
         }
-        fn2.apply(this, args2);
+        fn.apply(this, args);
       };
     }
   }
@@ -16242,7 +17485,7 @@ var require_init = __commonJS({
         req.next = next;
         setPrototypeOf(req, app2.request);
         setPrototypeOf(res, app2.response);
-        res.locals = res.locals || Object.create(null);
+        res.locals = res.locals || /* @__PURE__ */ Object.create(null);
         next();
       };
     };
@@ -16305,13 +17548,13 @@ var require_view = __commonJS({
         fileName += this.ext;
       }
       if (!opts.engines[this.ext]) {
-        var mod = this.ext.substr(1);
+        var mod = this.ext.slice(1);
         debug('require "%s"', mod);
-        var fn2 = require(mod).__express;
-        if (typeof fn2 !== "function") {
+        var fn = require(mod).__express;
+        if (typeof fn !== "function") {
           throw new Error('Module "' + mod + '" does not provide a view engine.');
         }
-        opts.engines[this.ext] = fn2;
+        opts.engines[this.ext] = fn;
       }
       this.engine = opts.engines[this.ext];
       this.path = this.lookup(fileName);
@@ -16376,6 +17619,7 @@ var require_safe_buffer = __commonJS({
     function SafeBuffer(arg, encodingOrOffset, length) {
       return Buffer2(arg, encodingOrOffset, length);
     }
+    SafeBuffer.prototype = Object.create(Buffer2.prototype);
     copyProps(Buffer2, SafeBuffer);
     SafeBuffer.from = function(arg, encodingOrOffset, length) {
       if (typeof arg === "number") {
@@ -16577,53 +17821,19 @@ var require_content_disposition = __commonJS({
   }
 });
 
-// node_modules/destroy/index.js
-var require_destroy = __commonJS({
-  "node_modules/destroy/index.js"(exports2, module2) {
-    "use strict";
-    var ReadStream = require("fs").ReadStream;
-    var Stream = require("stream");
-    module2.exports = destroy;
-    function destroy(stream) {
-      if (stream instanceof ReadStream) {
-        return destroyReadStream(stream);
-      }
-      if (!(stream instanceof Stream)) {
-        return stream;
-      }
-      if (typeof stream.destroy === "function") {
-        stream.destroy();
-      }
-      return stream;
-    }
-    function destroyReadStream(stream) {
-      stream.destroy();
-      if (typeof stream.close === "function") {
-        stream.on("open", onOpenClose);
-      }
-      return stream;
-    }
-    function onOpenClose() {
-      if (typeof this.fd === "number") {
-        this.close();
-      }
-    }
-  }
-});
-
 // node_modules/etag/index.js
 var require_etag = __commonJS({
   "node_modules/etag/index.js"(exports2, module2) {
     "use strict";
     module2.exports = etag;
-    var crypto3 = require("crypto");
+    var crypto2 = require("crypto");
     var Stats = require("fs").Stats;
     var toString = Object.prototype.toString;
     function entitytag(entity) {
       if (entity.length === 0) {
         return '"0-2jmj7l5rSw0yVb/vlWAYkK/YBwk"';
       }
-      var hash = crypto3.createHash("sha1").update(entity, "utf8").digest("base64").substring(0, 27);
+      var hash = crypto2.createHash("sha1").update(entity, "utf8").digest("base64").substring(0, 27);
       var len = typeof entity === "string" ? Buffer.byteLength(entity, "utf8") : entity.length;
       return '"' + len.toString(16) + "-" + hash + '"';
     }
@@ -16739,8 +17949,8 @@ var require_mime = __commonJS({
     var path = require("path");
     var fs = require("fs");
     function Mime() {
-      this.types = Object.create(null);
-      this.extensions = Object.create(null);
+      this.types = /* @__PURE__ */ Object.create(null);
+      this.extensions = /* @__PURE__ */ Object.create(null);
     }
     Mime.prototype.define = function(map) {
       for (var type in map) {
@@ -16801,7 +18011,7 @@ var require_ms2 = __commonJS({
       var type = typeof val;
       if (type === "string" && val.length > 0) {
         return parse(val);
-      } else if (type === "number" && isNaN(val) === false) {
+      } else if (type === "number" && isFinite(val)) {
         return options.long ? fmtLong(val) : fmtShort(val);
       }
       throw new Error("val is not a non-empty string or a valid number. val=" + JSON.stringify(val));
@@ -16811,7 +18021,7 @@ var require_ms2 = __commonJS({
       if (str.length > 100) {
         return;
       }
-      var match = /^((?:\d+)?\-?\d?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(str);
+      var match = /^(-?(?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(str);
       if (!match) {
         return;
       }
@@ -16986,7 +18196,7 @@ var require_send = __commonJS({
     "use strict";
     var createError = require_http_errors();
     var debug = require_src()("send");
-    var deprecate2 = require_depd()("send");
+    var deprecate = require_depd()("send");
     var destroy = require_destroy();
     var encodeUrl = require_encodeurl();
     var escapeHtml = require_escape_html();
@@ -17029,7 +18239,7 @@ var require_send = __commonJS({
       }
       this._hidden = Boolean(opts.hidden);
       if (opts.hidden !== void 0) {
-        deprecate2("hidden: use dotfiles: '" + (this._hidden ? "allow" : "ignore") + "' instead");
+        deprecate("hidden: use dotfiles: '" + (this._hidden ? "allow" : "ignore") + "' instead");
       }
       if (opts.dotfiles === void 0) {
         this._dotfiles = void 0;
@@ -17047,18 +18257,18 @@ var require_send = __commonJS({
       }
     }
     util.inherits(SendStream, Stream);
-    SendStream.prototype.etag = deprecate2.function(function etag2(val) {
+    SendStream.prototype.etag = deprecate.function(function etag2(val) {
       this._etag = Boolean(val);
       debug("etag %s", this._etag);
       return this;
     }, "send.etag: pass etag as option");
-    SendStream.prototype.hidden = deprecate2.function(function hidden(val) {
+    SendStream.prototype.hidden = deprecate.function(function hidden(val) {
       this._hidden = Boolean(val);
       this._dotfiles = void 0;
       debug("hidden %s", this._hidden);
       return this;
     }, "send.hidden: use dotfiles option");
-    SendStream.prototype.index = deprecate2.function(function index(paths) {
+    SendStream.prototype.index = deprecate.function(function index(paths) {
       var index2 = !paths ? [] : normalizeList(paths, "paths argument");
       debug("index %o", paths);
       this._index = index2;
@@ -17069,9 +18279,9 @@ var require_send = __commonJS({
       debug("root %s", this._root);
       return this;
     };
-    SendStream.prototype.from = deprecate2.function(SendStream.prototype.root, "send.from: pass root as option");
-    SendStream.prototype.root = deprecate2.function(SendStream.prototype.root, "send.root: pass root as option");
-    SendStream.prototype.maxage = deprecate2.function(function maxage(maxAge) {
+    SendStream.prototype.from = deprecate.function(SendStream.prototype.root, "send.from: pass root as option");
+    SendStream.prototype.root = deprecate.function(SendStream.prototype.root, "send.root: pass root as option");
+    SendStream.prototype.maxage = deprecate.function(function maxage(maxAge) {
       this._maxage = typeof maxAge === "string" ? ms(maxAge) : Number(maxAge);
       this._maxage = !isNaN(this._maxage) ? Math.min(Math.max(0, this._maxage), MAX_MAXAGE) : 0;
       debug("max-age %d", this._maxage);
@@ -17079,12 +18289,10 @@ var require_send = __commonJS({
     }, "send.maxage: pass maxAge as option");
     SendStream.prototype.error = function error(status, err) {
       if (hasListeners(this, "error")) {
-        return this.emit("error", createError(status, err, {
-          expose: false
-        }));
+        return this.emit("error", createHttpError(status, err));
       }
       var res = this.res;
-      var msg = statuses[status] || String(status);
+      var msg = statuses.message[status] || String(status);
       var doc = createHtmlDocument("Error", escapeHtml(msg));
       clearHeaders(res);
       if (err && err.headers) {
@@ -17122,13 +18330,11 @@ var require_send = __commonJS({
     };
     SendStream.prototype.removeContentHeaderFields = function removeContentHeaderFields() {
       var res = this.res;
-      var headers = getHeaderNames(res);
-      for (var i = 0; i < headers.length; i++) {
-        var header = headers[i];
-        if (header.substr(0, 8) === "content-" && header !== "content-location") {
-          res.removeHeader(header);
-        }
-      }
+      res.removeHeader("Content-Encoding");
+      res.removeHeader("Content-Language");
+      res.removeHeader("Content-Length");
+      res.removeHeader("Content-Range");
+      res.removeHeader("Content-Type");
     };
     SendStream.prototype.notModified = function notModified() {
       var res = this.res;
@@ -17160,7 +18366,7 @@ var require_send = __commonJS({
     };
     SendStream.prototype.isFresh = function isFresh() {
       return fresh(this.req.headers, {
-        "etag": this.res.getHeader("ETag"),
+        etag: this.res.getHeader("ETag"),
         "last-modified": this.res.getHeader("Last-Modified")
       });
     };
@@ -17374,21 +18580,17 @@ var require_send = __commonJS({
       next();
     };
     SendStream.prototype.stream = function stream(path2, options) {
-      var finished = false;
       var self2 = this;
       var res = this.res;
       var stream2 = fs.createReadStream(path2, options);
       this.emit("stream", stream2);
       stream2.pipe(res);
-      onFinished(res, function onfinished() {
-        finished = true;
-        destroy(stream2);
-      });
+      function cleanup() {
+        destroy(stream2, true);
+      }
+      onFinished(res, cleanup);
       stream2.on("error", function onerror(err) {
-        if (finished)
-          return;
-        finished = true;
-        destroy(stream2);
+        cleanup();
         self2.onStatError(err);
       });
       stream2.on("end", function onend() {
@@ -17463,6 +18665,12 @@ var require_send = __commonJS({
     function createHtmlDocument(title, body) {
       return '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<title>' + title + "</title>\n</head>\n<body>\n<pre>" + body + "</pre>\n</body>\n</html>\n";
     }
+    function createHttpError(status, err) {
+      if (!err) {
+        return createError(status);
+      }
+      return err instanceof Error ? createError(status, err, { expose: false }) : createError(status, err);
+    }
     function decode(path2) {
       try {
         return decodeURIComponent(path2);
@@ -17505,7 +18713,9 @@ var require_send = __commonJS({
             }
             break;
           case 44:
-            list.push(str.substring(start, end));
+            if (start !== end) {
+              list.push(str.substring(start, end));
+            }
             start = end = i + 1;
             break;
           default:
@@ -17513,7 +18723,9 @@ var require_send = __commonJS({
             break;
         }
       }
-      list.push(str.substring(start, end));
+      if (start !== end) {
+        list.push(str.substring(start, end));
+      }
       return list;
     }
     function setHeaders(res, headers) {
@@ -18364,7 +19576,7 @@ var require_utils2 = __commonJS({
     var Buffer2 = require_safe_buffer().Buffer;
     var contentDisposition = require_content_disposition();
     var contentType = require_content_type();
-    var deprecate2 = require_depd()("express");
+    var deprecate = require_depd()("express");
     var flatten = require_array_flatten();
     var mime = require_send().mime;
     var etag = require_etag();
@@ -18381,7 +19593,7 @@ var require_utils2 = __commonJS({
       if (path.substring(0, 2) === "\\\\")
         return true;
     };
-    exports2.flatten = deprecate2.function(flatten, "utils.flatten: use array-flatten npm module instead");
+    exports2.flatten = deprecate.function(flatten, "utils.flatten: use array-flatten npm module instead");
     exports2.normalizeType = function(type) {
       return ~type.indexOf("/") ? acceptParams(type) : { value: mime.lookup(type), params: {} };
     };
@@ -18392,7 +19604,7 @@ var require_utils2 = __commonJS({
       }
       return ret;
     };
-    exports2.contentDisposition = deprecate2.function(contentDisposition, "utils.contentDisposition: use content-disposition npm module instead");
+    exports2.contentDisposition = deprecate.function(contentDisposition, "utils.contentDisposition: use content-disposition npm module instead");
     function acceptParams(str, index) {
       var parts = str.split(/ *; */);
       var ret = { value: parts[0], quality: 1, params: {}, originalIndex: index };
@@ -18407,49 +19619,45 @@ var require_utils2 = __commonJS({
       return ret;
     }
     exports2.compileETag = function(val) {
-      var fn2;
+      var fn;
       if (typeof val === "function") {
         return val;
       }
       switch (val) {
         case true:
-          fn2 = exports2.wetag;
+        case "weak":
+          fn = exports2.wetag;
           break;
         case false:
           break;
         case "strong":
-          fn2 = exports2.etag;
-          break;
-        case "weak":
-          fn2 = exports2.wetag;
+          fn = exports2.etag;
           break;
         default:
           throw new TypeError("unknown value for etag function: " + val);
       }
-      return fn2;
+      return fn;
     };
     exports2.compileQueryParser = function compileQueryParser(val) {
-      var fn2;
+      var fn;
       if (typeof val === "function") {
         return val;
       }
       switch (val) {
         case true:
-          fn2 = querystring.parse;
+        case "simple":
+          fn = querystring.parse;
           break;
         case false:
-          fn2 = newObject;
+          fn = newObject;
           break;
         case "extended":
-          fn2 = parseExtendedQueryString;
-          break;
-        case "simple":
-          fn2 = querystring.parse;
+          fn = parseExtendedQueryString;
           break;
         default:
           throw new TypeError("unknown value for query parser function: " + val);
       }
-      return fn2;
+      return fn;
     };
     exports2.compileTrust = function(val) {
       if (typeof val === "function")
@@ -18465,7 +19673,9 @@ var require_utils2 = __commonJS({
         };
       }
       if (typeof val === "string") {
-        val = val.split(/ *, */);
+        val = val.split(",").map(function(v) {
+          return v.trim();
+        });
       }
       return proxyaddr.compile(val || []);
     };
@@ -18509,11 +19719,12 @@ var require_application = __commonJS({
     var compileETag = require_utils2().compileETag;
     var compileQueryParser = require_utils2().compileQueryParser;
     var compileTrust = require_utils2().compileTrust;
-    var deprecate2 = require_depd()("express");
+    var deprecate = require_depd()("express");
     var flatten = require_array_flatten();
     var merge = require_utils_merge();
     var resolve = require("path").resolve;
     var setPrototypeOf = require_setprototypeof();
+    var hasOwnProperty = Object.prototype.hasOwnProperty;
     var slice = Array.prototype.slice;
     var app2 = exports2 = module2.exports = {};
     var trustProxyDefaultSymbol = "@@symbol:trust_proxy_default";
@@ -18546,7 +19757,7 @@ var require_application = __commonJS({
         setPrototypeOf(this.engines, parent.engines);
         setPrototypeOf(this.settings, parent.settings);
       });
-      this.locals = Object.create(null);
+      this.locals = /* @__PURE__ */ Object.create(null);
       this.mountpath = "/";
       this.locals.settings = this.settings;
       this.set("view", View);
@@ -18584,17 +19795,17 @@ var require_application = __commonJS({
       }
       router.handle(req, res, done);
     };
-    app2.use = function use(fn2) {
+    app2.use = function use(fn) {
       var offset = 0;
       var path = "/";
-      if (typeof fn2 !== "function") {
-        var arg = fn2;
+      if (typeof fn !== "function") {
+        var arg = fn;
         while (Array.isArray(arg) && arg.length !== 0) {
           arg = arg[0];
         }
         if (typeof arg !== "function") {
           offset = 1;
-          path = fn2;
+          path = fn;
         }
       }
       var fns = flatten(slice.call(arguments, offset));
@@ -18603,22 +19814,22 @@ var require_application = __commonJS({
       }
       this.lazyrouter();
       var router = this._router;
-      fns.forEach(function(fn3) {
-        if (!fn3 || !fn3.handle || !fn3.set) {
-          return router.use(path, fn3);
+      fns.forEach(function(fn2) {
+        if (!fn2 || !fn2.handle || !fn2.set) {
+          return router.use(path, fn2);
         }
         debug(".use app under %s", path);
-        fn3.mountpath = path;
-        fn3.parent = this;
+        fn2.mountpath = path;
+        fn2.parent = this;
         router.use(path, function mounted_app(req, res, next) {
           var orig = req.app;
-          fn3.handle(req, res, function(err) {
+          fn2.handle(req, res, function(err) {
             setPrototypeOf(req, orig.request);
             setPrototypeOf(res, orig.response);
             next(err);
           });
         });
-        fn3.emit("mount", this);
+        fn2.emit("mount", this);
       }, this);
       return this;
     };
@@ -18626,28 +19837,35 @@ var require_application = __commonJS({
       this.lazyrouter();
       return this._router.route(path);
     };
-    app2.engine = function engine(ext, fn2) {
-      if (typeof fn2 !== "function") {
+    app2.engine = function engine(ext, fn) {
+      if (typeof fn !== "function") {
         throw new Error("callback function required");
       }
       var extension = ext[0] !== "." ? "." + ext : ext;
-      this.engines[extension] = fn2;
+      this.engines[extension] = fn;
       return this;
     };
-    app2.param = function param(name, fn2) {
+    app2.param = function param(name, fn) {
       this.lazyrouter();
       if (Array.isArray(name)) {
         for (var i = 0; i < name.length; i++) {
-          this.param(name[i], fn2);
+          this.param(name[i], fn);
         }
         return this;
       }
-      this._router.param(name, fn2);
+      this._router.param(name, fn);
       return this;
     };
     app2.set = function set(setting, val) {
       if (arguments.length === 1) {
-        return this.settings[setting];
+        var settings = this.settings;
+        while (settings && settings !== Object.prototype) {
+          if (hasOwnProperty.call(settings, setting)) {
+            return settings[setting];
+          }
+          settings = Object.getPrototypeOf(settings);
+        }
+        return void 0;
       }
       debug('set "%s" to %o', setting, val);
       this.settings[setting] = val;
@@ -18697,13 +19915,13 @@ var require_application = __commonJS({
     app2.all = function all(path) {
       this.lazyrouter();
       var route = this._router.route(path);
-      var args2 = slice.call(arguments, 1);
+      var args = slice.call(arguments, 1);
       for (var i = 0; i < methods.length; i++) {
-        route[methods[i]].apply(route, args2);
+        route[methods[i]].apply(route, args);
       }
       return this;
     };
-    app2.del = deprecate2.function(app2.delete, "app.del: Use app.delete instead");
+    app2.del = deprecate.function(app2.delete, "app.del: Use app.delete instead");
     app2.render = function render(name, options, callback) {
       var cache = this.cache;
       var done = callback;
@@ -18972,7 +20190,9 @@ var require_language = __commonJS({
       var match = simpleLanguageRegExp.exec(str);
       if (!match)
         return null;
-      var prefix = match[1], suffix = match[2], full = prefix;
+      var prefix = match[1];
+      var suffix = match[2];
+      var full = prefix;
       if (suffix)
         full += "-" + suffix;
       var q = 1;
@@ -19069,7 +20289,7 @@ var require_mediaType = __commonJS({
       var match = simpleMediaTypeRegExp.exec(str);
       if (!match)
         return null;
-      var params = Object.create(null);
+      var params = /* @__PURE__ */ Object.create(null);
       var q = 1;
       var subtype = match[2];
       var type = match[1];
@@ -19214,7 +20434,10 @@ var require_mediaType = __commonJS({
 var require_negotiator = __commonJS({
   "node_modules/negotiator/index.js"(exports2, module2) {
     "use strict";
-    var modules = Object.create(null);
+    var preferredCharsets = require_charset();
+    var preferredEncodings = require_encoding();
+    var preferredLanguages = require_language();
+    var preferredMediaTypes = require_mediaType();
     module2.exports = Negotiator;
     module2.exports.Negotiator = Negotiator;
     function Negotiator(request) {
@@ -19228,7 +20451,6 @@ var require_negotiator = __commonJS({
       return set && set[0];
     };
     Negotiator.prototype.charsets = function charsets(available) {
-      var preferredCharsets = loadModule("charset").preferredCharsets;
       return preferredCharsets(this.request.headers["accept-charset"], available);
     };
     Negotiator.prototype.encoding = function encoding(available) {
@@ -19236,7 +20458,6 @@ var require_negotiator = __commonJS({
       return set && set[0];
     };
     Negotiator.prototype.encodings = function encodings(available) {
-      var preferredEncodings = loadModule("encoding").preferredEncodings;
       return preferredEncodings(this.request.headers["accept-encoding"], available);
     };
     Negotiator.prototype.language = function language(available) {
@@ -19244,7 +20465,6 @@ var require_negotiator = __commonJS({
       return set && set[0];
     };
     Negotiator.prototype.languages = function languages(available) {
-      var preferredLanguages = loadModule("language").preferredLanguages;
       return preferredLanguages(this.request.headers["accept-language"], available);
     };
     Negotiator.prototype.mediaType = function mediaType(available) {
@@ -19252,7 +20472,6 @@ var require_negotiator = __commonJS({
       return set && set[0];
     };
     Negotiator.prototype.mediaTypes = function mediaTypes(available) {
-      var preferredMediaTypes = loadModule("mediaType").preferredMediaTypes;
       return preferredMediaTypes(this.request.headers.accept, available);
     };
     Negotiator.prototype.preferredCharset = Negotiator.prototype.charset;
@@ -19263,30 +20482,6 @@ var require_negotiator = __commonJS({
     Negotiator.prototype.preferredLanguages = Negotiator.prototype.languages;
     Negotiator.prototype.preferredMediaType = Negotiator.prototype.mediaType;
     Negotiator.prototype.preferredMediaTypes = Negotiator.prototype.mediaTypes;
-    function loadModule(moduleName) {
-      var module3 = modules[moduleName];
-      if (module3 !== void 0) {
-        return module3;
-      }
-      switch (moduleName) {
-        case "charset":
-          module3 = require_charset();
-          break;
-        case "encoding":
-          module3 = require_encoding();
-          break;
-        case "language":
-          module3 = require_language();
-          break;
-        case "mediaType":
-          module3 = require_mediaType();
-          break;
-        default:
-          throw new Error("Cannot find module '" + moduleName + "'");
-      }
-      modules[moduleName] = module3;
-      return module3;
-    }
   }
 });
 
@@ -19376,7 +20571,7 @@ var require_request = __commonJS({
   "node_modules/express/lib/request.js"(exports2, module2) {
     "use strict";
     var accepts = require_accepts();
-    var deprecate2 = require_depd()("express");
+    var deprecate = require_depd()("express");
     var isIP = require("net").isIP;
     var typeis = require_type_is();
     var http2 = require("http");
@@ -19410,17 +20605,17 @@ var require_request = __commonJS({
       var accept = accepts(this);
       return accept.encodings.apply(accept, arguments);
     };
-    req.acceptsEncoding = deprecate2.function(req.acceptsEncodings, "req.acceptsEncoding: Use acceptsEncodings instead");
+    req.acceptsEncoding = deprecate.function(req.acceptsEncodings, "req.acceptsEncoding: Use acceptsEncodings instead");
     req.acceptsCharsets = function() {
       var accept = accepts(this);
       return accept.charsets.apply(accept, arguments);
     };
-    req.acceptsCharset = deprecate2.function(req.acceptsCharsets, "req.acceptsCharset: Use acceptsCharsets instead");
+    req.acceptsCharset = deprecate.function(req.acceptsCharsets, "req.acceptsCharset: Use acceptsCharsets instead");
     req.acceptsLanguages = function() {
       var accept = accepts(this);
       return accept.languages.apply(accept, arguments);
     };
-    req.acceptsLanguage = deprecate2.function(req.acceptsLanguages, "req.acceptsLanguage: Use acceptsLanguages instead");
+    req.acceptsLanguage = deprecate.function(req.acceptsLanguages, "req.acceptsLanguage: Use acceptsLanguages instead");
     req.range = function range(size, options) {
       var range2 = this.get("Range");
       if (!range2)
@@ -19431,8 +20626,8 @@ var require_request = __commonJS({
       var params = this.params || {};
       var body = this.body || {};
       var query = this.query || {};
-      var args2 = arguments.length === 1 ? "name" : "name, default";
-      deprecate2("req.param(" + args2 + "): Use req.params, req.body, or req.query instead");
+      var args = arguments.length === 1 ? "name" : "name, default";
+      deprecate("req.param(" + args + "): Use req.params, req.body, or req.query instead");
       if (params[name] != null && params.hasOwnProperty(name))
         return params[name];
       if (body[name] != null)
@@ -19499,7 +20694,7 @@ var require_request = __commonJS({
       var index = host.indexOf(":", offset);
       return index !== -1 ? host.substring(0, index) : host;
     });
-    defineGetter(req, "host", deprecate2.function(function host() {
+    defineGetter(req, "host", deprecate.function(function host() {
       return this.hostname;
     }, "req.host: Use req.hostname instead"));
     defineGetter(req, "fresh", function() {
@@ -19536,13 +20731,13 @@ var require_request = __commonJS({
 // node_modules/cookie-signature/index.js
 var require_cookie_signature = __commonJS({
   "node_modules/cookie-signature/index.js"(exports2) {
-    var crypto3 = require("crypto");
+    var crypto2 = require("crypto");
     exports2.sign = function(val, secret) {
       if (typeof val != "string")
         throw new TypeError("Cookie value must be provided as a string.");
       if (typeof secret != "string")
         throw new TypeError("Secret string must be provided.");
-      return val + "." + crypto3.createHmac("sha256", secret).update(val).digest("base64").replace(/\=+$/, "");
+      return val + "." + crypto2.createHmac("sha256", secret).update(val).digest("base64").replace(/\=+$/, "");
     };
     exports2.unsign = function(val, secret) {
       if (typeof val != "string")
@@ -19553,7 +20748,7 @@ var require_cookie_signature = __commonJS({
       return sha1(mac) == sha1(val) ? str : false;
     };
     function sha1(str) {
-      return crypto3.createHash("sha1").update(str).digest("hex");
+      return crypto2.createHash("sha1").update(str).digest("hex");
     }
   }
 });
@@ -19564,9 +20759,7 @@ var require_cookie = __commonJS({
     "use strict";
     exports2.parse = parse;
     exports2.serialize = serialize;
-    var decode = decodeURIComponent;
-    var encode = encodeURIComponent;
-    var pairSplitRegExp = /; */;
+    var __toString = Object.prototype.toString;
     var fieldContentRegExp = /^[\u0009\u0020-\u007e\u0080-\u00ff]+$/;
     function parse(str, options) {
       if (typeof str !== "string") {
@@ -19574,22 +20767,29 @@ var require_cookie = __commonJS({
       }
       var obj = {};
       var opt = options || {};
-      var pairs = str.split(pairSplitRegExp);
       var dec = opt.decode || decode;
-      for (var i = 0; i < pairs.length; i++) {
-        var pair = pairs[i];
-        var eq_idx = pair.indexOf("=");
-        if (eq_idx < 0) {
+      var index = 0;
+      while (index < str.length) {
+        var eqIdx = str.indexOf("=", index);
+        if (eqIdx === -1) {
+          break;
+        }
+        var endIdx = str.indexOf(";", index);
+        if (endIdx === -1) {
+          endIdx = str.length;
+        } else if (endIdx < eqIdx) {
+          index = str.lastIndexOf(";", eqIdx - 1) + 1;
           continue;
         }
-        var key = pair.substr(0, eq_idx).trim();
-        var val = pair.substr(++eq_idx, pair.length).trim();
-        if (val[0] == '"') {
-          val = val.slice(1, -1);
-        }
-        if (obj[key] == void 0) {
+        var key = str.slice(index, eqIdx).trim();
+        if (obj[key] === void 0) {
+          var val = str.slice(eqIdx + 1, endIdx).trim();
+          if (val.charCodeAt(0) === 34) {
+            val = val.slice(1, -1);
+          }
           obj[key] = tryDecode(val, dec);
         }
+        index = endIdx + 1;
       }
       return obj;
     }
@@ -19609,8 +20809,9 @@ var require_cookie = __commonJS({
       var str = name + "=" + value;
       if (opt.maxAge != null) {
         var maxAge = opt.maxAge - 0;
-        if (isNaN(maxAge))
-          throw new Error("maxAge should be a Number");
+        if (isNaN(maxAge) || !isFinite(maxAge)) {
+          throw new TypeError("option maxAge is invalid");
+        }
         str += "; Max-Age=" + Math.floor(maxAge);
       }
       if (opt.domain) {
@@ -19626,16 +20827,33 @@ var require_cookie = __commonJS({
         str += "; Path=" + opt.path;
       }
       if (opt.expires) {
-        if (typeof opt.expires.toUTCString !== "function") {
+        var expires = opt.expires;
+        if (!isDate(expires) || isNaN(expires.valueOf())) {
           throw new TypeError("option expires is invalid");
         }
-        str += "; Expires=" + opt.expires.toUTCString();
+        str += "; Expires=" + expires.toUTCString();
       }
       if (opt.httpOnly) {
         str += "; HttpOnly";
       }
       if (opt.secure) {
         str += "; Secure";
+      }
+      if (opt.priority) {
+        var priority = typeof opt.priority === "string" ? opt.priority.toLowerCase() : opt.priority;
+        switch (priority) {
+          case "low":
+            str += "; Priority=Low";
+            break;
+          case "medium":
+            str += "; Priority=Medium";
+            break;
+          case "high":
+            str += "; Priority=High";
+            break;
+          default:
+            throw new TypeError("option priority is invalid");
+        }
       }
       if (opt.sameSite) {
         var sameSite = typeof opt.sameSite === "string" ? opt.sameSite.toLowerCase() : opt.sameSite;
@@ -19657,6 +20875,15 @@ var require_cookie = __commonJS({
         }
       }
       return str;
+    }
+    function decode(str) {
+      return str.indexOf("%") !== -1 ? decodeURIComponent(str) : str;
+    }
+    function encode(val) {
+      return encodeURIComponent(val);
+    }
+    function isDate(val) {
+      return __toString.call(val) === "[object Date]" || val instanceof Date;
     }
     function tryDecode(str, decode2) {
       try {
@@ -19747,7 +20974,8 @@ var require_response = __commonJS({
     "use strict";
     var Buffer2 = require_safe_buffer().Buffer;
     var contentDisposition = require_content_disposition();
-    var deprecate2 = require_depd()("express");
+    var createError = require_http_errors();
+    var deprecate = require_depd()("express");
     var encodeUrl = require_encodeurl();
     var escapeHtml = require_escape_html();
     var http2 = require("http");
@@ -19770,6 +20998,9 @@ var require_response = __commonJS({
     module2.exports = res;
     var charsetRegExp = /;\s*charset\s*=/;
     res.status = function status(code) {
+      if ((typeof code === "string" || Math.floor(code) !== code) && code > 99 && code < 1e3) {
+        deprecate("res.status(" + JSON.stringify(code) + "): use res.status(" + Math.floor(code) + ") instead");
+      }
       this.statusCode = code;
       return this;
     };
@@ -19789,10 +21020,10 @@ var require_response = __commonJS({
       var app2 = this.app;
       if (arguments.length === 2) {
         if (typeof arguments[0] !== "number" && typeof arguments[1] === "number") {
-          deprecate2("res.send(body, status): Use res.status(status).send(body) instead");
+          deprecate("res.send(body, status): Use res.status(status).send(body) instead");
           this.statusCode = arguments[1];
         } else {
-          deprecate2("res.send(status, body): Use res.status(status).send(body) instead");
+          deprecate("res.send(status, body): Use res.status(status).send(body) instead");
           this.statusCode = arguments[0];
           chunk = arguments[1];
         }
@@ -19801,9 +21032,9 @@ var require_response = __commonJS({
         if (!this.get("Content-Type")) {
           this.type("txt");
         }
-        deprecate2("res.send(status): Use res.sendStatus(status) instead");
+        deprecate("res.send(status): Use res.sendStatus(status) instead");
         this.statusCode = chunk;
-        chunk = statuses[chunk];
+        chunk = statuses.message[chunk];
       }
       switch (typeof chunk) {
         case "string":
@@ -19861,6 +21092,11 @@ var require_response = __commonJS({
         this.removeHeader("Transfer-Encoding");
         chunk = "";
       }
+      if (this.statusCode === 205) {
+        this.set("Content-Length", "0");
+        this.removeHeader("Transfer-Encoding");
+        chunk = "";
+      }
       if (req.method === "HEAD") {
         this.end();
       } else {
@@ -19872,10 +21108,10 @@ var require_response = __commonJS({
       var val = obj;
       if (arguments.length === 2) {
         if (typeof arguments[1] === "number") {
-          deprecate2("res.json(obj, status): Use res.status(status).json(obj) instead");
+          deprecate("res.json(obj, status): Use res.status(status).json(obj) instead");
           this.statusCode = arguments[1];
         } else {
-          deprecate2("res.json(status, obj): Use res.status(status).json(obj) instead");
+          deprecate("res.json(status, obj): Use res.status(status).json(obj) instead");
           this.statusCode = arguments[0];
           val = arguments[1];
         }
@@ -19894,10 +21130,10 @@ var require_response = __commonJS({
       var val = obj;
       if (arguments.length === 2) {
         if (typeof arguments[1] === "number") {
-          deprecate2("res.jsonp(obj, status): Use res.status(status).json(obj) instead");
+          deprecate("res.jsonp(obj, status): Use res.status(status).jsonp(obj) instead");
           this.statusCode = arguments[1];
         } else {
-          deprecate2("res.jsonp(status, obj): Use res.status(status).jsonp(obj) instead");
+          deprecate("res.jsonp(status, obj): Use res.status(status).jsonp(obj) instead");
           this.statusCode = arguments[0];
           val = arguments[1];
         }
@@ -19919,13 +21155,17 @@ var require_response = __commonJS({
         this.set("X-Content-Type-Options", "nosniff");
         this.set("Content-Type", "text/javascript");
         callback = callback.replace(/[^\[\]\w$.]/g, "");
-        body = body.replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029");
+        if (body === void 0) {
+          body = "";
+        } else if (typeof body === "string") {
+          body = body.replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029");
+        }
         body = "/**/ typeof " + callback + " === 'function' && " + callback + "(" + body + ");";
       }
       return this.send(body);
     };
     res.sendStatus = function sendStatus(statusCode) {
-      var body = statuses[statusCode] || String(statusCode);
+      var body = statuses.message[statusCode] || String(statusCode);
       this.statusCode = statusCode;
       this.type("txt");
       return this.send(body);
@@ -19982,7 +21222,7 @@ var require_response = __commonJS({
         }
       });
     };
-    res.sendfile = deprecate2.function(res.sendfile, "res.sendfile: Use res.sendFile instead");
+    res.sendfile = deprecate.function(res.sendfile, "res.sendfile: Use res.sendFile instead");
     res.download = function download(path2, filename, options, callback) {
       var done = callback;
       var name = filename;
@@ -19994,6 +21234,10 @@ var require_response = __commonJS({
       } else if (typeof options === "function") {
         done = options;
         opts = null;
+      }
+      if (typeof filename === "object" && (typeof options === "function" || options === void 0)) {
+        name = null;
+        opts = filename;
       }
       var headers = {
         "Content-Disposition": contentDisposition(name || path2)
@@ -20009,7 +21253,7 @@ var require_response = __commonJS({
       }
       opts = Object.create(opts);
       opts.headers = headers;
-      var fullPath = resolve(path2);
+      var fullPath = !opts.root ? resolve(path2) : path2;
       return this.sendFile(fullPath, opts, done);
     };
     res.contentType = res.type = function contentType(type) {
@@ -20019,24 +21263,22 @@ var require_response = __commonJS({
     res.format = function(obj) {
       var req = this.req;
       var next = req.next;
-      var fn2 = obj.default;
-      if (fn2)
-        delete obj.default;
-      var keys = Object.keys(obj);
+      var keys = Object.keys(obj).filter(function(v) {
+        return v !== "default";
+      });
       var key = keys.length > 0 ? req.accepts(keys) : false;
       this.vary("Accept");
       if (key) {
         this.set("Content-Type", normalizeType(key).value);
         obj[key](req, this, next);
-      } else if (fn2) {
-        fn2();
+      } else if (obj.default) {
+        obj.default(req, this, next);
       } else {
-        var err = new Error("Not Acceptable");
-        err.status = err.statusCode = 406;
-        err.types = normalizeTypes(keys).map(function(o) {
-          return o.value;
-        });
-        next(err);
+        next(createError(406, {
+          types: normalizeTypes(keys).map(function(o) {
+            return o.value;
+          })
+        }));
       }
       return this;
     };
@@ -20094,9 +21336,12 @@ var require_response = __commonJS({
       if (signed) {
         val = "s:" + sign(val, secret);
       }
-      if ("maxAge" in opts) {
-        opts.expires = new Date(Date.now() + opts.maxAge);
-        opts.maxAge /= 1e3;
+      if (opts.maxAge != null) {
+        var maxAge = opts.maxAge - 0;
+        if (!isNaN(maxAge)) {
+          opts.expires = new Date(Date.now() + maxAge);
+          opts.maxAge = Math.floor(maxAge / 1e3);
+        }
       }
       if (opts.path == null) {
         opts.path = "/";
@@ -20120,18 +21365,18 @@ var require_response = __commonJS({
           status = arguments[0];
           address = arguments[1];
         } else {
-          deprecate2("res.redirect(url, status): Use res.redirect(status, url) instead");
+          deprecate("res.redirect(url, status): Use res.redirect(status, url) instead");
           status = arguments[1];
         }
       }
       address = this.location(address).get("Location");
       this.format({
         text: function() {
-          body = statuses[status] + ". Redirecting to " + address;
+          body = statuses.message[status] + ". Redirecting to " + address;
         },
         html: function() {
           var u = escapeHtml(address);
-          body = "<p>" + statuses[status] + '. Redirecting to <a href="' + u + '">' + u + "</a></p>";
+          body = "<p>" + statuses.message[status] + '. Redirecting to <a href="' + u + '">' + u + "</a></p>";
         },
         default: function() {
           body = "";
@@ -20147,7 +21392,7 @@ var require_response = __commonJS({
     };
     res.vary = function(field) {
       if (!field || Array.isArray(field) && !field.length) {
-        deprecate2("res.vary(): Provide a field name");
+        deprecate("res.vary(): Provide a field name");
         return this;
       }
       vary(this, field);
@@ -20246,7 +21491,7 @@ var require_response = __commonJS({
     }
     function stringify(value, replacer, spaces, escape2) {
       var json = replacer || spaces ? JSON.stringify(value, replacer, spaces) : JSON.stringify(value);
-      if (escape2) {
+      if (escape2 && typeof json === "string") {
         json = json.replace(/[<>&]/g, function(c) {
           switch (c.charCodeAt(0)) {
             case 60:
@@ -20450,7 +21695,7 @@ var require_express2 = __commonJS({
 // node_modules/base64id/lib/base64id.js
 var require_base64id = __commonJS({
   "node_modules/base64id/lib/base64id.js"(exports2, module2) {
-    var crypto3 = require("crypto");
+    var crypto2 = require("crypto");
     var Base64Id = function() {
     };
     Base64Id.prototype.getRandomBytes = function(bytes) {
@@ -20458,12 +21703,12 @@ var require_base64id = __commonJS({
       var self2 = this;
       bytes = bytes || 12;
       if (bytes > BUFFER_SIZE) {
-        return crypto3.randomBytes(bytes);
+        return crypto2.randomBytes(bytes);
       }
       var bytesInBuffer = parseInt(BUFFER_SIZE / bytes);
       var threshold = parseInt(bytesInBuffer * 0.85);
       if (!threshold) {
-        return crypto3.randomBytes(bytes);
+        return crypto2.randomBytes(bytes);
       }
       if (this.bytesBufferIndex == null) {
         this.bytesBufferIndex = -1;
@@ -20475,14 +21720,14 @@ var require_base64id = __commonJS({
       if (this.bytesBufferIndex == -1 || this.bytesBufferIndex > threshold) {
         if (!this.isGeneratingBytes) {
           this.isGeneratingBytes = true;
-          crypto3.randomBytes(BUFFER_SIZE, function(err, bytes2) {
+          crypto2.randomBytes(BUFFER_SIZE, function(err, bytes2) {
             self2.bytesBuffer = bytes2;
             self2.bytesBufferIndex = 0;
             self2.isGeneratingBytes = false;
           });
         }
         if (this.bytesBufferIndex == -1) {
-          return crypto3.randomBytes(bytes);
+          return crypto2.randomBytes(bytes);
         }
       }
       var result = this.bytesBuffer.slice(bytes * this.bytesBufferIndex, bytes * (this.bytesBufferIndex + 1));
@@ -20496,7 +21741,7 @@ var require_base64id = __commonJS({
       }
       this.sequenceNumber = this.sequenceNumber + 1 | 0;
       rand.writeInt32BE(this.sequenceNumber, 11);
-      if (crypto3.randomBytes) {
+      if (crypto2.randomBytes) {
         this.getRandomBytes(12).copy(rand);
       } else {
         [0, 4, 8].forEach(function(i) {
@@ -20515,7 +21760,7 @@ var require_commons = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.ERROR_PACKET = exports2.PACKET_TYPES_REVERSE = exports2.PACKET_TYPES = void 0;
-    var PACKET_TYPES = Object.create(null);
+    var PACKET_TYPES = /* @__PURE__ */ Object.create(null);
     exports2.PACKET_TYPES = PACKET_TYPES;
     PACKET_TYPES["open"] = "0";
     PACKET_TYPES["close"] = "1";
@@ -20524,7 +21769,7 @@ var require_commons = __commonJS({
     PACKET_TYPES["message"] = "4";
     PACKET_TYPES["upgrade"] = "5";
     PACKET_TYPES["noop"] = "6";
-    var PACKET_TYPES_REVERSE = Object.create(null);
+    var PACKET_TYPES_REVERSE = /* @__PURE__ */ Object.create(null);
     exports2.PACKET_TYPES_REVERSE = PACKET_TYPES_REVERSE;
     Object.keys(PACKET_TYPES).forEach((key) => {
       PACKET_TYPES_REVERSE[PACKET_TYPES[key]] = key;
@@ -20889,9 +22134,9 @@ var require_parser_v3 = __commonJS({
     }
     function encodeBase64Packet(packet, callback) {
       var data = Buffer.isBuffer(packet.data) ? packet.data : arrayBufferToBuffer(packet.data);
-      var message2 = "b" + exports2.packets[packet.type];
-      message2 += data.toString("base64");
-      return callback(message2);
+      var message = "b" + exports2.packets[packet.type];
+      message += data.toString("base64");
+      return callback(message);
     }
     exports2.encodeBase64Packet = encodeBase64Packet;
     function decodePacket(data, binaryType, utf8decode) {
@@ -20964,8 +22209,8 @@ var require_parser_v3 = __commonJS({
         return callback("0:");
       }
       function encodeOne(packet, doneCallback) {
-        encodePacket(packet, supportsBinary, false, function(message2) {
-          doneCallback(null, setLengthHeader(message2));
+        encodePacket(packet, supportsBinary, false, function(message) {
+          doneCallback(null, setLengthHeader(message));
         });
       }
       map(packets, encodeOne, function(err2, results) {
@@ -20973,8 +22218,8 @@ var require_parser_v3 = __commonJS({
       });
     }
     exports2.encodePayload = encodePayload;
-    function setLengthHeader(message2) {
-      return message2.length + ":" + message2;
+    function setLengthHeader(message) {
+      return message.length + ":" + message;
     }
     function map(ary, each, done) {
       const results = new Array(ary.length);
@@ -21262,7 +22507,7 @@ var require_common = __commonJS({
         let enableOverride = null;
         let namespacesCache;
         let enabledCache;
-        function debug(...args2) {
+        function debug(...args) {
           if (!debug.enabled) {
             return;
           }
@@ -21273,28 +22518,28 @@ var require_common = __commonJS({
           self2.prev = prevTime;
           self2.curr = curr;
           prevTime = curr;
-          args2[0] = createDebug.coerce(args2[0]);
-          if (typeof args2[0] !== "string") {
-            args2.unshift("%O");
+          args[0] = createDebug.coerce(args[0]);
+          if (typeof args[0] !== "string") {
+            args.unshift("%O");
           }
           let index = 0;
-          args2[0] = args2[0].replace(/%([a-zA-Z%])/g, (match, format2) => {
+          args[0] = args[0].replace(/%([a-zA-Z%])/g, (match, format2) => {
             if (match === "%%") {
               return "%";
             }
             index++;
             const formatter = createDebug.formatters[format2];
             if (typeof formatter === "function") {
-              const val = args2[index];
+              const val = args[index];
               match = formatter.call(self2, val);
-              args2.splice(index, 1);
+              args.splice(index, 1);
               index--;
             }
             return match;
           });
-          createDebug.formatArgs.call(self2, args2);
+          createDebug.formatArgs.call(self2, args);
           const logFn = self2.log || createDebug.log;
-          logFn.apply(self2, args2);
+          logFn.apply(self2, args);
         }
         debug.namespace = namespace;
         debug.useColors = createDebug.useColors();
@@ -21342,7 +22587,7 @@ var require_common = __commonJS({
           }
           namespaces = split[i].replace(/\*/g, ".*?");
           if (namespaces[0] === "-") {
-            createDebug.skips.push(new RegExp("^" + namespaces.substr(1) + "$"));
+            createDebug.skips.push(new RegExp("^" + namespaces.slice(1) + "$"));
           } else {
             createDebug.names.push(new RegExp("^" + namespaces + "$"));
           }
@@ -21497,16 +22742,16 @@ var require_browser2 = __commonJS({
       }
       return typeof document !== "undefined" && document.documentElement && document.documentElement.style && document.documentElement.style.WebkitAppearance || typeof window !== "undefined" && window.console && (window.console.firebug || window.console.exception && window.console.table) || typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/) && parseInt(RegExp.$1, 10) >= 31 || typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/);
     }
-    function formatArgs(args2) {
-      args2[0] = (this.useColors ? "%c" : "") + this.namespace + (this.useColors ? " %c" : " ") + args2[0] + (this.useColors ? "%c " : " ") + "+" + module2.exports.humanize(this.diff);
+    function formatArgs(args) {
+      args[0] = (this.useColors ? "%c" : "") + this.namespace + (this.useColors ? " %c" : " ") + args[0] + (this.useColors ? "%c " : " ") + "+" + module2.exports.humanize(this.diff);
       if (!this.useColors) {
         return;
       }
       const c = "color: " + this.color;
-      args2.splice(1, 0, c, "color: inherit");
+      args.splice(1, 0, c, "color: inherit");
       let index = 0;
       let lastC = 0;
-      args2[0].replace(/%[a-zA-Z%]/g, (match) => {
+      args[0].replace(/%[a-zA-Z%]/g, (match) => {
         if (match === "%%") {
           return;
         }
@@ -21515,7 +22760,7 @@ var require_browser2 = __commonJS({
           lastC = index;
         }
       });
-      args2.splice(lastC, 0, c);
+      args.splice(lastC, 0, c);
     }
     exports2.log = console.debug || console.log || (() => {
     });
@@ -21673,7 +22918,7 @@ var require_node2 = __commonJS({
     var tty = require("tty");
     var util = require("util");
     exports2.init = init;
-    exports2.log = log2;
+    exports2.log = log;
     exports2.formatArgs = formatArgs;
     exports2.save = save;
     exports2.load = load;
@@ -21787,16 +23032,16 @@ var require_node2 = __commonJS({
     function useColors() {
       return "colors" in exports2.inspectOpts ? Boolean(exports2.inspectOpts.colors) : tty.isatty(process.stderr.fd);
     }
-    function formatArgs(args2) {
+    function formatArgs(args) {
       const { namespace: name, useColors: useColors2 } = this;
       if (useColors2) {
         const c = this.color;
-        const colorCode = "[3" + (c < 8 ? c : "8;5;" + c);
-        const prefix = `  ${colorCode};1m${name} [0m`;
-        args2[0] = prefix + args2[0].split("\n").join("\n" + prefix);
-        args2.push(colorCode + "m+" + module2.exports.humanize(this.diff) + "[0m");
+        const colorCode = "\x1B[3" + (c < 8 ? c : "8;5;" + c);
+        const prefix = `  ${colorCode};1m${name} \x1B[0m`;
+        args[0] = prefix + args[0].split("\n").join("\n" + prefix);
+        args.push(colorCode + "m+" + module2.exports.humanize(this.diff) + "\x1B[0m");
       } else {
-        args2[0] = getDate() + name + " " + args2[0];
+        args[0] = getDate() + name + " " + args[0];
       }
     }
     function getDate() {
@@ -21805,8 +23050,8 @@ var require_node2 = __commonJS({
       }
       return new Date().toISOString() + " ";
     }
-    function log2(...args2) {
-      return process.stderr.write(util.format(...args2) + "\n");
+    function log(...args) {
+      return process.stderr.write(util.format(...args) + "\n");
     }
     function save(namespaces) {
       if (namespaces) {
@@ -21839,7 +23084,7 @@ var require_node2 = __commonJS({
 });
 
 // node_modules/engine.io/node_modules/debug/src/index.js
-var require_src2 = __commonJS({
+var require_src3 = __commonJS({
   "node_modules/engine.io/node_modules/debug/src/index.js"(exports2, module2) {
     if (typeof process === "undefined" || process.type === "renderer" || process.browser === true || process.__nwjs) {
       module2.exports = require_browser2();
@@ -21858,7 +23103,7 @@ var require_transport = __commonJS({
     var events_1 = require("events");
     var parser_v4 = require_cjs();
     var parser_v3 = require_parser_v3();
-    var debug_1 = require_src2();
+    var debug_1 = require_src3();
     var debug = (0, debug_1.default)("engine:transport");
     function noop() {
     }
@@ -21884,11 +23129,11 @@ var require_transport = __commonJS({
         debug("setting request");
         this.req = req;
       }
-      close(fn2) {
+      close(fn) {
         if (this.readyState === "closed" || this.readyState === "closing")
           return;
         this.readyState = "closing";
-        this.doClose(fn2 || noop);
+        this.doClose(fn || noop);
       }
       onError(msg, desc) {
         if (this.listeners("error").length) {
@@ -21924,7 +23169,7 @@ var require_polling = __commonJS({
     var transport_1 = require_transport();
     var zlib_1 = require("zlib");
     var accepts = require_accepts();
-    var debug_1 = require_src2();
+    var debug_1 = require_src3();
     var debug = (0, debug_1.default)("engine:polling");
     var compressionMethods = {
       gzip: zlib_1.createGzip,
@@ -22013,8 +23258,8 @@ var require_polling = __commonJS({
             contentLength = Buffer.byteLength(chunks);
           }
           if (contentLength > this.maxHttpBufferSize) {
-            chunks = isBinary ? Buffer.concat([]) : "";
-            req.connection.destroy();
+            res.writeHead(413).end();
+            cleanup();
           }
         };
         const onEnd = () => {
@@ -22129,7 +23374,7 @@ var require_polling = __commonJS({
           callback(null, Buffer.concat(buffers, nread));
         }).end(data);
       }
-      doClose(fn2) {
+      doClose(fn) {
         debug("closing");
         let closeTimeoutTimer;
         if (this.dataReq) {
@@ -22138,7 +23383,7 @@ var require_polling = __commonJS({
         }
         const onClose = () => {
           clearTimeout(closeTimeoutTimer);
-          fn2();
+          fn();
           this.onClose();
         };
         if (this.writable) {
@@ -22210,16 +23455,16 @@ var require_websocket = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.WebSocket = void 0;
     var transport_1 = require_transport();
-    var debug_1 = require_src2();
+    var debug_1 = require_src3();
     var debug = (0, debug_1.default)("engine:ws");
     var WebSocket = class extends transport_1.Transport {
       constructor(req) {
         super(req);
         this.socket = req.websocket;
         this.socket.on("message", (data, isBinary) => {
-          const message2 = isBinary ? data : data.toString();
-          debug('received "%s"', message2);
-          super.onData(message2);
+          const message = isBinary ? data : data.toString();
+          debug('received "%s"', message);
+          super.onData(message);
         });
         this.socket.once("close", this.onClose.bind(this));
         this.socket.on("error", this.onError.bind(this));
@@ -22267,10 +23512,10 @@ var require_websocket = __commonJS({
           this.parser.encodePacket(packet, this.supportsBinary, send);
         }
       }
-      doClose(fn2) {
+      doClose(fn) {
         debug("closing");
         this.socket.close();
-        fn2 && fn2();
+        fn && fn();
       }
     };
     exports2.WebSocket = WebSocket;
@@ -22307,7 +23552,7 @@ var require_socket = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.Socket = void 0;
     var events_1 = require("events");
-    var debug_1 = require_src2();
+    var debug_1 = require_src3();
     var timers_1 = require("timers");
     var debug = (0, debug_1.default)("engine:socket");
     var Socket2 = class extends events_1.EventEmitter {
@@ -22350,7 +23595,8 @@ var require_socket = __commonJS({
           sid: this.id,
           upgrades: this.getAvailableUpgrades(),
           pingInterval: this.server.opts.pingInterval,
-          pingTimeout: this.server.opts.pingTimeout
+          pingTimeout: this.server.opts.pingTimeout,
+          maxPayload: this.server.opts.maxHttpBufferSize
         }));
         if (this.server.opts.initialPacket) {
           this.sendPacket("message", this.server.opts.initialPacket);
@@ -22647,7 +23893,6 @@ var require_cookie2 = __commonJS({
     exports2.serialize = serialize;
     var decode = decodeURIComponent;
     var encode = encodeURIComponent;
-    var pairSplitRegExp = /; */;
     var fieldContentRegExp = /^[\u0009\u0020-\u007e\u0080-\u00ff]+$/;
     function parse(str, options) {
       if (typeof str !== "string") {
@@ -22655,20 +23900,20 @@ var require_cookie2 = __commonJS({
       }
       var obj = {};
       var opt = options || {};
-      var pairs = str.split(pairSplitRegExp);
+      var pairs = str.split(";");
       var dec = opt.decode || decode;
       for (var i = 0; i < pairs.length; i++) {
         var pair = pairs[i];
-        var eq_idx = pair.indexOf("=");
-        if (eq_idx < 0) {
+        var index = pair.indexOf("=");
+        if (index < 0) {
           continue;
         }
-        var key = pair.substr(0, eq_idx).trim();
-        var val = pair.substr(++eq_idx, pair.length).trim();
-        if (val[0] == '"') {
-          val = val.slice(1, -1);
-        }
+        var key = pair.substring(0, index).trim();
         if (obj[key] == void 0) {
+          var val = pair.substring(index + 1, pair.length).trim();
+          if (val[0] === '"') {
+            val = val.slice(1, -1);
+          }
           obj[key] = tryDecode(val, dec);
         }
       }
@@ -22750,9 +23995,9 @@ var require_cookie2 = __commonJS({
   }
 });
 
-// node_modules/ws/lib/constants.js
+// node_modules/engine.io/node_modules/ws/lib/constants.js
 var require_constants = __commonJS({
-  "node_modules/ws/lib/constants.js"(exports2, module2) {
+  "node_modules/engine.io/node_modules/ws/lib/constants.js"(exports2, module2) {
     "use strict";
     module2.exports = {
       BINARY_TYPES: ["nodebuffer", "arraybuffer", "fragments"],
@@ -22768,9 +24013,9 @@ var require_constants = __commonJS({
   }
 });
 
-// node_modules/ws/lib/buffer-util.js
+// node_modules/engine.io/node_modules/ws/lib/buffer-util.js
 var require_buffer_util = __commonJS({
-  "node_modules/ws/lib/buffer-util.js"(exports2, module2) {
+  "node_modules/engine.io/node_modules/ws/lib/buffer-util.js"(exports2, module2) {
     "use strict";
     var { EMPTY_BUFFER } = require_constants();
     function concat(list, totalLength) {
@@ -22851,9 +24096,9 @@ var require_buffer_util = __commonJS({
   }
 });
 
-// node_modules/ws/lib/limiter.js
+// node_modules/engine.io/node_modules/ws/lib/limiter.js
 var require_limiter = __commonJS({
-  "node_modules/ws/lib/limiter.js"(exports2, module2) {
+  "node_modules/engine.io/node_modules/ws/lib/limiter.js"(exports2, module2) {
     "use strict";
     var kDone = Symbol("kDone");
     var kRun = Symbol("kRun");
@@ -22885,9 +24130,9 @@ var require_limiter = __commonJS({
   }
 });
 
-// node_modules/ws/lib/permessage-deflate.js
+// node_modules/engine.io/node_modules/ws/lib/permessage-deflate.js
 var require_permessage_deflate = __commonJS({
-  "node_modules/ws/lib/permessage-deflate.js"(exports2, module2) {
+  "node_modules/engine.io/node_modules/ws/lib/permessage-deflate.js"(exports2, module2) {
     "use strict";
     var zlib = require("zlib");
     var bufferUtil = require_buffer_util();
@@ -23145,9 +24390,9 @@ var require_permessage_deflate = __commonJS({
   }
 });
 
-// node_modules/ws/lib/validation.js
+// node_modules/engine.io/node_modules/ws/lib/validation.js
 var require_validation = __commonJS({
-  "node_modules/ws/lib/validation.js"(exports2, module2) {
+  "node_modules/engine.io/node_modules/ws/lib/validation.js"(exports2, module2) {
     "use strict";
     var tokenChars = [
       0,
@@ -23328,9 +24573,9 @@ var require_validation = __commonJS({
   }
 });
 
-// node_modules/ws/lib/receiver.js
+// node_modules/engine.io/node_modules/ws/lib/receiver.js
 var require_receiver = __commonJS({
-  "node_modules/ws/lib/receiver.js"(exports2, module2) {
+  "node_modules/engine.io/node_modules/ws/lib/receiver.js"(exports2, module2) {
     "use strict";
     var { Writable } = require("stream");
     var PerMessageDeflate = require_permessage_deflate();
@@ -23642,8 +24887,8 @@ var require_receiver = __commonJS({
       }
     };
     module2.exports = Receiver;
-    function error(ErrorCtor, message2, prefix, statusCode, errorCode) {
-      const err = new ErrorCtor(prefix ? `Invalid WebSocket frame: ${message2}` : message2);
+    function error(ErrorCtor, message, prefix, statusCode, errorCode) {
+      const err = new ErrorCtor(prefix ? `Invalid WebSocket frame: ${message}` : message);
       Error.captureStackTrace(err, error);
       err.code = errorCode;
       err[kStatusCode] = statusCode;
@@ -23652,13 +24897,13 @@ var require_receiver = __commonJS({
   }
 });
 
-// node_modules/ws/lib/sender.js
+// node_modules/engine.io/node_modules/ws/lib/sender.js
 var require_sender = __commonJS({
-  "node_modules/ws/lib/sender.js"(exports2, module2) {
+  "node_modules/engine.io/node_modules/ws/lib/sender.js"(exports2, module2) {
     "use strict";
     var net = require("net");
     var tls = require("tls");
-    var { randomFillSync } = require("crypto");
+    var { randomFillSync: randomFillSync2 } = require("crypto");
     var PerMessageDeflate = require_permessage_deflate();
     var { EMPTY_BUFFER } = require_constants();
     var { isValidStatusCode } = require_validation();
@@ -23698,7 +24943,7 @@ var require_sender = __commonJS({
         }
         if (!options.mask)
           return [target, data];
-        randomFillSync(mask, 0, 4);
+        randomFillSync2(mask, 0, 4);
         target[1] |= 128;
         target[offset - 4] = mask[0];
         target[offset - 3] = mask[1];
@@ -23881,9 +25126,9 @@ var require_sender = __commonJS({
   }
 });
 
-// node_modules/ws/lib/event-target.js
+// node_modules/engine.io/node_modules/ws/lib/event-target.js
 var require_event_target = __commonJS({
-  "node_modules/ws/lib/event-target.js"(exports2, module2) {
+  "node_modules/engine.io/node_modules/ws/lib/event-target.js"(exports2, module2) {
     "use strict";
     var { kForOnEventAttribute, kListener } = require_constants();
     var kCode = Symbol("kCode");
@@ -23965,10 +25210,10 @@ var require_event_target = __commonJS({
             listener.call(this, event);
           };
         } else if (type === "close") {
-          wrapper = function onClose(code, message2) {
+          wrapper = function onClose(code, message) {
             const event = new CloseEvent("close", {
               code,
-              reason: message2.toString(),
+              reason: message.toString(),
               wasClean: this._closeFrameReceived && this._closeFrameSent
             });
             event[kTarget] = this;
@@ -24019,9 +25264,9 @@ var require_event_target = __commonJS({
   }
 });
 
-// node_modules/ws/lib/extension.js
+// node_modules/engine.io/node_modules/ws/lib/extension.js
 var require_extension = __commonJS({
-  "node_modules/ws/lib/extension.js"(exports2, module2) {
+  "node_modules/engine.io/node_modules/ws/lib/extension.js"(exports2, module2) {
     "use strict";
     var { tokenChars } = require_validation();
     function push(dest, name, elem) {
@@ -24031,8 +25276,8 @@ var require_extension = __commonJS({
         dest[name].push(elem);
     }
     function parse(header) {
-      const offers = Object.create(null);
-      let params = Object.create(null);
+      const offers = /* @__PURE__ */ Object.create(null);
+      let params = /* @__PURE__ */ Object.create(null);
       let mustUnescape = false;
       let isEscaping = false;
       let inQuotes = false;
@@ -24060,7 +25305,7 @@ var require_extension = __commonJS({
             const name = header.slice(start, end);
             if (code === 44) {
               push(offers, name, params);
-              params = Object.create(null);
+              params = /* @__PURE__ */ Object.create(null);
             } else {
               extensionName = name;
             }
@@ -24084,7 +25329,7 @@ var require_extension = __commonJS({
             push(params, header.slice(start, end), true);
             if (code === 44) {
               push(offers, extensionName, params);
-              params = Object.create(null);
+              params = /* @__PURE__ */ Object.create(null);
               extensionName = void 0;
             }
             start = end = -1;
@@ -24138,7 +25383,7 @@ var require_extension = __commonJS({
             push(params, paramName, value);
             if (code === 44) {
               push(offers, extensionName, params);
-              params = Object.create(null);
+              params = /* @__PURE__ */ Object.create(null);
               extensionName = void 0;
             }
             paramName = void 0;
@@ -24187,9 +25432,9 @@ var require_extension = __commonJS({
   }
 });
 
-// node_modules/ws/lib/websocket.js
+// node_modules/engine.io/node_modules/ws/lib/websocket.js
 var require_websocket2 = __commonJS({
-  "node_modules/ws/lib/websocket.js"(exports2, module2) {
+  "node_modules/engine.io/node_modules/ws/lib/websocket.js"(exports2, module2) {
     "use strict";
     var EventEmitter = require("events");
     var https = require("https");
@@ -24664,29 +25909,29 @@ var require_websocket2 = __commonJS({
         const secWebSocketExtensions = res.headers["sec-websocket-extensions"];
         if (secWebSocketExtensions !== void 0) {
           if (!perMessageDeflate) {
-            const message2 = "Server sent a Sec-WebSocket-Extensions header but no extension was requested";
-            abortHandshake(websocket, socket, message2);
+            const message = "Server sent a Sec-WebSocket-Extensions header but no extension was requested";
+            abortHandshake(websocket, socket, message);
             return;
           }
           let extensions;
           try {
             extensions = parse(secWebSocketExtensions);
           } catch (err) {
-            const message2 = "Invalid Sec-WebSocket-Extensions header";
-            abortHandshake(websocket, socket, message2);
+            const message = "Invalid Sec-WebSocket-Extensions header";
+            abortHandshake(websocket, socket, message);
             return;
           }
           const extensionNames = Object.keys(extensions);
           if (extensionNames.length !== 1 || extensionNames[0] !== PerMessageDeflate.extensionName) {
-            const message2 = "Server indicated an extension that was not requested";
-            abortHandshake(websocket, socket, message2);
+            const message = "Server indicated an extension that was not requested";
+            abortHandshake(websocket, socket, message);
             return;
           }
           try {
             perMessageDeflate.accept(extensions[PerMessageDeflate.extensionName]);
           } catch (err) {
-            const message2 = "Invalid Sec-WebSocket-Extensions header";
-            abortHandshake(websocket, socket, message2);
+            const message = "Invalid Sec-WebSocket-Extensions header";
+            abortHandshake(websocket, socket, message);
             return;
           }
           websocket._extensions[PerMessageDeflate.extensionName] = perMessageDeflate;
@@ -24708,9 +25953,9 @@ var require_websocket2 = __commonJS({
       }
       return tls.connect(options);
     }
-    function abortHandshake(websocket, stream, message2) {
+    function abortHandshake(websocket, stream, message) {
       websocket._readyState = WebSocket.CLOSING;
-      const err = new Error(message2);
+      const err = new Error(message);
       Error.captureStackTrace(err, abortHandshake);
       if (stream.setHeader) {
         stream.abort();
@@ -24824,9 +26069,9 @@ var require_websocket2 = __commonJS({
   }
 });
 
-// node_modules/ws/lib/stream.js
+// node_modules/engine.io/node_modules/ws/lib/stream.js
 var require_stream = __commonJS({
-  "node_modules/ws/lib/stream.js"(exports2, module2) {
+  "node_modules/engine.io/node_modules/ws/lib/stream.js"(exports2, module2) {
     "use strict";
     var { Duplex } = require("stream");
     function emitClose(stream) {
@@ -24867,7 +26112,7 @@ var require_stream = __commonJS({
         objectMode: false,
         writableObjectMode: false
       });
-      ws.on("message", function message2(msg, isBinary) {
+      ws.on("message", function message(msg, isBinary) {
         const data = !isBinary && duplex._readableState.objectMode ? msg.toString() : msg;
         if (!duplex.push(data)) {
           resumeOnReceiverDrain = false;
@@ -24948,9 +26193,9 @@ var require_stream = __commonJS({
   }
 });
 
-// node_modules/ws/lib/subprotocol.js
+// node_modules/engine.io/node_modules/ws/lib/subprotocol.js
 var require_subprotocol = __commonJS({
-  "node_modules/ws/lib/subprotocol.js"(exports2, module2) {
+  "node_modules/engine.io/node_modules/ws/lib/subprotocol.js"(exports2, module2) {
     "use strict";
     var { tokenChars } = require_validation();
     function parse(header) {
@@ -24996,9 +26241,9 @@ var require_subprotocol = __commonJS({
   }
 });
 
-// node_modules/ws/lib/websocket-server.js
+// node_modules/engine.io/node_modules/ws/lib/websocket-server.js
 var require_websocket_server = __commonJS({
-  "node_modules/ws/lib/websocket-server.js"(exports2, module2) {
+  "node_modules/engine.io/node_modules/ws/lib/websocket-server.js"(exports2, module2) {
     "use strict";
     var EventEmitter = require("events");
     var http2 = require("http");
@@ -25160,9 +26405,9 @@ var require_websocket_server = __commonJS({
             req
           };
           if (this.options.verifyClient.length === 2) {
-            this.options.verifyClient(info, (verified, code, message2, headers) => {
+            this.options.verifyClient(info, (verified, code, message, headers) => {
               if (!verified) {
-                return abortHandshake(socket, code || 401, message2, headers);
+                return abortHandshake(socket, code || 401, message, headers);
               }
               this.completeUpgrade(extensions, key, protocols, req, socket, head, cb);
             });
@@ -25240,17 +26485,17 @@ var require_websocket_server = __commonJS({
     function socketOnError() {
       this.destroy();
     }
-    function abortHandshake(socket, code, message2, headers) {
+    function abortHandshake(socket, code, message, headers) {
       if (socket.writable) {
-        message2 = message2 || http2.STATUS_CODES[code];
+        message = message || http2.STATUS_CODES[code];
         headers = {
           Connection: "close",
           "Content-Type": "text/html",
-          "Content-Length": Buffer.byteLength(message2),
+          "Content-Length": Buffer.byteLength(message),
           ...headers
         };
         socket.write(`HTTP/1.1 ${code} ${http2.STATUS_CODES[code]}\r
-` + Object.keys(headers).map((h) => `${h}: ${headers[h]}`).join("\r\n") + "\r\n\r\n" + message2);
+` + Object.keys(headers).map((h) => `${h}: ${headers[h]}`).join("\r\n") + "\r\n\r\n" + message);
       }
       socket.removeListener("error", socketOnError);
       socket.destroy();
@@ -25258,9 +26503,9 @@ var require_websocket_server = __commonJS({
   }
 });
 
-// node_modules/ws/index.js
+// node_modules/engine.io/node_modules/ws/index.js
 var require_ws = __commonJS({
-  "node_modules/ws/index.js"(exports2, module2) {
+  "node_modules/engine.io/node_modules/ws/index.js"(exports2, module2) {
     "use strict";
     var WebSocket = require_websocket2();
     WebSocket.createWebSocketStream = require_stream();
@@ -25563,7 +26808,7 @@ var require_server = __commonJS({
     var transports_1 = require_transports();
     var events_1 = require("events");
     var socket_1 = require_socket();
-    var debug_1 = require_src2();
+    var debug_1 = require_src3();
     var cookie_1 = require_cookie2();
     var ws_1 = require_ws();
     var debug = (0, debug_1.default)("engine");
@@ -25609,18 +26854,18 @@ var require_server = __commonJS({
           return [];
         return transports_1.default[transport].upgradesTo || [];
       }
-      verify(req, upgrade, fn2) {
+      verify(req, upgrade, fn) {
         const transport = req._query.transport;
         if (!~this.opts.transports.indexOf(transport)) {
           debug('unknown transport "%s"', transport);
-          return fn2(Server2.errors.UNKNOWN_TRANSPORT, { transport });
+          return fn(Server2.errors.UNKNOWN_TRANSPORT, { transport });
         }
         const isOriginInvalid = checkInvalidHeaderChar(req.headers.origin);
         if (isOriginInvalid) {
           const origin = req.headers.origin;
           req.headers.origin = null;
           debug("origin header invalid");
-          return fn2(Server2.errors.BAD_REQUEST, {
+          return fn(Server2.errors.BAD_REQUEST, {
             name: "INVALID_ORIGIN",
             origin
           });
@@ -25629,14 +26874,14 @@ var require_server = __commonJS({
         if (sid) {
           if (!this.clients.hasOwnProperty(sid)) {
             debug('unknown sid "%s"', sid);
-            return fn2(Server2.errors.UNKNOWN_SID, {
+            return fn(Server2.errors.UNKNOWN_SID, {
               sid
             });
           }
           const previousTransport = this.clients[sid].transport.name;
           if (!upgrade && previousTransport !== transport) {
             debug("bad request: unexpected transport without upgrade");
-            return fn2(Server2.errors.BAD_REQUEST, {
+            return fn(Server2.errors.BAD_REQUEST, {
               name: "TRANSPORT_MISMATCH",
               transport,
               previousTransport
@@ -25644,28 +26889,28 @@ var require_server = __commonJS({
           }
         } else {
           if (req.method !== "GET") {
-            return fn2(Server2.errors.BAD_HANDSHAKE_METHOD, {
+            return fn(Server2.errors.BAD_HANDSHAKE_METHOD, {
               method: req.method
             });
           }
           if (transport === "websocket" && !upgrade) {
             debug("invalid transport upgrade");
-            return fn2(Server2.errors.BAD_REQUEST, {
+            return fn(Server2.errors.BAD_REQUEST, {
               name: "TRANSPORT_HANDSHAKE_ERROR"
             });
           }
           if (!this.opts.allowRequest)
-            return fn2();
-          return this.opts.allowRequest(req, (message2, success) => {
+            return fn();
+          return this.opts.allowRequest(req, (message, success) => {
             if (!success) {
-              return fn2(Server2.errors.FORBIDDEN, {
-                message: message2
+              return fn(Server2.errors.FORBIDDEN, {
+                message
               });
             }
-            fn2();
+            fn();
           });
         }
-        fn2();
+        fn();
       }
       close() {
         debug("closing all open clients");
@@ -25953,11 +27198,11 @@ var require_server = __commonJS({
     exports2.Server = Server2;
     function abortRequest(res, errorCode, errorContext) {
       const statusCode = errorCode === Server2.errors.FORBIDDEN ? 403 : 400;
-      const message2 = errorContext && errorContext.message ? errorContext.message : Server2.errorMessages[errorCode];
+      const message = errorContext && errorContext.message ? errorContext.message : Server2.errorMessages[errorCode];
       res.writeHead(statusCode, { "Content-Type": "application/json" });
       res.end(JSON.stringify({
         code: errorCode,
-        message: message2
+        message
       }));
     }
     function abortUpgrade(socket, errorCode, errorContext = {}) {
@@ -25965,9 +27210,9 @@ var require_server = __commonJS({
         debug("ignoring error from closed connection");
       });
       if (socket.writable) {
-        const message2 = errorContext.message || Server2.errorMessages[errorCode];
-        const length = Buffer.byteLength(message2);
-        socket.write("HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-type: text/html\r\nContent-Length: " + length + "\r\n\r\n" + message2);
+        const message = errorContext.message || Server2.errorMessages[errorCode];
+        const length = Buffer.byteLength(message);
+        socket.write("HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-type: text/html\r\nContent-Length: " + length + "\r\n\r\n" + message);
       }
       socket.destroy();
     }
@@ -26275,7 +27520,7 @@ var require_polling2 = __commonJS({
     var transport_1 = require_transport();
     var zlib_1 = require("zlib");
     var accepts = require_accepts();
-    var debug_1 = require_src2();
+    var debug_1 = require_src3();
     var debug = (0, debug_1.default)("engine:polling");
     var compressionMethods = {
       gzip: zlib_1.createGzip,
@@ -26337,49 +27582,71 @@ var require_polling2 = __commonJS({
           res.end();
           return;
         }
+        const expectedContentLength = Number(req.headers["content-length"]);
+        if (!expectedContentLength) {
+          this.onError("content-length header required");
+          res.writeStatus("411 Length Required").end();
+          return;
+        }
+        if (expectedContentLength > this.maxHttpBufferSize) {
+          this.onError("payload too large");
+          res.writeStatus("413 Payload Too Large").end();
+          return;
+        }
         const isBinary = req.headers["content-type"] === "application/octet-stream";
         if (isBinary && this.protocol === 4) {
           return this.onError("invalid content");
         }
         this.dataReq = req;
         this.dataRes = res;
-        let chunks = [];
-        let contentLength = 0;
-        const cleanup = () => {
-          this.dataReq = this.dataRes = chunks = null;
-        };
-        const onClose = () => {
-          cleanup();
-          this.onError("data request connection closed prematurely");
-        };
+        let buffer;
+        let offset = 0;
         const headers = {
           "Content-Type": "text/html"
         };
         this.headers(req, headers);
-        Object.keys(headers).forEach((key) => {
+        for (let key in headers) {
           res.writeHeader(key, String(headers[key]));
-        });
-        const onEnd = () => {
-          this.onData(Buffer.concat(chunks).toString());
-          if (this.readyState !== "closing") {
-            res.end("ok");
-          }
-          cleanup();
+        }
+        const onEnd = (buffer2) => {
+          this.onData(buffer2.toString());
+          this.onDataRequestCleanup();
+          res.end("ok");
         };
-        res.onAborted(onClose);
-        res.onData((chunk, isLast) => {
-          chunks.push(Buffer.from(chunk));
-          contentLength += Buffer.byteLength(chunk);
-          if (contentLength > this.maxHttpBufferSize) {
-            this.onError("payload too large");
-            res.writeStatus("413 Payload Too Large");
-            res.end();
+        res.onAborted(() => {
+          this.onDataRequestCleanup();
+          this.onError("data request connection closed prematurely");
+        });
+        res.onData((arrayBuffer, isLast) => {
+          const totalLength = offset + arrayBuffer.byteLength;
+          if (totalLength > expectedContentLength) {
+            this.onError("content-length mismatch");
+            res.close();
             return;
           }
-          if (isLast) {
-            onEnd();
+          if (!buffer) {
+            if (isLast) {
+              onEnd(Buffer.from(arrayBuffer));
+              return;
+            }
+            buffer = Buffer.allocUnsafe(expectedContentLength);
           }
+          Buffer.from(arrayBuffer).copy(buffer, offset);
+          if (isLast) {
+            if (totalLength != expectedContentLength) {
+              this.onError("content-length mismatch");
+              res.writeStatus("400 Content-Length Mismatch").end();
+              this.onDataRequestCleanup();
+              return;
+            }
+            onEnd(buffer);
+            return;
+          }
+          offset = totalLength;
         });
+      }
+      onDataRequestCleanup() {
+        this.dataReq = this.dataRes = null;
       }
       onData(data) {
         debug('received "%s"', data);
@@ -26479,12 +27746,12 @@ var require_polling2 = __commonJS({
           callback(null, Buffer.concat(buffers, nread));
         }).end(data);
       }
-      doClose(fn2) {
+      doClose(fn) {
         debug("closing");
         let closeTimeoutTimer;
         const onClose = () => {
           clearTimeout(closeTimeoutTimer);
-          fn2();
+          fn();
           this.onClose();
         };
         if (this.writable) {
@@ -26521,7 +27788,7 @@ var require_websocket3 = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.WebSocket = void 0;
     var transport_1 = require_transport();
-    var debug_1 = require_src2();
+    var debug_1 = require_src3();
     var debug = (0, debug_1.default)("engine:ws");
     var WebSocket = class extends transport_1.Transport {
       constructor(req) {
@@ -26563,9 +27830,9 @@ var require_websocket3 = __commonJS({
           this.parser.encodePacket(packet, this.supportsBinary, send);
         }
       }
-      doClose(fn2) {
+      doClose(fn) {
         debug("closing");
-        fn2 && fn2();
+        fn && fn();
         this.socket.close();
       }
     };
@@ -26593,7 +27860,7 @@ var require_userver = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.uServer = void 0;
-    var debug_1 = require_src2();
+    var debug_1 = require_src3();
     var server_1 = require_server();
     var transports_uws_1 = require_transports_uws();
     var debug = (0, debug_1.default)("engine:uws");
@@ -26633,11 +27900,11 @@ var require_userver = __commonJS({
             ws.transport.writable = true;
             ws.transport.emit("drain");
           },
-          message: (ws, message2, isBinary) => {
-            ws.transport.onData(isBinary ? message2 : Buffer.from(message2).toString());
+          message: (ws, message, isBinary) => {
+            ws.transport.onData(isBinary ? message : Buffer.from(message).toString());
           },
-          close: (ws, code, message2) => {
-            ws.transport.onClose(code, message2);
+          close: (ws, code, message) => {
+            ws.transport.onClose(code, message);
           }
         });
       }
@@ -26719,12 +27986,12 @@ var require_userver = __commonJS({
       }
       abortRequest(res, errorCode, errorContext) {
         const statusCode = errorCode === server_1.Server.errors.FORBIDDEN ? "403 Forbidden" : "400 Bad Request";
-        const message2 = errorContext && errorContext.message ? errorContext.message : server_1.Server.errorMessages[errorCode];
+        const message = errorContext && errorContext.message ? errorContext.message : server_1.Server.errorMessages[errorCode];
         res.writeStatus(statusCode);
         res.writeHeader("Content-Type", "application/json");
         res.end(JSON.stringify({
           code: errorCode,
-          message: message2
+          message
         }));
       }
     };
@@ -26769,11 +28036,11 @@ var require_userver = __commonJS({
         }
         this.res.end(data);
       }
-      onData(fn2) {
-        this.res.onData(fn2);
+      onData(fn) {
+        this.res.onData(fn);
       }
-      onAborted(fn2) {
-        this.res.onAborted(fn2);
+      onAborted(fn) {
+        this.res.onAborted(fn);
       }
     };
   }
@@ -26807,9 +28074,9 @@ var require_engine_io = __commonJS({
       return transport_1.Transport;
     } });
     exports2.protocol = parser.protocol;
-    function listen(port2, options, fn2) {
+    function listen(port2, options, fn) {
       if (typeof options === "function") {
-        fn2 = options;
+        fn = options;
         options = {};
       }
       const server2 = (0, http_1.createServer)(function(req, res) {
@@ -26818,7 +28085,7 @@ var require_engine_io = __commonJS({
       });
       const engine = attach(server2, options);
       engine.httpServer = server2;
-      server2.listen(port2, fn2);
+      server2.listen(port2, fn);
       return engine;
     }
     exports2.listen = listen;
@@ -26847,21 +28114,21 @@ var require_component_emitter = __commonJS({
       }
       return obj;
     }
-    Emitter.prototype.on = Emitter.prototype.addEventListener = function(event, fn2) {
+    Emitter.prototype.on = Emitter.prototype.addEventListener = function(event, fn) {
       this._callbacks = this._callbacks || {};
-      (this._callbacks["$" + event] = this._callbacks["$" + event] || []).push(fn2);
+      (this._callbacks["$" + event] = this._callbacks["$" + event] || []).push(fn);
       return this;
     };
-    Emitter.prototype.once = function(event, fn2) {
+    Emitter.prototype.once = function(event, fn) {
       function on() {
         this.off(event, on);
-        fn2.apply(this, arguments);
+        fn.apply(this, arguments);
       }
-      on.fn = fn2;
+      on.fn = fn;
       this.on(event, on);
       return this;
     };
-    Emitter.prototype.off = Emitter.prototype.removeListener = Emitter.prototype.removeAllListeners = Emitter.prototype.removeEventListener = function(event, fn2) {
+    Emitter.prototype.off = Emitter.prototype.removeListener = Emitter.prototype.removeAllListeners = Emitter.prototype.removeEventListener = function(event, fn) {
       this._callbacks = this._callbacks || {};
       if (arguments.length == 0) {
         this._callbacks = {};
@@ -26877,7 +28144,7 @@ var require_component_emitter = __commonJS({
       var cb;
       for (var i = 0; i < callbacks.length; i++) {
         cb = callbacks[i];
-        if (cb === fn2 || cb.fn === fn2) {
+        if (cb === fn || cb.fn === fn) {
           callbacks.splice(i, 1);
           break;
         }
@@ -26889,14 +28156,14 @@ var require_component_emitter = __commonJS({
     };
     Emitter.prototype.emit = function(event) {
       this._callbacks = this._callbacks || {};
-      var args2 = new Array(arguments.length - 1), callbacks = this._callbacks["$" + event];
+      var args = new Array(arguments.length - 1), callbacks = this._callbacks["$" + event];
       for (var i = 1; i < arguments.length; i++) {
-        args2[i - 1] = arguments[i];
+        args[i - 1] = arguments[i];
       }
       if (callbacks) {
         callbacks = callbacks.slice(0);
         for (var i = 0, len = callbacks.length; i < len; ++i) {
-          callbacks[i].apply(this, args2);
+          callbacks[i].apply(this, args);
         }
       }
       return this;
@@ -27168,7 +28435,7 @@ var require_common2 = __commonJS({
         let enableOverride = null;
         let namespacesCache;
         let enabledCache;
-        function debug(...args2) {
+        function debug(...args) {
           if (!debug.enabled) {
             return;
           }
@@ -27179,28 +28446,28 @@ var require_common2 = __commonJS({
           self2.prev = prevTime;
           self2.curr = curr;
           prevTime = curr;
-          args2[0] = createDebug.coerce(args2[0]);
-          if (typeof args2[0] !== "string") {
-            args2.unshift("%O");
+          args[0] = createDebug.coerce(args[0]);
+          if (typeof args[0] !== "string") {
+            args.unshift("%O");
           }
           let index = 0;
-          args2[0] = args2[0].replace(/%([a-zA-Z%])/g, (match, format2) => {
+          args[0] = args[0].replace(/%([a-zA-Z%])/g, (match, format2) => {
             if (match === "%%") {
               return "%";
             }
             index++;
             const formatter = createDebug.formatters[format2];
             if (typeof formatter === "function") {
-              const val = args2[index];
+              const val = args[index];
               match = formatter.call(self2, val);
-              args2.splice(index, 1);
+              args.splice(index, 1);
               index--;
             }
             return match;
           });
-          createDebug.formatArgs.call(self2, args2);
+          createDebug.formatArgs.call(self2, args);
           const logFn = self2.log || createDebug.log;
-          logFn.apply(self2, args2);
+          logFn.apply(self2, args);
         }
         debug.namespace = namespace;
         debug.useColors = createDebug.useColors();
@@ -27403,16 +28670,16 @@ var require_browser3 = __commonJS({
       }
       return typeof document !== "undefined" && document.documentElement && document.documentElement.style && document.documentElement.style.WebkitAppearance || typeof window !== "undefined" && window.console && (window.console.firebug || window.console.exception && window.console.table) || typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/) && parseInt(RegExp.$1, 10) >= 31 || typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/);
     }
-    function formatArgs(args2) {
-      args2[0] = (this.useColors ? "%c" : "") + this.namespace + (this.useColors ? " %c" : " ") + args2[0] + (this.useColors ? "%c " : " ") + "+" + module2.exports.humanize(this.diff);
+    function formatArgs(args) {
+      args[0] = (this.useColors ? "%c" : "") + this.namespace + (this.useColors ? " %c" : " ") + args[0] + (this.useColors ? "%c " : " ") + "+" + module2.exports.humanize(this.diff);
       if (!this.useColors) {
         return;
       }
       const c = "color: " + this.color;
-      args2.splice(1, 0, c, "color: inherit");
+      args.splice(1, 0, c, "color: inherit");
       let index = 0;
       let lastC = 0;
-      args2[0].replace(/%[a-zA-Z%]/g, (match) => {
+      args[0].replace(/%[a-zA-Z%]/g, (match) => {
         if (match === "%%") {
           return;
         }
@@ -27421,7 +28688,7 @@ var require_browser3 = __commonJS({
           lastC = index;
         }
       });
-      args2.splice(lastC, 0, c);
+      args.splice(lastC, 0, c);
     }
     exports2.log = console.debug || console.log || (() => {
     });
@@ -27470,7 +28737,7 @@ var require_node3 = __commonJS({
     var tty = require("tty");
     var util = require("util");
     exports2.init = init;
-    exports2.log = log2;
+    exports2.log = log;
     exports2.formatArgs = formatArgs;
     exports2.save = save;
     exports2.load = load;
@@ -27584,16 +28851,16 @@ var require_node3 = __commonJS({
     function useColors() {
       return "colors" in exports2.inspectOpts ? Boolean(exports2.inspectOpts.colors) : tty.isatty(process.stderr.fd);
     }
-    function formatArgs(args2) {
+    function formatArgs(args) {
       const { namespace: name, useColors: useColors2 } = this;
       if (useColors2) {
         const c = this.color;
-        const colorCode = "[3" + (c < 8 ? c : "8;5;" + c);
-        const prefix = `  ${colorCode};1m${name} [0m`;
-        args2[0] = prefix + args2[0].split("\n").join("\n" + prefix);
-        args2.push(colorCode + "m+" + module2.exports.humanize(this.diff) + "[0m");
+        const colorCode = "\x1B[3" + (c < 8 ? c : "8;5;" + c);
+        const prefix = `  ${colorCode};1m${name} \x1B[0m`;
+        args[0] = prefix + args[0].split("\n").join("\n" + prefix);
+        args.push(colorCode + "m+" + module2.exports.humanize(this.diff) + "\x1B[0m");
       } else {
-        args2[0] = getDate() + name + " " + args2[0];
+        args[0] = getDate() + name + " " + args[0];
       }
     }
     function getDate() {
@@ -27602,8 +28869,8 @@ var require_node3 = __commonJS({
       }
       return new Date().toISOString() + " ";
     }
-    function log2(...args2) {
-      return process.stderr.write(util.format(...args2) + "\n");
+    function log(...args) {
+      return process.stderr.write(util.format(...args) + "\n");
     }
     function save(namespaces) {
       if (namespaces) {
@@ -27636,7 +28903,7 @@ var require_node3 = __commonJS({
 });
 
 // node_modules/socket.io-parser/node_modules/debug/src/index.js
-var require_src3 = __commonJS({
+var require_src4 = __commonJS({
   "node_modules/socket.io-parser/node_modules/debug/src/index.js"(exports2, module2) {
     if (typeof process === "undefined" || process.type === "renderer" || process.browser === true || process.__nwjs) {
       module2.exports = require_browser3();
@@ -27655,7 +28922,7 @@ var require_dist = __commonJS({
     var Emitter = require_component_emitter();
     var binary_1 = require_binary();
     var is_binary_1 = require_is_binary();
-    var debug = require_src3()("socket.io-parser");
+    var debug = require_src4()("socket.io-parser");
     exports2.protocol = 5;
     var PacketType;
     (function(PacketType2) {
@@ -27987,7 +29254,7 @@ var require_common3 = __commonJS({
         let enableOverride = null;
         let namespacesCache;
         let enabledCache;
-        function debug(...args2) {
+        function debug(...args) {
           if (!debug.enabled) {
             return;
           }
@@ -27998,28 +29265,28 @@ var require_common3 = __commonJS({
           self2.prev = prevTime;
           self2.curr = curr;
           prevTime = curr;
-          args2[0] = createDebug.coerce(args2[0]);
-          if (typeof args2[0] !== "string") {
-            args2.unshift("%O");
+          args[0] = createDebug.coerce(args[0]);
+          if (typeof args[0] !== "string") {
+            args.unshift("%O");
           }
           let index = 0;
-          args2[0] = args2[0].replace(/%([a-zA-Z%])/g, (match, format2) => {
+          args[0] = args[0].replace(/%([a-zA-Z%])/g, (match, format2) => {
             if (match === "%%") {
               return "%";
             }
             index++;
             const formatter = createDebug.formatters[format2];
             if (typeof formatter === "function") {
-              const val = args2[index];
+              const val = args[index];
               match = formatter.call(self2, val);
-              args2.splice(index, 1);
+              args.splice(index, 1);
               index--;
             }
             return match;
           });
-          createDebug.formatArgs.call(self2, args2);
+          createDebug.formatArgs.call(self2, args);
           const logFn = self2.log || createDebug.log;
-          logFn.apply(self2, args2);
+          logFn.apply(self2, args);
         }
         debug.namespace = namespace;
         debug.useColors = createDebug.useColors();
@@ -28222,16 +29489,16 @@ var require_browser4 = __commonJS({
       }
       return typeof document !== "undefined" && document.documentElement && document.documentElement.style && document.documentElement.style.WebkitAppearance || typeof window !== "undefined" && window.console && (window.console.firebug || window.console.exception && window.console.table) || typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/) && parseInt(RegExp.$1, 10) >= 31 || typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/);
     }
-    function formatArgs(args2) {
-      args2[0] = (this.useColors ? "%c" : "") + this.namespace + (this.useColors ? " %c" : " ") + args2[0] + (this.useColors ? "%c " : " ") + "+" + module2.exports.humanize(this.diff);
+    function formatArgs(args) {
+      args[0] = (this.useColors ? "%c" : "") + this.namespace + (this.useColors ? " %c" : " ") + args[0] + (this.useColors ? "%c " : " ") + "+" + module2.exports.humanize(this.diff);
       if (!this.useColors) {
         return;
       }
       const c = "color: " + this.color;
-      args2.splice(1, 0, c, "color: inherit");
+      args.splice(1, 0, c, "color: inherit");
       let index = 0;
       let lastC = 0;
-      args2[0].replace(/%[a-zA-Z%]/g, (match) => {
+      args[0].replace(/%[a-zA-Z%]/g, (match) => {
         if (match === "%%") {
           return;
         }
@@ -28240,7 +29507,7 @@ var require_browser4 = __commonJS({
           lastC = index;
         }
       });
-      args2.splice(lastC, 0, c);
+      args.splice(lastC, 0, c);
     }
     exports2.log = console.debug || console.log || (() => {
     });
@@ -28289,7 +29556,7 @@ var require_node4 = __commonJS({
     var tty = require("tty");
     var util = require("util");
     exports2.init = init;
-    exports2.log = log2;
+    exports2.log = log;
     exports2.formatArgs = formatArgs;
     exports2.save = save;
     exports2.load = load;
@@ -28403,16 +29670,16 @@ var require_node4 = __commonJS({
     function useColors() {
       return "colors" in exports2.inspectOpts ? Boolean(exports2.inspectOpts.colors) : tty.isatty(process.stderr.fd);
     }
-    function formatArgs(args2) {
+    function formatArgs(args) {
       const { namespace: name, useColors: useColors2 } = this;
       if (useColors2) {
         const c = this.color;
-        const colorCode = "[3" + (c < 8 ? c : "8;5;" + c);
-        const prefix = `  ${colorCode};1m${name} [0m`;
-        args2[0] = prefix + args2[0].split("\n").join("\n" + prefix);
-        args2.push(colorCode + "m+" + module2.exports.humanize(this.diff) + "[0m");
+        const colorCode = "\x1B[3" + (c < 8 ? c : "8;5;" + c);
+        const prefix = `  ${colorCode};1m${name} \x1B[0m`;
+        args[0] = prefix + args[0].split("\n").join("\n" + prefix);
+        args.push(colorCode + "m+" + module2.exports.humanize(this.diff) + "\x1B[0m");
       } else {
-        args2[0] = getDate() + name + " " + args2[0];
+        args[0] = getDate() + name + " " + args[0];
       }
     }
     function getDate() {
@@ -28421,8 +29688,8 @@ var require_node4 = __commonJS({
       }
       return new Date().toISOString() + " ";
     }
-    function log2(...args2) {
-      return process.stderr.write(util.format(...args2) + "\n");
+    function log(...args) {
+      return process.stderr.write(util.format(...args) + "\n");
     }
     function save(namespaces) {
       if (namespaces) {
@@ -28455,7 +29722,7 @@ var require_node4 = __commonJS({
 });
 
 // node_modules/socket.io/node_modules/debug/src/index.js
-var require_src4 = __commonJS({
+var require_src5 = __commonJS({
   "node_modules/socket.io/node_modules/debug/src/index.js"(exports2, module2) {
     if (typeof process === "undefined" || process.type === "renderer" || process.browser === true || process.__nwjs) {
       module2.exports = require_browser4();
@@ -28472,7 +29739,7 @@ var require_client = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.Client = void 0;
     var socket_io_parser_1 = require_dist();
-    var debugModule = require_src4();
+    var debugModule = require_src5();
     var url = require("url");
     var debug = debugModule("socket.io:client");
     var Client = class {
@@ -28583,26 +29850,31 @@ var require_client = __commonJS({
         try {
           this.decoder.add(data);
         } catch (e) {
+          debug("invalid packet format");
           this.onerror(e);
         }
       }
       ondecoded(packet) {
-        if (socket_io_parser_1.PacketType.CONNECT === packet.type) {
-          if (this.conn.protocol === 3) {
-            const parsed = url.parse(packet.nsp, true);
-            this.connect(parsed.pathname, parsed.query);
-          } else {
-            this.connect(packet.nsp, packet.data);
-          }
+        let namespace;
+        let authPayload;
+        if (this.conn.protocol === 3) {
+          const parsed = url.parse(packet.nsp, true);
+          namespace = parsed.pathname;
+          authPayload = parsed.query;
         } else {
-          const socket = this.nsps.get(packet.nsp);
-          if (socket) {
-            process.nextTick(function() {
-              socket._onpacket(packet);
-            });
-          } else {
-            debug("no socket for namespace %s", packet.nsp);
-          }
+          namespace = packet.nsp;
+          authPayload = packet.data;
+        }
+        const socket = this.nsps.get(namespace);
+        if (!socket && packet.type === socket_io_parser_1.PacketType.CONNECT) {
+          this.connect(namespace, authPayload);
+        } else if (socket && packet.type !== socket_io_parser_1.PacketType.CONNECT && packet.type !== socket_io_parser_1.PacketType.CONNECT_ERROR) {
+          process.nextTick(function() {
+            socket._onpacket(packet);
+          });
+        } else {
+          debug("invalid state (packet type: %s)", packet.type);
+          this.close();
         }
       }
       onerror(err) {
@@ -28649,14 +29921,14 @@ var require_typed_events = __commonJS({
       once(ev, listener) {
         return super.once(ev, listener);
       }
-      emit(ev, ...args2) {
-        return super.emit(ev, ...args2);
+      emit(ev, ...args) {
+        return super.emit(ev, ...args);
       }
-      emitReserved(ev, ...args2) {
-        return super.emit(ev, ...args2);
+      emitReserved(ev, ...args) {
+        return super.emit(ev, ...args);
       }
-      emitUntyped(ev, ...args2) {
-        return super.emit(ev, ...args2);
+      emitUntyped(ev, ...args) {
+        return super.emit(ev, ...args);
       }
       listeners(event) {
         return super.listeners(event);
@@ -28714,22 +29986,59 @@ var require_broadcast_operator = __commonJS({
         const flags = Object.assign({}, this.flags, { local: true });
         return new BroadcastOperator(this.adapter, this.rooms, this.exceptRooms, flags);
       }
-      emit(ev, ...args2) {
+      timeout(timeout) {
+        const flags = Object.assign({}, this.flags, { timeout });
+        return new BroadcastOperator(this.adapter, this.rooms, this.exceptRooms, flags);
+      }
+      emit(ev, ...args) {
         if (socket_1.RESERVED_EVENTS.has(ev)) {
           throw new Error(`"${ev}" is a reserved event name`);
         }
-        const data = [ev, ...args2];
+        const data = [ev, ...args];
         const packet = {
           type: socket_io_parser_1.PacketType.EVENT,
           data
         };
-        if (typeof data[data.length - 1] == "function") {
-          throw new Error("Callbacks are not supported when broadcasting");
+        const withAck = typeof data[data.length - 1] === "function";
+        if (!withAck) {
+          this.adapter.broadcast(packet, {
+            rooms: this.rooms,
+            except: this.exceptRooms,
+            flags: this.flags
+          });
+          return true;
         }
-        this.adapter.broadcast(packet, {
+        const ack = data.pop();
+        let timedOut = false;
+        let responses = [];
+        const timer = setTimeout(() => {
+          timedOut = true;
+          ack.apply(this, [new Error("operation has timed out"), responses]);
+        }, this.flags.timeout);
+        let expectedServerCount = -1;
+        let actualServerCount = 0;
+        let expectedClientCount = 0;
+        const checkCompleteness = () => {
+          if (!timedOut && expectedServerCount === actualServerCount && responses.length === expectedClientCount) {
+            clearTimeout(timer);
+            ack.apply(this, [null, responses]);
+          }
+        };
+        this.adapter.broadcastWithAck(packet, {
           rooms: this.rooms,
           except: this.exceptRooms,
           flags: this.flags
+        }, (clientCount) => {
+          expectedClientCount += clientCount;
+          actualServerCount++;
+          checkCompleteness();
+        }, (clientResponse) => {
+          responses.push(clientResponse);
+          checkCompleteness();
+        });
+        this.adapter.serverCount().then((serverCount) => {
+          expectedServerCount = serverCount;
+          checkCompleteness();
         });
         return true;
       }
@@ -28742,7 +30051,8 @@ var require_broadcast_operator = __commonJS({
       fetchSockets() {
         return this.adapter.fetchSockets({
           rooms: this.rooms,
-          except: this.exceptRooms
+          except: this.exceptRooms,
+          flags: this.flags
         }).then((sockets) => {
           return sockets.map((socket) => {
             if (socket instanceof socket_1.Socket) {
@@ -28756,19 +30066,22 @@ var require_broadcast_operator = __commonJS({
       socketsJoin(room) {
         this.adapter.addSockets({
           rooms: this.rooms,
-          except: this.exceptRooms
+          except: this.exceptRooms,
+          flags: this.flags
         }, Array.isArray(room) ? room : [room]);
       }
       socketsLeave(room) {
         this.adapter.delSockets({
           rooms: this.rooms,
-          except: this.exceptRooms
+          except: this.exceptRooms,
+          flags: this.flags
         }, Array.isArray(room) ? room : [room]);
       }
       disconnectSockets(close = false) {
         this.adapter.disconnectSockets({
           rooms: this.rooms,
-          except: this.exceptRooms
+          except: this.exceptRooms,
+          flags: this.flags
         }, close);
       }
     };
@@ -28781,8 +30094,8 @@ var require_broadcast_operator = __commonJS({
         this.data = details.data;
         this.operator = new BroadcastOperator(adapter, /* @__PURE__ */ new Set([this.id]));
       }
-      emit(ev, ...args2) {
-        return this.operator.emit(ev, ...args2);
+      emit(ev, ...args) {
+        return this.operator.emit(ev, ...args);
       }
       join(room) {
         return this.operator.socketsJoin(room);
@@ -28809,7 +30122,7 @@ var require_socket2 = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.Socket = exports2.RESERVED_EVENTS = void 0;
     var socket_io_parser_1 = require_dist();
-    var debug_1 = __importDefault(require_src4());
+    var debug_1 = __importDefault(require_src5());
     var typed_events_1 = require_typed_events();
     var base64id_1 = __importDefault(require_base64id());
     var broadcast_operator_1 = require_broadcast_operator();
@@ -28854,11 +30167,11 @@ var require_socket2 = __commonJS({
           auth
         };
       }
-      emit(ev, ...args2) {
+      emit(ev, ...args) {
         if (exports2.RESERVED_EVENTS.has(ev)) {
           throw new Error(`"${ev}" is a reserved event name`);
         }
-        const data = [ev, ...args2];
+        const data = [ev, ...args];
         const packet = {
           type: socket_io_parser_1.PacketType.EVENT,
           data
@@ -28871,6 +30184,7 @@ var require_socket2 = __commonJS({
         }
         const flags = Object.assign({}, this.flags);
         this.flags = {};
+        this.notifyOutgoingListeners(packet);
         this.packet(packet, flags);
         return true;
       }
@@ -28885,9 +30199,9 @@ var require_socket2 = __commonJS({
           this.acks.delete(id);
           ack.call(this, new Error("operation has timed out"));
         }, timeout);
-        this.acks.set(id, (...args2) => {
+        this.acks.set(id, (...args) => {
           clearTimeout(timer);
-          ack.apply(this, [null, ...args2]);
+          ack.apply(this, [null, ...args]);
         });
       }
       to(room) {
@@ -28899,12 +30213,12 @@ var require_socket2 = __commonJS({
       except(room) {
         return this.newBroadcastOperator().except(room);
       }
-      send(...args2) {
-        this.emit("message", ...args2);
+      send(...args) {
+        this.emit("message", ...args);
         return this;
       }
-      write(...args2) {
-        this.emit("message", ...args2);
+      write(...args) {
+        this.emit("message", ...args);
         return this;
       }
       packet(packet, opts = {}) {
@@ -28951,24 +30265,22 @@ var require_socket2 = __commonJS({
           case socket_io_parser_1.PacketType.DISCONNECT:
             this.ondisconnect();
             break;
-          case socket_io_parser_1.PacketType.CONNECT_ERROR:
-            this._onerror(new Error(packet.data));
         }
       }
       onevent(packet) {
-        const args2 = packet.data || [];
-        debug("emitting event %j", args2);
+        const args = packet.data || [];
+        debug("emitting event %j", args);
         if (packet.id != null) {
           debug("attaching ack callback to event");
-          args2.push(this.ack(packet.id));
+          args.push(this.ack(packet.id));
         }
         if (this._anyListeners && this._anyListeners.length) {
           const listeners = this._anyListeners.slice();
           for (const listener of listeners) {
-            listener.apply(this, args2);
+            listener.apply(this, args);
           }
         }
-        this.dispatch(args2);
+        this.dispatch(args);
       }
       ack(id) {
         const self2 = this;
@@ -28976,12 +30288,12 @@ var require_socket2 = __commonJS({
         return function() {
           if (sent)
             return;
-          const args2 = Array.prototype.slice.call(arguments);
-          debug("sending ack %j", args2);
+          const args = Array.prototype.slice.call(arguments);
+          debug("sending ack %j", args);
           self2.packet({
             id,
             type: socket_io_parser_1.PacketType.ACK,
-            data: args2
+            data: args
           });
           sent = true;
         };
@@ -29067,20 +30379,20 @@ var require_socket2 = __commonJS({
           });
         });
       }
-      use(fn2) {
-        this.fns.push(fn2);
+      use(fn) {
+        this.fns.push(fn);
         return this;
       }
-      run(event, fn2) {
+      run(event, fn) {
         const fns = this.fns.slice(0);
         if (!fns.length)
-          return fn2(null);
+          return fn(null);
         function run(i) {
           fns[i](event, function(err) {
             if (err)
-              return fn2(err);
+              return fn(err);
             if (!fns[i + 1])
-              return fn2(null);
+              return fn(null);
             run(i + 1);
           });
         }
@@ -29128,6 +30440,44 @@ var require_socket2 = __commonJS({
       listenersAny() {
         return this._anyListeners || [];
       }
+      onAnyOutgoing(listener) {
+        this._anyOutgoingListeners = this._anyOutgoingListeners || [];
+        this._anyOutgoingListeners.push(listener);
+        return this;
+      }
+      prependAnyOutgoing(listener) {
+        this._anyOutgoingListeners = this._anyOutgoingListeners || [];
+        this._anyOutgoingListeners.unshift(listener);
+        return this;
+      }
+      offAnyOutgoing(listener) {
+        if (!this._anyOutgoingListeners) {
+          return this;
+        }
+        if (listener) {
+          const listeners = this._anyOutgoingListeners;
+          for (let i = 0; i < listeners.length; i++) {
+            if (listener === listeners[i]) {
+              listeners.splice(i, 1);
+              return this;
+            }
+          }
+        } else {
+          this._anyOutgoingListeners = [];
+        }
+        return this;
+      }
+      listenersAnyOutgoing() {
+        return this._anyOutgoingListeners || [];
+      }
+      notifyOutgoingListeners(packet) {
+        if (this._anyOutgoingListeners && this._anyOutgoingListeners.length) {
+          const listeners = this._anyOutgoingListeners.slice();
+          for (const listener of listeners) {
+            listener.apply(this, packet.data);
+          }
+        }
+      }
       newBroadcastOperator() {
         const flags = Object.assign({}, this.flags);
         this.flags = {};
@@ -29149,7 +30499,7 @@ var require_namespace = __commonJS({
     exports2.Namespace = exports2.RESERVED_EVENTS = void 0;
     var socket_1 = require_socket2();
     var typed_events_1 = require_typed_events();
-    var debug_1 = __importDefault(require_src4());
+    var debug_1 = __importDefault(require_src5());
     var broadcast_operator_1 = require_broadcast_operator();
     var debug = (0, debug_1.default)("socket.io:namespace");
     exports2.RESERVED_EVENTS = /* @__PURE__ */ new Set(["connect", "connection", "new_namespace"]);
@@ -29166,20 +30516,20 @@ var require_namespace = __commonJS({
       _initAdapter() {
         this.adapter = new (this.server.adapter())(this);
       }
-      use(fn2) {
-        this._fns.push(fn2);
+      use(fn) {
+        this._fns.push(fn);
         return this;
       }
-      run(socket, fn2) {
+      run(socket, fn) {
         const fns = this._fns.slice(0);
         if (!fns.length)
-          return fn2(null);
+          return fn(null);
         function run(i) {
           fns[i](socket, function(err) {
             if (err)
-              return fn2(err);
+              return fn(err);
             if (!fns[i + 1])
-              return fn2(null);
+              return fn(null);
             run(i + 1);
           });
         }
@@ -29194,7 +30544,7 @@ var require_namespace = __commonJS({
       except(room) {
         return new broadcast_operator_1.BroadcastOperator(this.adapter).except(room);
       }
-      _add(client, query, fn2) {
+      _add(client, query, fn) {
         debug("adding socket to nsp %s", this.name);
         const socket = new socket_1.Socket(this, client, query);
         this.run(socket, (err) => {
@@ -29212,8 +30562,8 @@ var require_namespace = __commonJS({
               }
               this.sockets.set(socket.id, socket);
               socket._onconnect();
-              if (fn2)
-                fn2();
+              if (fn)
+                fn();
               this.emitReserved("connect", socket);
               this.emitReserved("connection", socket);
             } else {
@@ -29230,27 +30580,27 @@ var require_namespace = __commonJS({
           debug("ignoring remove for %s", socket.id);
         }
       }
-      emit(ev, ...args2) {
-        return new broadcast_operator_1.BroadcastOperator(this.adapter).emit(ev, ...args2);
+      emit(ev, ...args) {
+        return new broadcast_operator_1.BroadcastOperator(this.adapter).emit(ev, ...args);
       }
-      send(...args2) {
-        this.emit("message", ...args2);
+      send(...args) {
+        this.emit("message", ...args);
         return this;
       }
-      write(...args2) {
-        this.emit("message", ...args2);
+      write(...args) {
+        this.emit("message", ...args);
         return this;
       }
-      serverSideEmit(ev, ...args2) {
+      serverSideEmit(ev, ...args) {
         if (exports2.RESERVED_EVENTS.has(ev)) {
           throw new Error(`"${ev}" is a reserved event name`);
         }
-        args2.unshift(ev);
-        this.adapter.serverSideEmit(args2);
+        args.unshift(ev);
+        this.adapter.serverSideEmit(args);
         return true;
       }
-      _onServerSideEmit(args2) {
-        super.emitUntyped.apply(this, args2);
+      _onServerSideEmit(args) {
+        super.emitUntyped.apply(this, args);
       }
       allSockets() {
         return new broadcast_operator_1.BroadcastOperator(this.adapter).allSockets();
@@ -29263,6 +30613,9 @@ var require_namespace = __commonJS({
       }
       get local() {
         return new broadcast_operator_1.BroadcastOperator(this.adapter).local;
+      }
+      timeout(timeout) {
+        return new broadcast_operator_1.BroadcastOperator(this.adapter).timeout(timeout);
       }
       fetchSockets() {
         return new broadcast_operator_1.BroadcastOperator(this.adapter).fetchSockets();
@@ -29301,9 +30654,9 @@ var require_parent_namespace = __commonJS({
         };
         this.adapter = { broadcast };
       }
-      emit(ev, ...args2) {
+      emit(ev, ...args) {
         this.children.forEach((nsp) => {
-          nsp.emit(ev, ...args2);
+          nsp.emit(ev, ...args);
         });
         return true;
       }
@@ -29315,6 +30668,9 @@ var require_parent_namespace = __commonJS({
         this.children.add(namespace);
         this.server._nsps.set(name, namespace);
         return namespace;
+      }
+      fetchSockets() {
+        throw new Error("fetchSockets() is not supported on parent namespaces");
       }
     };
     exports2.ParentNamespace = ParentNamespace;
@@ -29340,6 +30696,9 @@ var require_dist2 = __commonJS({
       init() {
       }
       close() {
+      }
+      serverCount() {
+        return Promise.resolve(1);
       }
       addAll(id, rooms) {
         if (!this.sids.has(id)) {
@@ -29394,8 +30753,32 @@ var require_dist2 = __commonJS({
         packet.nsp = this.nsp.name;
         const encodedPackets = this.encoder.encode(packet);
         this.apply(opts, (socket) => {
+          if (typeof socket.notifyOutgoingListeners === "function") {
+            socket.notifyOutgoingListeners(packet);
+          }
           socket.client.writeToEngine(encodedPackets, packetOpts);
         });
+      }
+      broadcastWithAck(packet, opts, clientCountCallback, ack) {
+        const flags = opts.flags || {};
+        const packetOpts = {
+          preEncoded: true,
+          volatile: flags.volatile,
+          compress: flags.compress
+        };
+        packet.nsp = this.nsp.name;
+        packet.id = this.nsp._ids++;
+        const encodedPackets = this.encoder.encode(packet);
+        let clientCount = 0;
+        this.apply(opts, (socket) => {
+          clientCount++;
+          socket.acks.set(packet.id, ack);
+          if (typeof socket.notifyOutgoingListeners === "function") {
+            socket.notifyOutgoingListeners(packet);
+          }
+          socket.client.writeToEngine(encodedPackets, packetOpts);
+        });
+        clientCountCallback(clientCount);
       }
       sockets(rooms) {
         const sids = /* @__PURE__ */ new Set();
@@ -29469,7 +30852,7 @@ var require_dist2 = __commonJS({
         return exceptSids;
       }
       serverSideEmit(packet) {
-        throw new Error("this adapter does not support the serverSideEmit() functionality");
+        console.warn("this adapter does not support the serverSideEmit() functionality");
       }
     };
     exports2.Adapter = Adapter;
@@ -29487,7 +30870,7 @@ var require_uws = __commonJS({
     exports2.serveFile = exports2.restoreAdapter = exports2.patchAdapter = void 0;
     var socket_io_adapter_1 = require_dist2();
     var fs_1 = require("fs");
-    var debug_1 = __importDefault(require_src4());
+    var debug_1 = __importDefault(require_src5());
     var debug = (0, debug_1.default)("socket.io:adapter-uws");
     var SEPARATOR = "";
     var { addAll, del, broadcast } = socket_io_adapter_1.Adapter.prototype;
@@ -29607,7 +30990,7 @@ var require_package = __commonJS({
   "node_modules/socket.io/package.json"(exports2, module2) {
     module2.exports = {
       name: "socket.io",
-      version: "4.4.0",
+      version: "4.5.1",
       description: "node.js realtime framework server",
       keywords: [
         "realtime",
@@ -29634,7 +31017,8 @@ var require_package = __commonJS({
       main: "./dist/index.js",
       exports: {
         import: "./wrapper.mjs",
-        require: "./dist/index.js"
+        require: "./dist/index.js",
+        types: "./dist/index.d.ts"
       },
       types: "./dist/index.d.ts",
       license: "MIT",
@@ -29655,8 +31039,8 @@ var require_package = __commonJS({
         accepts: "~1.3.4",
         base64id: "~2.0.0",
         debug: "~4.3.2",
-        "engine.io": "~6.1.0",
-        "socket.io-adapter": "~2.3.3",
+        "engine.io": "~6.2.0",
+        "socket.io-adapter": "~2.4.0",
         "socket.io-parser": "~4.0.4"
       },
       devDependencies: {
@@ -29666,7 +31050,7 @@ var require_package = __commonJS({
         nyc: "^15.1.0",
         prettier: "^2.3.2",
         rimraf: "^3.0.2",
-        "socket.io-client": "4.4.0",
+        "socket.io-client": "4.5.1",
         "socket.io-client-v2": "npm:socket.io-client@^2.4.0",
         superagent: "^6.1.0",
         supertest: "^6.1.6",
@@ -29756,13 +31140,13 @@ var require_dist3 = __commonJS({
     var parent_namespace_1 = require_parent_namespace();
     var socket_io_adapter_1 = require_dist2();
     var parser = __importStar(require_dist());
-    var debug_1 = __importDefault(require_src4());
+    var debug_1 = __importDefault(require_src5());
     var socket_1 = require_socket2();
     Object.defineProperty(exports2, "Socket", { enumerable: true, get: function() {
       return socket_1.Socket;
     } });
     var typed_events_1 = require_typed_events();
-    var uws_js_1 = require_uws();
+    var uws_1 = require_uws();
     var debug = (0, debug_1.default)("socket.io:server");
     var clientVersion = require_package().version;
     var dotMapRegex = /\.map/;
@@ -29792,14 +31176,14 @@ var require_dist3 = __commonJS({
         this._serveClient = v;
         return this;
       }
-      _checkNamespace(name, auth, fn2) {
+      _checkNamespace(name, auth, fn) {
         if (this.parentNsps.size === 0)
-          return fn2(false);
+          return fn(false);
         const keysIterator = this.parentNsps.keys();
         const run = () => {
           const nextFn = keysIterator.next();
           if (nextFn.done) {
-            return fn2(false);
+            return fn(false);
           }
           nextFn.value(name, auth, (err, allow) => {
             if (err || !allow) {
@@ -29807,12 +31191,12 @@ var require_dist3 = __commonJS({
             }
             if (this._nsps.has(name)) {
               debug("dynamic namespace %s already exists", name);
-              return fn2(this._nsps.get(name));
+              return fn(this._nsps.get(name));
             }
             const namespace = this.parentNsps.get(nextFn.value).createChild(name);
             debug("dynamic namespace %s was created", name);
             this.sockets.emitReserved("new_namespace", namespace);
-            fn2(namespace);
+            fn(namespace);
           });
         };
         run();
@@ -29897,10 +31281,10 @@ var require_dist3 = __commonJS({
             res.writeHeader("content-type", "application/" + (isMap ? "json" : "javascript"));
             res.writeHeader("etag", expectedEtag);
             const filepath = path.join(__dirname, "../client-dist/", filename);
-            (0, uws_js_1.serveFile)(res, filepath);
+            (0, uws_1.serveFile)(res, filepath);
           });
         }
-        (0, uws_js_1.patchAdapter)(app2);
+        (0, uws_1.patchAdapter)(app2);
       }
       initEngine(srv, opts) {
         debug("creating engine.io instance with opts %j", opts);
@@ -29985,7 +31369,7 @@ var require_dist3 = __commonJS({
         }
         return this;
       }
-      of(name, fn2) {
+      of(name, fn) {
         if (typeof name === "function" || name instanceof RegExp) {
           const parentNsp = new parent_namespace_1.ParentNamespace(this);
           debug("initializing parent namespace %s", parentNsp.name);
@@ -29994,8 +31378,8 @@ var require_dist3 = __commonJS({
           } else {
             this.parentNsps.set((nsp2, conn, next) => next(null, name.test(nsp2)), parentNsp);
           }
-          if (fn2) {
-            parentNsp.on("connect", fn2);
+          if (fn) {
+            parentNsp.on("connect", fn);
           }
           return parentNsp;
         }
@@ -30010,24 +31394,24 @@ var require_dist3 = __commonJS({
             this.sockets.emitReserved("new_namespace", nsp);
           }
         }
-        if (fn2)
-          nsp.on("connect", fn2);
+        if (fn)
+          nsp.on("connect", fn);
         return nsp;
       }
-      close(fn2) {
+      close(fn) {
         for (const socket of this.sockets.sockets.values()) {
           socket._onclose("server shutting down");
         }
         this.engine.close();
-        (0, uws_js_1.restoreAdapter)();
+        (0, uws_1.restoreAdapter)();
         if (this.httpServer) {
-          this.httpServer.close(fn2);
+          this.httpServer.close(fn);
         } else {
-          fn2 && fn2();
+          fn && fn();
         }
       }
-      use(fn2) {
-        this.sockets.use(fn2);
+      use(fn) {
+        this.sockets.use(fn);
         return this;
       }
       to(room) {
@@ -30039,16 +31423,16 @@ var require_dist3 = __commonJS({
       except(name) {
         return this.sockets.except(name);
       }
-      send(...args2) {
-        this.sockets.emit("message", ...args2);
+      send(...args) {
+        this.sockets.emit("message", ...args);
         return this;
       }
-      write(...args2) {
-        this.sockets.emit("message", ...args2);
+      write(...args) {
+        this.sockets.emit("message", ...args);
         return this;
       }
-      serverSideEmit(ev, ...args2) {
-        return this.sockets.serverSideEmit(ev, ...args2);
+      serverSideEmit(ev, ...args) {
+        return this.sockets.serverSideEmit(ev, ...args);
       }
       allSockets() {
         return this.sockets.allSockets();
@@ -30061,6 +31445,9 @@ var require_dist3 = __commonJS({
       }
       get local() {
         return this.sockets.local;
+      }
+      timeout(timeout) {
+        return this.sockets.timeout(timeout);
       }
       fetchSockets() {
         return this.sockets.fetchSockets();
@@ -30079,9 +31466,9 @@ var require_dist3 = __commonJS({
     var emitterMethods = Object.keys(events_1.EventEmitter.prototype).filter(function(key) {
       return typeof events_1.EventEmitter.prototype[key] === "function";
     });
-    emitterMethods.forEach(function(fn2) {
-      Server2.prototype[fn2] = function() {
-        return this.sockets[fn2].apply(this.sockets, arguments);
+    emitterMethods.forEach(function(fn) {
+      Server2.prototype[fn] = function() {
+        return this.sockets[fn].apply(this.sockets, arguments);
       };
     });
     module2.exports = (srv, opts) => new Server2(srv, opts);
@@ -30108,9 +31495,9 @@ var require_PromiseInspection = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var PromiseInspection = class {
-      constructor(args2) {
-        this._value = args2.value;
-        this._error = args2.error;
+      constructor(args) {
+        this._value = args.value;
+        this._error = args.error;
       }
       value() {
         return this._value;
@@ -30639,11 +32026,11 @@ var require_Pool = __commonJS({
         }
         this.interval = null;
       }
-      _executeEventHandlers(eventName, ...args2) {
+      _executeEventHandlers(eventName, ...args) {
         const listeners = this.emitter.listeners(eventName);
         listeners.forEach((listener) => {
           try {
-            listener(...args2);
+            listener(...args);
           } catch (err) {
             this.log(`Tarn: event handler "${eventName}" threw an exception ${err.stack}`, "warn");
           }
@@ -32183,8 +33570,8 @@ var require_DataView = __commonJS({
   "node_modules/lodash/_DataView.js"(exports2, module2) {
     var getNative = require_getNative();
     var root = require_root();
-    var DataView = getNative(root, "DataView");
-    module2.exports = DataView;
+    var DataView2 = getNative(root, "DataView");
+    module2.exports = DataView2;
   }
 });
 
@@ -32221,7 +33608,7 @@ var require_WeakMap = __commonJS({
 // node_modules/lodash/_getTag.js
 var require_getTag = __commonJS({
   "node_modules/lodash/_getTag.js"(exports2, module2) {
-    var DataView = require_DataView();
+    var DataView2 = require_DataView();
     var Map2 = require_Map();
     var Promise2 = require_Promise();
     var Set2 = require_Set();
@@ -32234,13 +33621,13 @@ var require_getTag = __commonJS({
     var setTag = "[object Set]";
     var weakMapTag = "[object WeakMap]";
     var dataViewTag = "[object DataView]";
-    var dataViewCtorString = toSource(DataView);
+    var dataViewCtorString = toSource(DataView2);
     var mapCtorString = toSource(Map2);
     var promiseCtorString = toSource(Promise2);
     var setCtorString = toSource(Set2);
     var weakMapCtorString = toSource(WeakMap2);
     var getTag = baseGetTag;
-    if (DataView && getTag(new DataView(new ArrayBuffer(1))) != dataViewTag || Map2 && getTag(new Map2()) != mapTag || Promise2 && getTag(Promise2.resolve()) != promiseTag || Set2 && getTag(new Set2()) != setTag || WeakMap2 && getTag(new WeakMap2()) != weakMapTag) {
+    if (DataView2 && getTag(new DataView2(new ArrayBuffer(1))) != dataViewTag || Map2 && getTag(new Map2()) != mapTag || Promise2 && getTag(Promise2.resolve()) != promiseTag || Set2 && getTag(new Set2()) != setTag || WeakMap2 && getTag(new WeakMap2()) != weakMapTag) {
       getTag = function(value) {
         var result = baseGetTag(value), Ctor = result == objectTag ? value.constructor : void 0, ctorString = Ctor ? toSource(Ctor) : "";
         if (ctorString) {
@@ -32562,10 +33949,10 @@ var require_baseClone = __commonJS({
     var cloneableTags = {};
     cloneableTags[argsTag] = cloneableTags[arrayTag] = cloneableTags[arrayBufferTag] = cloneableTags[dataViewTag] = cloneableTags[boolTag] = cloneableTags[dateTag] = cloneableTags[float32Tag] = cloneableTags[float64Tag] = cloneableTags[int8Tag] = cloneableTags[int16Tag] = cloneableTags[int32Tag] = cloneableTags[mapTag] = cloneableTags[numberTag] = cloneableTags[objectTag] = cloneableTags[regexpTag] = cloneableTags[setTag] = cloneableTags[stringTag] = cloneableTags[symbolTag] = cloneableTags[uint8Tag] = cloneableTags[uint8ClampedTag] = cloneableTags[uint16Tag] = cloneableTags[uint32Tag] = true;
     cloneableTags[errorTag] = cloneableTags[funcTag] = cloneableTags[weakMapTag] = false;
-    function baseClone(value, bitmask, customizer, key, object, stack2) {
+    function baseClone(value, bitmask, customizer, key, object, stack) {
       var result, isDeep = bitmask & CLONE_DEEP_FLAG, isFlat = bitmask & CLONE_FLAT_FLAG, isFull = bitmask & CLONE_SYMBOLS_FLAG;
       if (customizer) {
-        result = object ? customizer(value, key, object, stack2) : customizer(value);
+        result = object ? customizer(value, key, object, stack) : customizer(value);
       }
       if (result !== void 0) {
         return result;
@@ -32596,19 +33983,19 @@ var require_baseClone = __commonJS({
           result = initCloneByTag(value, tag, isDeep);
         }
       }
-      stack2 || (stack2 = new Stack());
-      var stacked = stack2.get(value);
+      stack || (stack = new Stack());
+      var stacked = stack.get(value);
       if (stacked) {
         return stacked;
       }
-      stack2.set(value, result);
+      stack.set(value, result);
       if (isSet(value)) {
         value.forEach(function(subValue) {
-          result.add(baseClone(subValue, bitmask, customizer, subValue, value, stack2));
+          result.add(baseClone(subValue, bitmask, customizer, subValue, value, stack));
         });
       } else if (isMap(value)) {
         value.forEach(function(subValue, key2) {
-          result.set(key2, baseClone(subValue, bitmask, customizer, key2, value, stack2));
+          result.set(key2, baseClone(subValue, bitmask, customizer, key2, value, stack));
         });
       }
       var keysFunc = isFull ? isFlat ? getAllKeysIn : getAllKeys : isFlat ? keysIn : keys;
@@ -32618,7 +34005,7 @@ var require_baseClone = __commonJS({
           key2 = subValue;
           subValue = value[key2];
         }
-        assignValue(result, key2, baseClone(subValue, bitmask, customizer, key2, value, stack2));
+        assignValue(result, key2, baseClone(subValue, bitmask, customizer, key2, value, stack));
       });
       return result;
     }
@@ -32652,18 +34039,18 @@ var require_identity = __commonJS({
 // node_modules/lodash/_apply.js
 var require_apply = __commonJS({
   "node_modules/lodash/_apply.js"(exports2, module2) {
-    function apply(func, thisArg, args2) {
-      switch (args2.length) {
+    function apply(func, thisArg, args) {
+      switch (args.length) {
         case 0:
           return func.call(thisArg);
         case 1:
-          return func.call(thisArg, args2[0]);
+          return func.call(thisArg, args[0]);
         case 2:
-          return func.call(thisArg, args2[0], args2[1]);
+          return func.call(thisArg, args[0], args[1]);
         case 3:
-          return func.call(thisArg, args2[0], args2[1], args2[2]);
+          return func.call(thisArg, args[0], args[1], args[2]);
       }
-      return func.apply(thisArg, args2);
+      return func.apply(thisArg, args);
     }
     module2.exports = apply;
   }
@@ -32677,14 +34064,14 @@ var require_overRest = __commonJS({
     function overRest(func, start, transform) {
       start = nativeMax(start === void 0 ? func.length - 1 : start, 0);
       return function() {
-        var args2 = arguments, index = -1, length = nativeMax(args2.length - start, 0), array = Array(length);
+        var args = arguments, index = -1, length = nativeMax(args.length - start, 0), array = Array(length);
         while (++index < length) {
-          array[index] = args2[start + index];
+          array[index] = args[start + index];
         }
         index = -1;
         var otherArgs = Array(start + 1);
         while (++index < start) {
-          otherArgs[index] = args2[index];
+          otherArgs[index] = args[index];
         }
         otherArgs[start] = transform(array);
         return apply(func, this, otherArgs);
@@ -32911,8 +34298,8 @@ var require_uniqueId = __commonJS({
 var require_timeout = __commonJS({
   "node_modules/knex/lib/util/timeout.js"(exports2, module2) {
     var KnexTimeoutError = class extends Error {
-      constructor(message2) {
-        super(message2);
+      constructor(message) {
+        super(message);
         this.name = "KnexTimeoutError";
       }
     };
@@ -33098,11 +34485,36 @@ var require_runner = __commonJS({
             return this.query(query);
           }
           const statements = await query.statementsProducer(void 0, this.connection);
-          const queryObjects = statements.map((statement) => ({
+          const sqlQueryObjects = statements.sql.map((statement) => ({
             sql: statement,
             bindings: query.bindings
           }));
-          return this.queryArray(queryObjects);
+          const preQueryObjects = statements.pre.map((statement) => ({
+            sql: statement,
+            bindings: query.bindings
+          }));
+          const postQueryObjects = statements.post.map((statement) => ({
+            sql: statement,
+            bindings: query.bindings
+          }));
+          let results2 = [];
+          await this.queryArray(preQueryObjects);
+          try {
+            await this.client.transaction(async (trx) => {
+              const transactionRunner = new Runner(trx.client, this.builder);
+              transactionRunner.connection = this.connection;
+              results2 = await transactionRunner.queryArray(sqlQueryObjects);
+              if (statements.check) {
+                const foreignViolations = await trx.raw(statements.check);
+                if (foreignViolations.length > 0) {
+                  throw new Error("FOREIGN KEY constraint failed");
+                }
+              }
+            }, { connection: this.connection });
+          } finally {
+            await this.queryArray(postQueryObjects);
+          }
+          return results2;
         }
         const results = [];
         for (const query of queries) {
@@ -33286,7 +34698,7 @@ var require_common4 = __commonJS({
         let enableOverride = null;
         let namespacesCache;
         let enabledCache;
-        function debug(...args2) {
+        function debug(...args) {
           if (!debug.enabled) {
             return;
           }
@@ -33297,28 +34709,28 @@ var require_common4 = __commonJS({
           self2.prev = prevTime;
           self2.curr = curr;
           prevTime = curr;
-          args2[0] = createDebug.coerce(args2[0]);
-          if (typeof args2[0] !== "string") {
-            args2.unshift("%O");
+          args[0] = createDebug.coerce(args[0]);
+          if (typeof args[0] !== "string") {
+            args.unshift("%O");
           }
           let index = 0;
-          args2[0] = args2[0].replace(/%([a-zA-Z%])/g, (match, format2) => {
+          args[0] = args[0].replace(/%([a-zA-Z%])/g, (match, format2) => {
             if (match === "%%") {
               return "%";
             }
             index++;
             const formatter = createDebug.formatters[format2];
             if (typeof formatter === "function") {
-              const val = args2[index];
+              const val = args[index];
               match = formatter.call(self2, val);
-              args2.splice(index, 1);
+              args.splice(index, 1);
               index--;
             }
             return match;
           });
-          createDebug.formatArgs.call(self2, args2);
+          createDebug.formatArgs.call(self2, args);
           const logFn = self2.log || createDebug.log;
-          logFn.apply(self2, args2);
+          logFn.apply(self2, args);
         }
         debug.namespace = namespace;
         debug.useColors = createDebug.useColors();
@@ -33366,7 +34778,7 @@ var require_common4 = __commonJS({
           }
           namespaces = split[i].replace(/\*/g, ".*?");
           if (namespaces[0] === "-") {
-            createDebug.skips.push(new RegExp("^" + namespaces.substr(1) + "$"));
+            createDebug.skips.push(new RegExp("^" + namespaces.slice(1) + "$"));
           } else {
             createDebug.names.push(new RegExp("^" + namespaces + "$"));
           }
@@ -33521,16 +34933,16 @@ var require_browser5 = __commonJS({
       }
       return typeof document !== "undefined" && document.documentElement && document.documentElement.style && document.documentElement.style.WebkitAppearance || typeof window !== "undefined" && window.console && (window.console.firebug || window.console.exception && window.console.table) || typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/) && parseInt(RegExp.$1, 10) >= 31 || typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/);
     }
-    function formatArgs(args2) {
-      args2[0] = (this.useColors ? "%c" : "") + this.namespace + (this.useColors ? " %c" : " ") + args2[0] + (this.useColors ? "%c " : " ") + "+" + module2.exports.humanize(this.diff);
+    function formatArgs(args) {
+      args[0] = (this.useColors ? "%c" : "") + this.namespace + (this.useColors ? " %c" : " ") + args[0] + (this.useColors ? "%c " : " ") + "+" + module2.exports.humanize(this.diff);
       if (!this.useColors) {
         return;
       }
       const c = "color: " + this.color;
-      args2.splice(1, 0, c, "color: inherit");
+      args.splice(1, 0, c, "color: inherit");
       let index = 0;
       let lastC = 0;
-      args2[0].replace(/%[a-zA-Z%]/g, (match) => {
+      args[0].replace(/%[a-zA-Z%]/g, (match) => {
         if (match === "%%") {
           return;
         }
@@ -33539,7 +34951,7 @@ var require_browser5 = __commonJS({
           lastC = index;
         }
       });
-      args2.splice(lastC, 0, c);
+      args.splice(lastC, 0, c);
     }
     exports2.log = console.debug || console.log || (() => {
     });
@@ -33588,7 +35000,7 @@ var require_node5 = __commonJS({
     var tty = require("tty");
     var util = require("util");
     exports2.init = init;
-    exports2.log = log2;
+    exports2.log = log;
     exports2.formatArgs = formatArgs;
     exports2.save = save;
     exports2.load = load;
@@ -33702,16 +35114,16 @@ var require_node5 = __commonJS({
     function useColors() {
       return "colors" in exports2.inspectOpts ? Boolean(exports2.inspectOpts.colors) : tty.isatty(process.stderr.fd);
     }
-    function formatArgs(args2) {
+    function formatArgs(args) {
       const { namespace: name, useColors: useColors2 } = this;
       if (useColors2) {
         const c = this.color;
-        const colorCode = "[3" + (c < 8 ? c : "8;5;" + c);
-        const prefix = `  ${colorCode};1m${name} [0m`;
-        args2[0] = prefix + args2[0].split("\n").join("\n" + prefix);
-        args2.push(colorCode + "m+" + module2.exports.humanize(this.diff) + "[0m");
+        const colorCode = "\x1B[3" + (c < 8 ? c : "8;5;" + c);
+        const prefix = `  ${colorCode};1m${name} \x1B[0m`;
+        args[0] = prefix + args[0].split("\n").join("\n" + prefix);
+        args.push(colorCode + "m+" + module2.exports.humanize(this.diff) + "\x1B[0m");
       } else {
-        args2[0] = getDate() + name + " " + args2[0];
+        args[0] = getDate() + name + " " + args[0];
       }
     }
     function getDate() {
@@ -33720,8 +35132,8 @@ var require_node5 = __commonJS({
       }
       return new Date().toISOString() + " ";
     }
-    function log2(...args2) {
-      return process.stderr.write(util.format(...args2) + "\n");
+    function log(...args) {
+      return process.stderr.write(util.format(...args) + "\n");
     }
     function save(namespaces) {
       if (namespaces) {
@@ -33754,7 +35166,7 @@ var require_node5 = __commonJS({
 });
 
 // node_modules/knex/node_modules/debug/src/index.js
-var require_src5 = __commonJS({
+var require_src6 = __commonJS({
   "node_modules/knex/node_modules/debug/src/index.js"(exports2, module2) {
     if (typeof process === "undefined" || process.type === "renderer" || process.browser === true || process.__nwjs) {
       module2.exports = require_browser5();
@@ -34060,11 +35472,11 @@ var require_memoize = __commonJS({
         throw new TypeError(FUNC_ERROR_TEXT);
       }
       var memoized = function() {
-        var args2 = arguments, key = resolver ? resolver.apply(this, args2) : args2[0], cache = memoized.cache;
+        var args = arguments, key = resolver ? resolver.apply(this, args) : args[0], cache = memoized.cache;
         if (cache.has(key)) {
           return cache.get(key);
         }
-        var result = func.apply(this, args2);
+        var result = func.apply(this, args);
         memoized.cache = cache.set(key, result) || cache;
         return result;
       };
@@ -34345,10 +35757,7 @@ var require_migration_list_resolver = __commonJS({
     }
     async function listCompleted(tableName, schemaName, trxOrKnex) {
       await ensureTable(tableName, schemaName, trxOrKnex);
-      const completedMigrations = await trxOrKnex.from(getTableName(tableName, schemaName)).orderBy("id").select("name");
-      return completedMigrations.map((migration) => {
-        return migration.name;
-      });
+      return await trxOrKnex.from(getTableName(tableName, schemaName)).orderBy("id").select("name");
     }
     function listAllAndCompleted(config, trxOrKnex) {
       return Promise.all([
@@ -34456,9 +35865,9 @@ var require_attempt = __commonJS({
     var apply = require_apply();
     var baseRest = require_baseRest();
     var isError = require_isError();
-    var attempt = baseRest(function(func, args2) {
+    var attempt = baseRest(function(func, args) {
       try {
-        return apply(func, void 0, args2);
+        return apply(func, void 0, args);
       } catch (e) {
         return isError(e) ? e : new Error(e);
       }
@@ -34787,23 +36196,23 @@ var require_equalArrays = __commonJS({
     var cacheHas = require_cacheHas();
     var COMPARE_PARTIAL_FLAG = 1;
     var COMPARE_UNORDERED_FLAG = 2;
-    function equalArrays(array, other, bitmask, customizer, equalFunc, stack2) {
+    function equalArrays(array, other, bitmask, customizer, equalFunc, stack) {
       var isPartial = bitmask & COMPARE_PARTIAL_FLAG, arrLength = array.length, othLength = other.length;
       if (arrLength != othLength && !(isPartial && othLength > arrLength)) {
         return false;
       }
-      var arrStacked = stack2.get(array);
-      var othStacked = stack2.get(other);
+      var arrStacked = stack.get(array);
+      var othStacked = stack.get(other);
       if (arrStacked && othStacked) {
         return arrStacked == other && othStacked == array;
       }
       var index = -1, result = true, seen = bitmask & COMPARE_UNORDERED_FLAG ? new SetCache() : void 0;
-      stack2.set(array, other);
-      stack2.set(other, array);
+      stack.set(array, other);
+      stack.set(other, array);
       while (++index < arrLength) {
         var arrValue = array[index], othValue = other[index];
         if (customizer) {
-          var compared = isPartial ? customizer(othValue, arrValue, index, other, array, stack2) : customizer(arrValue, othValue, index, array, other, stack2);
+          var compared = isPartial ? customizer(othValue, arrValue, index, other, array, stack) : customizer(arrValue, othValue, index, array, other, stack);
         }
         if (compared !== void 0) {
           if (compared) {
@@ -34814,20 +36223,20 @@ var require_equalArrays = __commonJS({
         }
         if (seen) {
           if (!arraySome(other, function(othValue2, othIndex) {
-            if (!cacheHas(seen, othIndex) && (arrValue === othValue2 || equalFunc(arrValue, othValue2, bitmask, customizer, stack2))) {
+            if (!cacheHas(seen, othIndex) && (arrValue === othValue2 || equalFunc(arrValue, othValue2, bitmask, customizer, stack))) {
               return seen.push(othIndex);
             }
           })) {
             result = false;
             break;
           }
-        } else if (!(arrValue === othValue || equalFunc(arrValue, othValue, bitmask, customizer, stack2))) {
+        } else if (!(arrValue === othValue || equalFunc(arrValue, othValue, bitmask, customizer, stack))) {
           result = false;
           break;
         }
       }
-      stack2["delete"](array);
-      stack2["delete"](other);
+      stack["delete"](array);
+      stack["delete"](other);
       return result;
     }
     module2.exports = equalArrays;
@@ -34886,7 +36295,7 @@ var require_equalByTag = __commonJS({
     var dataViewTag = "[object DataView]";
     var symbolProto = Symbol2 ? Symbol2.prototype : void 0;
     var symbolValueOf = symbolProto ? symbolProto.valueOf : void 0;
-    function equalByTag(object, other, tag, bitmask, customizer, equalFunc, stack2) {
+    function equalByTag(object, other, tag, bitmask, customizer, equalFunc, stack) {
       switch (tag) {
         case dataViewTag:
           if (object.byteLength != other.byteLength || object.byteOffset != other.byteOffset) {
@@ -34916,14 +36325,14 @@ var require_equalByTag = __commonJS({
           if (object.size != other.size && !isPartial) {
             return false;
           }
-          var stacked = stack2.get(object);
+          var stacked = stack.get(object);
           if (stacked) {
             return stacked == other;
           }
           bitmask |= COMPARE_UNORDERED_FLAG;
-          stack2.set(object, other);
-          var result = equalArrays(convert(object), convert(other), bitmask, customizer, equalFunc, stack2);
-          stack2["delete"](object);
+          stack.set(object, other);
+          var result = equalArrays(convert(object), convert(other), bitmask, customizer, equalFunc, stack);
+          stack["delete"](object);
           return result;
         case symbolTag:
           if (symbolValueOf) {
@@ -34943,7 +36352,7 @@ var require_equalObjects = __commonJS({
     var COMPARE_PARTIAL_FLAG = 1;
     var objectProto = Object.prototype;
     var hasOwnProperty = objectProto.hasOwnProperty;
-    function equalObjects(object, other, bitmask, customizer, equalFunc, stack2) {
+    function equalObjects(object, other, bitmask, customizer, equalFunc, stack) {
       var isPartial = bitmask & COMPARE_PARTIAL_FLAG, objProps = getAllKeys(object), objLength = objProps.length, othProps = getAllKeys(other), othLength = othProps.length;
       if (objLength != othLength && !isPartial) {
         return false;
@@ -34955,22 +36364,22 @@ var require_equalObjects = __commonJS({
           return false;
         }
       }
-      var objStacked = stack2.get(object);
-      var othStacked = stack2.get(other);
+      var objStacked = stack.get(object);
+      var othStacked = stack.get(other);
       if (objStacked && othStacked) {
         return objStacked == other && othStacked == object;
       }
       var result = true;
-      stack2.set(object, other);
-      stack2.set(other, object);
+      stack.set(object, other);
+      stack.set(other, object);
       var skipCtor = isPartial;
       while (++index < objLength) {
         key = objProps[index];
         var objValue = object[key], othValue = other[key];
         if (customizer) {
-          var compared = isPartial ? customizer(othValue, objValue, key, other, object, stack2) : customizer(objValue, othValue, key, object, other, stack2);
+          var compared = isPartial ? customizer(othValue, objValue, key, other, object, stack) : customizer(objValue, othValue, key, object, other, stack);
         }
-        if (!(compared === void 0 ? objValue === othValue || equalFunc(objValue, othValue, bitmask, customizer, stack2) : compared)) {
+        if (!(compared === void 0 ? objValue === othValue || equalFunc(objValue, othValue, bitmask, customizer, stack) : compared)) {
           result = false;
           break;
         }
@@ -34982,8 +36391,8 @@ var require_equalObjects = __commonJS({
           result = false;
         }
       }
-      stack2["delete"](object);
-      stack2["delete"](other);
+      stack["delete"](object);
+      stack["delete"](other);
       return result;
     }
     module2.exports = equalObjects;
@@ -35007,7 +36416,7 @@ var require_baseIsEqualDeep = __commonJS({
     var objectTag = "[object Object]";
     var objectProto = Object.prototype;
     var hasOwnProperty = objectProto.hasOwnProperty;
-    function baseIsEqualDeep(object, other, bitmask, customizer, equalFunc, stack2) {
+    function baseIsEqualDeep(object, other, bitmask, customizer, equalFunc, stack) {
       var objIsArr = isArray(object), othIsArr = isArray(other), objTag = objIsArr ? arrayTag : getTag(object), othTag = othIsArr ? arrayTag : getTag(other);
       objTag = objTag == argsTag ? objectTag : objTag;
       othTag = othTag == argsTag ? objectTag : othTag;
@@ -35020,22 +36429,22 @@ var require_baseIsEqualDeep = __commonJS({
         objIsObj = false;
       }
       if (isSameTag && !objIsObj) {
-        stack2 || (stack2 = new Stack());
-        return objIsArr || isTypedArray(object) ? equalArrays(object, other, bitmask, customizer, equalFunc, stack2) : equalByTag(object, other, objTag, bitmask, customizer, equalFunc, stack2);
+        stack || (stack = new Stack());
+        return objIsArr || isTypedArray(object) ? equalArrays(object, other, bitmask, customizer, equalFunc, stack) : equalByTag(object, other, objTag, bitmask, customizer, equalFunc, stack);
       }
       if (!(bitmask & COMPARE_PARTIAL_FLAG)) {
         var objIsWrapped = objIsObj && hasOwnProperty.call(object, "__wrapped__"), othIsWrapped = othIsObj && hasOwnProperty.call(other, "__wrapped__");
         if (objIsWrapped || othIsWrapped) {
           var objUnwrapped = objIsWrapped ? object.value() : object, othUnwrapped = othIsWrapped ? other.value() : other;
-          stack2 || (stack2 = new Stack());
-          return equalFunc(objUnwrapped, othUnwrapped, bitmask, customizer, stack2);
+          stack || (stack = new Stack());
+          return equalFunc(objUnwrapped, othUnwrapped, bitmask, customizer, stack);
         }
       }
       if (!isSameTag) {
         return false;
       }
-      stack2 || (stack2 = new Stack());
-      return equalObjects(object, other, bitmask, customizer, equalFunc, stack2);
+      stack || (stack = new Stack());
+      return equalObjects(object, other, bitmask, customizer, equalFunc, stack);
     }
     module2.exports = baseIsEqualDeep;
   }
@@ -35046,14 +36455,14 @@ var require_baseIsEqual = __commonJS({
   "node_modules/lodash/_baseIsEqual.js"(exports2, module2) {
     var baseIsEqualDeep = require_baseIsEqualDeep();
     var isObjectLike = require_isObjectLike();
-    function baseIsEqual(value, other, bitmask, customizer, stack2) {
+    function baseIsEqual(value, other, bitmask, customizer, stack) {
       if (value === other) {
         return true;
       }
       if (value == null || other == null || !isObjectLike(value) && !isObjectLike(other)) {
         return value !== value && other !== other;
       }
-      return baseIsEqualDeep(value, other, bitmask, customizer, baseIsEqual, stack2);
+      return baseIsEqualDeep(value, other, bitmask, customizer, baseIsEqual, stack);
     }
     module2.exports = baseIsEqual;
   }
@@ -35086,11 +36495,11 @@ var require_baseIsMatch = __commonJS({
             return false;
           }
         } else {
-          var stack2 = new Stack();
+          var stack = new Stack();
           if (customizer) {
-            var result = customizer(objValue, srcValue, key, object, source, stack2);
+            var result = customizer(objValue, srcValue, key, object, source, stack);
           }
-          if (!(result === void 0 ? baseIsEqual(srcValue, objValue, COMPARE_PARTIAL_FLAG | COMPARE_UNORDERED_FLAG, customizer, stack2) : result)) {
+          if (!(result === void 0 ? baseIsEqual(srcValue, objValue, COMPARE_PARTIAL_FLAG | COMPARE_UNORDERED_FLAG, customizer, stack) : result)) {
             return false;
           }
         }
@@ -35515,18 +36924,129 @@ var require_sortBy = __commonJS({
   }
 });
 
+// node_modules/get-package-type/is-node-modules.cjs
+var require_is_node_modules = __commonJS({
+  "node_modules/get-package-type/is-node-modules.cjs"(exports2, module2) {
+    "use strict";
+    var path = require("path");
+    function isNodeModules(directory) {
+      let basename = path.basename(directory);
+      if (path.sep === "\\") {
+        basename = basename.toLowerCase();
+      }
+      return basename === "node_modules";
+    }
+    module2.exports = isNodeModules;
+  }
+});
+
+// node_modules/get-package-type/cache.cjs
+var require_cache = __commonJS({
+  "node_modules/get-package-type/cache.cjs"(exports2, module2) {
+    "use strict";
+    module2.exports = /* @__PURE__ */ new Map();
+  }
+});
+
+// node_modules/get-package-type/async.cjs
+var require_async = __commonJS({
+  "node_modules/get-package-type/async.cjs"(exports2, module2) {
+    "use strict";
+    var path = require("path");
+    var { promisify } = require("util");
+    var readFile = promisify(require("fs").readFile);
+    var isNodeModules = require_is_node_modules();
+    var resultsCache = require_cache();
+    var promiseCache = /* @__PURE__ */ new Map();
+    async function getDirectoryTypeActual(directory) {
+      if (isNodeModules(directory)) {
+        return "commonjs";
+      }
+      try {
+        return JSON.parse(await readFile(path.resolve(directory, "package.json"))).type || "commonjs";
+      } catch (_) {
+      }
+      const parent = path.dirname(directory);
+      if (parent === directory) {
+        return "commonjs";
+      }
+      return getDirectoryType(parent);
+    }
+    async function getDirectoryType(directory) {
+      if (resultsCache.has(directory)) {
+        return resultsCache.get(directory);
+      }
+      if (promiseCache.has(directory)) {
+        return promiseCache.get(directory);
+      }
+      const promise = getDirectoryTypeActual(directory);
+      promiseCache.set(directory, promise);
+      const result = await promise;
+      resultsCache.set(directory, result);
+      promiseCache.delete(directory);
+      return result;
+    }
+    function getPackageType(filename) {
+      return getDirectoryType(path.resolve(path.dirname(filename)));
+    }
+    module2.exports = getPackageType;
+  }
+});
+
+// node_modules/get-package-type/sync.cjs
+var require_sync = __commonJS({
+  "node_modules/get-package-type/sync.cjs"(exports2, module2) {
+    "use strict";
+    var path = require("path");
+    var { readFileSync } = require("fs");
+    var isNodeModules = require_is_node_modules();
+    var resultsCache = require_cache();
+    function getDirectoryTypeActual(directory) {
+      if (isNodeModules(directory)) {
+        return "commonjs";
+      }
+      try {
+        return JSON.parse(readFileSync(path.resolve(directory, "package.json"))).type || "commonjs";
+      } catch (_) {
+      }
+      const parent = path.dirname(directory);
+      if (parent === directory) {
+        return "commonjs";
+      }
+      return getDirectoryType(parent);
+    }
+    function getDirectoryType(directory) {
+      if (resultsCache.has(directory)) {
+        return resultsCache.get(directory);
+      }
+      const result = getDirectoryTypeActual(directory);
+      resultsCache.set(directory, result);
+      return result;
+    }
+    function getPackageTypeSync(filename) {
+      return getDirectoryType(path.resolve(path.dirname(filename)));
+    }
+    module2.exports = getPackageTypeSync;
+  }
+});
+
+// node_modules/get-package-type/index.cjs
+var require_get_package_type = __commonJS({
+  "node_modules/get-package-type/index.cjs"(exports2, module2) {
+    "use strict";
+    var getPackageType = require_async();
+    var getPackageTypeSync = require_sync();
+    module2.exports = (filename) => getPackageType(filename);
+    module2.exports.sync = getPackageTypeSync;
+  }
+});
+
 // node_modules/knex/lib/migrations/util/is-module-type.js
 var require_is_module_type = __commonJS({
   "node_modules/knex/lib/migrations/util/is-module-type.js"(exports2, module2) {
-    var { readFile } = require_fs();
+    var getPackageType = require_get_package_type();
     module2.exports = async function isModuleType(filepath) {
-      if (process.env.npm_package_json) {
-        const packageJson = JSON.parse(await readFile(process.env.npm_package_json, "utf-8"));
-        if (packageJson.type === "module") {
-          return true;
-        }
-      }
-      return process.env.npm_package_type === "module" || filepath.endsWith(".mjs");
+      return filepath.endsWith(".mjs") || !filepath.endsWith(".cjs") && await getPackageType(filepath) === "module";
     };
   }
 });
@@ -35541,12 +37061,10 @@ var require_import_file = __commonJS({
   }
 });
 
-// node_modules/knex/lib/migrations/migrate/sources/fs-migrations.js
-var require_fs_migrations = __commonJS({
-  "node_modules/knex/lib/migrations/migrate/sources/fs-migrations.js"(exports2, module2) {
+// node_modules/knex/lib/migrations/common/MigrationsLoader.js
+var require_MigrationsLoader = __commonJS({
+  "node_modules/knex/lib/migrations/common/MigrationsLoader.js"(exports2, module2) {
     var path = require("path");
-    var sortBy = require_sortBy();
-    var { readdir } = require_fs();
     var DEFAULT_LOAD_EXTENSIONS = Object.freeze([
       ".co",
       ".coffee",
@@ -35558,7 +37076,7 @@ var require_fs_migrations = __commonJS({
       ".ls",
       ".ts"
     ]);
-    var FsMigrations = class {
+    var AbstractMigrationsLoader = class {
       constructor(migrationDirectories, sortDirsSeparately, loadExtensions) {
         this.sortDirsSeparately = sortDirsSeparately;
         if (!Array.isArray(migrationDirectories)) {
@@ -35567,6 +37085,28 @@ var require_fs_migrations = __commonJS({
         this.migrationsPaths = migrationDirectories;
         this.loadExtensions = loadExtensions || DEFAULT_LOAD_EXTENSIONS;
       }
+      getFile(migrationsInfo) {
+        const absoluteDir = path.resolve(process.cwd(), migrationsInfo.directory);
+        const _path = path.join(absoluteDir, migrationsInfo.file);
+        const importFile = require_import_file();
+        return importFile(_path);
+      }
+    };
+    module2.exports = {
+      DEFAULT_LOAD_EXTENSIONS,
+      AbstractMigrationsLoader
+    };
+  }
+});
+
+// node_modules/knex/lib/migrations/migrate/sources/fs-migrations.js
+var require_fs_migrations = __commonJS({
+  "node_modules/knex/lib/migrations/migrate/sources/fs-migrations.js"(exports2, module2) {
+    var path = require("path");
+    var sortBy = require_sortBy();
+    var { readdir } = require_fs();
+    var { AbstractMigrationsLoader } = require_MigrationsLoader();
+    var FsMigrations = class extends AbstractMigrationsLoader {
       getMigrations(loadExtensions) {
         const readMigrationsPromises = this.migrationsPaths.map((configDir) => {
           const absoluteDir = path.resolve(process.cwd(), configDir);
@@ -35593,11 +37133,8 @@ var require_fs_migrations = __commonJS({
       getMigrationName(migration) {
         return migration.file;
       }
-      getMigration(migration) {
-        const absoluteDir = path.resolve(process.cwd(), migration.directory);
-        const _path = path.join(absoluteDir, migration.file);
-        const importFile = require_import_file();
-        return importFile(_path);
+      getMigration(migrationInfo) {
+        return this.getFile(migrationInfo);
       }
     };
     function filterMigrations(migrationSource, migrations, loadExtensions) {
@@ -35608,7 +37145,6 @@ var require_fs_migrations = __commonJS({
       });
     }
     module2.exports = {
-      DEFAULT_LOAD_EXTENSIONS,
       FsMigrations
     };
   }
@@ -35623,7 +37159,7 @@ var require_colorette = __commonJS({
     function _interopNamespace(e) {
       if (e && e.__esModule)
         return e;
-      var n = Object.create(null);
+      var n = /* @__PURE__ */ Object.create(null);
       if (e) {
         Object.keys(e).forEach(function(k) {
           if (k !== "default") {
@@ -35652,11 +37188,11 @@ var require_colorette = __commonJS({
     var replaceClose = (index, string, close, replace, head = string.substring(0, index) + replace, tail = string.substring(index + close.length), next = tail.indexOf(close)) => head + (next < 0 ? tail : replaceClose(next, tail, close, replace));
     var clearBleed = (index, string, open, close, replace) => index < 0 ? open + string + close : open + replaceClose(index, string, close, replace) + close;
     var filterEmpty = (open, close, replace = open, at = open.length + 1) => (string) => string || !(string === "" || string === void 0) ? clearBleed(("" + string).indexOf(close, at), string, open, close, replace) : "";
-    var init = (open, close, replace) => filterEmpty(`[${open}m`, `[${close}m`, replace);
+    var init = (open, close, replace) => filterEmpty(`\x1B[${open}m`, `\x1B[${close}m`, replace);
     var colors = {
       reset: init(0, 0),
-      bold: init(1, 22, "[22m[1m"),
-      dim: init(2, 22, "[22m[2m"),
+      bold: init(1, 22, "\x1B[22m\x1B[1m"),
+      dim: init(2, 22, "\x1B[22m\x1B[2m"),
       italic: init(3, 23),
       underline: init(4, 24),
       inverse: init(7, 27),
@@ -35832,7 +37368,7 @@ var require_logger = __commonJS({
             debug,
             warn,
             error,
-            deprecate: deprecate2,
+            deprecate,
             inspectionDepth,
             enableColors
           } = {}
@@ -35842,36 +37378,36 @@ var require_logger = __commonJS({
         this._debug = debug;
         this._warn = warn;
         this._error = error;
-        this._deprecate = deprecate2;
+        this._deprecate = deprecate;
       }
-      _log(message2, userFn, colorFn) {
+      _log(message, userFn, colorFn) {
         if (userFn != null && !isFunction(userFn)) {
           throw new TypeError("Extensions to knex logger must be functions!");
         }
         if (isFunction(userFn)) {
-          userFn(message2);
+          userFn(message);
           return;
         }
-        if (!isString(message2)) {
-          message2 = inspect(message2, {
+        if (!isString(message)) {
+          message = inspect(message, {
             depth: this._inspectionDepth,
             colors: this._enableColors
           });
         }
-        console.log(colorFn ? colorFn(message2) : message2);
+        console.log(colorFn ? colorFn(message) : message);
       }
-      debug(message2) {
-        this._log(message2, this._debug);
+      debug(message) {
+        this._log(message, this._debug);
       }
-      warn(message2) {
-        this._log(message2, this._warn, color.yellow);
+      warn(message) {
+        this._log(message, this._warn, color.yellow);
       }
-      error(message2) {
-        this._log(message2, this._error, color.red);
+      error(message) {
+        this._log(message, this._error, color.red);
       }
       deprecate(method, alternative) {
-        const message2 = `${method} is deprecated, please use ${alternative}`;
-        this._log(message2, this._deprecate, color.yellow);
+        const message = `${method} is deprecated, please use ${alternative}`;
+        this._log(message, this._deprecate, color.yellow);
       }
     };
     function resolveIsEnabledColors(enableColorsParam) {
@@ -35887,14 +37423,12 @@ var require_logger = __commonJS({
   }
 });
 
-// node_modules/knex/lib/migrations/migrate/configuration-merger.js
-var require_configuration_merger = __commonJS({
-  "node_modules/knex/lib/migrations/migrate/configuration-merger.js"(exports2, module2) {
-    var {
-      FsMigrations,
-      DEFAULT_LOAD_EXTENSIONS
-    } = require_fs_migrations();
+// node_modules/knex/lib/migrations/migrate/migrator-configuration-merger.js
+var require_migrator_configuration_merger = __commonJS({
+  "node_modules/knex/lib/migrations/migrate/migrator-configuration-merger.js"(exports2, module2) {
+    var { FsMigrations } = require_fs_migrations();
     var Logger = require_logger();
+    var { DEFAULT_LOAD_EXTENSIONS } = require_MigrationsLoader();
     var defaultLogger = new Logger();
     var CONFIG_DEFAULT = Object.freeze({
       extension: "js",
@@ -35941,7 +37475,7 @@ var require_MigrationGenerator = __commonJS({
   "node_modules/knex/lib/migrations/migrate/MigrationGenerator.js"(exports2, module2) {
     var path = require("path");
     var { writeJsFileUsingTemplate } = require_template2();
-    var { getMergedConfig } = require_configuration_merger();
+    var { getMergedConfig } = require_migrator_configuration_merger();
     var { ensureDirectoryExists } = require_fs();
     var { yyyymmddhhmmss } = require_timestamp();
     var MigrationGenerator = class {
@@ -35968,7 +37502,7 @@ var require_MigrationGenerator = __commonJS({
       _getNewMigrationName(name) {
         if (name[0] === "-")
           name = name.slice(1);
-        return yyyymmddhhmmss() + "_" + name + "." + this.config.extension;
+        return yyyymmddhhmmss() + "_" + name + "." + this.config.extension.split("-")[0];
       }
       _getNewMigrationPath(name) {
         const fileName = this._getNewMigrationName(name);
@@ -36002,7 +37536,6 @@ var require_Migrator = __commonJS({
     var get = require_get();
     var isEmpty = require_isEmpty();
     var max = require_max();
-    var { inherits } = require("util");
     var {
       getLockTableName,
       getTable,
@@ -36011,13 +37544,14 @@ var require_Migrator = __commonJS({
     var { getSchemaBuilder } = require_table_creator();
     var migrationListResolver = require_migration_list_resolver();
     var MigrationGenerator = require_MigrationGenerator();
-    var { getMergedConfig } = require_configuration_merger();
+    var { getMergedConfig } = require_migrator_configuration_merger();
     var { isBoolean, isFunction } = require_is();
-    function LockError(msg) {
-      this.name = "MigrationLocked";
-      this.message = msg;
-    }
-    inherits(LockError, Error);
+    var LockError = class extends Error {
+      constructor(msg) {
+        super(msg);
+        this.name = "MigrationLocked";
+      }
+    };
     var Migrator = class {
       constructor(knex2) {
         if (isFunction(knex2)) {
@@ -36112,7 +37646,7 @@ var require_Migrator = __commonJS({
           }).then((val) => {
             const [allMigrations, completedMigrations] = val;
             return all ? allMigrations.filter((migration) => {
-              return completedMigrations.includes(this.config.migrationSource.getMigrationName(migration));
+              return completedMigrations.map((migration2) => migration2.name).includes(this.config.migrationSource.getMigrationName(migration));
             }).reverse() : this._getLastBatch(val);
           }).then((migrations) => {
             return this._runBatch(migrations, "down");
@@ -36129,7 +37663,7 @@ var require_Migrator = __commonJS({
           return value;
         }).then(([all, completed]) => {
           const completedMigrations = all.filter((migration) => {
-            return completed.includes(this.config.migrationSource.getMigrationName(migration));
+            return completed.map((migration2) => migration2.name).includes(this.config.migrationSource.getMigrationName(migration));
           });
           let migrationToRun;
           const name = this.config.name;
@@ -36162,7 +37696,7 @@ var require_Migrator = __commonJS({
         this._disableProcessing();
         this.config = getMergedConfig(config, this.config, this.knex.client.logger);
         return migrationListResolver.listCompleted(this.config.tableName, this.config.schemaName, this.knex).then((completed) => {
-          const val = max(completed.map((value) => value.split("_")[0]));
+          const val = max(completed.map((value) => value.name.split("_")[0]));
           return val === void 0 ? "none" : val;
         });
       }
@@ -36207,7 +37741,7 @@ var require_Migrator = __commonJS({
         });
       }
       _getLock(trx) {
-        const transact = trx ? (fn2) => fn2(trx) : (fn2) => this.knex.transaction(fn2);
+        const transact = trx ? (fn) => fn(trx) : (fn) => this.knex.transaction(fn);
         return transact((trx2) => {
           return this._lockMigrations(trx2);
         }).catch((err) => {
@@ -36283,7 +37817,7 @@ var require_Migrator = __commonJS({
         const trxOrKnex = trx || this.knex;
         const { tableName, schemaName, disableTransactions } = this.config;
         let current = Promise.resolve();
-        const log2 = [];
+        const log = [];
         migrations.forEach((migration) => {
           const name = this.config.migrationSource.getMigrationName(migration);
           this._activeMigration.fileName = name;
@@ -36299,7 +37833,7 @@ var require_Migrator = __commonJS({
           }).then(() => {
             trxOrKnex.disableProcessing();
             this.knex.disableProcessing();
-            log2.push(name);
+            log.push(name);
             if (direction === "up") {
               return trxOrKnex.into(getTableName(tableName, schemaName)).insert({
                 name,
@@ -36312,7 +37846,7 @@ var require_Migrator = __commonJS({
             }
           });
         });
-        return current.then(() => [batchNo, log2]);
+        return current.then(() => [batchNo, log]);
       }
       _transaction(knex2, migrationContent, direction, name) {
         return knex2.transaction((trx) => {
@@ -36326,17 +37860,18 @@ var require_Migrator = __commonJS({
       const [all, completed] = migrations;
       const diff = getMissingMigrations(migrationSource, completed, all);
       if (!isEmpty(diff)) {
-        throw new Error(`The migration directory is corrupt, the following files are missing: ${diff.join(", ")}`);
+        const names = diff.map((d) => d.name);
+        throw new Error(`The migration directory is corrupt, the following files are missing: ${names.join(", ")}`);
       }
     }
     function getMissingMigrations(migrationSource, completed, all) {
-      return differenceWith(completed, all, (completedMigration, allMigration) => {
-        return completedMigration === migrationSource.getMigrationName(allMigration);
+      return differenceWith(completed, all, (c, a) => {
+        return c.name === migrationSource.getMigrationName(a);
       });
     }
     function getNewMigrations(migrationSource, all, completed) {
-      return differenceWith(all, completed, (allMigration, completedMigration) => {
-        return completedMigration === migrationSource.getMigrationName(allMigration);
+      return differenceWith(all, completed, (a, c) => {
+        return c.name === migrationSource.getMigrationName(a);
       });
     }
     function checkPromise(logger, migrationPromise, name, commitFn) {
@@ -36351,26 +37886,6 @@ var require_Migrator = __commonJS({
     module2.exports = {
       Migrator
     };
-  }
-});
-
-// node_modules/lodash/assignIn.js
-var require_assignIn = __commonJS({
-  "node_modules/lodash/assignIn.js"(exports2, module2) {
-    var copyObject = require_copyObject();
-    var createAssigner = require_createAssigner();
-    var keysIn = require_keysIn();
-    var assignIn = createAssigner(function(object, source) {
-      copyObject(source, keysIn(source), object);
-    });
-    module2.exports = assignIn;
-  }
-});
-
-// node_modules/lodash/extend.js
-var require_extend = __commonJS({
-  "node_modules/lodash/extend.js"(exports2, module2) {
-    module2.exports = require_assignIn();
   }
 });
 
@@ -36514,66 +38029,131 @@ var require_includes = __commonJS({
   }
 });
 
-// node_modules/knex/lib/migrations/seed/Seeder.js
-var require_Seeder = __commonJS({
-  "node_modules/knex/lib/migrations/seed/Seeder.js"(exports2, module2) {
+// node_modules/knex/lib/migrations/seed/sources/fs-seeds.js
+var require_fs_seeds = __commonJS({
+  "node_modules/knex/lib/migrations/seed/sources/fs-seeds.js"(exports2, module2) {
     var path = require("path");
     var flatten = require_flatten();
-    var extend = require_extend();
     var includes = require_includes();
-    var { ensureDirectoryExists, getFilepathsInFolder } = require_fs();
-    var { writeJsFileUsingTemplate } = require_template2();
-    var { yyyymmddhhmmss } = require_timestamp();
+    var { AbstractMigrationsLoader } = require_MigrationsLoader();
+    var { getFilepathsInFolder } = require_fs();
     var filterByLoadExtensions = (extensions) => (value) => {
       const extension = path.extname(value);
       return includes(extensions, extension);
     };
+    var FsSeeds = class extends AbstractMigrationsLoader {
+      _getConfigDirectories(logger) {
+        const directories = this.migrationsPaths;
+        return directories.map((directory) => {
+          if (!directory) {
+            logger.warn("Empty value passed as a directory for Seeder, this is not supported.");
+          }
+          return path.resolve(process.cwd(), directory);
+        });
+      }
+      async getSeeds(config) {
+        const { loadExtensions, recursive, specific } = config;
+        const seeds = flatten(await Promise.all(this._getConfigDirectories(config.logger).map((d) => getFilepathsInFolder(d, recursive))));
+        let files = seeds.filter(filterByLoadExtensions(loadExtensions));
+        if (!this.sortDirsSeparately) {
+          files.sort();
+        }
+        if (specific) {
+          files = files.filter((file) => path.basename(file) === specific);
+          if (files.length === 0) {
+            throw new Error(`Invalid argument provided: the specific seed "${specific}" does not exist.`);
+          }
+        }
+        return files;
+      }
+      async getSeed(filepath) {
+        const importFile = require_import_file();
+        const seed = await importFile(filepath);
+        return seed;
+      }
+    };
+    module2.exports = {
+      FsSeeds
+    };
+  }
+});
+
+// node_modules/knex/lib/migrations/seed/seeder-configuration-merger.js
+var require_seeder_configuration_merger = __commonJS({
+  "node_modules/knex/lib/migrations/seed/seeder-configuration-merger.js"(exports2, module2) {
+    var { FsSeeds } = require_fs_seeds();
+    var Logger = require_logger();
+    var { DEFAULT_LOAD_EXTENSIONS } = require_MigrationsLoader();
+    var defaultLogger = new Logger();
+    var CONFIG_DEFAULT = Object.freeze({
+      extension: "js",
+      directory: "./seeds",
+      loadExtensions: DEFAULT_LOAD_EXTENSIONS,
+      specific: null,
+      timestampFilenamePrefix: false,
+      recursive: false,
+      sortDirsSeparately: false
+    });
+    function getMergedConfig(config, currentConfig, logger = defaultLogger) {
+      const mergedConfig = Object.assign({}, CONFIG_DEFAULT, currentConfig || {}, config, {
+        logger
+      });
+      if (config && (config.directory || config.sortDirsSeparately !== void 0 || config.loadExtensions)) {
+        if (config.seedSource) {
+          logger.warn("FS-related option specified for seed configuration. This resets seedSource to default FsMigrations");
+        }
+        mergedConfig.seedSource = null;
+      }
+      if (!mergedConfig.seedSource) {
+        mergedConfig.seedSource = new FsSeeds(mergedConfig.directory, mergedConfig.sortDirsSeparately, mergedConfig.loadExtensions);
+      }
+      return mergedConfig;
+    }
+    module2.exports = {
+      getMergedConfig
+    };
+  }
+});
+
+// node_modules/knex/lib/migrations/seed/Seeder.js
+var require_Seeder = __commonJS({
+  "node_modules/knex/lib/migrations/seed/Seeder.js"(exports2, module2) {
+    var path = require("path");
+    var { ensureDirectoryExists } = require_fs();
+    var { writeJsFileUsingTemplate } = require_template2();
+    var { yyyymmddhhmmss } = require_timestamp();
+    var { getMergedConfig } = require_seeder_configuration_merger();
     var Seeder = class {
       constructor(knex2) {
         this.knex = knex2;
-        this.config = this.setConfig(knex2.client.config.seeds);
+        this.config = this.resolveConfig(knex2.client.config.seeds);
       }
       async run(config) {
-        this.config = this.setConfig(config);
-        let files = await this._listAll();
-        if (config && config.specific) {
-          files = files.filter((file) => path.basename(file) === config.specific);
-          if (files.length === 0) {
-            throw new Error(`Invalid argument provided: the specific seed "${config.specific}" does not exist.`);
-          }
-        }
+        this.config = this.resolveConfig(config);
+        const files = await this.config.seedSource.getSeeds(this.config);
         return this._runSeeds(files);
       }
       async make(name, config) {
-        this.config = this.setConfig(config);
+        this.config = this.resolveConfig(config);
         if (!name)
           throw new Error("A name must be specified for the generated seed");
         await this._ensureFolder(config);
         const seedPath = await this._writeNewSeed(name);
         return seedPath;
       }
-      async _listAll(config) {
-        this.config = this.setConfig(config);
-        const { loadExtensions, recursive } = this.config;
-        const seeds = flatten(await Promise.all(this._absoluteConfigDirs().map((d) => getFilepathsInFolder(d, recursive))));
-        if (this.config.sortDirsSeparately) {
-          return seeds.filter(filterByLoadExtensions(loadExtensions));
-        } else {
-          return seeds.filter(filterByLoadExtensions(loadExtensions)).sort();
-        }
-      }
       _ensureFolder() {
-        const dirs = this._absoluteConfigDirs();
+        const dirs = this.config.seedSource._getConfigDirectories(this.config.logger);
         const promises = dirs.map(ensureDirectoryExists);
         return Promise.all(promises);
       }
-      _runSeeds(seeds) {
-        seeds.forEach((seed) => this._validateSeedStructure(seed));
+      async _runSeeds(seeds) {
+        for (const seed of seeds) {
+          await this._validateSeedStructure(seed);
+        }
         return this._waterfallBatch(seeds);
       }
       async _validateSeedStructure(filepath) {
-        const importFile = require_import_file();
-        const seed = await importFile(filepath);
+        const seed = await this.config.seedSource.getSeed(filepath);
         if (typeof seed.seed !== "function") {
           throw new Error(`Invalid seed file: ${filepath} must have a seed function`);
         }
@@ -36592,7 +38172,7 @@ var require_Seeder = __commonJS({
       }
       _getNewStubFilePath(name) {
         const fileName = this._getNewStubFileName(name);
-        const dirs = this._absoluteConfigDirs();
+        const dirs = this.config.seedSource._getConfigDirectories(this.config.logger);
         const dir = dirs.slice(-1)[0];
         return path.join(dir, fileName);
       }
@@ -36601,15 +38181,18 @@ var require_Seeder = __commonJS({
         await writeJsFileUsingTemplate(seedPath, this._getStubPath(), { variable: "d" }, this.config.variables || {});
         return seedPath;
       }
+      async _listAll(config) {
+        this.config = this.resolveConfig(config);
+        return this.config.seedSource.getSeeds(this.config);
+      }
       async _waterfallBatch(seeds) {
         const { knex: knex2 } = this;
-        const log2 = [];
+        const log = [];
         for (const seedPath of seeds) {
-          const importFile = require_import_file();
-          const seed = await importFile(seedPath);
+          const seed = await this.config.seedSource.getSeed(seedPath);
           try {
             await seed.seed(knex2);
-            log2.push(seedPath);
+            log.push(seedPath);
           } catch (originalError) {
             const error = new Error(`Error while executing "${seedPath}" seed: ${originalError.message}`);
             error.original = originalError;
@@ -36617,36 +38200,10 @@ var require_Seeder = __commonJS({
             throw error;
           }
         }
-        return [log2];
+        return [log];
       }
-      _absoluteConfigDirs() {
-        const directories = Array.isArray(this.config.directory) ? this.config.directory : [this.config.directory];
-        return directories.map((directory) => {
-          if (!directory) {
-            console.warn("Failed to resolve config file, knex cannot determine where to run or make seeds");
-          }
-          return path.resolve(process.cwd(), directory);
-        });
-      }
-      setConfig(config) {
-        return extend({
-          extension: "js",
-          directory: "./seeds",
-          loadExtensions: [
-            ".co",
-            ".coffee",
-            ".eg",
-            ".iced",
-            ".js",
-            ".litcoffee",
-            ".ls",
-            ".ts",
-            ".cjs"
-          ],
-          timestampFilenamePrefix: false,
-          sortDirsSeparately: false,
-          recursive: false
-        }, this.config || {}, config);
+      resolveConfig(config) {
+        return getMergedConfig(config, this.config, this.knex.client.logger);
       }
     };
     module2.exports = Seeder;
@@ -36666,6 +38223,36 @@ var require_FunctionHelper = __commonJS({
         }
         return this.client.raw("CURRENT_TIMESTAMP");
       }
+      uuidToBin(uuid, ordered = true) {
+        const buf = Buffer.from(uuid.replace(/-/g, ""), "hex");
+        return ordered ? Buffer.concat([
+          buf.slice(6, 8),
+          buf.slice(4, 6),
+          buf.slice(0, 4),
+          buf.slice(8, 16)
+        ]) : Buffer.concat([
+          buf.slice(0, 4),
+          buf.slice(4, 6),
+          buf.slice(6, 8),
+          buf.slice(8, 16)
+        ]);
+      }
+      binToUuid(bin, ordered = true) {
+        const buf = Buffer.from(bin, "hex");
+        return ordered ? [
+          buf.toString("hex", 4, 8),
+          buf.toString("hex", 2, 4),
+          buf.toString("hex", 0, 2),
+          buf.toString("hex", 8, 10),
+          buf.toString("hex", 10, 16)
+        ].join("-") : [
+          buf.toString("hex", 0, 4),
+          buf.toString("hex", 4, 6),
+          buf.toString("hex", 6, 8),
+          buf.toString("hex", 8, 10),
+          buf.toString("hex", 10, 16)
+        ].join("-");
+      }
     };
     module2.exports = FunctionHelper;
   }
@@ -36677,12 +38264,15 @@ var require_method_constants = __commonJS({
     module2.exports = [
       "with",
       "withRecursive",
+      "withMaterialized",
+      "withNotMaterialized",
       "select",
       "as",
       "columns",
       "column",
       "from",
       "fromJS",
+      "fromRaw",
       "into",
       "withSchema",
       "table",
@@ -36702,6 +38292,12 @@ var require_method_constants = __commonJS({
       "orWhere",
       "whereNot",
       "orWhereNot",
+      "whereLike",
+      "andWhereLike",
+      "orWhereLike",
+      "whereILike",
+      "andWhereILike",
+      "orWhereILike",
       "whereRaw",
       "whereWrapped",
       "havingWrapped",
@@ -36762,7 +38358,32 @@ var require_method_constants = __commonJS({
       "delete",
       "truncate",
       "transacting",
-      "connection"
+      "connection",
+      "jsonExtract",
+      "jsonSet",
+      "jsonInsert",
+      "jsonRemove",
+      "whereJsonObject",
+      "orWhereJsonObject",
+      "andWhereJsonObject",
+      "whereNotJsonObject",
+      "orWhereNotJsonObject",
+      "andWhereNotJsonObject",
+      "whereJsonPath",
+      "orWhereJsonPath",
+      "andWhereJsonPath",
+      "whereJsonSupersetOf",
+      "orWhereJsonSupersetOf",
+      "andWhereJsonSupersetOf",
+      "whereJsonNotSupersetOf",
+      "orWhereJsonNotSupersetOf",
+      "andWhereJsonNotSupersetOf",
+      "whereJsonSubsetOf",
+      "orWhereJsonSubsetOf",
+      "andWhereJsonSubsetOf",
+      "whereJsonNotSubsetOf",
+      "orWhereJsonNotSubsetOf",
+      "andWhereJsonNotSubsetOf"
     ];
   }
 });
@@ -36827,13 +38448,13 @@ var require_baseMergeDeep = __commonJS({
     var isTypedArray = require_isTypedArray();
     var safeGet = require_safeGet();
     var toPlainObject = require_toPlainObject();
-    function baseMergeDeep(object, source, key, srcIndex, mergeFunc, customizer, stack2) {
-      var objValue = safeGet(object, key), srcValue = safeGet(source, key), stacked = stack2.get(srcValue);
+    function baseMergeDeep(object, source, key, srcIndex, mergeFunc, customizer, stack) {
+      var objValue = safeGet(object, key), srcValue = safeGet(source, key), stacked = stack.get(srcValue);
       if (stacked) {
         assignMergeValue(object, key, stacked);
         return;
       }
-      var newValue = customizer ? customizer(objValue, srcValue, key + "", object, source, stack2) : void 0;
+      var newValue = customizer ? customizer(objValue, srcValue, key + "", object, source, stack) : void 0;
       var isCommon = newValue === void 0;
       if (isCommon) {
         var isArr = isArray(srcValue), isBuff = !isArr && isBuffer(srcValue), isTyped = !isArr && !isBuff && isTypedArray(srcValue);
@@ -36864,9 +38485,9 @@ var require_baseMergeDeep = __commonJS({
         }
       }
       if (isCommon) {
-        stack2.set(srcValue, newValue);
-        mergeFunc(newValue, srcValue, srcIndex, customizer, stack2);
-        stack2["delete"](srcValue);
+        stack.set(srcValue, newValue);
+        mergeFunc(newValue, srcValue, srcIndex, customizer, stack);
+        stack["delete"](srcValue);
       }
       assignMergeValue(object, key, newValue);
     }
@@ -36884,16 +38505,16 @@ var require_baseMerge = __commonJS({
     var isObject = require_isObject();
     var keysIn = require_keysIn();
     var safeGet = require_safeGet();
-    function baseMerge(object, source, srcIndex, customizer, stack2) {
+    function baseMerge(object, source, srcIndex, customizer, stack) {
       if (object === source) {
         return;
       }
       baseFor(source, function(srcValue, key) {
-        stack2 || (stack2 = new Stack());
+        stack || (stack = new Stack());
         if (isObject(srcValue)) {
-          baseMergeDeep(object, source, key, srcIndex, baseMerge, customizer, stack2);
+          baseMergeDeep(object, source, key, srcIndex, baseMerge, customizer, stack);
         } else {
-          var newValue = customizer ? customizer(safeGet(object, key), srcValue, key + "", object, source, stack2) : void 0;
+          var newValue = customizer ? customizer(safeGet(object, key), srcValue, key + "", object, source, stack) : void 0;
           if (newValue === void 0) {
             newValue = srcValue;
           }
@@ -37093,8 +38714,8 @@ var require_make_knex = __commonJS({
     ];
     for (const m of CONTEXT_METHODS) {
       KNEX_PROPERTY_DEFINITIONS[m] = {
-        value: function(...args2) {
-          return this.context[m](...args2);
+        value: function(...args) {
+          return this.context[m](...args);
         },
         configurable: true
       };
@@ -37290,7 +38911,7 @@ var require_finally_mixin = __commonJS({
 var require_transaction = __commonJS({
   "node_modules/knex/lib/execution/transaction.js"(exports2, module2) {
     var { EventEmitter } = require("events");
-    var Debug = require_src5();
+    var Debug = require_src6();
     var uniqueId = require_uniqueId();
     var { callbackify } = require("util");
     var makeKnex = require_make_knex();
@@ -37455,8 +39076,8 @@ var require_transaction = __commonJS({
       then(onResolve, onReject) {
         return this._promise.then(onResolve, onReject);
       }
-      catch(...args2) {
-        return this._promise.catch(...args2);
+      catch(...args) {
+        return this._promise.catch(...args);
       }
       asCallback(cb) {
         callbackify(() => this._promise)(cb);
@@ -37567,8 +39188,8 @@ var require_transaction = __commonJS({
 // node_modules/knex/lib/execution/internal/query-executioner.js
 var require_query_executioner = __commonJS({
   "node_modules/knex/lib/execution/internal/query-executioner.js"(exports2, module2) {
-    var _debugQuery = require_src5()("knex:query");
-    var debugBindings = require_src5()("knex:bindings");
+    var _debugQuery = require_src6()("knex:query");
+    var debugBindings = require_src6()("knex:bindings");
     var debugQuery = (sql, txId) => _debugQuery(sql.replace(/%/g, "%%"), txId);
     var { isString } = require_is();
     function formatQuery(sql, bindings, timeZone, client) {
@@ -37707,18 +39328,18 @@ var require_negate = __commonJS({
         throw new TypeError(FUNC_ERROR_TEXT);
       }
       return function() {
-        var args2 = arguments;
-        switch (args2.length) {
+        var args = arguments;
+        switch (args.length) {
           case 0:
             return !predicate.call(this);
           case 1:
-            return !predicate.call(this, args2[0]);
+            return !predicate.call(this, args[0]);
           case 2:
-            return !predicate.call(this, args2[0], args2[1]);
+            return !predicate.call(this, args[0], args[1]);
           case 3:
-            return !predicate.call(this, args2[0], args2[1], args2[2]);
+            return !predicate.call(this, args[0], args[1], args[2]);
         }
-        return !predicate.apply(this, args2);
+        return !predicate.apply(this, args);
       };
     }
     module2.exports = negate;
@@ -37888,7 +39509,8 @@ var require_constants2 = __commonJS({
       "pgnative",
       "redshift",
       "sqlite3",
-      "cockroachdb"
+      "cockroachdb",
+      "better-sqlite3"
     ].concat(Object.keys(CLIENT_ALIASES)));
     var DRIVER_NAMES = Object.freeze({
       MsSQL: "mssql",
@@ -37899,7 +39521,8 @@ var require_constants2 = __commonJS({
       PgNative: "pgnative",
       Redshift: "pg-redshift",
       SQLite: "sqlite3",
-      CockroachDB: "cockroachdb"
+      CockroachDB: "cockroachdb",
+      BetterSQLite3: "better-sqlite3"
     });
     var POOL_CONFIG_OPTIONS = Object.freeze([
       "maxWaitingClients",
@@ -37930,11 +39553,11 @@ var require_helpers = __commonJS({
     var isTypedArray = require_isTypedArray();
     var { CLIENT_ALIASES } = require_constants2();
     var { isFunction } = require_is();
-    function normalizeArr(...args2) {
-      if (Array.isArray(args2[0])) {
-        return args2[0];
+    function normalizeArr(...args) {
+      if (Array.isArray(args[0])) {
+        return args[0];
       }
-      return args2;
+      return args;
     }
     function containsUndefined(mixed) {
       let argContainsUndefined = false;
@@ -38068,11 +39691,26 @@ var require_joinclause = __commonJS({
         }
         return this;
       }
-      using(column) {
-        return this.clauses.push({ type: "onUsing", column, bool: this._bool() });
-      }
       orOn(first, operator, second) {
         return this._bool("or").on.apply(this, arguments);
+      }
+      onJsonPathEquals(columnFirst, jsonPathFirst, columnSecond, jsonPathSecond) {
+        this.clauses.push({
+          type: "onJsonPathEquals",
+          columnFirst,
+          jsonPathFirst,
+          columnSecond,
+          jsonPathSecond,
+          bool: this._bool(),
+          not: this._not()
+        });
+        return this;
+      }
+      orOnJsonPathEquals(columnFirst, jsonPathFirst, columnSecond, jsonPathSecond) {
+        return this._bool("or").onJsonPathEquals.apply(this, arguments);
+      }
+      using(column) {
+        return this.clauses.push({ type: "onUsing", column, bool: this._bool() });
       }
       onVal(first) {
         if (typeof first === "object" && typeof first.toSQL !== "function") {
@@ -38209,6 +39847,7 @@ var require_joinclause = __commonJS({
     JoinClause.prototype.andOnNotExists = JoinClause.prototype.onNotExists;
     JoinClause.prototype.andOnBetween = JoinClause.prototype.onBetween;
     JoinClause.prototype.andOnNotBetween = JoinClause.prototype.onNotBetween;
+    JoinClause.prototype.andOnJsonPathEquals = JoinClause.prototype.onJsonPathEquals;
     module2.exports = JoinClause;
   }
 });
@@ -38476,23 +40115,53 @@ var require_querybuilder = __commonJS({
         }
         return this;
       }
+      isValidStatementArg(statement) {
+        return typeof statement === "function" || statement instanceof Builder || statement && statement.isRawInstance;
+      }
+      _validateWithArgs(alias, statementOrColumnList, nothingOrStatement, method) {
+        const [query, columnList] = typeof nothingOrStatement === "undefined" ? [statementOrColumnList, void 0] : [nothingOrStatement, statementOrColumnList];
+        if (typeof alias !== "string") {
+          throw new Error(`${method}() first argument must be a string`);
+        }
+        if (this.isValidStatementArg(query) && typeof columnList === "undefined") {
+          return;
+        }
+        const isNonEmptyNameList = Array.isArray(columnList) && columnList.length > 0 && columnList.every((it) => typeof it === "string");
+        if (!isNonEmptyNameList) {
+          throw new Error(`${method}() second argument must be a statement or non-empty column name list.`);
+        }
+        if (this.isValidStatementArg(query)) {
+          return;
+        }
+        throw new Error(`${method}() third argument must be a function / QueryBuilder or a raw when its second argument is a column name list`);
+      }
       with(alias, statementOrColumnList, nothingOrStatement) {
-        validateWithArgs(alias, statementOrColumnList, nothingOrStatement, "with");
+        this._validateWithArgs(alias, statementOrColumnList, nothingOrStatement, "with");
         return this.withWrapped(alias, statementOrColumnList, nothingOrStatement);
       }
-      withWrapped(alias, statementOrColumnList, nothingOrStatement) {
+      withMaterialized(alias, statementOrColumnList, nothingOrStatement) {
+        throw new Error("With materialized is not supported by this dialect");
+      }
+      withNotMaterialized(alias, statementOrColumnList, nothingOrStatement) {
+        throw new Error("With materialized is not supported by this dialect");
+      }
+      withWrapped(alias, statementOrColumnList, nothingOrStatement, materialized) {
         const [query, columnList] = typeof nothingOrStatement === "undefined" ? [statementOrColumnList, void 0] : [nothingOrStatement, statementOrColumnList];
-        this._statements.push({
+        const statement = {
           grouping: "with",
           type: "withWrapped",
           alias,
           columnList,
           value: query
-        });
+        };
+        if (materialized !== void 0) {
+          statement.materialized = materialized;
+        }
+        this._statements.push(statement);
         return this;
       }
       withRecursive(alias, statementOrColumnList, nothingOrStatement) {
-        validateWithArgs(alias, statementOrColumnList, nothingOrStatement, "withRecursive");
+        this._validateWithArgs(alias, statementOrColumnList, nothingOrStatement, "withRecursive");
         return this.withRecursiveWrapped(alias, statementOrColumnList, nothingOrStatement);
       }
       withRecursiveWrapped(alias, statementOrColumnList, nothingOrStatement) {
@@ -38539,26 +40208,26 @@ var require_querybuilder = __commonJS({
         this._single.only = options.only === true;
         return this;
       }
-      distinct(...args2) {
+      distinct(...args) {
         this._statements.push({
           grouping: "columns",
-          value: normalizeArr(...args2),
+          value: normalizeArr(...args),
           distinct: true
         });
         return this;
       }
-      distinctOn(...args2) {
-        if (isEmpty(args2)) {
+      distinctOn(...args) {
+        if (isEmpty(args)) {
           throw new Error("distinctOn requires at least on argument");
         }
         this._statements.push({
           grouping: "columns",
-          value: normalizeArr(...args2),
+          value: normalizeArr(...args),
           distinctOn: true
         });
         return this;
       }
-      join(table, first, ...args2) {
+      join(table, first, ...args) {
         let join;
         const schema = table instanceof Builder || typeof table === "function" ? void 0 : this._single.schema;
         const joinType = this._joinType();
@@ -38570,38 +40239,41 @@ var require_querybuilder = __commonJS({
         } else {
           join = new JoinClause(table, joinType, schema);
           if (first) {
-            join.on(first, ...args2);
+            join.on(first, ...args);
           }
         }
         this._statements.push(join);
         return this;
       }
-      innerJoin(...args2) {
-        return this._joinType("inner").join(...args2);
+      using(tables) {
+        throw new Error("'using' function is only available in PostgreSQL dialect with Delete statements.");
       }
-      leftJoin(...args2) {
-        return this._joinType("left").join(...args2);
+      innerJoin(...args) {
+        return this._joinType("inner").join(...args);
       }
-      leftOuterJoin(...args2) {
-        return this._joinType("left outer").join(...args2);
+      leftJoin(...args) {
+        return this._joinType("left").join(...args);
       }
-      rightJoin(...args2) {
-        return this._joinType("right").join(...args2);
+      leftOuterJoin(...args) {
+        return this._joinType("left outer").join(...args);
       }
-      rightOuterJoin(...args2) {
-        return this._joinType("right outer").join(...args2);
+      rightJoin(...args) {
+        return this._joinType("right").join(...args);
       }
-      outerJoin(...args2) {
-        return this._joinType("outer").join(...args2);
+      rightOuterJoin(...args) {
+        return this._joinType("right outer").join(...args);
       }
-      fullOuterJoin(...args2) {
-        return this._joinType("full outer").join(...args2);
+      outerJoin(...args) {
+        return this._joinType("outer").join(...args);
       }
-      crossJoin(...args2) {
-        return this._joinType("cross").join(...args2);
+      fullOuterJoin(...args) {
+        return this._joinType("full outer").join(...args);
       }
-      joinRaw(...args2) {
-        return this._joinType("raw").join(...args2);
+      crossJoin(...args) {
+        return this._joinType("cross").join(...args);
+      }
+      joinRaw(...args) {
+        return this._joinType("raw").join(...args);
       }
       get or() {
         return this._bool("or");
@@ -38654,13 +40326,13 @@ var require_querybuilder = __commonJS({
         });
         return this;
       }
-      whereColumn(...args2) {
+      whereColumn(...args) {
         this._asColumnFlag = true;
-        this.where(...args2);
+        this.where(...args);
         this._asColumnFlag = false;
         return this;
       }
-      orWhere(column, ...args2) {
+      orWhere(column, ...args) {
         this._bool("or");
         const obj = column;
         if (isObject(obj) && !obj.isRawInstance) {
@@ -38670,9 +40342,9 @@ var require_querybuilder = __commonJS({
             }
           });
         }
-        return this.where(column, ...args2);
+        return this.where(column, ...args);
       }
-      orWhereColumn(column, ...args2) {
+      orWhereColumn(column, ...args) {
         this._bool("or");
         const obj = column;
         if (isObject(obj) && !obj.isRawInstance) {
@@ -38682,24 +40354,24 @@ var require_querybuilder = __commonJS({
             }
           });
         }
-        return this.whereColumn(column, ...args2);
+        return this.whereColumn(column, ...args);
       }
-      whereNot(column, ...args2) {
-        if (args2.length >= 1) {
-          if (args2[0] === "in" || args2[0] === "between") {
+      whereNot(column, ...args) {
+        if (args.length >= 2) {
+          if (args[0] === "in" || args[0] === "between") {
             this.client.logger.warn('whereNot is not suitable for "in" and "between" type subqueries. You should use "not in" and "not between" instead.');
           }
         }
-        return this._not(true).where(column, ...args2);
+        return this._not(true).where(column, ...args);
       }
-      whereNotColumn(...args2) {
-        return this._not(true).whereColumn(...args2);
+      whereNotColumn(...args) {
+        return this._not(true).whereColumn(...args);
       }
-      orWhereNot(...args2) {
-        return this._bool("or").whereNot(...args2);
+      orWhereNot(...args) {
+        return this._bool("or").whereNot(...args);
       }
-      orWhereNotColumn(...args2) {
-        return this._bool("or").whereNotColumn(...args2);
+      orWhereNotColumn(...args) {
+        return this._bool("or").whereNotColumn(...args);
       }
       _objectWhere(obj) {
         const boolVal = this._bool();
@@ -38815,6 +40487,30 @@ var require_querybuilder = __commonJS({
       orWhereNotBetween(column, values) {
         return this._bool("or").whereNotBetween(column, values);
       }
+      _whereLike(type, column, value) {
+        this._statements.push({
+          grouping: "where",
+          type,
+          column,
+          value,
+          not: this._not(),
+          bool: this._bool(),
+          asColumn: this._asColumnFlag
+        });
+        return this;
+      }
+      whereLike(column, value) {
+        return this._whereLike("whereLike", column, value);
+      }
+      orWhereLike(column, value) {
+        return this._bool("or")._whereLike("whereLike", column, value);
+      }
+      whereILike(column, value) {
+        return this._whereLike("whereILike", column, value);
+      }
+      orWhereILike(column, value) {
+        return this._bool("or")._whereLike("whereILike", column, value);
+      }
       groupBy(item) {
         if (item && item.isRawInstance) {
           return this.groupByRaw.apply(this, arguments);
@@ -38878,10 +40574,10 @@ var require_querybuilder = __commonJS({
         });
         return this;
       }
-      _union(clause, args2) {
-        let callbacks = args2[0];
-        let wrap = args2[1];
-        if (args2.length === 1 || args2.length === 2 && isBoolean(wrap)) {
+      _union(clause, args) {
+        let callbacks = args[0];
+        let wrap = args[1];
+        if (args.length === 1 || args.length === 2 && isBoolean(wrap)) {
           if (!Array.isArray(callbacks)) {
             callbacks = [callbacks];
           }
@@ -38894,8 +40590,8 @@ var require_querybuilder = __commonJS({
             });
           }
         } else {
-          callbacks = toArray(args2).slice(0, args2.length - 1);
-          wrap = args2[args2.length - 1];
+          callbacks = toArray(args).slice(0, args.length - 1);
+          wrap = args[args.length - 1];
           if (!isBoolean(wrap)) {
             callbacks.push(wrap);
             wrap = false;
@@ -38904,11 +40600,11 @@ var require_querybuilder = __commonJS({
         }
         return this;
       }
-      union(...args2) {
-        return this._union("union", args2);
+      union(...args) {
+        return this._union("union", args);
       }
-      unionAll(...args2) {
-        return this._union("union all", args2);
+      unionAll(...args) {
+        return this._union("union all", args);
       }
       intersect(callbacks, wrap) {
         if (arguments.length === 1 || arguments.length === 2 && isBoolean(wrap)) {
@@ -38952,7 +40648,7 @@ var require_querybuilder = __commonJS({
         });
         return this;
       }
-      orHaving(column, ...args2) {
+      orHaving(column, ...args) {
         this._bool("or");
         const obj = column;
         if (isObject(obj) && !obj.isRawInstance) {
@@ -38962,7 +40658,7 @@ var require_querybuilder = __commonJS({
             }
           });
         }
-        return this.having(column, ...args2);
+        return this.having(column, ...args);
       }
       havingWrapped(callback) {
         this._statements.push({
@@ -39070,7 +40766,15 @@ var require_querybuilder = __commonJS({
       orHavingRaw(sql, bindings) {
         return this._bool("or").havingRaw(sql, bindings);
       }
-      offset(value) {
+      _setSkipBinding(attribute, options) {
+        let skipBinding = options;
+        if (isObject(options)) {
+          skipBinding = options.skipBinding;
+        }
+        this._single.skipBinding = this._single.skipBinding || {};
+        this._single.skipBinding[attribute] = skipBinding;
+      }
+      offset(value, options) {
         if (value == null || value.isRawInstance || value instanceof Builder) {
           this._single.offset = value;
         } else {
@@ -39083,14 +40787,16 @@ var require_querybuilder = __commonJS({
             this._single.offset = val;
           }
         }
+        this._setSkipBinding("offset", options);
         return this;
       }
-      limit(value) {
+      limit(value, options) {
         const val = parseInt(value, 10);
         if (isNaN(val)) {
           this.client.logger.warn("A valid integer must be provided to limit");
         } else {
           this._single.limit = val;
+          this._setSkipBinding("limit", options);
         }
         return this;
       }
@@ -39149,11 +40855,11 @@ var require_querybuilder = __commonJS({
         this._single.counter = {};
         return this;
       }
-      first(...args2) {
+      first(...args) {
         if (this._method && this._method !== "select") {
           throw new Error(`Cannot chain .first() on "${this._method}" query`);
         }
-        this.select(normalizeArr(...args2));
+        this.select(normalizeArr(...args));
         this._method = "first";
         this.limit(1);
         return this;
@@ -39219,7 +40925,11 @@ var require_querybuilder = __commonJS({
         const obj = this._single.update || {};
         this._method = "update";
         if (isString(values)) {
-          obj[values] = returning;
+          if (isPlainObject(returning)) {
+            obj[values] = JSON.stringify(returning);
+          } else {
+            obj[values] = returning;
+          }
           if (arguments.length > 2) {
             ret = arguments[2];
           }
@@ -39270,7 +40980,11 @@ var require_querybuilder = __commonJS({
       }
       forUpdate(...tables) {
         this._single.lock = lockMode.forUpdate;
-        this._single.lockTables = tables;
+        if (tables.length === 1 && Array.isArray(tables[0])) {
+          this._single.lockTables = tables[0];
+        } else {
+          this._single.lockTables = tables;
+        }
         return this;
       }
       forShare(...tables) {
@@ -39327,12 +41041,150 @@ var require_querybuilder = __commonJS({
         });
         return this;
       }
+      fromRaw(sql, bindings) {
+        const raw = sql.isRawInstance ? sql : this.client.raw(sql, bindings);
+        return this.from(raw);
+      }
       modify(callback) {
         callback.apply(this, [this].concat(tail(arguments)));
         return this;
       }
       upsert(values, returning, options) {
         throw new Error(`Upsert is not yet supported for dialect ${this.client.dialect}`);
+      }
+      _json(nameFunction, params) {
+        this._statements.push({
+          grouping: "columns",
+          type: "json",
+          method: nameFunction,
+          params
+        });
+        return this;
+      }
+      jsonExtract() {
+        const column = arguments[0];
+        let path;
+        let alias;
+        let singleValue = true;
+        if (arguments.length >= 2) {
+          path = arguments[1];
+        }
+        if (arguments.length >= 3) {
+          alias = arguments[2];
+        }
+        if (arguments.length === 4) {
+          singleValue = arguments[3];
+        }
+        if (arguments.length === 2 && Array.isArray(arguments[0]) && isBoolean(arguments[1])) {
+          singleValue = arguments[1];
+        }
+        return this._json("jsonExtract", {
+          column,
+          path,
+          alias,
+          singleValue
+        });
+      }
+      jsonSet(column, path, value, alias) {
+        return this._json("jsonSet", {
+          column,
+          path,
+          value,
+          alias
+        });
+      }
+      jsonInsert(column, path, value, alias) {
+        return this._json("jsonInsert", {
+          column,
+          path,
+          value,
+          alias
+        });
+      }
+      jsonRemove(column, path, alias) {
+        return this._json("jsonRemove", {
+          column,
+          path,
+          alias
+        });
+      }
+      _isJsonObject(jsonValue) {
+        return isObject(jsonValue) && !(jsonValue instanceof Builder);
+      }
+      _whereJsonWrappedValue(type, column, value) {
+        const whereJsonClause = {
+          grouping: "where",
+          type,
+          column,
+          value,
+          not: this._not(),
+          bool: this._bool(),
+          asColumn: this._asColumnFlag
+        };
+        if (arguments[3]) {
+          whereJsonClause.operator = arguments[3];
+        }
+        if (arguments[4]) {
+          whereJsonClause.jsonPath = arguments[4];
+        }
+        this._statements.push(whereJsonClause);
+      }
+      whereJsonObject(column, value) {
+        this._whereJsonWrappedValue("whereJsonObject", column, value);
+        return this;
+      }
+      orWhereJsonObject(column, operator, value) {
+        return this._bool("or").whereJsonObject(column, operator, value);
+      }
+      whereNotJsonObject(column, value) {
+        this._not(true)._whereJsonWrappedValue("whereJsonObject", column, value);
+        return this;
+      }
+      orWhereNotJsonObject(column, operator, value) {
+        return this._not(true)._bool("or").whereJsonObject(column, operator, value);
+      }
+      whereJsonPath(column, path, operator, value) {
+        this._whereJsonWrappedValue("whereJsonPath", column, value, operator, path);
+        return this;
+      }
+      orWhereJsonPath(column, path, operator, value) {
+        return this._bool("or").whereJsonPath(column, path, operator, value);
+      }
+      whereJsonSupersetOf(column, value) {
+        this._whereJsonWrappedValue("whereJsonSupersetOf", column, value);
+        return this;
+      }
+      whereJsonNotSupersetOf(column, value) {
+        this._not(true).whereJsonSupersetOf(column, value);
+        return this;
+      }
+      orWhereJsonSupersetOf(column, value) {
+        this._whereJsonWrappedValue("whereJsonSupersetOf", column, value);
+        return this;
+      }
+      orWhereJsonNotSupersetOf(column, value) {
+        this._not(true)._bool("or").whereJsonSupersetOf(column, value);
+        return this;
+      }
+      whereJsonSubsetOf(column, value) {
+        this._whereJsonWrappedValue("whereJsonSubsetOf", column, value);
+        return this;
+      }
+      whereJsonNotSubsetOf(column, value) {
+        this._not(true).whereJsonSubsetOf(column, value);
+        return this;
+      }
+      orWhereJsonSubsetOf(column, value) {
+        this._whereJsonWrappedValue("whereJsonSubsetOf", column, value);
+        return this;
+      }
+      orWhereJsonNotSubsetOf(column, value) {
+        this._not(true)._bool("or").whereJsonSubsetOf(column, value);
+        return this;
+      }
+      whereJsonHasNone(column, values) {
+        this._not(true).whereJsonHasAll(column, values);
+        return this;
       }
       _analytic(alias, second, third) {
         let analytic;
@@ -39372,14 +41224,14 @@ var require_querybuilder = __commonJS({
         this._statements.push(analytic);
         return this;
       }
-      rank(...args2) {
-        return this._analyticMethod("rank")._analytic(...args2);
+      rank(...args) {
+        return this._analyticMethod("rank")._analytic(...args);
       }
-      denseRank(...args2) {
-        return this._analyticMethod("dense_rank")._analytic(...args2);
+      denseRank(...args) {
+        return this._analyticMethod("dense_rank")._analytic(...args);
       }
-      rowNumber(...args2) {
-        return this._analyticMethod("row_number")._analytic(...args2);
+      rowNumber(...args) {
+        return this._analyticMethod("row_number")._analytic(...args);
       }
       _counter(column, amount) {
         amount = parseFloat(amount);
@@ -39447,24 +41299,6 @@ var require_querybuilder = __commonJS({
         return LOCK_MODES.has(this._single.lock);
       }
     };
-    var isValidStatementArg = (statement) => typeof statement === "function" || statement instanceof Builder || statement && statement.isRawInstance;
-    var validateWithArgs = function(alias, statementOrColumnList, nothingOrStatement, method) {
-      const [query, columnList] = typeof nothingOrStatement === "undefined" ? [statementOrColumnList, void 0] : [nothingOrStatement, statementOrColumnList];
-      if (typeof alias !== "string") {
-        throw new Error(`${method}() first argument must be a string`);
-      }
-      if (isValidStatementArg(query) && typeof columnList === "undefined") {
-        return;
-      }
-      const isNonEmptyNameList = Array.isArray(columnList) && columnList.length > 0 && columnList.every((it) => typeof it === "string");
-      if (!isNonEmptyNameList) {
-        throw new Error(`${method}() second argument must be a statement or non-empty column name list.`);
-      }
-      if (isValidStatementArg(query)) {
-        return;
-      }
-      throw new Error(`${method}() third argument must be a function / QueryBuilder or a raw when its second argument is a column name list`);
-    };
     Builder.prototype.select = Builder.prototype.columns;
     Builder.prototype.column = Builder.prototype.columns;
     Builder.prototype.andWhereNot = Builder.prototype.whereNot;
@@ -39474,6 +41308,11 @@ var require_querybuilder = __commonJS({
     Builder.prototype.andWhereRaw = Builder.prototype.whereRaw;
     Builder.prototype.andWhereBetween = Builder.prototype.whereBetween;
     Builder.prototype.andWhereNotBetween = Builder.prototype.whereNotBetween;
+    Builder.prototype.andWhereJsonObject = Builder.prototype.whereJsonObject;
+    Builder.prototype.andWhereNotJsonObject = Builder.prototype.whereJsonObject;
+    Builder.prototype.andWhereJsonPath = Builder.prototype.whereJsonPath;
+    Builder.prototype.andWhereLike = Builder.prototype.whereLike;
+    Builder.prototype.andWhereILike = Builder.prototype.whereILike;
     Builder.prototype.andHaving = Builder.prototype.having;
     Builder.prototype.andHavingIn = Builder.prototype.havingIn;
     Builder.prototype.andHavingNotIn = Builder.prototype.havingNotIn;
@@ -39488,11 +41327,11 @@ var require_querybuilder = __commonJS({
     Builder.prototype.del = Builder.prototype.delete;
     augmentWithBuilderInterface(Builder);
     addQueryContext(Builder);
-    Builder.extend = (methodName, fn2) => {
+    Builder.extend = (methodName, fn) => {
       if (Object.prototype.hasOwnProperty.call(Builder.prototype, methodName)) {
         throw new Error(`Can't extend QueryBuilder with existing method ('${methodName}').`);
       }
-      assign(Builder.prototype, { [methodName]: fn2 });
+      assign(Builder.prototype, { [methodName]: fn });
     };
     var OnConflictBuilder = class {
       constructor(builder, columns) {
@@ -39927,7 +41766,7 @@ var require_nanoid = __commonJS({
 var require_raw2 = __commonJS({
   "node_modules/knex/lib/raw.js"(exports2, module2) {
     var { EventEmitter } = require("events");
-    var debug = require_src5();
+    var debug = require_src6();
     var assign = require_assign();
     var isPlainObject = require_isPlainObject();
     var reduce = require_reduce();
@@ -40249,7 +42088,7 @@ var require_querycompiler = __commonJS({
     var Raw = require_raw2();
     var QueryBuilder = require_querybuilder();
     var JoinClause = require_joinclause();
-    var debug = require_src5();
+    var debug = require_src6();
     var assign = require_assign();
     var compact = require_compact();
     var groupBy = require_groupBy();
@@ -40341,8 +42180,34 @@ var require_querycompiler = __commonJS({
       }
       select() {
         let sql = this.with();
-        const statements = components.map((component) => this[component](this));
-        sql += compact(statements).join(" ");
+        let unionStatement = "";
+        const firstStatements = [];
+        const endStatements = [];
+        components.forEach((component) => {
+          const statement = this[component](this);
+          switch (component) {
+            case "union":
+              unionStatement = statement;
+              break;
+            case "columns":
+            case "join":
+            case "where":
+              firstStatements.push(statement);
+              break;
+            default:
+              endStatements.push(statement);
+              break;
+          }
+        });
+        const wrapMainQuery = this.grouped.union && this.grouped.union.map((u) => u.wrap).some((u) => u);
+        if (this.onlyUnions()) {
+          const statements = compact(firstStatements.concat(endStatements)).join(" ");
+          sql += unionStatement + (statements ? " " + statements : "");
+        } else {
+          const allStatements = (wrapMainQuery ? "(" : "") + compact(firstStatements).join(" ") + (wrapMainQuery ? ")" : "");
+          const endStat = compact(endStatements).join(" ");
+          sql += allStatements + (unionStatement ? " " + unionStatement : "") + (endStat ? " " + endStat : endStat);
+        }
         return sql;
       }
       pluck() {
@@ -40357,7 +42222,25 @@ var require_querycompiler = __commonJS({
       }
       insert() {
         const insertValues = this.single.insert || [];
-        let sql = this.with() + `insert into ${this.tableName} `;
+        const sql = this.with() + `insert into ${this.tableName} `;
+        const body = this._insertBody(insertValues);
+        return body === "" ? "" : sql + body;
+      }
+      _onConflictClause(columns) {
+        return columns instanceof Raw ? this.formatter.wrap(columns) : `(${this.formatter.columnize(columns)})`;
+      }
+      _buildInsertValues(insertData) {
+        let sql = "";
+        let i = -1;
+        while (++i < insertData.values.length) {
+          if (i !== 0)
+            sql += "), (";
+          sql += this.client.parameterize(insertData.values[i], this.client.valueForUndefined, this.builder, this.bindingsHolder);
+        }
+        return sql;
+      }
+      _insertBody(insertValues) {
+        let sql = "";
         if (Array.isArray(insertValues)) {
           if (insertValues.length === 0) {
             return "";
@@ -40371,14 +42254,7 @@ var require_querycompiler = __commonJS({
         } else {
           if (insertData.columns.length) {
             sql += `(${columnize_(insertData.columns, this.builder, this.client, this.bindingsHolder)}`;
-            sql += ") values (";
-            let i = -1;
-            while (++i < insertData.values.length) {
-              if (i !== 0)
-                sql += "), (";
-              sql += this.client.parameterize(insertData.values[i], this.client.valueForUndefined, this.builder, this.bindingsHolder);
-            }
-            sql += ")";
+            sql += ") values (" + this._buildInsertValues(insertData) + ")";
           } else if (insertValues.length === 1 && insertValues[0]) {
             sql += this._emptyInsertValue;
           } else {
@@ -40422,6 +42298,8 @@ var require_querycompiler = __commonJS({
               sql.push(this.aggregateRaw(stmt));
             } else if (stmt.type === "analytic") {
               sql.push(this.analytic(stmt));
+            } else if (stmt.type === "json") {
+              sql.push(this.json(stmt));
             } else if (stmt.value && stmt.value.length > 0) {
               sql.push(columnize_(stmt.value, this.builder, this.client, this.bindingsHolder));
             }
@@ -40429,7 +42307,8 @@ var require_querycompiler = __commonJS({
         }
         if (sql.length === 0)
           sql = ["*"];
-        return `select ${hints}${distinctClause}` + sql.join(", ") + (this.tableName ? ` from ${this.single.only ? "only " : ""}${this.tableName}` : "");
+        const select = this.onlyJson() ? "" : "select ";
+        return `${select}${hints}${distinctClause}` + sql.join(", ") + (this.tableName ? ` from ${this.single.only ? "only " : ""}${this.tableName}` : "");
       }
       _aggregate(stmt, { aliasSeparator = " as ", distinctParentheses } = {}) {
         const value = stmt.value;
@@ -40489,6 +42368,9 @@ var require_querycompiler = __commonJS({
         const distinct = stmt.aggregateDistinct ? "distinct " : "";
         return `${stmt.method}(${distinct + unwrapRaw_(stmt.value, void 0, this.builder, this.client, this.bindingsHolder)})`;
       }
+      _joinTable(join) {
+        return join.schema && !(join.table instanceof Raw) ? `${join.schema}.${join.table}` : join.table;
+      }
       join() {
         let sql = "";
         let i = -1;
@@ -40497,7 +42379,7 @@ var require_querycompiler = __commonJS({
           return "";
         while (++i < joins.length) {
           const join = joins[i];
-          const table = join.schema && !(join.table instanceof Raw) ? `${join.schema}.${join.table}` : join.table;
+          const table = this._joinTable(join);
           if (i > 0)
             sql += " ";
           if (join.joinType === "raw") {
@@ -40533,7 +42415,13 @@ var require_querycompiler = __commonJS({
       onIn(statement) {
         if (Array.isArray(statement.column))
           return this.multiOnIn(statement);
-        return wrap_(statement.column, void 0, this.builder, this.client, this.bindingsHolder) + " " + this._not(statement, "in ") + this.wrap(this.client.parameterize(statement.value, void 0, this.builder, this.bindingsHolder));
+        let values;
+        if (statement.value instanceof Raw) {
+          values = this.client.parameter(statement.value, this.builder, this.formatter);
+        } else {
+          values = this.client.parameterize(statement.value, void 0, this.builder, this.bindingsHolder);
+        }
+        return wrap_(statement.column, void 0, this.builder, this.client, this.bindingsHolder) + " " + this._not(statement, "in ") + this.wrap(values);
       }
       multiOnIn(statement) {
         let i = -1, sql = `(${columnize_(statement.column, this.builder, this.client, this.bindingsHolder)}) `;
@@ -40620,14 +42508,7 @@ var require_querycompiler = __commonJS({
         return wrap_(statement.column, void 0, this.builder, this.client, this.bindingsHolder) + " " + this._not(statement, "in ") + this.wrap(this.client.parameterize(statement.value, void 0, this.builder, this.bindingsHolder));
       }
       multiHavingIn(statement) {
-        let i = -1, sql = `(${columnize_(statement.column, this.builder, this.client, this.bindingsHolder)}) `;
-        sql += this._not(statement, "in ") + "((";
-        while (++i < statement.value.length) {
-          if (i !== 0)
-            sql += "),(";
-          sql += this.client.parameterize(statement.value[i], void 0, this.builder, this.bindingsHolder);
-        }
-        return sql + "))";
+        return this.multiOnIn(statement);
       }
       union() {
         const onlyUnions = this.onlyUnions();
@@ -40643,28 +42524,38 @@ var require_querycompiler = __commonJS({
             sql += union.clause + " ";
           const statement = rawOrFn_(union.value, void 0, this.builder, this.client, this.bindingsHolder);
           if (statement) {
-            if (union.wrap)
+            const wrap = union.wrap;
+            if (wrap)
               sql += "(";
             sql += statement;
-            if (union.wrap)
+            if (wrap)
               sql += ")";
           }
         }
         return sql;
       }
       onlyUnions() {
-        return !this.grouped.columns && this.grouped.union && !this.tableName;
+        return (!this.grouped.columns || !!this.grouped.columns[0].value) && this.grouped.union && !this.tableName;
+      }
+      _getValueOrParameterFromAttribute(attribute, rawValue) {
+        if (this.single.skipBinding[attribute] === true) {
+          return rawValue !== void 0 && rawValue !== null ? rawValue : this.single[attribute];
+        }
+        return this.client.parameter(this.single[attribute], this.builder, this.bindingsHolder);
+      }
+      onlyJson() {
+        return !this.tableName && this.grouped.columns && this.grouped.columns.length === 1 && this.grouped.columns[0].type === "json";
       }
       limit() {
         const noLimit = !this.single.limit && this.single.limit !== 0;
         if (noLimit)
           return "";
-        return `limit ${this.client.parameter(this.single.limit, this.builder, this.bindingsHolder)}`;
+        return `limit ${this._getValueOrParameterFromAttribute("limit")}`;
       }
       offset() {
         if (!this.single.offset)
           return "";
-        return `offset ${this.client.parameter(this.single.offset, this.builder, this.bindingsHolder)}`;
+        return `offset ${this._getValueOrParameterFromAttribute("offset")}`;
       }
       del() {
         const { tableName } = this;
@@ -40717,7 +42608,8 @@ var require_querycompiler = __commonJS({
         return "";
       }
       onBasic(clause) {
-        return wrap_(clause.column, void 0, this.builder, this.client, this.bindingsHolder) + " " + operator_(clause.operator, this.builder, this.client, this.bindingsHolder) + " " + wrap_(clause.value, void 0, this.builder, this.client, this.bindingsHolder);
+        const toWrap = clause.value instanceof QueryBuilder;
+        return wrap_(clause.column, void 0, this.builder, this.client, this.bindingsHolder) + " " + operator_(clause.operator, this.builder, this.client, this.bindingsHolder) + " " + (toWrap ? "(" : "") + wrap_(clause.value, void 0, this.builder, this.client, this.bindingsHolder) + (toWrap ? ")" : "");
       }
       onVal(clause) {
         return wrap_(clause.column, void 0, this.builder, this.client, this.bindingsHolder) + " " + operator_(clause.operator, this.builder, this.client, this.bindingsHolder) + " " + this.client.parameter(clause.value, this.builder, this.bindingsHolder);
@@ -40728,21 +42620,33 @@ var require_querycompiler = __commonJS({
       onUsing(clause) {
         return "(" + columnize_(clause.column, this.builder, this.client, this.bindingsHolder) + ")";
       }
-      whereIn(statement) {
+      _valueClause(statement) {
+        return statement.asColumn ? wrap_(statement.value, void 0, this.builder, this.client, this.bindingsHolder) : this.client.parameter(statement.value, this.builder, this.bindingsHolder);
+      }
+      _columnClause(statement) {
         let columns;
         if (Array.isArray(statement.column)) {
           columns = `(${columnize_(statement.column, this.builder, this.client, this.bindingsHolder)})`;
         } else {
           columns = wrap_(statement.column, void 0, this.builder, this.client, this.bindingsHolder);
         }
+        return columns;
+      }
+      whereIn(statement) {
         const values = this.client.values(statement.value, this.builder, this.bindingsHolder);
-        return `${columns} ${this._not(statement, "in ")}${values}`;
+        return `${this._columnClause(statement)} ${this._not(statement, "in ")}${values}`;
+      }
+      whereLike(statement) {
+        return `${this._columnClause(statement)} ${this._not(statement, "like ")}${this._valueClause(statement)}`;
+      }
+      whereILike(statement) {
+        return `${this._columnClause(statement)} ${this._not(statement, "ilike ")}${this._valueClause(statement)}`;
       }
       whereNull(statement) {
         return wrap_(statement.column, void 0, this.builder, this.client, this.bindingsHolder) + " is " + this._not(statement, "null");
       }
       whereBasic(statement) {
-        return this._not(statement, "") + wrap_(statement.column, void 0, this.builder, this.client, this.bindingsHolder) + " " + operator_(statement.operator, this.builder, this.client, this.bindingsHolder) + " " + (statement.asColumn ? wrap_(statement.value, void 0, this.builder, this.client, this.bindingsHolder) : this.client.parameter(statement.value, this.builder, this.bindingsHolder));
+        return this._not(statement, "") + wrap_(statement.column, void 0, this.builder, this.client, this.bindingsHolder) + " " + operator_(statement.operator, this.builder, this.client, this.bindingsHolder) + " " + this._valueClause(statement);
       }
       whereExists(statement) {
         return this._not(statement, "exists") + " (" + rawOrFn_(statement.value, void 0, this.builder, this.client, this.bindingsHolder) + ")";
@@ -40757,10 +42661,30 @@ var require_querycompiler = __commonJS({
       whereRaw(statement) {
         return this._not(statement, "") + unwrapRaw_(statement.value, void 0, this.builder, this.client, this.bindingsHolder);
       }
+      _jsonWrapValue(jsonValue) {
+        if (!this.builder._isJsonObject(jsonValue)) {
+          try {
+            return JSON.stringify(JSON.parse(jsonValue.replace(/\n|\t/g, "")));
+          } catch (e) {
+            return jsonValue;
+          }
+        }
+        return JSON.stringify(jsonValue);
+      }
+      _jsonValueClause(statement) {
+        statement.value = this._jsonWrapValue(statement.value);
+        return this._valueClause(statement);
+      }
+      whereJsonObject(statement) {
+        return `${this._columnClause(statement)} ${statement.not ? "!=" : "="} ${this._jsonValueClause(statement)}`;
+      }
       wrap(str) {
         if (str.charAt(0) !== "(")
           return `(${str})`;
         return str;
+      }
+      json(stmt) {
+        return this[stmt.method](stmt.params);
       }
       analytic(stmt) {
         let sql = "";
@@ -40815,7 +42739,8 @@ var require_querycompiler = __commonJS({
       withWrapped(statement) {
         const val = rawOrFn_(statement.value, void 0, this.builder, this.client, this.bindingsHolder);
         const columnList = statement.columnList ? "(" + columnize_(statement.columnList, this.builder, this.client, this.bindingsHolder) + ")" : "";
-        return val && columnize_(statement.alias, this.builder, this.client, this.bindingsHolder) + columnList + " as (" + val + ")" || "";
+        const materialized = statement.materialized === void 0 ? "" : statement.materialized ? "materialized " : "not materialized ";
+        return val && columnize_(statement.alias, this.builder, this.client, this.bindingsHolder) + columnList + " as " + materialized + "(" + val + ")" || "";
       }
       _not(statement, str) {
         if (statement.not)
@@ -40900,22 +42825,38 @@ var require_querycompiler = __commonJS({
         } else if (nulls === "first") {
           nullOrder = " is not null";
         }
+        let groupOrder;
         if (value instanceof Raw) {
-          return unwrapRaw_(value, void 0, this.builder, this.client, this.bindingsHolder);
+          groupOrder = unwrapRaw_(value, void 0, this.builder, this.client, this.bindingsHolder);
         } else if (value instanceof QueryBuilder || nulls) {
-          return "(" + formatter.columnize(value) + nullOrder + ")";
+          groupOrder = "(" + formatter.columnize(value) + nullOrder + ")";
         } else {
-          return formatter.columnize(value);
+          groupOrder = formatter.columnize(value);
         }
+        return groupOrder;
+      }
+      _basicGroupOrder(item, type) {
+        const column = this._formatGroupsItemValue(item.value, item.nulls);
+        const direction = type === "order" && item.type !== "orderByRaw" ? ` ${direction_(item.direction, this.builder, this.client, this.bindingsHolder)}` : "";
+        return column + direction;
+      }
+      _groupOrder(item, type) {
+        return this._basicGroupOrder(item, type);
+      }
+      _groupOrderNulls(item, type) {
+        const column = this._formatGroupsItemValue(item.value);
+        const direction = type === "order" && item.type !== "orderByRaw" ? ` ${direction_(item.direction, this.builder, this.client, this.bindingsHolder)}` : "";
+        if (item.nulls && !(item.value instanceof Raw)) {
+          return `${column}${direction ? direction : ""} nulls ${item.nulls}`;
+        }
+        return column + direction;
       }
       _groupsOrders(type) {
         const items = this.grouped[type];
         if (!items)
           return "";
         const sql = items.map((item) => {
-          const column = this._formatGroupsItemValue(item.value, item.nulls);
-          const direction = type === "order" && item.type !== "orderByRaw" ? ` ${direction_(item.direction, this.builder, this.client, this.bindingsHolder)}` : "";
-          return column + direction;
+          return this._groupOrder(item, type);
         });
         return sql.length ? type + " by " + sql.join(", ") : "";
       }
@@ -40935,6 +42876,38 @@ var require_querycompiler = __commonJS({
         }
         return this._tableName;
       }
+      _jsonPathWrap(extraction) {
+        return this.client.parameter(extraction.path || extraction[1], this.builder, this.bindingsHolder);
+      }
+      _jsonExtract(nameFunction, params) {
+        let extractions;
+        if (Array.isArray(params.column)) {
+          extractions = params.column;
+        } else {
+          extractions = [params];
+        }
+        if (!Array.isArray(nameFunction)) {
+          nameFunction = [nameFunction];
+        }
+        return extractions.map((extraction) => {
+          let jsonCol = `${columnize_(extraction.column || extraction[0], this.builder, this.client, this.bindingsHolder)}, ${this._jsonPathWrap(extraction)}`;
+          nameFunction.forEach((f) => {
+            jsonCol = f + "(" + jsonCol + ")";
+          });
+          const alias = extraction.alias || extraction[2];
+          return alias ? this.client.alias(jsonCol, this.formatter.wrap(alias)) : jsonCol;
+        }).join(", ");
+      }
+      _jsonSet(nameFunction, params) {
+        const jsonSet = `${nameFunction}(${columnize_(params.column, this.builder, this.client, this.bindingsHolder)}, ${this.client.parameter(params.path, this.builder, this.bindingsHolder)}, ${this.client.parameter(params.value, this.builder, this.bindingsHolder)})`;
+        return params.alias ? this.client.alias(jsonSet, this.formatter.wrap(params.alias)) : jsonSet;
+      }
+      _whereJsonPath(nameFunction, statement) {
+        return `${nameFunction}(${this._columnClause(statement)}, ${this._jsonPathWrap({ path: statement.jsonPath })}) ${operator_(statement.operator, this.builder, this.client, this.bindingsHolder)} ${this._jsonValueClause(statement)}`;
+      }
+      _onJsonPathEquals(nameJoinFunction, clause) {
+        return nameJoinFunction + "(" + wrap_(clause.columnFirst, void 0, this.builder, this.client, this.bindingsHolder) + ", " + this.client.parameter(clause.jsonPathFirst, this.builder, this.bindingsHolder) + ") = " + nameJoinFunction + "(" + wrap_(clause.columnSecond, void 0, this.builder, this.client, this.bindingsHolder) + ", " + this.client.parameter(clause.jsonPathSecond, this.builder, this.bindingsHolder) + ")";
+      }
     };
     module2.exports = QueryCompiler;
   }
@@ -40945,6 +42918,7 @@ var require_builder = __commonJS({
   "node_modules/knex/lib/schema/builder.js"(exports2, module2) {
     var { EventEmitter } = require("events");
     var toArray = require_toArray();
+    var assign = require_assign();
     var { addQueryContext } = require_helpers();
     var saveAsyncStack = require_save_async_stack();
     var {
@@ -41027,6 +43001,12 @@ var require_builder = __commonJS({
         return this;
       };
     });
+    SchemaBuilder.extend = (methodName, fn) => {
+      if (Object.prototype.hasOwnProperty.call(SchemaBuilder.prototype, methodName)) {
+        throw new Error(`Can't extend SchemaBuilder with existing method ('${methodName}').`);
+      }
+      assign(SchemaBuilder.prototype, { [methodName]: fn });
+    };
     augmentWithBuilderInterface(SchemaBuilder);
     addQueryContext(SchemaBuilder);
     module2.exports = SchemaBuilder;
@@ -41052,9 +43032,9 @@ var require_helpers2 = __commonJS({
       this.bindings = [];
       this.formatter.bindings = this.bindings;
     }
-    function pushAdditional(fn2) {
+    function pushAdditional(fn) {
       const child = new this.constructor(this.client, this.tableCompiler, this.columnBuilder);
-      fn2.call(child, tail(arguments));
+      fn.call(child, tail(arguments));
       this.sequence.additional = (this.sequence.additional || []).concat(child.sequence);
     }
     function unshiftQuery(query) {
@@ -41154,6 +43134,7 @@ var require_compiler = __commonJS({
         return {
           pre: [],
           sql: Array.isArray(generatedCommands) ? generatedCommands : [generatedCommands],
+          check: null,
           post: []
         };
       }
@@ -41186,20 +43167,20 @@ var require_compiler = __commonJS({
     }
     function buildTable(type) {
       if (type === "createLike") {
-        return function(tableName, tableNameLike, fn2) {
-          const builder = this.client.tableBuilder(type, tableName, tableNameLike, fn2);
+        return function(tableName, tableNameLike, fn) {
+          const builder = this.client.tableBuilder(type, tableName, tableNameLike, fn);
           build.call(this, builder);
         };
       } else {
-        return function(tableName, fn2) {
-          const builder = this.client.tableBuilder(type, tableName, null, fn2);
+        return function(tableName, fn) {
+          const builder = this.client.tableBuilder(type, tableName, null, fn);
           build.call(this, builder);
         };
       }
     }
     function buildView(type) {
-      return function(viewName, fn2) {
-        const builder = this.client.viewBuilder(type, viewName, fn2);
+      return function(viewName, fn) {
+        const builder = this.client.viewBuilder(type, viewName, fn);
         build.call(this, builder);
       };
     }
@@ -41213,18 +43194,39 @@ var require_compiler = __commonJS({
   }
 });
 
+// node_modules/lodash/assignIn.js
+var require_assignIn = __commonJS({
+  "node_modules/lodash/assignIn.js"(exports2, module2) {
+    var copyObject = require_copyObject();
+    var createAssigner = require_createAssigner();
+    var keysIn = require_keysIn();
+    var assignIn = createAssigner(function(object, source) {
+      copyObject(source, keysIn(source), object);
+    });
+    module2.exports = assignIn;
+  }
+});
+
+// node_modules/lodash/extend.js
+var require_extend = __commonJS({
+  "node_modules/lodash/extend.js"(exports2, module2) {
+    module2.exports = require_assignIn();
+  }
+});
+
 // node_modules/knex/lib/schema/tablebuilder.js
 var require_tablebuilder = __commonJS({
   "node_modules/knex/lib/schema/tablebuilder.js"(exports2, module2) {
     var each = require_each();
     var extend = require_extend();
+    var assign = require_assign();
     var toArray = require_toArray();
     var helpers = require_helpers();
-    var { isString, isFunction } = require_is();
+    var { isString, isFunction, isObject } = require_is();
     var TableBuilder = class {
-      constructor(client, method, tableName, tableNameLike, fn2) {
+      constructor(client, method, tableName, tableNameLike, fn) {
         this.client = client;
-        this._fn = fn2;
+        this._fn = fn;
         this._method = method;
         this._schemaName = void 0;
         this._tableName = tableName;
@@ -41247,16 +43249,18 @@ var require_tablebuilder = __commonJS({
         }
         return this.client.tableCompiler(this).toSQL();
       }
-      timestamps() {
-        const method = arguments[0] === true ? "timestamp" : "datetime";
-        const createdAt = this[method]("created_at");
-        const updatedAt = this[method]("updated_at");
-        if (arguments[1] === true) {
+      timestamps(useTimestamps, defaultToNow, useCamelCase) {
+        if (isObject(useTimestamps)) {
+          ({ useTimestamps, defaultToNow, useCamelCase } = useTimestamps);
+        }
+        const method = useTimestamps === true ? "timestamp" : "datetime";
+        const createdAt = this[method](useCamelCase ? "createdAt" : "created_at");
+        const updatedAt = this[method](useCamelCase ? "updatedAt" : "updated_at");
+        if (defaultToNow === true) {
           const now = this.client.raw("CURRENT_TIMESTAMP");
           createdAt.notNullable().defaultTo(now);
           updatedAt.notNullable().defaultTo(now);
         }
-        return;
       }
       comment(value) {
         if (typeof value !== "string") {
@@ -41329,6 +43333,13 @@ var require_tablebuilder = __commonJS({
           }
         };
         return returnObj;
+      }
+      check(checkPredicate, bindings, constraintName) {
+        this._statements.push({
+          grouping: "checks",
+          args: [checkPredicate, bindings, constraintName]
+        });
+        return this;
       }
     };
     [
@@ -41425,8 +43436,8 @@ var require_tablebuilder = __commonJS({
     ];
     columnTypes.forEach((type) => {
       TableBuilder.prototype[type] = function() {
-        const args2 = toArray(arguments);
-        const builder = this.client.columnBuilder(this, type, args2);
+        const args = toArray(arguments);
+        const builder = this.client.columnBuilder(this, type, args);
         this._statements.push({
           grouping: "columns",
           builder
@@ -41444,7 +43455,7 @@ var require_tablebuilder = __commonJS({
         return this;
       },
       dropTimestamps() {
-        return this.dropColumns(["created_at", "updated_at"]);
+        return this.dropColumns(arguments[0] === true ? ["createdAt", "updatedAt"] : ["created_at", "updated_at"]);
       },
       setNullable(column) {
         this._statements.push({
@@ -41453,6 +43464,20 @@ var require_tablebuilder = __commonJS({
           args: [column]
         });
         return this;
+      },
+      check(checkPredicate, bindings, constraintName) {
+        this._statements.push({
+          grouping: "alterTable",
+          method: "check",
+          args: [checkPredicate, bindings, constraintName]
+        });
+      },
+      dropChecks() {
+        this._statements.push({
+          grouping: "alterTable",
+          method: "dropChecks",
+          args: toArray(arguments)
+        });
       },
       dropNullable(column) {
         this._statements.push({
@@ -41470,6 +43495,12 @@ var require_tablebuilder = __commonJS({
         args: toArray(arguments)
       });
       return this;
+    };
+    TableBuilder.extend = (methodName, fn) => {
+      if (Object.prototype.hasOwnProperty.call(TableBuilder.prototype, methodName)) {
+        throw new Error(`Can't extend TableBuilder with existing method ('${methodName}').`);
+      }
+      assign(TableBuilder.prototype, { [methodName]: fn });
     };
     module2.exports = TableBuilder;
   }
@@ -41509,6 +43540,7 @@ var require_tablecompiler = __commonJS({
     var indexOf = require_indexOf();
     var isEmpty = require_isEmpty();
     var tail = require_tail();
+    var { normalizeArr } = require_helpers();
     var TableCompiler = class {
       constructor(client, tableBuilder) {
         this.client = client;
@@ -41526,6 +43558,7 @@ var require_tablecompiler = __commonJS({
         this.bindingsHolder = this;
         this.sequence = [];
         this._formatting = client.config && client.config.formatting;
+        this.checksCount = 0;
       }
       toSQL() {
         this[this.method]();
@@ -41575,9 +43608,9 @@ var require_tablecompiler = __commonJS({
           const onDelete = foreignData.onDelete ? (this.lowerCase ? " on delete " : " ON DELETE ") + foreignData.onDelete : "";
           const deferrable = foreignData.deferrable ? this.lowerCase ? ` deferrable initially ${foreignData.deferrable.toLowerCase()} ` : ` DEFERRABLE INITIALLY ${foreignData.deferrable.toUpperCase()} ` : "";
           if (this.lowerCase) {
-            this.pushQuery((!this.forCreate ? `alter table ${this.tableName()} add ` : "") + "constraint " + keyName + " foreign key (" + column + ") references " + inTable + " (" + references + ")" + deferrable + onUpdate + onDelete);
+            this.pushQuery((!this.forCreate ? `alter table ${this.tableName()} add ` : "") + "constraint " + keyName + " foreign key (" + column + ") references " + inTable + " (" + references + ")" + onUpdate + onDelete + deferrable);
           } else {
-            this.pushQuery((!this.forCreate ? `ALTER TABLE ${this.tableName()} ADD ` : "") + "CONSTRAINT " + keyName + " FOREIGN KEY (" + column + ") REFERENCES " + inTable + " (" + references + ")" + deferrable + onUpdate + onDelete);
+            this.pushQuery((!this.forCreate ? `ALTER TABLE ${this.tableName()} ADD ` : "") + "CONSTRAINT " + keyName + " FOREIGN KEY (" + column + ") REFERENCES " + inTable + " (" + references + ")" + onUpdate + onDelete + deferrable);
           }
         }
       }
@@ -41715,12 +43748,47 @@ var require_tablecompiler = __commonJS({
       dropNullable(column) {
         return this._setNullableState(column, false);
       }
+      dropChecks(checkConstraintNames) {
+        if (checkConstraintNames === void 0)
+          return "";
+        checkConstraintNames = normalizeArr(checkConstraintNames);
+        const tableName = this.tableName();
+        const sql = `alter table ${tableName} ${checkConstraintNames.map((constraint) => `drop constraint ${constraint}`).join(", ")}`;
+        this.pushQuery(sql);
+      }
+      check(checkPredicate, bindings, constraintName) {
+        const tableName = this.tableName();
+        let checkConstraint = constraintName;
+        if (!checkConstraint) {
+          this.checksCount++;
+          checkConstraint = tableName + "_" + this.checksCount;
+        }
+        const sql = `alter table ${tableName} add constraint ${checkConstraint} check(${checkPredicate})`;
+        this.pushQuery(sql);
+      }
+      _addChecks() {
+        if (this.grouped.checks) {
+          return ", " + this.grouped.checks.map((c) => {
+            return `${c.args[2] ? "constraint " + c.args[2] + " " : ""}check (${this.client.raw(c.args[0], c.args[1])})`;
+          }).join(", ");
+        }
+        return "";
+      }
       _indexCommand(type, tableName, columns) {
         if (!Array.isArray(columns))
           columns = columns ? [columns] : [];
         const table = tableName.replace(/\.|-/g, "_");
         const indexName = (table + "_" + columns.join("_") + "_" + type).toLowerCase();
         return this.formatter.wrap(indexName);
+      }
+      _getPrimaryKeys() {
+        return (this.grouped.alterTable || []).filter((a) => a.method === "primary").flatMap((a) => a.args).flat();
+      }
+      _canBeAddPrimaryKey(options) {
+        return options.primaryKey && this._getPrimaryKeys().length === 0;
+      }
+      _getIncrementsColumnNames() {
+        return this.grouped.columns.filter((c) => c.builder._type === "increments").map((c) => c.builder._args[0]);
       }
     };
     TableCompiler.prototype.pushQuery = pushQuery;
@@ -41740,17 +43808,18 @@ var require_tablecompiler = __commonJS({
 var require_columnbuilder = __commonJS({
   "node_modules/knex/lib/schema/columnbuilder.js"(exports2, module2) {
     var extend = require_extend();
+    var assign = require_assign();
     var toArray = require_toArray();
     var { addQueryContext } = require_helpers();
     var ColumnBuilder = class {
-      constructor(client, tableBuilder, type, args2) {
+      constructor(client, tableBuilder, type, args) {
         this.client = client;
         this._method = "add";
         this._single = {};
         this._modifiers = {};
         this._statements = [];
         this._type = columnAlias[type] || type;
-        this._args = args2;
+        this._args = args;
         this._tableBuilder = tableBuilder;
         if (tableBuilder._method === "alter") {
           extend(this, AlterMethods);
@@ -41769,7 +43838,15 @@ var require_columnbuilder = __commonJS({
       "first",
       "after",
       "comment",
-      "collate"
+      "collate",
+      "check",
+      "checkPositive",
+      "checkNegative",
+      "checkIn",
+      "checkNotIn",
+      "checkBetween",
+      "checkLength",
+      "checkRegex"
     ];
     var aliasMethod = {
       default: "defaultTo",
@@ -41794,6 +43871,12 @@ var require_columnbuilder = __commonJS({
         return this;
       };
     });
+    ColumnBuilder.extend = (methodName, fn) => {
+      if (Object.prototype.hasOwnProperty.call(ColumnBuilder.prototype, methodName)) {
+        throw new Error(`Can't extend ColumnBuilder with existing method ('${methodName}').`);
+      }
+      assign(ColumnBuilder.prototype, { [methodName]: fn });
+    };
     var AlterMethods = {};
     AlterMethods.drop = function() {
       this._single.drop = true;
@@ -41806,8 +43889,13 @@ var require_columnbuilder = __commonJS({
       });
       return this;
     };
-    AlterMethods.alter = function() {
+    AlterMethods.alter = function({
+      alterNullable = true,
+      alterType = true
+    } = {}) {
       this._method = "alter";
+      this.alterNullable = alterNullable;
+      this.alterType = alterType;
       return this;
     };
     var columnAlias = {
@@ -41848,6 +43936,7 @@ var require_columncompiler = __commonJS({
     var tail = require_tail();
     var { toNumber } = require_helpers();
     var { formatDefault } = require_formatterUtils();
+    var { operator: operator_ } = require_wrappingFormatter();
     var ColumnCompiler = class {
       constructor(client, tableCompiler, columnBuilder) {
         this.client = client;
@@ -41865,6 +43954,10 @@ var require_columncompiler = __commonJS({
         this.bindingsHolder = this;
         this.sequence = [];
         this.modifiers = [];
+        this.checksCount = 0;
+      }
+      _addCheckModifiers() {
+        this.modifiers.push("check", "checkPositive", "checkNegative", "checkIn", "checkNotIn", "checkBetween", "checkLength", "checkRegex");
       }
       defaults(label) {
         if (Object.prototype.hasOwnProperty.call(this._defaultMap, label)) {
@@ -41932,6 +44025,59 @@ var require_columncompiler = __commonJS({
       defaultTo(value) {
         return `default ${formatDefault(value, this.type, this.client)}`;
       }
+      increments(options = { primaryKey: true }) {
+        return "integer not null" + (this.tableCompiler._canBeAddPrimaryKey(options) ? " primary key" : "") + " autoincrement";
+      }
+      bigincrements(options = { primaryKey: true }) {
+        return this.increments(options);
+      }
+      _pushAlterCheckQuery(checkPredicate, constraintName) {
+        let checkName = constraintName;
+        if (!checkName) {
+          this.checksCount++;
+          checkName = this.tableCompiler.tableNameRaw + "_" + this.getColumnName() + "_" + this.checksCount;
+        }
+        this.pushAdditional(function() {
+          this.pushQuery(`alter table ${this.tableCompiler.tableName()} add constraint ${checkName} check(${checkPredicate})`);
+        });
+      }
+      _checkConstraintName(constraintName) {
+        return constraintName ? `constraint ${constraintName} ` : "";
+      }
+      _check(checkPredicate, constraintName) {
+        if (this.columnBuilder._method === "alter") {
+          this._pushAlterCheckQuery(checkPredicate, constraintName);
+          return "";
+        }
+        return `${this._checkConstraintName(constraintName)}check (${checkPredicate})`;
+      }
+      checkPositive(constraintName) {
+        return this._check(`${this.formatter.wrap(this.getColumnName())} ${operator_(">", this.columnBuilder, this.bindingsHolder)} 0`, constraintName);
+      }
+      checkNegative(constraintName) {
+        return this._check(`${this.formatter.wrap(this.getColumnName())} ${operator_("<", this.columnBuilder, this.bindingsHolder)} 0`, constraintName);
+      }
+      _checkIn(values, constraintName, not) {
+        return this._check(`${this.formatter.wrap(this.getColumnName())} ${not ? "not " : ""}in (${values.map((v) => this.client._escapeBinding(v)).join(",")})`, constraintName);
+      }
+      checkIn(values, constraintName) {
+        return this._checkIn(values, constraintName);
+      }
+      checkNotIn(values, constraintName) {
+        return this._checkIn(values, constraintName, true);
+      }
+      checkBetween(intervals, constraintName) {
+        if (intervals.length === 2 && !Array.isArray(intervals[0]) && !Array.isArray(intervals[1])) {
+          intervals = [intervals];
+        }
+        const intervalChecks = intervals.map((interval) => {
+          return `${this.formatter.wrap(this.getColumnName())} between ${this.client._escapeBinding(interval[0])} and ${this.client._escapeBinding(interval[1])}`;
+        }).join(" or ");
+        return this._check(intervalChecks, constraintName);
+      }
+      checkLength(operator, length, constraintName) {
+        return this._check(`length(${this.formatter.wrap(this.getColumnName())}) ${operator_(operator, this.columnBuilder, this.bindingsHolder)} ${toNumber(length)}`, constraintName);
+      }
     };
     ColumnCompiler.prototype.binary = "blob";
     ColumnCompiler.prototype.bool = "boolean";
@@ -41944,9 +44090,7 @@ var require_columncompiler = __commonJS({
     ColumnCompiler.prototype.point = "point";
     ColumnCompiler.prototype.enu = "varchar";
     ColumnCompiler.prototype.bit = ColumnCompiler.prototype.json = "text";
-    ColumnCompiler.prototype.uuid = "char(36)";
-    ColumnCompiler.prototype.increments = ({ primaryKey = true } = {}) => "integer not null" + (primaryKey ? " primary key" : "") + " autoincrement";
-    ColumnCompiler.prototype.bigincrements = ({ primaryKey = true } = {}) => "integer not null" + (primaryKey ? " primary key" : "") + " autoincrement";
+    ColumnCompiler.prototype.uuid = ({ useBinaryUuid = false } = {}) => useBinaryUuid ? "binary(16)" : "char(36)";
     ColumnCompiler.prototype.integer = ColumnCompiler.prototype.smallint = ColumnCompiler.prototype.mediumint = "integer";
     ColumnCompiler.prototype.biginteger = "bigint";
     ColumnCompiler.prototype.text = "text";
@@ -42027,13 +44171,14 @@ var require_viewbuilder = __commonJS({
   "node_modules/knex/lib/schema/viewbuilder.js"(exports2, module2) {
     var helpers = require_helpers();
     var extend = require_extend();
+    var assign = require_assign();
     var ViewBuilder = class {
-      constructor(client, method, viewName, fn2) {
+      constructor(client, method, viewName, fn) {
         this.client = client;
         this._method = method;
         this._schemaName = void 0;
         this._columns = void 0;
-        this._fn = fn2;
+        this._fn = fn;
         this._viewName = viewName;
         this._statements = [];
         this._single = {};
@@ -42088,6 +44233,12 @@ var require_viewbuilder = __commonJS({
       }
     };
     helpers.addQueryContext(ViewBuilder);
+    ViewBuilder.extend = (methodName, fn) => {
+      if (Object.prototype.hasOwnProperty.call(ViewBuilder.prototype, methodName)) {
+        throw new Error(`Can't extend ViewBuilder with existing method ('${methodName}').`);
+      }
+      assign(ViewBuilder.prototype, { [methodName]: fn });
+    };
     module2.exports = ViewBuilder;
   }
 });
@@ -42130,12 +44281,9 @@ var require_viewcompiler = __commonJS({
         throw new Error("materialized views are not supported by this dialect.");
       }
       createQuery(columns, selectQuery, materialized, replace) {
-        const createStatement = "create " + (materialized ? "materialized " : "") + "view " + (replace ? "or replace " : "");
-        const formatColumns = [];
-        for (const c of columns) {
-          formatColumns.push(columnize_(c, this.viewBuilder, this.client, this.bindingsHolder));
-        }
-        let sql = createStatement + this.viewName() + " (" + formatColumns.join(", ") + ")";
+        const createStatement = "create " + (materialized ? "materialized " : "") + (replace ? "or replace " : "") + "view ";
+        const columnList = columns ? " (" + columnize_(columns, this.viewBuilder, this.client, this.bindingsHolder) + ")" : "";
+        let sql = createStatement + this.viewName() + columnList;
         sql += " as ";
         sql += selectQuery.toString();
         switch (this.single.checkOption) {
@@ -42229,7 +44377,8 @@ var require_client2 = __commonJS({
     var { POOL_CONFIG_OPTIONS } = require_constants2();
     var ViewBuilder = require_viewbuilder();
     var ViewCompiler = require_viewcompiler();
-    var debug = require_src5()("knex:client");
+    var isPlainObject = require_isPlainObject();
+    var debug = require_src6()("knex:client");
     var Client = class extends EventEmitter {
       constructor(config = {}) {
         super();
@@ -42278,11 +44427,11 @@ var require_client2 = __commonJS({
       schemaCompiler(builder) {
         return new SchemaCompiler(this, builder);
       }
-      tableBuilder(type, tableName, tableNameLike, fn2) {
-        return new TableBuilder(this, type, tableName, tableNameLike, fn2);
+      tableBuilder(type, tableName, tableNameLike, fn) {
+        return new TableBuilder(this, type, tableName, tableNameLike, fn);
       }
-      viewBuilder(type, viewBuilder, fn2) {
-        return new ViewBuilder(this, type, viewBuilder, fn2);
+      viewBuilder(type, viewBuilder, fn) {
+        return new ViewBuilder(this, type, viewBuilder, fn);
       }
       tableCompiler(tableBuilder) {
         return new TableCompiler(this, tableBuilder);
@@ -42290,8 +44439,8 @@ var require_client2 = __commonJS({
       viewCompiler(viewCompiler) {
         return new ViewCompiler(this, viewCompiler);
       }
-      columnBuilder(tableBuilder, type, args2) {
-        return new ColumnBuilder(this, tableBuilder, type, args2);
+      columnBuilder(tableBuilder, type, args) {
+        return new ColumnBuilder(this, tableBuilder, type, args);
       }
       columnCompiler(tableBuilder, columnBuilder) {
         return new ColumnCompiler(this, tableBuilder, columnBuilder);
@@ -42344,12 +44493,12 @@ var require_client2 = __commonJS({
         try {
           this.driver = this._driver();
         } catch (e) {
-          const message2 = `Knex: run
+          const message = `Knex: run
 $ npm install ${this.driverName} --save`;
-          this.logger.error(`${message2}
+          this.logger.error(`${message}
 ${e.message}
 ${e.stack}`);
-          throw new Error(`${message2}
+          throw new Error(`${message}
 ${e.message}`);
         }
       }
@@ -42498,7 +44647,11 @@ ${e.message}`);
         while (++i < values.length) {
           if (i > 0)
             str += ", ";
-          str += this.parameter(values[i] === void 0 ? notSetValue : values[i], builder, bindingsHolder);
+          let value = values[i];
+          if (isPlainObject(value)) {
+            value = JSON.stringify(value);
+          }
+          str += this.parameter(value === void 0 ? notSetValue : value, builder, bindingsHolder);
         }
         return str;
       }
@@ -42515,6 +44668,9 @@ ${e.message}`);
         return this.parameter(values, builder, bindingsHolder);
       }
       processPassedConnection(connection) {
+      }
+      toPathForJson(jsonPath) {
+        return jsonPath;
       }
     };
     Object.assign(Client.prototype, {
@@ -42687,91 +44843,1946 @@ var require_parse_connection = __commonJS({
   }
 });
 
-// node_modules/knex/lib/knex-builder/internal/config-resolver.js
-var require_config_resolver = __commonJS({
-  "node_modules/knex/lib/knex-builder/internal/config-resolver.js"(exports2, module2) {
-    var Client = require_client2();
-    var { SUPPORTED_CLIENTS } = require_constants2();
-    var parseConnection = require_parse_connection();
-    var { resolveClientNameWithAliases } = require_helpers();
-    function resolveConfig(config) {
-      let Dialect;
-      let resolvedConfig;
-      const parsedConfig = typeof config === "string" ? Object.assign(parseConnection(config), arguments[2]) : config;
-      if (arguments.length === 0 || !parsedConfig.client && !parsedConfig.dialect) {
-        Dialect = Client;
-      } else if (typeof parsedConfig.client === "function") {
-        Dialect = parsedConfig.client;
-      } else {
-        const clientName = parsedConfig.client || parsedConfig.dialect;
-        if (!SUPPORTED_CLIENTS.includes(clientName)) {
-          throw new Error(`knex: Unknown configuration option 'client' value ${clientName}. Note that it is case-sensitive, check documentation for supported values.`);
+// node_modules/knex/lib/dialects/sqlite3/execution/sqlite-transaction.js
+var require_sqlite_transaction = __commonJS({
+  "node_modules/knex/lib/dialects/sqlite3/execution/sqlite-transaction.js"(exports2, module2) {
+    var Transaction = require_transaction();
+    var Transaction_Sqlite = class extends Transaction {
+      begin(conn) {
+        if (this.isolationLevel) {
+          this.client.logger.warn("sqlite3 only supports serializable transactions, ignoring the isolation level param");
         }
-        const resolvedClientName = resolveClientNameWithAliases(clientName);
-        Dialect = require(`../../dialects/${resolvedClientName}/index.js`);
+        return this.query(conn, "BEGIN;");
       }
-      if (typeof parsedConfig.connection === "string") {
-        resolvedConfig = Object.assign({}, parsedConfig, {
-          connection: parseConnection(parsedConfig.connection).connection
+    };
+    module2.exports = Transaction_Sqlite;
+  }
+});
+
+// node_modules/knex/lib/dialects/sqlite3/query/sqlite-querycompiler.js
+var require_sqlite_querycompiler = __commonJS({
+  "node_modules/knex/lib/dialects/sqlite3/query/sqlite-querycompiler.js"(exports2, module2) {
+    var constant = require_constant();
+    var each = require_each();
+    var identity = require_identity();
+    var isEmpty = require_isEmpty();
+    var reduce = require_reduce();
+    var QueryCompiler = require_querycompiler();
+    var noop = require_noop();
+    var { isString } = require_is();
+    var {
+      wrapString,
+      columnize: columnize_
+    } = require_wrappingFormatter();
+    var emptyStr = constant("");
+    var QueryCompiler_SQLite3 = class extends QueryCompiler {
+      constructor(client, builder, formatter) {
+        super(client, builder, formatter);
+        this.forShare = emptyStr;
+        this.forKeyShare = emptyStr;
+        this.forUpdate = emptyStr;
+        this.forNoKeyUpdate = emptyStr;
+      }
+      insert() {
+        const insertValues = this.single.insert || [];
+        let sql = this.with() + `insert into ${this.tableName} `;
+        if (Array.isArray(insertValues)) {
+          if (insertValues.length === 0) {
+            return "";
+          } else if (insertValues.length === 1 && insertValues[0] && isEmpty(insertValues[0])) {
+            return {
+              sql: sql + this._emptyInsertValue
+            };
+          }
+        } else if (typeof insertValues === "object" && isEmpty(insertValues)) {
+          return {
+            sql: sql + this._emptyInsertValue
+          };
+        }
+        const insertData = this._prepInsert(insertValues);
+        if (isString(insertData)) {
+          return {
+            sql: sql + insertData
+          };
+        }
+        if (insertData.columns.length === 0) {
+          return {
+            sql: ""
+          };
+        }
+        sql += `(${this.formatter.columnize(insertData.columns)})`;
+        if (this.client.valueForUndefined !== null) {
+          insertData.values.forEach((bindings) => {
+            each(bindings, (binding) => {
+              if (binding === void 0)
+                throw new TypeError("`sqlite` does not support inserting default values. Specify values explicitly or use the `useNullAsDefault` config flag. (see docs http://knexjs.org/#Builder-insert).");
+            });
+          });
+        }
+        if (insertData.values.length === 1) {
+          const parameters = this.client.parameterize(insertData.values[0], this.client.valueForUndefined, this.builder, this.bindingsHolder);
+          sql += ` values (${parameters})`;
+          const { onConflict: onConflict2, ignore: ignore2, merge: merge2 } = this.single;
+          if (onConflict2 && ignore2)
+            sql += this._ignore(onConflict2);
+          else if (onConflict2 && merge2) {
+            sql += this._merge(merge2.updates, onConflict2, insertValues);
+            const wheres = this.where();
+            if (wheres)
+              sql += ` ${wheres}`;
+          }
+          const { returning: returning2 } = this.single;
+          if (returning2) {
+            sql += this._returning(returning2);
+          }
+          return {
+            sql,
+            returning: returning2
+          };
+        }
+        const blocks = [];
+        let i = -1;
+        while (++i < insertData.values.length) {
+          let i2 = -1;
+          const block = blocks[i] = [];
+          let current = insertData.values[i];
+          current = current === void 0 ? this.client.valueForUndefined : current;
+          while (++i2 < insertData.columns.length) {
+            block.push(this.client.alias(this.client.parameter(current[i2], this.builder, this.bindingsHolder), this.formatter.wrap(insertData.columns[i2])));
+          }
+          blocks[i] = block.join(", ");
+        }
+        sql += " select " + blocks.join(" union all select ");
+        const { onConflict, ignore, merge } = this.single;
+        if (onConflict && ignore)
+          sql += " where true" + this._ignore(onConflict);
+        else if (onConflict && merge) {
+          sql += " where true" + this._merge(merge.updates, onConflict, insertValues);
+        }
+        const { returning } = this.single;
+        if (returning)
+          sql += this._returning(returning);
+        return {
+          sql,
+          returning
+        };
+      }
+      _ignore(columns) {
+        if (columns === true) {
+          return " on conflict do nothing";
+        }
+        return ` on conflict ${this._onConflictClause(columns)} do nothing`;
+      }
+      _merge(updates, columns, insert) {
+        let sql = ` on conflict ${this._onConflictClause(columns)} do update set `;
+        if (updates && Array.isArray(updates)) {
+          sql += updates.map((column) => wrapString(column.split(".").pop(), this.formatter.builder, this.client, this.formatter)).map((column) => `${column} = excluded.${column}`).join(", ");
+          return sql;
+        } else if (updates && typeof updates === "object") {
+          const updateData = this._prepUpdate(updates);
+          if (typeof updateData === "string") {
+            sql += updateData;
+          } else {
+            sql += updateData.join(",");
+          }
+          return sql;
+        } else {
+          const insertData = this._prepInsert(insert);
+          if (typeof insertData === "string") {
+            throw new Error("If using merge with a raw insert query, then updates must be provided");
+          }
+          sql += insertData.columns.map((column) => wrapString(column.split(".").pop(), this.builder, this.client)).map((column) => `${column} = excluded.${column}`).join(", ");
+          return sql;
+        }
+      }
+      _returning(value) {
+        return value ? ` returning ${this.formatter.columnize(value)}` : "";
+      }
+      truncate() {
+        const { table } = this.single;
+        return {
+          sql: `delete from ${this.tableName}`,
+          output() {
+            return this.query({
+              sql: `delete from sqlite_sequence where name = '${table}'`
+            }).catch(noop);
+          }
+        };
+      }
+      columnInfo() {
+        const column = this.single.columnInfo;
+        const table = this.client.customWrapIdentifier(this.single.table, identity);
+        return {
+          sql: `PRAGMA table_info(\`${table}\`)`,
+          output(resp) {
+            const maxLengthRegex = /.*\((\d+)\)/;
+            const out = reduce(resp, function(columns, val) {
+              let { type } = val;
+              let maxLength = type.match(maxLengthRegex);
+              if (maxLength) {
+                maxLength = maxLength[1];
+              }
+              type = maxLength ? type.split("(")[0] : type;
+              columns[val.name] = {
+                type: type.toLowerCase(),
+                maxLength,
+                nullable: !val.notnull,
+                defaultValue: val.dflt_value
+              };
+              return columns;
+            }, {});
+            return column && out[column] || out;
+          }
+        };
+      }
+      limit() {
+        const noLimit = !this.single.limit && this.single.limit !== 0;
+        if (noLimit && !this.single.offset)
+          return "";
+        this.single.limit = noLimit ? -1 : this.single.limit;
+        return `limit ${this._getValueOrParameterFromAttribute("limit")}`;
+      }
+      jsonExtract(params) {
+        return this._jsonExtract("json_extract", params);
+      }
+      jsonSet(params) {
+        return this._jsonSet("json_set", params);
+      }
+      jsonInsert(params) {
+        return this._jsonSet("json_insert", params);
+      }
+      jsonRemove(params) {
+        const jsonCol = `json_remove(${columnize_(params.column, this.builder, this.client, this.bindingsHolder)},${this.client.parameter(params.path, this.builder, this.bindingsHolder)})`;
+        return params.alias ? this.client.alias(jsonCol, this.formatter.wrap(params.alias)) : jsonCol;
+      }
+      whereJsonPath(statement) {
+        return this._whereJsonPath("json_extract", statement);
+      }
+      whereJsonSupersetOf(statement) {
+        throw new Error("Json superset where clause not actually supported by SQLite");
+      }
+      whereJsonSubsetOf(statement) {
+        throw new Error("Json subset where clause not actually supported by SQLite");
+      }
+      onJsonPathEquals(clause) {
+        return this._onJsonPathEquals("json_extract", clause);
+      }
+    };
+    module2.exports = QueryCompiler_SQLite3;
+  }
+});
+
+// node_modules/lodash/_baseSome.js
+var require_baseSome = __commonJS({
+  "node_modules/lodash/_baseSome.js"(exports2, module2) {
+    var baseEach = require_baseEach();
+    function baseSome(collection, predicate) {
+      var result;
+      baseEach(collection, function(value, index, collection2) {
+        result = predicate(value, index, collection2);
+        return !result;
+      });
+      return !!result;
+    }
+    module2.exports = baseSome;
+  }
+});
+
+// node_modules/lodash/some.js
+var require_some = __commonJS({
+  "node_modules/lodash/some.js"(exports2, module2) {
+    var arraySome = require_arraySome();
+    var baseIteratee = require_baseIteratee();
+    var baseSome = require_baseSome();
+    var isArray = require_isArray();
+    var isIterateeCall = require_isIterateeCall();
+    function some(collection, predicate, guard) {
+      var func = isArray(collection) ? arraySome : baseSome;
+      if (guard && isIterateeCall(collection, predicate, guard)) {
+        predicate = void 0;
+      }
+      return func(collection, baseIteratee(predicate, 3));
+    }
+    module2.exports = some;
+  }
+});
+
+// node_modules/knex/lib/dialects/sqlite3/schema/sqlite-compiler.js
+var require_sqlite_compiler = __commonJS({
+  "node_modules/knex/lib/dialects/sqlite3/schema/sqlite-compiler.js"(exports2, module2) {
+    var SchemaCompiler = require_compiler();
+    var some = require_some();
+    var SchemaCompiler_SQLite3 = class extends SchemaCompiler {
+      constructor(client, builder) {
+        super(client, builder);
+      }
+      hasTable(tableName) {
+        const sql = `select * from sqlite_master where type = 'table' and name = ${this.client.parameter(this.formatter.wrap(tableName).replace(/`/g, ""), this.builder, this.bindingsHolder)}`;
+        this.pushQuery({ sql, output: (resp) => resp.length > 0 });
+      }
+      hasColumn(tableName, column) {
+        this.pushQuery({
+          sql: `PRAGMA table_info(${this.formatter.wrap(tableName)})`,
+          output(resp) {
+            return some(resp, (col) => {
+              return this.client.wrapIdentifier(col.name.toLowerCase()) === this.client.wrapIdentifier(column.toLowerCase());
+            });
+          }
         });
-      } else {
-        resolvedConfig = Object.assign({}, parsedConfig);
       }
-      return {
-        resolvedConfig,
-        Dialect
-      };
+      renameTable(from, to) {
+        this.pushQuery(`alter table ${this.formatter.wrap(from)} rename to ${this.formatter.wrap(to)}`);
+      }
+      async generateDdlCommands() {
+        const sequence = this.builder._sequence;
+        for (let i = 0, l = sequence.length; i < l; i++) {
+          const query = sequence[i];
+          this[query.method].apply(this, query.args);
+        }
+        const commandSources = this.sequence;
+        if (commandSources.length === 1 && commandSources[0].statementsProducer) {
+          return commandSources[0].statementsProducer();
+        } else {
+          const result = [];
+          for (const commandSource of commandSources) {
+            const command = commandSource.sql;
+            if (Array.isArray(command)) {
+              result.push(...command);
+            } else {
+              result.push(command);
+            }
+          }
+          return { pre: [], sql: result, check: null, post: [] };
+        }
+      }
+    };
+    module2.exports = SchemaCompiler_SQLite3;
+  }
+});
+
+// node_modules/knex/lib/dialects/sqlite3/schema/sqlite-columncompiler.js
+var require_sqlite_columncompiler = __commonJS({
+  "node_modules/knex/lib/dialects/sqlite3/schema/sqlite-columncompiler.js"(exports2, module2) {
+    var ColumnCompiler = require_columncompiler();
+    var ColumnCompiler_SQLite3 = class extends ColumnCompiler {
+      constructor() {
+        super(...arguments);
+        this.modifiers = ["nullable", "defaultTo"];
+        this._addCheckModifiers();
+      }
+      enu(allowed) {
+        return `text check (${this.formatter.wrap(this.args[0])} in ('${allowed.join("', '")}'))`;
+      }
+      _pushAlterCheckQuery(checkPredicate, constraintName) {
+        throw new Error(`Alter table with to add constraints is not permitted in SQLite`);
+      }
+      checkRegex(regexes, constraintName) {
+        return this._check(`${this.formatter.wrap(this.getColumnName())} REGEXP ${this.client._escapeBinding(regexes)}`, constraintName);
+      }
+    };
+    ColumnCompiler_SQLite3.prototype.json = "json";
+    ColumnCompiler_SQLite3.prototype.jsonb = "json";
+    ColumnCompiler_SQLite3.prototype.double = ColumnCompiler_SQLite3.prototype.decimal = ColumnCompiler_SQLite3.prototype.floating = "float";
+    ColumnCompiler_SQLite3.prototype.timestamp = "datetime";
+    ColumnCompiler_SQLite3.prototype.increments = ColumnCompiler_SQLite3.prototype.bigincrements = "integer not null primary key autoincrement";
+    module2.exports = ColumnCompiler_SQLite3;
+  }
+});
+
+// node_modules/lodash/filter.js
+var require_filter = __commonJS({
+  "node_modules/lodash/filter.js"(exports2, module2) {
+    var arrayFilter = require_arrayFilter();
+    var baseFilter = require_baseFilter();
+    var baseIteratee = require_baseIteratee();
+    var isArray = require_isArray();
+    function filter(collection, predicate) {
+      var func = isArray(collection) ? arrayFilter : baseFilter;
+      return func(collection, baseIteratee(predicate, 3));
+    }
+    module2.exports = filter;
+  }
+});
+
+// node_modules/knex/lib/dialects/sqlite3/schema/sqlite-tablecompiler.js
+var require_sqlite_tablecompiler = __commonJS({
+  "node_modules/knex/lib/dialects/sqlite3/schema/sqlite-tablecompiler.js"(exports2, module2) {
+    var filter = require_filter();
+    var values = require_values();
+    var identity = require_identity();
+    var { isObject } = require_is();
+    var TableCompiler = require_tablecompiler();
+    var { formatDefault } = require_formatterUtils();
+    var TableCompiler_SQLite3 = class extends TableCompiler {
+      constructor() {
+        super(...arguments);
+      }
+      createQuery(columns, ifNot, like) {
+        const createStatement = ifNot ? "create table if not exists " : "create table ";
+        let sql = createStatement + this.tableName();
+        if (like && this.tableNameLike()) {
+          sql += " as select * from " + this.tableNameLike() + " where 0=1";
+        } else {
+          sql += " (" + columns.sql.join(", ");
+          sql += this.foreignKeys() || "";
+          sql += this.primaryKeys() || "";
+          sql += this._addChecks();
+          sql += ")";
+        }
+        this.pushQuery(sql);
+        if (like) {
+          this.addColumns(columns, this.addColumnsPrefix);
+        }
+      }
+      addColumns(columns, prefix, colCompilers) {
+        if (prefix === this.alterColumnsPrefix) {
+          const compiler = this;
+          const columnsInfo = colCompilers.map((col) => {
+            const name = this.client.customWrapIdentifier(col.getColumnName(), identity, col.columnBuilder.queryContext());
+            const type = col.getColumnType();
+            const defaultTo = col.modified["defaultTo"] ? formatDefault(col.modified["defaultTo"][0], type, this.client) : null;
+            const notNull = col.modified["nullable"] && col.modified["nullable"][0] === false;
+            return { name, type, defaultTo, notNull };
+          });
+          this.pushQuery({
+            sql: `PRAGMA table_info(${this.tableName()})`,
+            statementsProducer(pragma, connection) {
+              return compiler.client.ddl(compiler, pragma, connection).alterColumn(columnsInfo);
+            }
+          });
+        } else {
+          for (let i = 0, l = columns.sql.length; i < l; i++) {
+            this.pushQuery({
+              sql: `alter table ${this.tableName()} add column ${columns.sql[i]}`,
+              bindings: columns.bindings[i]
+            });
+          }
+        }
+      }
+      dropUnique(columns, indexName) {
+        indexName = indexName ? this.formatter.wrap(indexName) : this._indexCommand("unique", this.tableNameRaw, columns);
+        this.pushQuery(`drop index ${indexName}`);
+      }
+      dropForeign(columns, indexName) {
+        const compiler = this;
+        columns = Array.isArray(columns) ? columns : [columns];
+        columns = columns.map((column) => this.client.customWrapIdentifier(column, identity));
+        indexName = this.client.customWrapIdentifier(indexName, identity);
+        this.pushQuery({
+          sql: `PRAGMA table_info(${this.tableName()})`,
+          output(pragma) {
+            return compiler.client.ddl(compiler, pragma, this.connection).dropForeign(columns, indexName);
+          }
+        });
+      }
+      dropPrimary(constraintName) {
+        const compiler = this;
+        constraintName = this.client.customWrapIdentifier(constraintName, identity);
+        this.pushQuery({
+          sql: `PRAGMA table_info(${this.tableName()})`,
+          output(pragma) {
+            return compiler.client.ddl(compiler, pragma, this.connection).dropPrimary(constraintName);
+          }
+        });
+      }
+      dropIndex(columns, indexName) {
+        indexName = indexName ? this.formatter.wrap(indexName) : this._indexCommand("index", this.tableNameRaw, columns);
+        this.pushQuery(`drop index ${indexName}`);
+      }
+      unique(columns, indexName) {
+        let deferrable;
+        if (isObject(indexName)) {
+          ({ indexName, deferrable } = indexName);
+        }
+        if (deferrable && deferrable !== "not deferrable") {
+          this.client.logger.warn(`sqlite3: unique index \`${indexName}\` will not be deferrable ${deferrable} because sqlite3 does not support deferred constraints.`);
+        }
+        indexName = indexName ? this.formatter.wrap(indexName) : this._indexCommand("unique", this.tableNameRaw, columns);
+        columns = this.formatter.columnize(columns);
+        this.pushQuery(`create unique index ${indexName} on ${this.tableName()} (${columns})`);
+      }
+      index(columns, indexName, options) {
+        indexName = indexName ? this.formatter.wrap(indexName) : this._indexCommand("index", this.tableNameRaw, columns);
+        columns = this.formatter.columnize(columns);
+        let predicate;
+        if (isObject(options)) {
+          ({ predicate } = options);
+        }
+        const predicateQuery = predicate ? " " + this.client.queryCompiler(predicate).where() : "";
+        this.pushQuery(`create index ${indexName} on ${this.tableName()} (${columns})${predicateQuery}`);
+      }
+      primary(columns, constraintName) {
+        const compiler = this;
+        columns = Array.isArray(columns) ? columns : [columns];
+        columns = columns.map((column) => this.client.customWrapIdentifier(column, identity));
+        let deferrable;
+        if (isObject(constraintName)) {
+          ({ constraintName, deferrable } = constraintName);
+        }
+        if (deferrable && deferrable !== "not deferrable") {
+          this.client.logger.warn(`sqlite3: primary key constraint \`${constraintName}\` will not be deferrable ${deferrable} because sqlite3 does not support deferred constraints.`);
+        }
+        constraintName = this.client.customWrapIdentifier(constraintName, identity);
+        if (this.method !== "create" && this.method !== "createIfNot") {
+          this.pushQuery({
+            sql: `PRAGMA table_info(${this.tableName()})`,
+            output(pragma) {
+              return compiler.client.ddl(compiler, pragma, this.connection).primary(columns, constraintName);
+            }
+          });
+        }
+      }
+      foreign(foreignInfo) {
+        const compiler = this;
+        if (this.method !== "create" && this.method !== "createIfNot") {
+          foreignInfo.column = Array.isArray(foreignInfo.column) ? foreignInfo.column : [foreignInfo.column];
+          foreignInfo.column = foreignInfo.column.map((column) => this.client.customWrapIdentifier(column, identity));
+          foreignInfo.inTable = this.client.customWrapIdentifier(foreignInfo.inTable, identity);
+          foreignInfo.references = Array.isArray(foreignInfo.references) ? foreignInfo.references : [foreignInfo.references];
+          foreignInfo.references = foreignInfo.references.map((column) => this.client.customWrapIdentifier(column, identity));
+          this.pushQuery({
+            sql: `PRAGMA table_info(${this.tableName()})`,
+            statementsProducer(pragma, connection) {
+              return compiler.client.ddl(compiler, pragma, connection).foreign(foreignInfo);
+            }
+          });
+        }
+      }
+      primaryKeys() {
+        const pks = filter(this.grouped.alterTable || [], { method: "primary" });
+        if (pks.length > 0 && pks[0].args.length > 0) {
+          const columns = pks[0].args[0];
+          let constraintName = pks[0].args[1] || "";
+          if (constraintName) {
+            constraintName = " constraint " + this.formatter.wrap(constraintName);
+          }
+          const needUniqueCols = this.grouped.columns.filter((t) => t.builder._type === "increments").length > 0;
+          return `,${constraintName} ${needUniqueCols ? "unique" : "primary key"} (${this.formatter.columnize(columns)})`;
+        }
+      }
+      foreignKeys() {
+        let sql = "";
+        const foreignKeys = filter(this.grouped.alterTable || [], {
+          method: "foreign"
+        });
+        for (let i = 0, l = foreignKeys.length; i < l; i++) {
+          const foreign = foreignKeys[i].args[0];
+          const column = this.formatter.columnize(foreign.column);
+          const references = this.formatter.columnize(foreign.references);
+          const foreignTable = this.formatter.wrap(foreign.inTable);
+          let constraintName = foreign.keyName || "";
+          if (constraintName) {
+            constraintName = " constraint " + this.formatter.wrap(constraintName);
+          }
+          sql += `,${constraintName} foreign key(${column}) references ${foreignTable}(${references})`;
+          if (foreign.onDelete)
+            sql += ` on delete ${foreign.onDelete}`;
+          if (foreign.onUpdate)
+            sql += ` on update ${foreign.onUpdate}`;
+        }
+        return sql;
+      }
+      createTableBlock() {
+        return this.getColumns().concat().join(",");
+      }
+      renameColumn(from, to) {
+        this.pushQuery({
+          sql: `alter table ${this.tableName()} rename ${this.formatter.wrap(from)} to ${this.formatter.wrap(to)}`
+        });
+      }
+      _setNullableState(column, isNullable) {
+        const compiler = this;
+        this.pushQuery({
+          sql: `PRAGMA table_info(${this.tableName()})`,
+          statementsProducer(pragma, connection) {
+            return compiler.client.ddl(compiler, pragma, connection).setNullable(column, isNullable);
+          }
+        });
+      }
+      dropColumn() {
+        const compiler = this;
+        const columns = values(arguments);
+        const columnsWrapped = columns.map((column) => this.client.customWrapIdentifier(column, identity));
+        this.pushQuery({
+          sql: `PRAGMA table_info(${this.tableName()})`,
+          output(pragma) {
+            return compiler.client.ddl(compiler, pragma, this.connection).dropColumn(columnsWrapped);
+          }
+        });
+      }
+    };
+    module2.exports = TableCompiler_SQLite3;
+  }
+});
+
+// node_modules/knex/lib/dialects/sqlite3/schema/sqlite-viewcompiler.js
+var require_sqlite_viewcompiler = __commonJS({
+  "node_modules/knex/lib/dialects/sqlite3/schema/sqlite-viewcompiler.js"(exports2, module2) {
+    var ViewCompiler = require_viewcompiler();
+    var {
+      columnize: columnize_
+    } = require_wrappingFormatter();
+    var ViewCompiler_SQLite3 = class extends ViewCompiler {
+      constructor(client, viewCompiler) {
+        super(client, viewCompiler);
+      }
+      createOrReplace() {
+        const columns = this.columns;
+        const selectQuery = this.selectQuery.toString();
+        const viewName = this.viewName();
+        const columnList = columns ? " (" + columnize_(columns, this.viewBuilder, this.client, this.bindingsHolder) + ")" : "";
+        const dropSql = `drop view if exists ${viewName}`;
+        const createSql = `create view ${viewName}${columnList} as ${selectQuery}`;
+        this.pushQuery({
+          sql: dropSql
+        });
+        this.pushQuery({
+          sql: createSql
+        });
+      }
+    };
+    module2.exports = ViewCompiler_SQLite3;
+  }
+});
+
+// node_modules/knex/lib/dialects/sqlite3/schema/internal/sqlite-ddl-operations.js
+var require_sqlite_ddl_operations = __commonJS({
+  "node_modules/knex/lib/dialects/sqlite3/schema/internal/sqlite-ddl-operations.js"(exports2, module2) {
+    function copyData(sourceTable, targetTable, columns) {
+      return `INSERT INTO "${targetTable}" SELECT ${columns === void 0 ? "*" : columns.map((column) => `"${column}"`).join(", ")} FROM "${sourceTable}";`;
+    }
+    function dropOriginal(tableName) {
+      return `DROP TABLE "${tableName}"`;
+    }
+    function renameTable(tableName, alteredName) {
+      return `ALTER TABLE "${tableName}" RENAME TO "${alteredName}"`;
+    }
+    function getTableSql(tableName) {
+      return `SELECT type, sql FROM sqlite_master WHERE (type='table' OR (type='index' AND sql IS NOT NULL)) AND tbl_name='${tableName}'`;
+    }
+    function isForeignCheckEnabled() {
+      return `PRAGMA foreign_keys`;
+    }
+    function setForeignCheck(enable) {
+      return `PRAGMA foreign_keys = ${enable ? "ON" : "OFF"}`;
+    }
+    function executeForeignCheck() {
+      return `PRAGMA foreign_key_check`;
     }
     module2.exports = {
-      resolveConfig
+      copyData,
+      dropOriginal,
+      renameTable,
+      getTableSql,
+      isForeignCheckEnabled,
+      setForeignCheck,
+      executeForeignCheck
     };
   }
 });
 
-// node_modules/knex/lib/knex-builder/Knex.js
-var require_Knex = __commonJS({
-  "node_modules/knex/lib/knex-builder/Knex.js"(exports2, module2) {
-    var Client = require_client2();
-    var QueryBuilder = require_querybuilder();
-    var QueryInterface = require_method_constants();
-    var makeKnex = require_make_knex();
-    var { KnexTimeoutError } = require_timeout();
-    var { resolveConfig } = require_config_resolver();
-    function knex2(config) {
-      const { resolvedConfig, Dialect } = resolveConfig(...arguments);
-      const newKnex = makeKnex(new Dialect(resolvedConfig));
-      if (resolvedConfig.userParams) {
-        newKnex.userParams = resolvedConfig.userParams;
+// node_modules/knex/lib/dialects/sqlite3/schema/internal/tokenizer.js
+var require_tokenizer = __commonJS({
+  "node_modules/knex/lib/dialects/sqlite3/schema/internal/tokenizer.js"(exports2, module2) {
+    function tokenize(text, tokens) {
+      const compiledRegex = new RegExp(Object.entries(tokens).map(([type, regex]) => `(?<${type}>${regex.source})`).join("|"), "yi");
+      let index = 0;
+      const ast = [];
+      while (index < text.length) {
+        compiledRegex.lastIndex = index;
+        const result = text.match(compiledRegex);
+        if (result !== null) {
+          const [type, text2] = Object.entries(result.groups).find(([name, group]) => group !== void 0);
+          index += text2.length;
+          if (!type.startsWith("_")) {
+            ast.push({ type, text: text2 });
+          }
+        } else {
+          throw new Error(`No matching tokenizer rule found at: [${text.substring(index)}]`);
+        }
       }
-      return newKnex;
+      return ast;
     }
-    knex2.Client = Client;
-    knex2.KnexTimeoutError = KnexTimeoutError;
-    knex2.QueryBuilder = {
-      extend: function(methodName, fn2) {
-        QueryBuilder.extend(methodName, fn2);
-        QueryInterface.push(methodName);
+    module2.exports = {
+      tokenize
+    };
+  }
+});
+
+// node_modules/knex/lib/dialects/sqlite3/schema/internal/parser-combinator.js
+var require_parser_combinator = __commonJS({
+  "node_modules/knex/lib/dialects/sqlite3/schema/internal/parser-combinator.js"(exports2, module2) {
+    function s(sequence, post = (v) => v) {
+      return function({ index = 0, input }) {
+        let position = index;
+        const ast = [];
+        for (const parser of sequence) {
+          const result = parser({ index: position, input });
+          if (result.success) {
+            position = result.index;
+            ast.push(result.ast);
+          } else {
+            return result;
+          }
+        }
+        return { success: true, ast: post(ast), index: position, input };
+      };
+    }
+    function a(alternative, post = (v) => v) {
+      return function({ index = 0, input }) {
+        for (const parser of alternative) {
+          const result = parser({ index, input });
+          if (result.success) {
+            return {
+              success: true,
+              ast: post(result.ast),
+              index: result.index,
+              input
+            };
+          }
+        }
+        return { success: false, ast: null, index, input };
+      };
+    }
+    function m(many, post = (v) => v) {
+      return function({ index = 0, input }) {
+        let result = {};
+        let position = index;
+        const ast = [];
+        do {
+          result = many({ index: position, input });
+          if (result.success) {
+            position = result.index;
+            ast.push(result.ast);
+          }
+        } while (result.success);
+        if (ast.length > 0) {
+          return { success: true, ast: post(ast), index: position, input };
+        } else {
+          return { success: false, ast: null, index: position, input };
+        }
+      };
+    }
+    function o(optional, post = (v) => v) {
+      return function({ index = 0, input }) {
+        const result = optional({ index, input });
+        if (result.success) {
+          return {
+            success: true,
+            ast: post(result.ast),
+            index: result.index,
+            input
+          };
+        } else {
+          return { success: true, ast: post(null), index, input };
+        }
+      };
+    }
+    function l(lookahead, post = (v) => v) {
+      return function({ index = 0, input }) {
+        const result = lookahead.do({ index, input });
+        if (result.success) {
+          const resultNext = lookahead.next({ index: result.index, input });
+          if (resultNext.success) {
+            return {
+              success: true,
+              ast: post(result.ast),
+              index: result.index,
+              input
+            };
+          }
+        }
+        return { success: false, ast: null, index, input };
+      };
+    }
+    function n(negative, post = (v) => v) {
+      return function({ index = 0, input }) {
+        const result = negative.do({ index, input });
+        if (result.success) {
+          const resultNot = negative.not({ index, input });
+          if (!resultNot.success) {
+            return {
+              success: true,
+              ast: post(result.ast),
+              index: result.index,
+              input
+            };
+          }
+        }
+        return { success: false, ast: null, index, input };
+      };
+    }
+    function t(token, post = (v) => v.text) {
+      return function({ index = 0, input }) {
+        const result = input[index];
+        if (result !== void 0 && (token.type === void 0 || token.type === result.type) && (token.text === void 0 || token.text.toUpperCase() === result.text.toUpperCase())) {
+          return {
+            success: true,
+            ast: post(result),
+            index: index + 1,
+            input
+          };
+        } else {
+          return { success: false, ast: null, index, input };
+        }
+      };
+    }
+    var e = function({ index = 0, input }) {
+      return { success: true, ast: null, index, input };
+    };
+    var f = function({ index = 0, input }) {
+      return { success: index === input.length, ast: null, index, input };
+    };
+    module2.exports = { s, a, m, o, l, n, t, e, f };
+  }
+});
+
+// node_modules/knex/lib/dialects/sqlite3/schema/internal/parser.js
+var require_parser = __commonJS({
+  "node_modules/knex/lib/dialects/sqlite3/schema/internal/parser.js"(exports2, module2) {
+    var { tokenize } = require_tokenizer();
+    var { s, a, m, o, l, n, t, e, f } = require_parser_combinator();
+    var TOKENS = {
+      keyword: /(?:ABORT|ACTION|ADD|AFTER|ALL|ALTER|ALWAYS|ANALYZE|AND|AS|ASC|ATTACH|AUTOINCREMENT|BEFORE|BEGIN|BETWEEN|BY|CASCADE|CASE|CAST|CHECK|COLLATE|COLUMN|COMMIT|CONFLICT|CONSTRAINT|CREATE|CROSS|CURRENT|CURRENT_DATE|CURRENT_TIME|CURRENT_TIMESTAMP|DATABASE|DEFAULT|DEFERRED|DEFERRABLE|DELETE|DESC|DETACH|DISTINCT|DO|DROP|END|EACH|ELSE|ESCAPE|EXCEPT|EXCLUSIVE|EXCLUDE|EXISTS|EXPLAIN|FAIL|FILTER|FIRST|FOLLOWING|FOR|FOREIGN|FROM|FULL|GENERATED|GLOB|GROUP|GROUPS|HAVING|IF|IGNORE|IMMEDIATE|IN|INDEX|INDEXED|INITIALLY|INNER|INSERT|INSTEAD|INTERSECT|INTO|IS|ISNULL|JOIN|KEY|LAST|LEFT|LIKE|LIMIT|MATCH|MATERIALIZED|NATURAL|NO|NOT|NOTHING|NOTNULL|NULL|NULLS|OF|OFFSET|ON|OR|ORDER|OTHERS|OUTER|OVER|PARTITION|PLAN|PRAGMA|PRECEDING|PRIMARY|QUERY|RAISE|RANGE|RECURSIVE|REFERENCES|REGEXP|REINDEX|RELEASE|RENAME|REPLACE|RESTRICT|RETURNING|RIGHT|ROLLBACK|ROW|ROWS|SAVEPOINT|SELECT|SET|TABLE|TEMP|TEMPORARY|THEN|TIES|TO|TRANSACTION|TRIGGER|UNBOUNDED|UNION|UNIQUE|UPDATE|USING|VACUUM|VALUES|VIEW|VIRTUAL|WHEN|WHERE|WINDOW|WITH|WITHOUT)(?=\s+|-|\(|\)|;|\+|\*|\/|%|==|=|<=|<>|<<|<|>=|>>|>|!=|,|&|~|\|\||\||\.)/,
+      id: /"[^"]*(?:""[^"]*)*"|`[^`]*(?:``[^`]*)*`|\[[^[\]]*\]|[a-z_][a-z0-9_$]*/,
+      string: /'[^']*(?:''[^']*)*'/,
+      blob: /x'(?:[0-9a-f][0-9a-f])+'/,
+      numeric: /(?:\d+(?:\.\d*)?|\.\d+)(?:e(?:\+|-)?\d+)?|0x[0-9a-f]+/,
+      variable: /\?\d*|[@$:][a-z0-9_$]+/,
+      operator: /-|\(|\)|;|\+|\*|\/|%|==|=|<=|<>|<<|<|>=|>>|>|!=|,|&|~|\|\||\||\./,
+      _ws: /\s+/
+    };
+    function parseCreateTable(sql) {
+      const result = createTable({ input: tokenize(sql, TOKENS) });
+      if (!result.success) {
+        throw new Error(`Parsing CREATE TABLE failed at [${result.input.slice(result.index).map((t2) => t2.text).join(" ")}] of "${sql}"`);
+      }
+      return result.ast;
+    }
+    function parseCreateIndex(sql) {
+      const result = createIndex({ input: tokenize(sql, TOKENS) });
+      if (!result.success) {
+        throw new Error(`Parsing CREATE INDEX failed at [${result.input.slice(result.index).map((t2) => t2.text).join(" ")}] of "${sql}"`);
+      }
+      return result.ast;
+    }
+    function createTable(ctx) {
+      return s([
+        t({ text: "CREATE" }, (v) => null),
+        temporary,
+        t({ text: "TABLE" }, (v) => null),
+        exists,
+        schema,
+        table,
+        t({ text: "(" }, (v) => null),
+        columnDefinitionList,
+        tableConstraintList,
+        t({ text: ")" }, (v) => null),
+        rowid,
+        f
+      ], (v) => Object.assign({}, ...v.filter((x) => x !== null)))(ctx);
+    }
+    function temporary(ctx) {
+      return a([t({ text: "TEMP" }), t({ text: "TEMPORARY" }), e], (v) => ({
+        temporary: v !== null
+      }))(ctx);
+    }
+    function rowid(ctx) {
+      return o(s([t({ text: "WITHOUT" }), t({ text: "ROWID" })]), (v) => ({
+        rowid: v !== null
+      }))(ctx);
+    }
+    function columnDefinitionList(ctx) {
+      return a([
+        s([columnDefinition, t({ text: "," }), columnDefinitionList], (v) => ({
+          columns: [v[0]].concat(v[2].columns)
+        })),
+        s([columnDefinition], (v) => ({ columns: [v[0]] }))
+      ])(ctx);
+    }
+    function columnDefinition(ctx) {
+      return s([s([identifier], (v) => ({ name: v[0] })), typeName, columnConstraintList], (v) => Object.assign({}, ...v))(ctx);
+    }
+    function typeName(ctx) {
+      return o(s([
+        m(t({ type: "id" })),
+        a([
+          s([
+            t({ text: "(" }),
+            signedNumber,
+            t({ text: "," }),
+            signedNumber,
+            t({ text: ")" })
+          ], (v) => `(${v[1]}, ${v[3]})`),
+          s([t({ text: "(" }), signedNumber, t({ text: ")" })], (v) => `(${v[1]})`),
+          e
+        ])
+      ], (v) => `${v[0].join(" ")}${v[1] || ""}`), (v) => ({ type: v }))(ctx);
+    }
+    function columnConstraintList(ctx) {
+      return o(m(columnConstraint), (v) => ({
+        constraints: Object.assign({
+          primary: null,
+          notnull: null,
+          null: null,
+          unique: null,
+          check: null,
+          default: null,
+          collate: null,
+          references: null,
+          as: null
+        }, ...v || [])
+      }))(ctx);
+    }
+    function columnConstraint(ctx) {
+      return a([
+        primaryColumnConstraint,
+        notnullColumnConstraint,
+        nullColumnConstraint,
+        uniqueColumnConstraint,
+        checkColumnConstraint,
+        defaultColumnConstraint,
+        collateColumnConstraint,
+        referencesColumnConstraint,
+        asColumnConstraint
+      ])(ctx);
+    }
+    function primaryColumnConstraint(ctx) {
+      return s([
+        constraintName,
+        t({ text: "PRIMARY" }, (v) => null),
+        t({ text: "KEY" }, (v) => null),
+        order,
+        conflictClause,
+        autoincrement
+      ], (v) => ({ primary: Object.assign({}, ...v.filter((x) => x !== null)) }))(ctx);
+    }
+    function autoincrement(ctx) {
+      return o(t({ text: "AUTOINCREMENT" }), (v) => ({
+        autoincrement: v !== null
+      }))(ctx);
+    }
+    function notnullColumnConstraint(ctx) {
+      return s([
+        constraintName,
+        t({ text: "NOT" }, (v) => null),
+        t({ text: "NULL" }, (v) => null),
+        conflictClause
+      ], (v) => ({ notnull: Object.assign({}, ...v.filter((x) => x !== null)) }))(ctx);
+    }
+    function nullColumnConstraint(ctx) {
+      return s([constraintName, t({ text: "NULL" }, (v) => null), conflictClause], (v) => ({ null: Object.assign({}, ...v.filter((x) => x !== null)) }))(ctx);
+    }
+    function uniqueColumnConstraint(ctx) {
+      return s([constraintName, t({ text: "UNIQUE" }, (v) => null), conflictClause], (v) => ({ unique: Object.assign({}, ...v.filter((x) => x !== null)) }))(ctx);
+    }
+    function checkColumnConstraint(ctx) {
+      return s([
+        constraintName,
+        t({ text: "CHECK" }, (v) => null),
+        t({ text: "(" }, (v) => null),
+        s([expression], (v) => ({ expression: v[0] })),
+        t({ text: ")" }, (v) => null)
+      ], (v) => ({ check: Object.assign({}, ...v.filter((x) => x !== null)) }))(ctx);
+    }
+    function defaultColumnConstraint(ctx) {
+      return s([
+        constraintName,
+        t({ text: "DEFAULT" }, (v) => null),
+        a([
+          s([t({ text: "(" }), expression, t({ text: ")" })], (v) => ({
+            value: v[1],
+            expression: true
+          })),
+          s([literalValue], (v) => ({ value: v[0], expression: false })),
+          s([signedNumber], (v) => ({ value: v[0], expression: false }))
+        ])
+      ], (v) => ({ default: Object.assign({}, ...v.filter((x) => x !== null)) }))(ctx);
+    }
+    function collateColumnConstraint(ctx) {
+      return s([
+        constraintName,
+        t({ text: "COLLATE" }, (v) => null),
+        t({ type: "id" }, (v) => ({ collation: v.text }))
+      ], (v) => ({ collate: Object.assign({}, ...v.filter((x) => x !== null)) }))(ctx);
+    }
+    function referencesColumnConstraint(ctx) {
+      return s([constraintName, s([foreignKeyClause], (v) => v[0].references)], (v) => ({
+        references: Object.assign({}, ...v.filter((x) => x !== null))
+      }))(ctx);
+    }
+    function asColumnConstraint(ctx) {
+      return s([
+        constraintName,
+        o(s([t({ text: "GENERATED" }), t({ text: "ALWAYS" })]), (v) => ({
+          generated: v !== null
+        })),
+        t({ text: "AS" }, (v) => null),
+        t({ text: "(" }, (v) => null),
+        s([expression], (v) => ({ expression: v[0] })),
+        t({ text: ")" }, (v) => null),
+        a([t({ text: "STORED" }), t({ text: "VIRTUAL" }), e], (v) => ({
+          mode: v ? v.toUpperCase() : null
+        }))
+      ], (v) => ({ as: Object.assign({}, ...v.filter((x) => x !== null)) }))(ctx);
+    }
+    function tableConstraintList(ctx) {
+      return o(m(s([t({ text: "," }), tableConstraint], (v) => v[1])), (v) => ({
+        constraints: v || []
+      }))(ctx);
+    }
+    function tableConstraint(ctx) {
+      return a([
+        primaryTableConstraint,
+        uniqueTableConstraint,
+        checkTableConstraint,
+        foreignTableConstraint
+      ])(ctx);
+    }
+    function primaryTableConstraint(ctx) {
+      return s([
+        constraintName,
+        t({ text: "PRIMARY" }, (v) => null),
+        t({ text: "KEY" }, (v) => null),
+        t({ text: "(" }, (v) => null),
+        indexedColumnList,
+        t({ text: ")" }, (v) => null),
+        conflictClause
+      ], (v) => Object.assign({ type: "PRIMARY KEY" }, ...v.filter((x) => x !== null)))(ctx);
+    }
+    function uniqueTableConstraint(ctx) {
+      return s([
+        constraintName,
+        t({ text: "UNIQUE" }, (v) => null),
+        t({ text: "(" }, (v) => null),
+        indexedColumnList,
+        t({ text: ")" }, (v) => null),
+        conflictClause
+      ], (v) => Object.assign({ type: "UNIQUE" }, ...v.filter((x) => x !== null)))(ctx);
+    }
+    function conflictClause(ctx) {
+      return o(s([
+        t({ text: "ON" }),
+        t({ text: "CONFLICT" }),
+        a([
+          t({ text: "ROLLBACK" }),
+          t({ text: "ABORT" }),
+          t({ text: "FAIL" }),
+          t({ text: "IGNORE" }),
+          t({ text: "REPLACE" })
+        ])
+      ], (v) => v[2]), (v) => ({ conflict: v ? v.toUpperCase() : null }))(ctx);
+    }
+    function checkTableConstraint(ctx) {
+      return s([
+        constraintName,
+        t({ text: "CHECK" }, (v) => null),
+        t({ text: "(" }, (v) => null),
+        s([expression], (v) => ({ expression: v[0] })),
+        t({ text: ")" }, (v) => null)
+      ], (v) => Object.assign({ type: "CHECK" }, ...v.filter((x) => x !== null)))(ctx);
+    }
+    function foreignTableConstraint(ctx) {
+      return s([
+        constraintName,
+        t({ text: "FOREIGN" }, (v) => null),
+        t({ text: "KEY" }, (v) => null),
+        t({ text: "(" }, (v) => null),
+        columnNameList,
+        t({ text: ")" }, (v) => null),
+        foreignKeyClause
+      ], (v) => Object.assign({ type: "FOREIGN KEY" }, ...v.filter((x) => x !== null)))(ctx);
+    }
+    function foreignKeyClause(ctx) {
+      return s([
+        t({ text: "REFERENCES" }, (v) => null),
+        table,
+        columnNameListOptional,
+        o(m(a([deleteReference, updateReference, matchReference])), (v) => Object.assign({ delete: null, update: null, match: null }, ...v || [])),
+        deferrable
+      ], (v) => ({ references: Object.assign({}, ...v.filter((x) => x !== null)) }))(ctx);
+    }
+    function columnNameListOptional(ctx) {
+      return o(s([t({ text: "(" }), columnNameList, t({ text: ")" })], (v) => v[1]), (v) => ({ columns: v ? v.columns : [] }))(ctx);
+    }
+    function columnNameList(ctx) {
+      return s([
+        o(m(s([identifier, t({ text: "," })], (v) => v[0])), (v) => v !== null ? v : []),
+        identifier
+      ], (v) => ({ columns: v[0].concat([v[1]]) }))(ctx);
+    }
+    function deleteReference(ctx) {
+      return s([t({ text: "ON" }), t({ text: "DELETE" }), onAction], (v) => ({
+        delete: v[2]
+      }))(ctx);
+    }
+    function updateReference(ctx) {
+      return s([t({ text: "ON" }), t({ text: "UPDATE" }), onAction], (v) => ({
+        update: v[2]
+      }))(ctx);
+    }
+    function matchReference(ctx) {
+      return s([t({ text: "MATCH" }), a([t({ type: "keyword" }), t({ type: "id" })])], (v) => ({ match: v[1] }))(ctx);
+    }
+    function deferrable(ctx) {
+      return o(s([
+        o(t({ text: "NOT" })),
+        t({ text: "DEFERRABLE" }),
+        o(s([
+          t({ text: "INITIALLY" }),
+          a([t({ text: "DEFERRED" }), t({ text: "IMMEDIATE" })])
+        ], (v) => v[1].toUpperCase()))
+      ]), (v) => ({ deferrable: v ? { not: v[0] !== null, initially: v[2] } : null }))(ctx);
+    }
+    function constraintName(ctx) {
+      return o(s([t({ text: "CONSTRAINT" }), identifier], (v) => v[1]), (v) => ({ name: v }))(ctx);
+    }
+    function createIndex(ctx) {
+      return s([
+        t({ text: "CREATE" }, (v) => null),
+        unique,
+        t({ text: "INDEX" }, (v) => null),
+        exists,
+        schema,
+        index,
+        t({ text: "ON" }, (v) => null),
+        table,
+        t({ text: "(" }, (v) => null),
+        indexedColumnList,
+        t({ text: ")" }, (v) => null),
+        where,
+        f
+      ], (v) => Object.assign({}, ...v.filter((x) => x !== null)))(ctx);
+    }
+    function unique(ctx) {
+      return o(t({ text: "UNIQUE" }), (v) => ({ unique: v !== null }))(ctx);
+    }
+    function exists(ctx) {
+      return o(s([t({ text: "IF" }), t({ text: "NOT" }), t({ text: "EXISTS" })]), (v) => ({ exists: v !== null }))(ctx);
+    }
+    function schema(ctx) {
+      return o(s([identifier, t({ text: "." })], (v) => v[0]), (v) => ({ schema: v }))(ctx);
+    }
+    function index(ctx) {
+      return s([identifier], (v) => ({ index: v[0] }))(ctx);
+    }
+    function table(ctx) {
+      return s([identifier], (v) => ({ table: v[0] }))(ctx);
+    }
+    function where(ctx) {
+      return o(s([t({ text: "WHERE" }), expression], (v) => v[1]), (v) => ({ where: v }))(ctx);
+    }
+    function indexedColumnList(ctx) {
+      return a([
+        s([indexedColumn, t({ text: "," }), indexedColumnList], (v) => ({
+          columns: [v[0]].concat(v[2].columns)
+        })),
+        s([indexedColumnExpression, t({ text: "," }), indexedColumnList], (v) => ({
+          columns: [v[0]].concat(v[2].columns)
+        })),
+        l({ do: indexedColumn, next: t({ text: ")" }) }, (v) => ({
+          columns: [v]
+        })),
+        l({ do: indexedColumnExpression, next: t({ text: ")" }) }, (v) => ({
+          columns: [v]
+        }))
+      ])(ctx);
+    }
+    function indexedColumn(ctx) {
+      return s([
+        s([identifier], (v) => ({ name: v[0], expression: false })),
+        collation,
+        order
+      ], (v) => Object.assign({}, ...v.filter((x) => x !== null)))(ctx);
+    }
+    function indexedColumnExpression(ctx) {
+      return s([
+        s([indexedExpression], (v) => ({ name: v[0], expression: true })),
+        collation,
+        order
+      ], (v) => Object.assign({}, ...v.filter((x) => x !== null)))(ctx);
+    }
+    function collation(ctx) {
+      return o(s([t({ text: "COLLATE" }), t({ type: "id" })], (v) => v[1]), (v) => ({ collation: v }))(ctx);
+    }
+    function order(ctx) {
+      return a([t({ text: "ASC" }), t({ text: "DESC" }), e], (v) => ({
+        order: v ? v.toUpperCase() : null
+      }))(ctx);
+    }
+    function indexedExpression(ctx) {
+      return m(a([
+        n({
+          do: t({ type: "keyword" }),
+          not: a([
+            t({ text: "COLLATE" }),
+            t({ text: "ASC" }),
+            t({ text: "DESC" })
+          ])
+        }),
+        t({ type: "id" }),
+        t({ type: "string" }),
+        t({ type: "blob" }),
+        t({ type: "numeric" }),
+        t({ type: "variable" }),
+        n({
+          do: t({ type: "operator" }),
+          not: a([t({ text: "(" }), t({ text: ")" }), t({ text: "," })])
+        }),
+        s([t({ text: "(" }), o(expression), t({ text: ")" })], (v) => v[1] || [])
+      ]))(ctx);
+    }
+    function expression(ctx) {
+      return m(a([
+        t({ type: "keyword" }),
+        t({ type: "id" }),
+        t({ type: "string" }),
+        t({ type: "blob" }),
+        t({ type: "numeric" }),
+        t({ type: "variable" }),
+        n({
+          do: t({ type: "operator" }),
+          not: a([t({ text: "(" }), t({ text: ")" })])
+        }),
+        s([t({ text: "(" }), o(expression), t({ text: ")" })], (v) => v[1] || [])
+      ]))(ctx);
+    }
+    function identifier(ctx) {
+      return a([t({ type: "id" }), t({ type: "string" })], (v) => /^["`['][^]*["`\]']$/.test(v) ? v.substring(1, v.length - 1) : v)(ctx);
+    }
+    function onAction(ctx) {
+      return a([
+        s([t({ text: "SET" }), t({ text: "NULL" })], (v) => `${v[0]} ${v[1]}`),
+        s([t({ text: "SET" }), t({ text: "DEFAULT" })], (v) => `${v[0]} ${v[1]}`),
+        t({ text: "CASCADE" }),
+        t({ text: "RESTRICT" }),
+        s([t({ text: "NO" }), t({ text: "ACTION" })], (v) => `${v[0]} ${v[1]}`)
+      ], (v) => v.toUpperCase())(ctx);
+    }
+    function literalValue(ctx) {
+      return a([
+        t({ type: "numeric" }),
+        t({ type: "string" }),
+        t({ type: "id" }),
+        t({ type: "blob" }),
+        t({ text: "NULL" }),
+        t({ text: "TRUE" }),
+        t({ text: "FALSE" }),
+        t({ text: "CURRENT_TIME" }),
+        t({ text: "CURRENT_DATE" }),
+        t({ text: "CURRENT_TIMESTAMP" })
+      ])(ctx);
+    }
+    function signedNumber(ctx) {
+      return s([a([t({ text: "+" }), t({ text: "-" }), e]), t({ type: "numeric" })], (v) => `${v[0] || ""}${v[1]}`)(ctx);
+    }
+    module2.exports = {
+      parseCreateTable,
+      parseCreateIndex
+    };
+  }
+});
+
+// node_modules/knex/lib/dialects/sqlite3/schema/internal/compiler.js
+var require_compiler2 = __commonJS({
+  "node_modules/knex/lib/dialects/sqlite3/schema/internal/compiler.js"(exports2, module2) {
+    function compileCreateTable(ast, wrap = (v) => v) {
+      return createTable(ast, wrap);
+    }
+    function compileCreateIndex(ast, wrap = (v) => v) {
+      return createIndex(ast, wrap);
+    }
+    function createTable(ast, wrap) {
+      return `CREATE${temporary(ast, wrap)} TABLE${exists(ast, wrap)} ${schema(ast, wrap)}${table(ast, wrap)} (${columnDefinitionList(ast, wrap)}${tableConstraintList(ast, wrap)})${rowid(ast, wrap)}`;
+    }
+    function temporary(ast, wrap) {
+      return ast.temporary ? " TEMP" : "";
+    }
+    function rowid(ast, wrap) {
+      return ast.rowid ? " WITHOUT ROWID" : "";
+    }
+    function columnDefinitionList(ast, wrap) {
+      return ast.columns.map((column) => columnDefinition(column, wrap)).join(", ");
+    }
+    function columnDefinition(ast, wrap) {
+      return `${identifier(ast.name, wrap)}${typeName(ast, wrap)}${columnConstraintList(ast.constraints, wrap)}`;
+    }
+    function typeName(ast, wrap) {
+      return ast.type !== null ? ` ${ast.type}` : "";
+    }
+    function columnConstraintList(ast, wrap) {
+      return `${primaryColumnConstraint(ast, wrap)}${notnullColumnConstraint(ast, wrap)}${nullColumnConstraint(ast, wrap)}${uniqueColumnConstraint(ast, wrap)}${checkColumnConstraint(ast, wrap)}${defaultColumnConstraint(ast, wrap)}${collateColumnConstraint(ast, wrap)}${referencesColumnConstraint(ast, wrap)}${asColumnConstraint(ast, wrap)}`;
+    }
+    function primaryColumnConstraint(ast, wrap) {
+      return ast.primary !== null ? ` ${constraintName(ast.primary, wrap)}PRIMARY KEY${order(ast.primary, wrap)}${conflictClause(ast.primary, wrap)}${autoincrement(ast.primary, wrap)}` : "";
+    }
+    function autoincrement(ast, wrap) {
+      return ast.autoincrement ? " AUTOINCREMENT" : "";
+    }
+    function notnullColumnConstraint(ast, wrap) {
+      return ast.notnull !== null ? ` ${constraintName(ast.notnull, wrap)}NOT NULL${conflictClause(ast.notnull, wrap)}` : "";
+    }
+    function nullColumnConstraint(ast, wrap) {
+      return ast.null !== null ? ` ${constraintName(ast.null, wrap)}NULL${conflictClause(ast.null, wrap)}` : "";
+    }
+    function uniqueColumnConstraint(ast, wrap) {
+      return ast.unique !== null ? ` ${constraintName(ast.unique, wrap)}UNIQUE${conflictClause(ast.unique, wrap)}` : "";
+    }
+    function checkColumnConstraint(ast, wrap) {
+      return ast.check !== null ? ` ${constraintName(ast.check, wrap)}CHECK (${expression(ast.check.expression, wrap)})` : "";
+    }
+    function defaultColumnConstraint(ast, wrap) {
+      return ast.default !== null ? ` ${constraintName(ast.default, wrap)}DEFAULT ${!ast.default.expression ? ast.default.value : `(${expression(ast.default.value, wrap)})`}` : "";
+    }
+    function collateColumnConstraint(ast, wrap) {
+      return ast.collate !== null ? ` ${constraintName(ast.collate, wrap)}COLLATE ${ast.collate.collation}` : "";
+    }
+    function referencesColumnConstraint(ast, wrap) {
+      return ast.references !== null ? ` ${constraintName(ast.references, wrap)}${foreignKeyClause(ast.references, wrap)}` : "";
+    }
+    function asColumnConstraint(ast, wrap) {
+      return ast.as !== null ? ` ${constraintName(ast.as, wrap)}${ast.as.generated ? "GENERATED ALWAYS " : ""}AS (${expression(ast.as.expression, wrap)})${ast.as.mode !== null ? ` ${ast.as.mode}` : ""}` : "";
+    }
+    function tableConstraintList(ast, wrap) {
+      return ast.constraints.reduce((constraintList, constraint) => `${constraintList}, ${tableConstraint(constraint, wrap)}`, "");
+    }
+    function tableConstraint(ast, wrap) {
+      switch (ast.type) {
+        case "PRIMARY KEY":
+          return primaryTableConstraint(ast, wrap);
+        case "UNIQUE":
+          return uniqueTableConstraint(ast, wrap);
+        case "CHECK":
+          return checkTableConstraint(ast, wrap);
+        case "FOREIGN KEY":
+          return foreignTableConstraint(ast, wrap);
+      }
+    }
+    function primaryTableConstraint(ast, wrap) {
+      return `${constraintName(ast, wrap)}PRIMARY KEY (${indexedColumnList(ast, wrap)})${conflictClause(ast, wrap)}`;
+    }
+    function uniqueTableConstraint(ast, wrap) {
+      return `${constraintName(ast, wrap)}UNIQUE (${indexedColumnList(ast, wrap)})${conflictClause(ast, wrap)}`;
+    }
+    function conflictClause(ast, wrap) {
+      return ast.conflict !== null ? ` ON CONFLICT ${ast.conflict}` : "";
+    }
+    function checkTableConstraint(ast, wrap) {
+      return `${constraintName(ast, wrap)}CHECK (${expression(ast.expression, wrap)})`;
+    }
+    function foreignTableConstraint(ast, wrap) {
+      return `${constraintName(ast, wrap)}FOREIGN KEY (${columnNameList(ast, wrap)}) ${foreignKeyClause(ast.references, wrap)}`;
+    }
+    function foreignKeyClause(ast, wrap) {
+      return `REFERENCES ${table(ast, wrap)}${columnNameListOptional(ast, wrap)}${deleteUpdateMatchList(ast, wrap)}${deferrable(ast.deferrable, wrap)}`;
+    }
+    function columnNameListOptional(ast, wrap) {
+      return ast.columns.length > 0 ? ` (${columnNameList(ast, wrap)})` : "";
+    }
+    function columnNameList(ast, wrap) {
+      return ast.columns.map((column) => identifier(column, wrap)).join(", ");
+    }
+    function deleteUpdateMatchList(ast, wrap) {
+      return `${deleteReference(ast, wrap)}${updateReference(ast, wrap)}${matchReference(ast, wrap)}`;
+    }
+    function deleteReference(ast, wrap) {
+      return ast.delete !== null ? ` ON DELETE ${ast.delete}` : "";
+    }
+    function updateReference(ast, wrap) {
+      return ast.update !== null ? ` ON UPDATE ${ast.update}` : "";
+    }
+    function matchReference(ast, wrap) {
+      return ast.match !== null ? ` MATCH ${ast.match}` : "";
+    }
+    function deferrable(ast, wrap) {
+      return ast !== null ? ` ${ast.not ? "NOT " : ""}DEFERRABLE${ast.initially !== null ? ` INITIALLY ${ast.initially}` : ""}` : "";
+    }
+    function constraintName(ast, wrap) {
+      return ast.name !== null ? `CONSTRAINT ${identifier(ast.name, wrap)} ` : "";
+    }
+    function createIndex(ast, wrap) {
+      return `CREATE${unique(ast, wrap)} INDEX${exists(ast, wrap)} ${schema(ast, wrap)}${index(ast, wrap)} on ${table(ast, wrap)} (${indexedColumnList(ast, wrap)})${where(ast, wrap)}`;
+    }
+    function unique(ast, wrap) {
+      return ast.unique ? " UNIQUE" : "";
+    }
+    function exists(ast, wrap) {
+      return ast.exists ? " IF NOT EXISTS" : "";
+    }
+    function schema(ast, wrap) {
+      return ast.schema !== null ? `${identifier(ast.schema, wrap)}.` : "";
+    }
+    function index(ast, wrap) {
+      return identifier(ast.index, wrap);
+    }
+    function table(ast, wrap) {
+      return identifier(ast.table, wrap);
+    }
+    function where(ast, wrap) {
+      return ast.where !== null ? ` where ${expression(ast.where)}` : "";
+    }
+    function indexedColumnList(ast, wrap) {
+      return ast.columns.map((column) => !column.expression ? indexedColumn(column, wrap) : indexedColumnExpression(column, wrap)).join(", ");
+    }
+    function indexedColumn(ast, wrap) {
+      return `${identifier(ast.name, wrap)}${collation(ast, wrap)}${order(ast, wrap)}`;
+    }
+    function indexedColumnExpression(ast, wrap) {
+      return `${indexedExpression(ast.name, wrap)}${collation(ast, wrap)}${order(ast, wrap)}`;
+    }
+    function collation(ast, wrap) {
+      return ast.collation !== null ? ` COLLATE ${ast.collation}` : "";
+    }
+    function order(ast, wrap) {
+      return ast.order !== null ? ` ${ast.order}` : "";
+    }
+    function indexedExpression(ast, wrap) {
+      return expression(ast, wrap);
+    }
+    function expression(ast, wrap) {
+      return ast.reduce((expr, e) => Array.isArray(e) ? `${expr}(${expression(e)})` : !expr ? e : `${expr} ${e}`, "");
+    }
+    function identifier(ast, wrap) {
+      return wrap(ast);
+    }
+    module2.exports = {
+      compileCreateTable,
+      compileCreateIndex
+    };
+  }
+});
+
+// node_modules/knex/lib/dialects/sqlite3/schema/internal/utils.js
+var require_utils4 = __commonJS({
+  "node_modules/knex/lib/dialects/sqlite3/schema/internal/utils.js"(exports2, module2) {
+    function isEqualId(first, second) {
+      return first.toLowerCase() === second.toLowerCase();
+    }
+    function includesId(list, id) {
+      return list.some((item) => isEqualId(item, id));
+    }
+    module2.exports = {
+      isEqualId,
+      includesId
+    };
+  }
+});
+
+// node_modules/knex/lib/dialects/sqlite3/schema/ddl.js
+var require_ddl = __commonJS({
+  "node_modules/knex/lib/dialects/sqlite3/schema/ddl.js"(exports2, module2) {
+    var identity = require_identity();
+    var { nanonum } = require_nanoid();
+    var {
+      copyData,
+      dropOriginal,
+      renameTable,
+      getTableSql,
+      isForeignCheckEnabled,
+      setForeignCheck,
+      executeForeignCheck
+    } = require_sqlite_ddl_operations();
+    var { parseCreateTable, parseCreateIndex } = require_parser();
+    var {
+      compileCreateTable,
+      compileCreateIndex
+    } = require_compiler2();
+    var { isEqualId, includesId } = require_utils4();
+    var SQLite3_DDL = class {
+      constructor(client, tableCompiler, pragma, connection) {
+        this.client = client;
+        this.tableCompiler = tableCompiler;
+        this.pragma = pragma;
+        this.tableNameRaw = this.tableCompiler.tableNameRaw;
+        this.alteredName = `_knex_temp_alter${nanonum(3)}`;
+        this.connection = connection;
+        this.formatter = (value) => this.client.customWrapIdentifier(value, identity);
+        this.wrap = (value) => this.client.wrapIdentifierImpl(value);
+      }
+      tableName() {
+        return this.formatter(this.tableNameRaw);
+      }
+      getTableSql() {
+        const tableName = this.tableName();
+        return this.client.transaction(async (trx) => {
+          trx.disableProcessing();
+          const result = await trx.raw(getTableSql(tableName));
+          trx.enableProcessing();
+          return {
+            createTable: result.filter((create) => create.type === "table")[0].sql,
+            createIndices: result.filter((create) => create.type === "index").map((create) => create.sql)
+          };
+        }, { connection: this.connection });
+      }
+      async isForeignCheckEnabled() {
+        const result = await this.client.raw(isForeignCheckEnabled()).connection(this.connection);
+        return result[0].foreign_keys === 1;
+      }
+      async setForeignCheck(enable) {
+        await this.client.raw(setForeignCheck(enable)).connection(this.connection);
+      }
+      renameTable(trx) {
+        return trx.raw(renameTable(this.alteredName, this.tableName()));
+      }
+      dropOriginal(trx) {
+        return trx.raw(dropOriginal(this.tableName()));
+      }
+      copyData(trx, columns) {
+        return trx.raw(copyData(this.tableName(), this.alteredName, columns));
+      }
+      async alterColumn(columns) {
+        const { createTable, createIndices } = await this.getTableSql();
+        const parsedTable = parseCreateTable(createTable);
+        parsedTable.table = this.alteredName;
+        parsedTable.columns = parsedTable.columns.map((column) => {
+          const newColumnInfo = columns.find((c) => isEqualId(c.name, column.name));
+          if (newColumnInfo) {
+            column.type = newColumnInfo.type;
+            column.constraints.default = newColumnInfo.defaultTo !== null ? {
+              name: null,
+              value: newColumnInfo.defaultTo,
+              expression: false
+            } : null;
+            column.constraints.notnull = newColumnInfo.notNull ? { name: null, conflict: null } : null;
+            column.constraints.null = newColumnInfo.notNull ? null : column.constraints.null;
+          }
+          return column;
+        });
+        const newTable = compileCreateTable(parsedTable, this.wrap);
+        return this.generateAlterCommands(newTable, createIndices);
+      }
+      async dropColumn(columns) {
+        const { createTable, createIndices } = await this.getTableSql();
+        const parsedTable = parseCreateTable(createTable);
+        parsedTable.table = this.alteredName;
+        parsedTable.columns = parsedTable.columns.filter((parsedColumn) => parsedColumn.expression || !includesId(columns, parsedColumn.name));
+        if (parsedTable.columns.length === 0) {
+          throw new Error("Unable to drop last column from table");
+        }
+        parsedTable.constraints = parsedTable.constraints.filter((constraint) => {
+          if (constraint.type === "PRIMARY KEY" || constraint.type === "UNIQUE") {
+            return constraint.columns.every((constraintColumn) => constraintColumn.expression || !includesId(columns, constraintColumn.name));
+          } else if (constraint.type === "FOREIGN KEY") {
+            return constraint.columns.every((constraintColumnName) => !includesId(columns, constraintColumnName)) && (constraint.references.table !== parsedTable.table || constraint.references.columns.every((referenceColumnName) => !includesId(columns, referenceColumnName)));
+          } else {
+            return true;
+          }
+        });
+        const newColumns = parsedTable.columns.map((column) => column.name);
+        const newTable = compileCreateTable(parsedTable, this.wrap);
+        const newIndices = [];
+        for (const createIndex of createIndices) {
+          const parsedIndex = parseCreateIndex(createIndex);
+          parsedIndex.columns = parsedIndex.columns.filter((parsedColumn) => parsedColumn.expression || !includesId(columns, parsedColumn.name));
+          if (parsedIndex.columns.length > 0) {
+            newIndices.push(compileCreateIndex(parsedIndex, this.wrap));
+          }
+        }
+        return this.alter(newTable, newIndices, newColumns);
+      }
+      async dropForeign(columns, foreignKeyName) {
+        const { createTable, createIndices } = await this.getTableSql();
+        const parsedTable = parseCreateTable(createTable);
+        parsedTable.table = this.alteredName;
+        if (!foreignKeyName) {
+          parsedTable.columns = parsedTable.columns.map((column) => ({
+            ...column,
+            references: includesId(columns, column.name) ? null : column.references
+          }));
+        }
+        parsedTable.constraints = parsedTable.constraints.filter((constraint) => {
+          if (constraint.type === "FOREIGN KEY") {
+            if (foreignKeyName) {
+              return !constraint.name || !isEqualId(constraint.name, foreignKeyName);
+            }
+            return constraint.columns.every((constraintColumnName) => !includesId(columns, constraintColumnName));
+          } else {
+            return true;
+          }
+        });
+        const newTable = compileCreateTable(parsedTable, this.wrap);
+        return this.alter(newTable, createIndices);
+      }
+      async dropPrimary(constraintName) {
+        const { createTable, createIndices } = await this.getTableSql();
+        const parsedTable = parseCreateTable(createTable);
+        parsedTable.table = this.alteredName;
+        parsedTable.columns = parsedTable.columns.map((column) => ({
+          ...column,
+          primary: null
+        }));
+        parsedTable.constraints = parsedTable.constraints.filter((constraint) => {
+          if (constraint.type === "PRIMARY KEY") {
+            if (constraintName) {
+              return !constraint.name || !isEqualId(constraint.name, constraintName);
+            } else {
+              return false;
+            }
+          } else {
+            return true;
+          }
+        });
+        const newTable = compileCreateTable(parsedTable, this.wrap);
+        return this.alter(newTable, createIndices);
+      }
+      async primary(columns, constraintName) {
+        const { createTable, createIndices } = await this.getTableSql();
+        const parsedTable = parseCreateTable(createTable);
+        parsedTable.table = this.alteredName;
+        parsedTable.columns = parsedTable.columns.map((column) => ({
+          ...column,
+          primary: null
+        }));
+        parsedTable.constraints = parsedTable.constraints.filter((constraint) => constraint.type !== "PRIMARY KEY");
+        parsedTable.constraints.push({
+          type: "PRIMARY KEY",
+          name: constraintName || null,
+          columns: columns.map((column) => ({
+            name: column,
+            expression: false,
+            collation: null,
+            order: null
+          })),
+          conflict: null
+        });
+        const newTable = compileCreateTable(parsedTable, this.wrap);
+        return this.alter(newTable, createIndices);
+      }
+      async foreign(foreignInfo) {
+        const { createTable, createIndices } = await this.getTableSql();
+        const parsedTable = parseCreateTable(createTable);
+        parsedTable.table = this.alteredName;
+        parsedTable.constraints.push({
+          type: "FOREIGN KEY",
+          name: foreignInfo.keyName || null,
+          columns: foreignInfo.column,
+          references: {
+            table: foreignInfo.inTable,
+            columns: foreignInfo.references,
+            delete: foreignInfo.onDelete || null,
+            update: foreignInfo.onUpdate || null,
+            match: null,
+            deferrable: null
+          }
+        });
+        const newTable = compileCreateTable(parsedTable, this.wrap);
+        return this.generateAlterCommands(newTable, createIndices);
+      }
+      async setNullable(column, isNullable) {
+        const { createTable, createIndices } = await this.getTableSql();
+        const parsedTable = parseCreateTable(createTable);
+        parsedTable.table = this.alteredName;
+        const parsedColumn = parsedTable.columns.find((c) => isEqualId(column, c.name));
+        if (!parsedColumn) {
+          throw new Error(`.setNullable: Column ${column} does not exist in table ${this.tableName()}.`);
+        }
+        parsedColumn.constraints.notnull = isNullable ? null : { name: null, conflict: null };
+        parsedColumn.constraints.null = isNullable ? parsedColumn.constraints.null : null;
+        const newTable = compileCreateTable(parsedTable, this.wrap);
+        return this.generateAlterCommands(newTable, createIndices);
+      }
+      async alter(newSql, createIndices, columns) {
+        const wasForeignCheckEnabled = await this.isForeignCheckEnabled();
+        if (wasForeignCheckEnabled) {
+          await this.setForeignCheck(false);
+        }
+        try {
+          await this.client.transaction(async (trx) => {
+            await trx.raw(newSql);
+            await this.copyData(trx, columns);
+            await this.dropOriginal(trx);
+            await this.renameTable(trx);
+            for (const createIndex of createIndices) {
+              await trx.raw(createIndex);
+            }
+            if (wasForeignCheckEnabled) {
+              const foreignViolations = await trx.raw(executeForeignCheck());
+              if (foreignViolations.length > 0) {
+                throw new Error("FOREIGN KEY constraint failed");
+              }
+            }
+          }, { connection: this.connection });
+        } finally {
+          if (wasForeignCheckEnabled) {
+            await this.setForeignCheck(true);
+          }
+        }
+      }
+      async generateAlterCommands(newSql, createIndices, columns) {
+        const sql = [];
+        const pre = [];
+        const post = [];
+        let check = null;
+        sql.push(newSql);
+        sql.push(copyData(this.tableName(), this.alteredName, columns));
+        sql.push(dropOriginal(this.tableName()));
+        sql.push(renameTable(this.alteredName, this.tableName()));
+        for (const createIndex of createIndices) {
+          sql.push(createIndex);
+        }
+        const isForeignCheckEnabled2 = await this.isForeignCheckEnabled();
+        if (isForeignCheckEnabled2) {
+          pre.push(setForeignCheck(false));
+          post.push(setForeignCheck(true));
+          check = executeForeignCheck();
+        }
+        return { pre, sql, check, post };
       }
     };
-    module2.exports = knex2;
+    module2.exports = SQLite3_DDL;
   }
 });
 
-// node_modules/knex/lib/index.js
-var require_lib4 = __commonJS({
-  "node_modules/knex/lib/index.js"(exports2, module2) {
-    var Knex2 = require_Knex();
-    module2.exports = Knex2;
+// node_modules/knex/lib/dialects/sqlite3/query/sqlite-querybuilder.js
+var require_sqlite_querybuilder = __commonJS({
+  "node_modules/knex/lib/dialects/sqlite3/query/sqlite-querybuilder.js"(exports2, module2) {
+    var QueryBuilder = require_querybuilder();
+    module2.exports = class QueryBuilder_SQLite3 extends QueryBuilder {
+      withMaterialized(alias, statementOrColumnList, nothingOrStatement) {
+        this._validateWithArgs(alias, statementOrColumnList, nothingOrStatement, "with");
+        return this.withWrapped(alias, statementOrColumnList, nothingOrStatement, true);
+      }
+      withNotMaterialized(alias, statementOrColumnList, nothingOrStatement) {
+        this._validateWithArgs(alias, statementOrColumnList, nothingOrStatement, "with");
+        return this.withWrapped(alias, statementOrColumnList, nothingOrStatement, false);
+      }
+    };
   }
 });
 
-// node_modules/knex/knex.js
-var require_knex = __commonJS({
-  "node_modules/knex/knex.js"(exports2, module2) {
-    var knex2 = require_lib4();
-    knex2.knex = knex2;
-    knex2.default = knex2;
-    module2.exports = knex2;
+// node_modules/knex/lib/dialects/sqlite3/index.js
+var require_sqlite3 = __commonJS({
+  "node_modules/knex/lib/dialects/sqlite3/index.js"(exports2, module2) {
+    var defaults = require_defaults();
+    var map = require_map();
+    var { promisify } = require("util");
+    var Client = require_client2();
+    var Raw = require_raw2();
+    var Transaction = require_sqlite_transaction();
+    var SqliteQueryCompiler = require_sqlite_querycompiler();
+    var SchemaCompiler = require_sqlite_compiler();
+    var ColumnCompiler = require_sqlite_columncompiler();
+    var TableCompiler = require_sqlite_tablecompiler();
+    var ViewCompiler = require_sqlite_viewcompiler();
+    var SQLite3_DDL = require_ddl();
+    var Formatter = require_formatter();
+    var QueryBuilder = require_sqlite_querybuilder();
+    var Client_SQLite3 = class extends Client {
+      constructor(config) {
+        super(config);
+        if (config.useNullAsDefault === void 0) {
+          this.logger.warn("sqlite does not support inserting default values. Set the `useNullAsDefault` flag to hide this warning. (see docs http://knexjs.org/#Builder-insert).");
+        }
+      }
+      _driver() {
+        return require("sqlite3");
+      }
+      schemaCompiler() {
+        return new SchemaCompiler(this, ...arguments);
+      }
+      transaction() {
+        return new Transaction(this, ...arguments);
+      }
+      queryCompiler(builder, formatter) {
+        return new SqliteQueryCompiler(this, builder, formatter);
+      }
+      queryBuilder() {
+        return new QueryBuilder(this);
+      }
+      viewCompiler(builder, formatter) {
+        return new ViewCompiler(this, builder, formatter);
+      }
+      columnCompiler() {
+        return new ColumnCompiler(this, ...arguments);
+      }
+      tableCompiler() {
+        return new TableCompiler(this, ...arguments);
+      }
+      ddl(compiler, pragma, connection) {
+        return new SQLite3_DDL(this, compiler, pragma, connection);
+      }
+      wrapIdentifierImpl(value) {
+        return value !== "*" ? `\`${value.replace(/`/g, "``")}\`` : "*";
+      }
+      acquireRawConnection() {
+        return new Promise((resolve, reject) => {
+          let flags = this.driver.OPEN_READWRITE | this.driver.OPEN_CREATE;
+          if (this.connectionSettings.flags) {
+            if (!Array.isArray(this.connectionSettings.flags)) {
+              throw new Error(`flags must be an array of strings`);
+            }
+            this.connectionSettings.flags.forEach((_flag) => {
+              if (!_flag.startsWith("OPEN_") || !this.driver[_flag]) {
+                throw new Error(`flag ${_flag} not supported by node-sqlite3`);
+              }
+              flags = flags | this.driver[_flag];
+            });
+          }
+          const db = new this.driver.Database(this.connectionSettings.filename, flags, (err) => {
+            if (err) {
+              return reject(err);
+            }
+            resolve(db);
+          });
+        });
+      }
+      async destroyRawConnection(connection) {
+        const close = promisify((cb) => connection.close(cb));
+        return close();
+      }
+      _query(connection, obj) {
+        if (!obj.sql)
+          throw new Error("The query is empty");
+        const { method } = obj;
+        let callMethod;
+        switch (method) {
+          case "insert":
+          case "update":
+          case "counter":
+          case "del":
+            callMethod = "run";
+            break;
+          default:
+            callMethod = "all";
+        }
+        return new Promise(function(resolver, rejecter) {
+          if (!connection || !connection[callMethod]) {
+            return rejecter(new Error(`Error calling ${callMethod} on connection.`));
+          }
+          connection[callMethod](obj.sql, obj.bindings, function(err, response) {
+            if (err)
+              return rejecter(err);
+            obj.response = response;
+            obj.context = this;
+            return resolver(obj);
+          });
+        });
+      }
+      _stream(connection, obj, stream) {
+        if (!obj.sql)
+          throw new Error("The query is empty");
+        const client = this;
+        return new Promise(function(resolver, rejecter) {
+          stream.on("error", rejecter);
+          stream.on("end", resolver);
+          return client._query(connection, obj).then((obj2) => obj2.response).then((rows) => rows.forEach((row) => stream.write(row))).catch(function(err) {
+            stream.emit("error", err);
+          }).then(function() {
+            stream.end();
+          });
+        });
+      }
+      processResponse(obj, runner) {
+        const ctx = obj.context;
+        const { response, returning } = obj;
+        if (obj.output)
+          return obj.output.call(runner, response);
+        switch (obj.method) {
+          case "select":
+            return response;
+          case "first":
+            return response[0];
+          case "pluck":
+            return map(response, obj.pluck);
+          case "insert": {
+            if (returning) {
+              if (response) {
+                return response;
+              }
+              this.logger.warn("node-sqlite3 does not currently support RETURNING clause");
+            }
+            return [ctx.lastID];
+          }
+          case "del":
+          case "update":
+          case "counter":
+            return ctx.changes;
+          default: {
+            return response;
+          }
+        }
+      }
+      poolDefaults() {
+        return defaults({ min: 1, max: 1 }, super.poolDefaults());
+      }
+      formatter(builder) {
+        return new Formatter(this, builder);
+      }
+      values(values, builder, formatter) {
+        if (Array.isArray(values)) {
+          if (Array.isArray(values[0])) {
+            return `( values ${values.map((value) => `(${this.parameterize(value, void 0, builder, formatter)})`).join(", ")})`;
+          }
+          return `(${this.parameterize(values, void 0, builder, formatter)})`;
+        }
+        if (values instanceof Raw) {
+          return `(${this.parameter(values, builder, formatter)})`;
+        }
+        return this.parameter(values, builder, formatter);
+      }
+    };
+    Object.assign(Client_SQLite3.prototype, {
+      dialect: "sqlite3",
+      driverName: "sqlite3"
+    });
+    module2.exports = Client_SQLite3;
+  }
+});
+
+// node_modules/knex/lib/dialects/better-sqlite3/index.js
+var require_better_sqlite3 = __commonJS({
+  "node_modules/knex/lib/dialects/better-sqlite3/index.js"(exports2, module2) {
+    var Client_SQLite3 = require_sqlite3();
+    var Client_BetterSQLite3 = class extends Client_SQLite3 {
+      _driver() {
+        return require("better-sqlite3");
+      }
+      async acquireRawConnection() {
+        return new this.driver(this.connectionSettings.filename);
+      }
+      async destroyRawConnection(connection) {
+        return connection.close();
+      }
+      async _query(connection, obj) {
+        if (!obj.sql)
+          throw new Error("The query is empty");
+        if (!connection) {
+          throw new Error("No connection provided");
+        }
+        const statement = connection.prepare(obj.sql);
+        const bindings = this._formatBindings(obj.bindings);
+        if (statement.reader) {
+          const response2 = await statement.all(bindings);
+          obj.response = response2;
+          return obj;
+        }
+        const response = await statement.run(bindings);
+        obj.response = response;
+        obj.context = {
+          lastID: response.lastInsertRowid,
+          changes: response.changes
+        };
+        return obj;
+      }
+      _formatBindings(bindings) {
+        if (!bindings) {
+          return [];
+        }
+        return bindings.map((binding) => {
+          if (binding instanceof Date) {
+            return binding.valueOf();
+          }
+          if (typeof binding === "boolean") {
+            return Number(binding);
+          }
+          return binding;
+        });
+      }
+    };
+    Object.assign(Client_BetterSQLite3.prototype, {
+      driverName: "better-sqlite3"
+    });
+    module2.exports = Client_BetterSQLite3;
   }
 });
 
@@ -42797,7 +46808,12 @@ var require_pg_querycompiler = __commonJS({
     var identity = require_identity();
     var reduce = require_reduce();
     var QueryCompiler = require_querycompiler();
-    var { wrapString } = require_wrappingFormatter();
+    var {
+      wrapString,
+      columnize: columnize_,
+      operator: operator_,
+      wrap: wrap_
+    } = require_wrappingFormatter();
     var QueryCompiler_PG = class extends QueryCompiler {
       constructor(client, builder, formatter) {
         super(client, builder, formatter);
@@ -42836,8 +46852,48 @@ var require_pg_querycompiler = __commonJS({
           returning
         };
       }
+      using() {
+        const usingTables = this.single.using;
+        if (!usingTables)
+          return;
+        let sql = "using ";
+        if (Array.isArray(usingTables)) {
+          sql += usingTables.map((table) => {
+            return this.formatter.wrap(table);
+          }).join(",");
+        } else {
+          sql += this.formatter.wrap(usingTables);
+        }
+        return sql;
+      }
       del() {
-        const sql = super.del(...arguments);
+        const { tableName } = this;
+        const withSQL = this.with();
+        let wheres = this.where() || "";
+        let using = this.using() || "";
+        const joins = this.grouped.join;
+        const tableJoins = [];
+        if (Array.isArray(joins)) {
+          for (const join of joins) {
+            tableJoins.push(wrap_(this._joinTable(join), void 0, this.builder, this.client, this.bindingsHolder));
+            const joinWheres = [];
+            for (const clause of join.clauses) {
+              joinWheres.push(this.whereBasic({
+                column: clause.column,
+                operator: "=",
+                value: clause.value,
+                asColumn: true
+              }));
+            }
+            if (joinWheres.length > 0) {
+              wheres += (wheres ? " and " : "where ") + joinWheres.join(" and ");
+            }
+          }
+          if (tableJoins.length > 0) {
+            using += (using ? "," : "using ") + tableJoins.join(",");
+          }
+        }
+        const sql = withSQL + `delete from ${this.single.only ? "only " : ""}${tableName}` + (using ? ` ${using}` : "") + (wheres ? ` ${wheres}` : "");
         const { returning } = this.single;
         return {
           sql: sql + this._returning(returning),
@@ -42854,10 +46910,10 @@ var require_pg_querycompiler = __commonJS({
         if (columns === true) {
           return " on conflict do nothing";
         }
-        return ` on conflict (${this.formatter.columnize(columns)}) do nothing`;
+        return ` on conflict ${this._onConflictClause(columns)} do nothing`;
       }
       _merge(updates, columns, insert) {
-        let sql = ` on conflict (${this.formatter.columnize(columns)}) do update set `;
+        let sql = ` on conflict ${this._onConflictClause(columns)} do update set `;
         if (updates && Array.isArray(updates)) {
           sql += updates.map((column) => wrapString(column.split(".").pop(), this.formatter.builder, this.client, this.formatter)).map((column) => `${column} = excluded.${column}`).join(", ");
           return sql;
@@ -42896,6 +46952,9 @@ var require_pg_querycompiler = __commonJS({
         const tables = this.single.lockTables || [];
         return lockMode + (tables.length ? " of " + this._tableNames(tables) : "");
       }
+      _groupOrder(item, type) {
+        return super._groupOrderNulls(item, type);
+      }
       forUpdate() {
         return this._lockingClause("for update");
       }
@@ -42921,8 +46980,11 @@ var require_pg_querycompiler = __commonJS({
         if (schema) {
           schema = this.client.customWrapIdentifier(schema, identity);
         }
-        let sql = "select * from information_schema.columns where table_name = ? and table_catalog = current_database()";
+        const sql = "select * from information_schema.columns where table_name = ? and table_catalog = current_database()";
         const bindings = [table];
+        return this._buildColumnInfoQuery(schema, sql, bindings, column);
+      }
+      _buildColumnInfoQuery(schema, sql, bindings, column) {
         if (schema) {
           sql += " and table_schema = ?";
           bindings.push(schema);
@@ -42949,8 +47011,66 @@ var require_pg_querycompiler = __commonJS({
       distinctOn(value) {
         return "distinct on (" + this.formatter.columnize(value) + ") ";
       }
+      jsonExtract(params) {
+        return this._jsonExtract("jsonb_path_query", params);
+      }
+      jsonSet(params) {
+        return this._jsonSet("jsonb_set", Object.assign({}, params, {
+          path: this.client.toPathForJson(params.path)
+        }));
+      }
+      jsonInsert(params) {
+        return this._jsonSet("jsonb_insert", Object.assign({}, params, {
+          path: this.client.toPathForJson(params.path)
+        }));
+      }
+      jsonRemove(params) {
+        const jsonCol = `${columnize_(params.column, this.builder, this.client, this.bindingsHolder)} #- ${this.client.parameter(this.client.toPathForJson(params.path), this.builder, this.bindingsHolder)}`;
+        return params.alias ? this.client.alias(jsonCol, this.formatter.wrap(params.alias)) : jsonCol;
+      }
+      whereJsonPath(statement) {
+        let castValue = "";
+        if (!isNaN(statement.value) && parseInt(statement.value)) {
+          castValue = "::int";
+        } else if (!isNaN(statement.value) && parseFloat(statement.value)) {
+          castValue = "::float";
+        } else {
+          castValue = " #>> '{}'";
+        }
+        return `jsonb_path_query_first(${this._columnClause(statement)}, ${this.client.parameter(statement.jsonPath, this.builder, this.bindingsHolder)})${castValue} ${operator_(statement.operator, this.builder, this.client, this.bindingsHolder)} ${this._jsonValueClause(statement)}`;
+      }
+      whereJsonSupersetOf(statement) {
+        return this._not(statement, `${wrap_(statement.column, void 0, this.builder, this.client, this.bindingsHolder)} @> ${this._jsonValueClause(statement)}`);
+      }
+      whereJsonSubsetOf(statement) {
+        return this._not(statement, `${columnize_(statement.column, this.builder, this.client, this.bindingsHolder)} <@ ${this._jsonValueClause(statement)}`);
+      }
+      onJsonPathEquals(clause) {
+        return this._onJsonPathEquals("jsonb_path_query_first", clause);
+      }
     };
     module2.exports = QueryCompiler_PG;
+  }
+});
+
+// node_modules/knex/lib/dialects/postgres/query/pg-querybuilder.js
+var require_pg_querybuilder = __commonJS({
+  "node_modules/knex/lib/dialects/postgres/query/pg-querybuilder.js"(exports2, module2) {
+    var QueryBuilder = require_querybuilder();
+    module2.exports = class QueryBuilder_PostgreSQL extends QueryBuilder {
+      using(tables) {
+        this._single.using = tables;
+        return this;
+      }
+      withMaterialized(alias, statementOrColumnList, nothingOrStatement) {
+        this._validateWithArgs(alias, statementOrColumnList, nothingOrStatement, "with");
+        return this.withWrapped(alias, statementOrColumnList, nothingOrStatement, true);
+      }
+      withNotMaterialized(alias, statementOrColumnList, nothingOrStatement) {
+        this._validateWithArgs(alias, statementOrColumnList, nothingOrStatement, "with");
+        return this.withWrapped(alias, statementOrColumnList, nothingOrStatement, false);
+      }
+    };
   }
 });
 
@@ -42965,6 +47085,7 @@ var require_pg_columncompiler = __commonJS({
       constructor(client, tableCompiler, columnBuilder) {
         super(client, tableCompiler, columnBuilder);
         this.modifiers = ["nullable", "defaultTo", "comment"];
+        this._addCheckModifiers();
       }
       bit(column) {
         return column.length !== false ? `bit(${column.length})` : "bit";
@@ -42999,6 +47120,9 @@ var require_pg_columncompiler = __commonJS({
       jsonb() {
         return jsonColumn(this.client, true);
       }
+      checkRegex(regex, constraintName) {
+        return this._check(`${this.formatter.wrap(this.getColumnName())} ~ ${this.client._escapeBinding(regex)}`, constraintName);
+      }
       datetime(withoutTz = false, precision) {
         let useTz;
         if (isObject(withoutTz)) {
@@ -43020,9 +47144,13 @@ var require_pg_columncompiler = __commonJS({
           this.pushQuery(`comment on column ${this.tableCompiler.tableName()}.` + this.formatter.wrap(columnName) + ` is ${escapedComment}`);
         }, comment);
       }
+      increments(options = { primaryKey: true }) {
+        return "serial" + (this.tableCompiler._canBeAddPrimaryKey(options) ? " primary key" : "");
+      }
+      bigincrements(options = { primaryKey: true }) {
+        return "bigserial" + (this.tableCompiler._canBeAddPrimaryKey(options) ? " primary key" : "");
+      }
     };
-    ColumnCompiler_PG.prototype.bigincrements = ({ primaryKey = true } = {}) => "bigserial" + (primaryKey ? " primary key" : "");
-    ColumnCompiler_PG.prototype.increments = ({ primaryKey = true } = {}) => "serial" + (primaryKey ? " primary key" : "");
     ColumnCompiler_PG.prototype.bigint = "bigint";
     ColumnCompiler_PG.prototype.binary = "bytea";
     ColumnCompiler_PG.prototype.bool = "boolean";
@@ -43072,8 +47200,8 @@ var require_pg_tablecompiler = __commonJS({
       }
       createQuery(columns, ifNot, like) {
         const createStatement = ifNot ? "create table if not exists " : "create table ";
-        const columnsSql = " (" + columns.sql.join(", ") + ")";
-        let sql = createStatement + this.tableName() + (like && this.tableNameLike() ? " (like " + this.tableNameLike() + " including all)" : columnsSql);
+        const columnsSql = " (" + columns.sql.join(", ") + this._addChecks() + ")";
+        let sql = createStatement + this.tableName() + (like && this.tableNameLike() ? " (like " + this.tableNameLike() + " including all" + (columns.sql.length ? ", " + columns.sql.join(", ") : "") + ")" : columnsSql);
         if (this.single.inherits)
           sql += ` inherits (${this.formatter.wrap(this.single.inherits)})`;
         this.pushQuery({
@@ -43087,40 +47215,51 @@ var require_pg_tablecompiler = __commonJS({
       addColumns(columns, prefix, colCompilers) {
         if (prefix === this.alterColumnsPrefix) {
           for (const col of colCompilers) {
-            const quotedTableName = this.tableName();
-            const type = col.getColumnType();
-            const colName = this.client.wrapIdentifier(col.getColumnName(), col.columnBuilder.queryContext());
-            const isEnum = col.type === "enu";
-            this.pushQuery({
-              sql: `alter table ${quotedTableName} alter column ${colName} drop default`,
-              bindings: []
-            });
-            this.pushQuery({
-              sql: `alter table ${quotedTableName} alter column ${colName} drop not null`,
-              bindings: []
-            });
-            this.pushQuery({
-              sql: `alter table ${quotedTableName} alter column ${colName} type ${type} using (${colName}${isEnum ? "::text::" : "::"}${type})`,
-              bindings: []
-            });
-            const defaultTo = col.modified["defaultTo"];
-            if (defaultTo) {
-              const modifier = col.defaultTo.apply(col, defaultTo);
-              this.pushQuery({
-                sql: `alter table ${quotedTableName} alter column ${colName} set ${modifier}`,
-                bindings: []
-              });
-            }
-            const nullable = col.modified["nullable"];
-            if (nullable && nullable[0] === false) {
-              this.pushQuery({
-                sql: `alter table ${quotedTableName} alter column ${colName} set not null`,
-                bindings: []
-              });
-            }
+            this._addColumn(col);
           }
         } else {
           super.addColumns(columns, prefix);
+        }
+      }
+      _addColumn(col) {
+        const quotedTableName = this.tableName();
+        const type = col.getColumnType();
+        const colName = this.client.wrapIdentifier(col.getColumnName(), col.columnBuilder.queryContext());
+        const isEnum = col.type === "enu";
+        this.pushQuery({
+          sql: `alter table ${quotedTableName} alter column ${colName} drop default`,
+          bindings: []
+        });
+        const alterNullable = col.columnBuilder.alterNullable;
+        if (alterNullable) {
+          this.pushQuery({
+            sql: `alter table ${quotedTableName} alter column ${colName} drop not null`,
+            bindings: []
+          });
+        }
+        const alterType = col.columnBuilder.alterType;
+        if (alterType) {
+          this.pushQuery({
+            sql: `alter table ${quotedTableName} alter column ${colName} type ${type} using (${colName}${isEnum ? "::text::" : "::"}${type})`,
+            bindings: []
+          });
+        }
+        const defaultTo = col.modified["defaultTo"];
+        if (defaultTo) {
+          const modifier = col.defaultTo.apply(col, defaultTo);
+          this.pushQuery({
+            sql: `alter table ${quotedTableName} alter column ${colName} set ${modifier}`,
+            bindings: []
+          });
+        }
+        if (alterNullable) {
+          const nullable = col.modified["nullable"];
+          if (nullable && nullable[0] === false) {
+            this.pushQuery({
+              sql: `alter table ${quotedTableName} alter column ${colName} set not null`,
+              bindings: []
+            });
+          }
         }
       }
       comment(comment) {
@@ -43305,9 +47444,9 @@ var require_pg_compiler = __commonJS({
       renameView(from, to) {
         this.pushQuery(this.alterViewPrefix + `${this.formatter.wrap(from)} rename to ${this.formatter.wrap(to)}`);
       }
-      refreshMaterializedView(viewName) {
+      refreshMaterializedView(viewName, concurrently = false) {
         this.pushQuery({
-          sql: `refresh materialized view ${this.formatter.wrap(viewName)}`
+          sql: `refresh materialized view${concurrently ? " concurrently" : ""} ${this.formatter.wrap(viewName)}`
         });
       }
       dropMaterializedView(viewName) {
@@ -43680,11 +47819,11 @@ var require_textParsers = __commonJS({
     var parseDate = require_postgres_date();
     var parseInterval = require_postgres_interval();
     var parseByteA = require_postgres_bytea();
-    function allowNull(fn2) {
+    function allowNull(fn) {
       return function nullAllowed(value) {
         if (value === null)
           return value;
-        return fn2(value);
+        return fn(value);
       };
     }
     function parseBool(value) {
@@ -44306,10 +48445,10 @@ var require_defaults2 = __commonJS({
 });
 
 // node_modules/pg/lib/utils.js
-var require_utils4 = __commonJS({
+var require_utils5 = __commonJS({
   "node_modules/pg/lib/utils.js"(exports2, module2) {
     "use strict";
-    var crypto3 = require("crypto");
+    var crypto2 = require("crypto");
     var defaults = require_defaults2();
     function escapeElement(elementRepresentation) {
       var escaped = elementRepresentation.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
@@ -44425,7 +48564,7 @@ var require_utils4 = __commonJS({
       return config;
     }
     var md5 = function(string) {
-      return crypto3.createHash("md5").update(string, "utf-8").digest("hex");
+      return crypto2.createHash("md5").update(string, "utf-8").digest("hex");
     };
     var postgresMd5PasswordHash = function(user, password, salt) {
       var inner = md5(password + user);
@@ -44447,12 +48586,12 @@ var require_utils4 = __commonJS({
 var require_sasl = __commonJS({
   "node_modules/pg/lib/sasl.js"(exports2, module2) {
     "use strict";
-    var crypto3 = require("crypto");
+    var crypto2 = require("crypto");
     function startSession(mechanisms) {
       if (mechanisms.indexOf("SCRAM-SHA-256") === -1) {
         throw new Error("SASL: Only mechanism SCRAM-SHA-256 is currently supported");
       }
-      const clientNonce = crypto3.randomBytes(18).toString("base64");
+      const clientNonce = crypto2.randomBytes(18).toString("base64");
       return {
         mechanism: "SCRAM-SHA-256",
         clientNonce,
@@ -44582,10 +48721,10 @@ var require_sasl = __commonJS({
       return Buffer.from(a.map((_, i) => a[i] ^ b[i]));
     }
     function sha256(text) {
-      return crypto3.createHash("sha256").update(text).digest();
+      return crypto2.createHash("sha256").update(text).digest();
     }
     function hmacSha256(key, msg) {
-      return crypto3.createHmac("sha256", key).update(msg).digest();
+      return crypto2.createHmac("sha256", key).update(msg).digest();
     }
     function Hi(password, saltBytes, iterations) {
       var ui1 = hmacSha256(password, Buffer.concat([saltBytes, Buffer.from([0, 0, 0, 1])]));
@@ -44730,8 +48869,8 @@ var require_helper = __commonJS({
     function warn() {
       var isWritable = warnStream instanceof Stream && warnStream.writable === true;
       if (isWritable) {
-        var args2 = Array.prototype.slice.call(arguments).concat("\n");
-        warnStream.write(util.format.apply(util, args2));
+        var args = Array.prototype.slice.call(arguments).concat("\n");
+        warnStream.write(util.format.apply(util, args));
       }
     }
     Object.defineProperty(module2.exports, "isWin", {
@@ -44873,7 +49012,7 @@ var require_helper = __commonJS({
 });
 
 // node_modules/pgpass/lib/index.js
-var require_lib5 = __commonJS({
+var require_lib4 = __commonJS({
   "node_modules/pgpass/lib/index.js"(exports2, module2) {
     "use strict";
     var path = require("path");
@@ -45157,7 +49296,7 @@ var require_query2 = __commonJS({
     "use strict";
     var { EventEmitter } = require("events");
     var Result = require_result();
-    var utils = require_utils4();
+    var utils = require_utils5();
     var Query = class extends EventEmitter {
       constructor(config, values, callback) {
         super();
@@ -45367,8 +49506,8 @@ var require_messages = __commonJS({
       length: 4
     };
     var DatabaseError = class extends Error {
-      constructor(message2, length, name) {
-        super(message2);
+      constructor(message, length, name) {
+        super(message);
         this.length = length;
         this.name = name;
       }
@@ -45483,9 +49622,9 @@ var require_messages = __commonJS({
     };
     exports2.DataRowMessage = DataRowMessage;
     var NoticeMessage = class {
-      constructor(length, message2) {
+      constructor(length, message) {
         this.length = length;
-        this.message = message2;
+        this.message = message;
         this.name = "notice";
       }
     };
@@ -45707,8 +49846,8 @@ var require_serializer = __commonJS({
     var copyData = (chunk) => {
       return writer.add(chunk).flush(100);
     };
-    var copyFail = (message2) => {
-      return cstringMessage(102, message2);
+    var copyFail = (message) => {
+      return cstringMessage(102, message);
     };
     var codeOnlyBuffer = (code) => Buffer.from([code, 0, 0, 0, 4]);
     var flushBuffer = codeOnlyBuffer(72);
@@ -45795,7 +49934,7 @@ var require_buffer_reader = __commonJS({
 });
 
 // node_modules/pg-protocol/dist/parser.js
-var require_parser = __commonJS({
+var require_parser2 = __commonJS({
   "node_modules/pg-protocol/dist/parser.js"(exports2) {
     "use strict";
     var __importDefault = exports2 && exports2.__importDefault || function(mod) {
@@ -45830,8 +49969,8 @@ var require_parser = __commonJS({
           const length = this.buffer.readUInt32BE(offset + CODE_LENGTH);
           const fullMessageLength = CODE_LENGTH + length;
           if (fullMessageLength + offset <= bufferFullLength) {
-            const message2 = this.handlePacket(offset + HEADER_LENGTH, code, length, this.buffer);
-            callback(message2);
+            const message = this.handlePacket(offset + HEADER_LENGTH, code, length, this.buffer);
+            callback(message);
             offset += fullMessageLength;
           } else {
             break;
@@ -45947,11 +50086,11 @@ var require_parser = __commonJS({
         this.reader.setBuffer(offset, bytes);
         const isBinary = this.reader.byte() !== 0;
         const columnCount = this.reader.int16();
-        const message2 = new messages_1.CopyResponse(length, messageName, isBinary, columnCount);
+        const message = new messages_1.CopyResponse(length, messageName, isBinary, columnCount);
         for (let i = 0; i < columnCount; i++) {
-          message2.columnTypes[i] = this.reader.int16();
+          message.columnTypes[i] = this.reader.int16();
         }
-        return message2;
+        return message;
       }
       parseNotificationMessage(offset, length, bytes) {
         this.reader.setBuffer(offset, bytes);
@@ -45963,11 +50102,11 @@ var require_parser = __commonJS({
       parseRowDescriptionMessage(offset, length, bytes) {
         this.reader.setBuffer(offset, bytes);
         const fieldCount = this.reader.int16();
-        const message2 = new messages_1.RowDescriptionMessage(length, fieldCount);
+        const message = new messages_1.RowDescriptionMessage(length, fieldCount);
         for (let i = 0; i < fieldCount; i++) {
-          message2.fields[i] = this.parseField();
+          message.fields[i] = this.parseField();
         }
-        return message2;
+        return message;
       }
       parseField() {
         const name = this.reader.cstring();
@@ -45982,11 +50121,11 @@ var require_parser = __commonJS({
       parseParameterDescriptionMessage(offset, length, bytes) {
         this.reader.setBuffer(offset, bytes);
         const parameterCount = this.reader.int16();
-        const message2 = new messages_1.ParameterDescriptionMessage(length, parameterCount);
+        const message = new messages_1.ParameterDescriptionMessage(length, parameterCount);
         for (let i = 0; i < parameterCount; i++) {
-          message2.dataTypeIDs[i] = this.reader.int32();
+          message.dataTypeIDs[i] = this.reader.int32();
         }
-        return message2;
+        return message;
       }
       parseDataRowMessage(offset, length, bytes) {
         this.reader.setBuffer(offset, bytes);
@@ -46013,7 +50152,7 @@ var require_parser = __commonJS({
       parseAuthenticationResponse(offset, length, bytes) {
         this.reader.setBuffer(offset, bytes);
         const code = this.reader.int32();
-        const message2 = {
+        const message = {
           name: "authenticationOk",
           length
         };
@@ -46021,40 +50160,40 @@ var require_parser = __commonJS({
           case 0:
             break;
           case 3:
-            if (message2.length === 8) {
-              message2.name = "authenticationCleartextPassword";
+            if (message.length === 8) {
+              message.name = "authenticationCleartextPassword";
             }
             break;
           case 5:
-            if (message2.length === 12) {
-              message2.name = "authenticationMD5Password";
+            if (message.length === 12) {
+              message.name = "authenticationMD5Password";
               const salt = this.reader.bytes(4);
               return new messages_1.AuthenticationMD5Password(length, salt);
             }
             break;
           case 10:
-            message2.name = "authenticationSASL";
-            message2.mechanisms = [];
+            message.name = "authenticationSASL";
+            message.mechanisms = [];
             let mechanism;
             do {
               mechanism = this.reader.cstring();
               if (mechanism) {
-                message2.mechanisms.push(mechanism);
+                message.mechanisms.push(mechanism);
               }
             } while (mechanism);
             break;
           case 11:
-            message2.name = "authenticationSASLContinue";
-            message2.data = this.reader.string(length - 8);
+            message.name = "authenticationSASLContinue";
+            message.data = this.reader.string(length - 8);
             break;
           case 12:
-            message2.name = "authenticationSASLFinal";
-            message2.data = this.reader.string(length - 8);
+            message.name = "authenticationSASLFinal";
+            message.data = this.reader.string(length - 8);
             break;
           default:
             throw new Error("Unknown authenticationOk message type " + code);
         }
-        return message2;
+        return message;
       }
       parseErrorMessage(offset, length, bytes, name) {
         this.reader.setBuffer(offset, bytes);
@@ -46065,24 +50204,24 @@ var require_parser = __commonJS({
           fieldType = this.reader.string(1);
         }
         const messageValue = fields.M;
-        const message2 = name === "notice" ? new messages_1.NoticeMessage(length, messageValue) : new messages_1.DatabaseError(messageValue, length, name);
-        message2.severity = fields.S;
-        message2.code = fields.C;
-        message2.detail = fields.D;
-        message2.hint = fields.H;
-        message2.position = fields.P;
-        message2.internalPosition = fields.p;
-        message2.internalQuery = fields.q;
-        message2.where = fields.W;
-        message2.schema = fields.s;
-        message2.table = fields.t;
-        message2.column = fields.c;
-        message2.dataType = fields.d;
-        message2.constraint = fields.n;
-        message2.file = fields.F;
-        message2.line = fields.L;
-        message2.routine = fields.R;
-        return message2;
+        const message = name === "notice" ? new messages_1.NoticeMessage(length, messageValue) : new messages_1.DatabaseError(messageValue, length, name);
+        message.severity = fields.S;
+        message.code = fields.C;
+        message.detail = fields.D;
+        message.hint = fields.H;
+        message.position = fields.P;
+        message.internalPosition = fields.p;
+        message.internalQuery = fields.q;
+        message.where = fields.W;
+        message.schema = fields.s;
+        message.table = fields.t;
+        message.column = fields.c;
+        message.dataType = fields.d;
+        message.constraint = fields.n;
+        message.file = fields.F;
+        message.line = fields.L;
+        message.routine = fields.R;
+        return message;
       }
     };
     exports2.Parser = Parser;
@@ -46103,7 +50242,7 @@ var require_dist4 = __commonJS({
     Object.defineProperty(exports2, "serialize", { enumerable: true, get: function() {
       return serializer_1.serialize;
     } });
-    var parser_1 = require_parser();
+    var parser_1 = require_parser2();
     function parse(stream, callback) {
       const parser = new parser_1.Parser();
       stream.on("data", (buffer) => parser.parse(buffer, callback));
@@ -46301,9 +50440,9 @@ var require_client3 = __commonJS({
     "use strict";
     var EventEmitter = require("events").EventEmitter;
     var util = require("util");
-    var utils = require_utils4();
+    var utils = require_utils5();
     var sasl = require_sasl();
-    var pgPass = require_lib5();
+    var pgPass = require_lib4();
     var TypeOverrides = require_type_overrides();
     var ConnectionParameters = require_connection_parameters();
     var Query = require_query2();
@@ -46854,15 +50993,17 @@ var require_pg_pool = __commonJS({
         this.options.max = this.options.max || this.options.poolSize || 10;
         this.options.maxUses = this.options.maxUses || Infinity;
         this.options.allowExitOnIdle = this.options.allowExitOnIdle || false;
+        this.options.maxLifetimeSeconds = this.options.maxLifetimeSeconds || 0;
         this.log = this.options.log || function() {
         };
-        this.Client = this.options.Client || Client || require_lib6().Client;
+        this.Client = this.options.Client || Client || require_lib5().Client;
         this.Promise = this.options.Promise || global.Promise;
         if (typeof this.options.idleTimeoutMillis === "undefined") {
           this.options.idleTimeoutMillis = 1e4;
         }
         this._clients = [];
         this._idle = [];
+        this._expired = /* @__PURE__ */ new WeakSet();
         this._pendingQueue = [];
         this._endCallback = void 0;
         this.ending = false;
@@ -46983,6 +51124,16 @@ var require_pg_pool = __commonJS({
             }
           } else {
             this.log("new client connected");
+            if (this.options.maxLifetimeSeconds !== 0) {
+              setTimeout(() => {
+                this.log("ending client due to expired lifetime");
+                this._expired.add(client);
+                const idleIndex = this._idle.findIndex((idleItem) => idleItem.client === client);
+                if (idleIndex !== -1) {
+                  this._acquireClient(client, new PendingItem((err2, client2, clientRelease) => clientRelease()), idleListener, false);
+                }
+              }, this.options.maxLifetimeSeconds * 1e3);
+            }
             return this._acquireClient(client, pendingItem, idleListener, true);
           }
         });
@@ -47031,6 +51182,14 @@ var require_pg_pool = __commonJS({
           if (client._poolUseCount >= this.options.maxUses) {
             this.log("remove expended client");
           }
+          this._remove(client);
+          this._pulseQueue();
+          return;
+        }
+        const isExpired = this._expired.has(client);
+        if (isExpired) {
+          this.log("remove expired client");
+          this._expired.delete(client);
           this._remove(client);
           this._pulseQueue();
           return;
@@ -47114,6 +51273,9 @@ var require_pg_pool = __commonJS({
       }
       get idleCount() {
         return this._idle.length;
+      }
+      get expiredCount() {
+        return this._clients.reduce((acc, client) => acc + (this._expired.has(client) ? 1 : 0), 0);
       }
       get totalCount() {
         return this._clients.length;
@@ -47615,11 +51777,11 @@ var require_textParsers2 = __commonJS({
     var parseDate = require_postgres_date();
     var parseInterval = require_postgres_interval();
     var parseByteA = require_postgres_bytea();
-    function allowNull(fn2) {
+    function allowNull(fn) {
       return function nullAllowed(value) {
         if (value === null)
           return value;
-        return fn2(value);
+        return fn(value);
       };
     }
     function parseBool(value) {
@@ -48137,11 +52299,11 @@ var require_copy_stream = __commonJS({
       });
     };
     CopyStream.prototype.end = function() {
-      var args2 = Array.prototype.slice.call(arguments, 0);
+      var args = Array.prototype.slice.call(arguments, 0);
       var self2 = this;
-      var callback = args2.pop();
-      if (args2.length) {
-        this.write(args2[0]);
+      var callback = args.pop();
+      if (args.length) {
+        this.write(args[0]);
       }
       var result = this.pq.putCopyEnd();
       if (result === 1) {
@@ -48202,9 +52364,9 @@ var require_copy_stream = __commonJS({
         pq.removeListener("readable", onReadable);
         pq.stopReader();
       };
-      var readError = function(message2) {
+      var readError = function(message) {
         cleanup();
-        return cb(new Error(message2 || pq.errorMessage()));
+        return cb(new Error(message || pq.errorMessage()));
       };
       var onReadable = function() {
         if (!pq.consumeInput()) {
@@ -48340,10 +52502,10 @@ var require_pg_native = __commonJS({
     };
     Client.prototype.prepare = function(statementName, text, nParams, cb) {
       var self2 = this;
-      var fn2 = function() {
+      var fn = function() {
         return self2.pq.sendPrepare(statementName, text, nParams);
       };
-      self2._dispatchQuery(self2.pq, fn2, function(err) {
+      self2._dispatchQuery(self2.pq, fn, function(err) {
         if (err)
           return cb(err);
         self2._awaitResult(cb);
@@ -48351,10 +52513,10 @@ var require_pg_native = __commonJS({
     };
     Client.prototype.execute = function(statementName, parameters, cb) {
       var self2 = this;
-      var fn2 = function() {
+      var fn = function() {
         return self2.pq.sendQueryPrepared(statementName, parameters);
       };
-      self2._dispatchQuery(self2.pq, fn2, function(err, rows) {
+      self2._dispatchQuery(self2.pq, fn, function(err, rows) {
         if (err)
           return cb(err);
         self2._awaitResult(cb);
@@ -48404,8 +52566,8 @@ var require_pg_native = __commonJS({
       if (cb)
         setImmediate(cb);
     };
-    Client.prototype._readError = function(message2) {
-      var err = new Error(message2 || this.pq.errorMessage());
+    Client.prototype._readError = function(message) {
+      var err = new Error(message || this.pq.errorMessage());
       this.emit("error", err);
     };
     Client.prototype._stopReading = function() {
@@ -48492,12 +52654,12 @@ var require_pg_native = __commonJS({
         self2._waitForDrain(pq, cb);
       });
     };
-    Client.prototype._dispatchQuery = function(pq, fn2, cb) {
+    Client.prototype._dispatchQuery = function(pq, fn, cb) {
       this._stopReading();
       var success = pq.setNonBlocking(true);
       if (!success)
         return cb(new Error("Unable to set non-blocking to true"));
-      var sent = fn2();
+      var sent = fn();
       if (!sent)
         return cb(new Error(pq.errorMessage() || "Something went wrong dispatching the query"));
       this._waitForDrain(pq, cb);
@@ -48537,7 +52699,7 @@ var require_package3 = __commonJS({
   "node_modules/pg/package.json"(exports2, module2) {
     module2.exports = {
       name: "pg",
-      version: "8.7.1",
+      version: "8.7.3",
       description: "PostgreSQL client - pure javascript & libpq with the same API",
       keywords: [
         "database",
@@ -48560,7 +52722,7 @@ var require_package3 = __commonJS({
         "buffer-writer": "2.0.0",
         "packet-reader": "1.0.0",
         "pg-connection-string": "^2.5.0",
-        "pg-pool": "^3.4.1",
+        "pg-pool": "^3.5.1",
         "pg-protocol": "^1.5.0",
         "pg-types": "^2.1.0",
         pgpass: "1.x"
@@ -48590,7 +52752,7 @@ var require_package3 = __commonJS({
       engines: {
         node: ">= 8.0.0"
       },
-      gitHead: "92b4d37926c276d343bfe56447ff6f526af757cf"
+      gitHead: "4fa7ee891a456168a75695ac026792136f16577f"
     };
   }
 });
@@ -48601,7 +52763,7 @@ var require_query3 = __commonJS({
     "use strict";
     var EventEmitter = require("events").EventEmitter;
     var util = require("util");
-    var utils = require_utils4();
+    var utils = require_utils5();
     var NativeQuery = module2.exports = function(config, values, callback) {
       EventEmitter.call(this);
       config = utils.normalizeQueryConfig(config, values, callback);
@@ -48973,7 +53135,7 @@ var require_native = __commonJS({
 });
 
 // node_modules/pg/lib/index.js
-var require_lib6 = __commonJS({
+var require_lib5 = __commonJS({
   "node_modules/pg/lib/index.js"(exports2, module2) {
     "use strict";
     var Client = require_client3();
@@ -49029,7 +53191,7 @@ var require_pg_cursor = __commonJS({
   "node_modules/pg-cursor/index.js"(exports2, module2) {
     "use strict";
     var Result = require_result();
-    var prepare = require_utils4().prepareValue;
+    var prepare = require_utils5().prepareValue;
     var EventEmitter = require("events").EventEmitter;
     var util = require("util");
     var nextUniqueID = 1;
@@ -49091,10 +53253,13 @@ var require_pg_cursor = __commonJS({
         }
       }
       _closePortal() {
+        if (this.state === "done")
+          return;
         this.connection.close({ type: "P", name: this._portal });
         if (this.state !== "error") {
           this.connection.sync();
         }
+        this.state = "done";
       }
       handleRowDescription(msg) {
         this._result.addFields(msg.fields);
@@ -49177,19 +53342,13 @@ var require_pg_cursor = __commonJS({
           });
         }
         if (!this.connection || this.state === "done") {
-          if (cb) {
-            return setImmediate(cb);
-          } else {
-            return;
-          }
+          setImmediate(cb);
+          return promise;
         }
         this._closePortal();
-        this.state = "done";
-        if (cb) {
-          this.connection.once("readyForQuery", function() {
-            cb();
-          });
-        }
+        this.connection.once("readyForQuery", function() {
+          cb();
+        });
         return promise;
       }
       read(rows, cb) {
@@ -49275,6 +53434,7 @@ var require_postgres = __commonJS({
     var Client = require_client2();
     var Transaction = require_pg_transaction();
     var QueryCompiler = require_pg_querycompiler();
+    var QueryBuilder = require_pg_querybuilder();
     var ColumnCompiler = require_pg_columncompiler();
     var TableCompiler = require_pg_tablecompiler();
     var ViewCompiler = require_pg_viewcompiler();
@@ -49295,6 +53455,9 @@ var require_postgres = __commonJS({
       transaction() {
         return new Transaction(this, ...arguments);
       }
+      queryBuilder() {
+        return new QueryBuilder(this);
+      }
       queryCompiler(builder, formatter) {
         return new QueryCompiler(this, builder, formatter);
       }
@@ -49314,7 +53477,7 @@ var require_postgres = __commonJS({
         return new ViewBuilder(this, ...arguments);
       }
       _driver() {
-        return require_lib6();
+        return require_lib5();
       }
       wrapIdentifierImpl(value) {
         if (value === "*")
@@ -49347,8 +53510,8 @@ var require_postgres = __commonJS({
             });
           }
           return connection;
-        }).then(function setSearchPath(connection) {
-          client.setSchemaSearchPath(connection);
+        }).then(async function setSearchPath(connection) {
+          await client.setSchemaSearchPath(connection);
           return connection;
         });
       }
@@ -49455,11 +53618,7 @@ var require_postgres = __commonJS({
           const returns = [];
           for (let i = 0, l = resp.rows.length; i < l; i++) {
             const row = resp.rows[i];
-            if (returning === "*" || Array.isArray(returning)) {
-              returns[i] = row;
-            } else {
-              returns[i] = row[Object.keys(row)[0]];
-            }
+            returns[i] = row;
           }
           return returns;
         }
@@ -49484,6 +53643,13 @@ var require_postgres = __commonJS({
           bindings: [connectionToKill.processID],
           options: {}
         });
+      }
+      toPathForJson(jsonPath) {
+        const PG_PATH_REGEX = /^{.*}$/;
+        if (jsonPath.match(PG_PATH_REGEX)) {
+          return jsonPath;
+        }
+        return "{" + jsonPath.replace(/^(\$\.)/, "").replace(".", ",").replace(/\[([0-9]+)]/, ",$1") + "}";
       }
     };
     Object.assign(Client_PG.prototype, {
@@ -49546,6 +53712,4561 @@ var require_postgres = __commonJS({
       return result + "}";
     }
     module2.exports = Client_PG;
+  }
+});
+
+// node_modules/knex/lib/dialects/cockroachdb/crdb-querycompiler.js
+var require_crdb_querycompiler = __commonJS({
+  "node_modules/knex/lib/dialects/cockroachdb/crdb-querycompiler.js"(exports2, module2) {
+    var QueryCompiler_PG = require_pg_querycompiler();
+    var {
+      columnize: columnize_,
+      wrap: wrap_,
+      operator: operator_
+    } = require_wrappingFormatter();
+    var QueryCompiler_CRDB = class extends QueryCompiler_PG {
+      truncate() {
+        return `truncate ${this.tableName}`;
+      }
+      upsert() {
+        let sql = this._upsert();
+        if (sql === "")
+          return sql;
+        const { returning } = this.single;
+        if (returning)
+          sql += this._returning(returning);
+        return {
+          sql,
+          returning
+        };
+      }
+      _upsert() {
+        const upsertValues = this.single.upsert || [];
+        const sql = this.with() + `upsert into ${this.tableName} `;
+        const body = this._insertBody(upsertValues);
+        return body === "" ? "" : sql + body;
+      }
+      _groupOrder(item, type) {
+        return this._basicGroupOrder(item, type);
+      }
+      whereJsonPath(statement) {
+        let castValue = "";
+        if (!isNaN(statement.value) && parseInt(statement.value)) {
+          castValue = "::int";
+        } else if (!isNaN(statement.value) && parseFloat(statement.value)) {
+          castValue = "::float";
+        } else {
+          castValue = " #>> '{}'";
+        }
+        return `json_extract_path(${this._columnClause(statement)}, ${this.client.toArrayPathFromJsonPath(statement.jsonPath, this.builder, this.bindingsHolder)})${castValue} ${operator_(statement.operator, this.builder, this.client, this.bindingsHolder)} ${this._jsonValueClause(statement)}`;
+      }
+      _jsonExtract(nameFunction, params) {
+        let extractions;
+        if (Array.isArray(params.column)) {
+          extractions = params.column;
+        } else {
+          extractions = [params];
+        }
+        return extractions.map((extraction) => {
+          const jsonCol = `json_extract_path(${columnize_(extraction.column || extraction[0], this.builder, this.client, this.bindingsHolder)}, ${this.client.toArrayPathFromJsonPath(extraction.path || extraction[1], this.builder, this.bindingsHolder)})`;
+          const alias = extraction.alias || extraction[2];
+          return alias ? this.client.alias(jsonCol, this.formatter.wrap(alias)) : jsonCol;
+        }).join(", ");
+      }
+      _onJsonPathEquals(nameJoinFunction, clause) {
+        return "json_extract_path(" + wrap_(clause.columnFirst, void 0, this.builder, this.client, this.bindingsHolder) + ", " + this.client.toArrayPathFromJsonPath(clause.jsonPathFirst, this.builder, this.bindingsHolder) + ") = json_extract_path(" + wrap_(clause.columnSecond, void 0, this.builder, this.client, this.bindingsHolder) + ", " + this.client.toArrayPathFromJsonPath(clause.jsonPathSecond, this.builder, this.bindingsHolder) + ")";
+      }
+    };
+    module2.exports = QueryCompiler_CRDB;
+  }
+});
+
+// node_modules/knex/lib/dialects/cockroachdb/crdb-tablecompiler.js
+var require_crdb_tablecompiler = __commonJS({
+  "node_modules/knex/lib/dialects/cockroachdb/crdb-tablecompiler.js"(exports2, module2) {
+    var TableCompiler = require_pg_tablecompiler();
+    var TableCompiler_CRDB = class extends TableCompiler {
+      constructor(client, tableBuilder) {
+        super(client, tableBuilder);
+      }
+      addColumns(columns, prefix, colCompilers) {
+        if (prefix === this.alterColumnsPrefix) {
+          for (const col of colCompilers) {
+            this.client.logger.warn("Experimental alter column in use, see issue: https://github.com/cockroachdb/cockroach/issues/49329");
+            this.pushQuery({
+              sql: "SET enable_experimental_alter_column_type_general = true",
+              bindings: []
+            });
+            super._addColumn(col);
+          }
+        } else {
+          super.addColumns(columns, prefix);
+        }
+      }
+      dropUnique(columns, indexName) {
+        indexName = indexName ? this.formatter.wrap(indexName) : this._indexCommand("unique", this.tableNameRaw, columns);
+        this.pushQuery(`drop index ${this.tableName()}@${indexName} cascade `);
+      }
+    };
+    module2.exports = TableCompiler_CRDB;
+  }
+});
+
+// node_modules/knex/lib/dialects/cockroachdb/crdb-viewcompiler.js
+var require_crdb_viewcompiler = __commonJS({
+  "node_modules/knex/lib/dialects/cockroachdb/crdb-viewcompiler.js"(exports2, module2) {
+    var ViewCompiler_PG = require_pg_viewcompiler();
+    var ViewCompiler_CRDB = class extends ViewCompiler_PG {
+      renameColumn(from, to) {
+        throw new Error("rename column of views is not supported by this dialect.");
+      }
+      defaultTo(column, defaultValue) {
+        throw new Error("change default values of views is not supported by this dialect.");
+      }
+    };
+    module2.exports = ViewCompiler_CRDB;
+  }
+});
+
+// node_modules/knex/lib/dialects/cockroachdb/crdb-querybuilder.js
+var require_crdb_querybuilder = __commonJS({
+  "node_modules/knex/lib/dialects/cockroachdb/crdb-querybuilder.js"(exports2, module2) {
+    var QueryBuilder = require_querybuilder();
+    var isEmpty = require_isEmpty();
+    module2.exports = class QueryBuilder_CockroachDB extends QueryBuilder {
+      upsert(values, returning, options) {
+        this._method = "upsert";
+        if (!isEmpty(returning))
+          this.returning(returning, options);
+        this._single.upsert = values;
+        return this;
+      }
+    };
+  }
+});
+
+// node_modules/knex/lib/dialects/cockroachdb/index.js
+var require_cockroachdb = __commonJS({
+  "node_modules/knex/lib/dialects/cockroachdb/index.js"(exports2, module2) {
+    var Client_PostgreSQL = require_postgres();
+    var Transaction = require_pg_transaction();
+    var QueryCompiler = require_crdb_querycompiler();
+    var TableCompiler = require_crdb_tablecompiler();
+    var ViewCompiler = require_crdb_viewcompiler();
+    var QueryBuilder = require_crdb_querybuilder();
+    var Client_CockroachDB = class extends Client_PostgreSQL {
+      transaction() {
+        return new Transaction(this, ...arguments);
+      }
+      queryCompiler(builder, formatter) {
+        return new QueryCompiler(this, builder, formatter);
+      }
+      tableCompiler() {
+        return new TableCompiler(this, ...arguments);
+      }
+      viewCompiler() {
+        return new ViewCompiler(this, ...arguments);
+      }
+      queryBuilder() {
+        return new QueryBuilder(this);
+      }
+      _parseVersion(versionString) {
+        return versionString.split(" ")[2];
+      }
+      async cancelQuery(connectionToKill) {
+        try {
+          return await this._wrappedCancelQueryCall(null, connectionToKill);
+        } catch (err) {
+          this.logger.warn(`Connection Error: ${err}`);
+          throw err;
+        }
+      }
+      _wrappedCancelQueryCall(emptyConnection, connectionToKill) {
+        if (connectionToKill.activeQuery.processID === 0 && connectionToKill.activeQuery.secretKey === 0) {
+          return;
+        }
+        return connectionToKill.cancel(connectionToKill, connectionToKill.activeQuery);
+      }
+      toArrayPathFromJsonPath(jsonPath, builder, bindingsHolder) {
+        return jsonPath.replace(/^(\$\.)/, "").replace(/\[([0-9]+)]/, ".$1").split(".").map(function(v) {
+          return this.parameter(v, builder, bindingsHolder);
+        }.bind(this)).join(", ");
+      }
+    };
+    Object.assign(Client_CockroachDB.prototype, {
+      driverName: "cockroachdb"
+    });
+    module2.exports = Client_CockroachDB;
+  }
+});
+
+// node_modules/lodash/isNil.js
+var require_isNil = __commonJS({
+  "node_modules/lodash/isNil.js"(exports2, module2) {
+    function isNil(value) {
+      return value == null;
+    }
+    module2.exports = isNil;
+  }
+});
+
+// node_modules/knex/lib/dialects/mssql/mssql-formatter.js
+var require_mssql_formatter = __commonJS({
+  "node_modules/knex/lib/dialects/mssql/mssql-formatter.js"(exports2, module2) {
+    var Formatter = require_formatter();
+    var MSSQL_Formatter = class extends Formatter {
+      columnizeWithPrefix(prefix, target) {
+        const columns = typeof target === "string" ? [target] : target;
+        let str = "", i = -1;
+        while (++i < columns.length) {
+          if (i > 0)
+            str += ", ";
+          str += prefix + this.wrap(columns[i]);
+        }
+        return str;
+      }
+      escapingStringDelimiters(string) {
+        return (string || "").replace(/'/g, "''");
+      }
+    };
+    module2.exports = MSSQL_Formatter;
+  }
+});
+
+// node_modules/knex/lib/dialects/mssql/transaction.js
+var require_transaction2 = __commonJS({
+  "node_modules/knex/lib/dialects/mssql/transaction.js"(exports2, module2) {
+    var Transaction = require_transaction();
+    var debug = require_src6()("knex:tx");
+    var Transaction_MSSQL = class extends Transaction {
+      begin(conn) {
+        debug("transaction::begin id=%s", this.txid);
+        return new Promise((resolve, reject) => {
+          conn.beginTransaction((err) => {
+            if (err) {
+              debug("transaction::begin error id=%s message=%s", this.txid, err.message);
+              return reject(err);
+            }
+            resolve();
+          }, this.outerTx ? this.txid : void 0, nameToIsolationLevelEnum(this.isolationLevel));
+        }).then(this._resolver, this._rejecter);
+      }
+      savepoint(conn) {
+        debug("transaction::savepoint id=%s", this.txid);
+        return new Promise((resolve, reject) => {
+          conn.saveTransaction((err) => {
+            if (err) {
+              debug("transaction::savepoint id=%s message=%s", this.txid, err.message);
+              return reject(err);
+            }
+            this.trxClient.emit("query", {
+              __knexUid: this.trxClient.__knexUid,
+              __knexTxId: this.trxClient.__knexTxId,
+              autogenerated: true,
+              sql: this.outerTx ? `SAVE TRANSACTION [${this.txid}]` : `SAVE TRANSACTION`
+            });
+            resolve();
+          }, this.outerTx ? this.txid : void 0);
+        });
+      }
+      commit(conn, value) {
+        debug("transaction::commit id=%s", this.txid);
+        return new Promise((resolve, reject) => {
+          conn.commitTransaction((err) => {
+            if (err) {
+              debug("transaction::commit error id=%s message=%s", this.txid, err.message);
+              return reject(err);
+            }
+            this._completed = true;
+            resolve(value);
+          }, this.outerTx ? this.txid : void 0);
+        }).then(() => this._resolver(value), this._rejecter);
+      }
+      release(conn, value) {
+        return this._resolver(value);
+      }
+      rollback(conn, error) {
+        this._completed = true;
+        debug("transaction::rollback id=%s", this.txid);
+        return new Promise((_resolve, reject) => {
+          if (!conn.inTransaction) {
+            return reject(error || new Error("Transaction rejected with non-error: undefined"));
+          }
+          if (conn.state.name !== "LoggedIn") {
+            return reject(new Error("Can't rollback transaction. There is a request in progress"));
+          }
+          conn.rollbackTransaction((err) => {
+            if (err) {
+              debug("transaction::rollback error id=%s message=%s", this.txid, err.message);
+            }
+            reject(err || error || new Error("Transaction rejected with non-error: undefined"));
+          }, this.outerTx ? this.txid : void 0);
+        }).catch((err) => {
+          if (!error && this.doNotRejectOnRollback) {
+            this._resolver();
+            return;
+          }
+          if (error) {
+            try {
+              err.originalError = error;
+            } catch (_err) {
+            }
+          }
+          this._rejecter(err);
+        });
+      }
+      rollbackTo(conn, error) {
+        return this.rollback(conn, error).then(() => void this.trxClient.emit("query", {
+          __knexUid: this.trxClient.__knexUid,
+          __knexTxId: this.trxClient.__knexTxId,
+          autogenerated: true,
+          sql: `ROLLBACK TRANSACTION`
+        }));
+      }
+    };
+    module2.exports = Transaction_MSSQL;
+    function nameToIsolationLevelEnum(level) {
+      if (!level)
+        return;
+      level = level.toUpperCase().replace(" ", "_");
+      const knownEnum = isolationEnum[level];
+      if (!knownEnum) {
+        throw new Error(`Unknown Isolation level, was expecting one of: ${JSON.stringify(humanReadableKeys)}`);
+      }
+      return knownEnum;
+    }
+    var isolationEnum = {
+      READ_UNCOMMITTED: 1,
+      READ_COMMITTED: 2,
+      REPEATABLE_READ: 3,
+      SERIALIZABLE: 4,
+      SNAPSHOT: 5
+    };
+    var humanReadableKeys = Object.keys(isolationEnum).map((key) => key.toLowerCase().replace("_", " "));
+  }
+});
+
+// node_modules/knex/lib/dialects/mssql/query/mssql-querycompiler.js
+var require_mssql_querycompiler = __commonJS({
+  "node_modules/knex/lib/dialects/mssql/query/mssql-querycompiler.js"(exports2, module2) {
+    var QueryCompiler = require_querycompiler();
+    var compact = require_compact();
+    var identity = require_identity();
+    var isEmpty = require_isEmpty();
+    var Raw = require_raw2();
+    var {
+      columnize: columnize_
+    } = require_wrappingFormatter();
+    var components = [
+      "columns",
+      "join",
+      "lock",
+      "where",
+      "union",
+      "group",
+      "having",
+      "order",
+      "limit",
+      "offset"
+    ];
+    var QueryCompiler_MSSQL = class extends QueryCompiler {
+      constructor(client, builder, formatter) {
+        super(client, builder, formatter);
+        const { onConflict } = this.single;
+        if (onConflict) {
+          throw new Error(".onConflict() is not supported for mssql.");
+        }
+        this._emptyInsertValue = "default values";
+      }
+      with() {
+        const undoList = [];
+        if (this.grouped.with) {
+          for (const stmt of this.grouped.with) {
+            if (stmt.recursive) {
+              undoList.push(stmt);
+              stmt.recursive = false;
+            }
+          }
+        }
+        const result = super.with();
+        for (const stmt of undoList) {
+          stmt.recursive = true;
+        }
+        return result;
+      }
+      select() {
+        const sql = this.with();
+        const statements = components.map((component) => this[component](this));
+        return sql + compact(statements).join(" ");
+      }
+      insert() {
+        if (this.single.options && this.single.options.includeTriggerModifications) {
+          return this.insertWithTriggers();
+        } else {
+          return this.standardInsert();
+        }
+      }
+      insertWithTriggers() {
+        const insertValues = this.single.insert || [];
+        const { returning } = this.single;
+        let sql = this.with() + `${this._buildTempTable(returning)}insert into ${this.tableName} `;
+        const returningSql = returning ? this._returning("insert", returning, true) + " " : "";
+        if (Array.isArray(insertValues)) {
+          if (insertValues.length === 0) {
+            return "";
+          }
+        } else if (typeof insertValues === "object" && isEmpty(insertValues)) {
+          return {
+            sql: sql + returningSql + this._emptyInsertValue + this._buildReturningSelect(returning),
+            returning
+          };
+        }
+        sql += this._buildInsertData(insertValues, returningSql);
+        if (returning) {
+          sql += this._buildReturningSelect(returning);
+        }
+        return {
+          sql,
+          returning
+        };
+      }
+      _buildInsertData(insertValues, returningSql) {
+        let sql = "";
+        const insertData = this._prepInsert(insertValues);
+        if (typeof insertData === "string") {
+          sql += insertData;
+        } else {
+          if (insertData.columns.length) {
+            sql += `(${this.formatter.columnize(insertData.columns)}`;
+            sql += `) ${returningSql}values (` + this._buildInsertValues(insertData) + ")";
+          } else if (insertValues.length === 1 && insertValues[0]) {
+            sql += returningSql + this._emptyInsertValue;
+          } else {
+            return "";
+          }
+        }
+        return sql;
+      }
+      standardInsert() {
+        const insertValues = this.single.insert || [];
+        let sql = this.with() + `insert into ${this.tableName} `;
+        const { returning } = this.single;
+        const returningSql = returning ? this._returning("insert", returning) + " " : "";
+        if (Array.isArray(insertValues)) {
+          if (insertValues.length === 0) {
+            return "";
+          }
+        } else if (typeof insertValues === "object" && isEmpty(insertValues)) {
+          return {
+            sql: sql + returningSql + this._emptyInsertValue,
+            returning
+          };
+        }
+        sql += this._buildInsertData(insertValues, returningSql);
+        return {
+          sql,
+          returning
+        };
+      }
+      update() {
+        if (this.single.options && this.single.options.includeTriggerModifications) {
+          return this.updateWithTriggers();
+        } else {
+          return this.standardUpdate();
+        }
+      }
+      updateWithTriggers() {
+        const top = this.top();
+        const withSQL = this.with();
+        const updates = this._prepUpdate(this.single.update);
+        const join = this.join();
+        const where = this.where();
+        const order = this.order();
+        const { returning } = this.single;
+        const declaredTemp = this._buildTempTable(returning);
+        return {
+          sql: withSQL + declaredTemp + `update ${top ? top + " " : ""}${this.tableName} set ` + updates.join(", ") + (returning ? ` ${this._returning("update", returning, true)}` : "") + (join ? ` from ${this.tableName} ${join}` : "") + (where ? ` ${where}` : "") + (order ? ` ${order}` : "") + (!returning ? this._returning("rowcount", "@@rowcount") : this._buildReturningSelect(returning)),
+          returning: returning || "@@rowcount"
+        };
+      }
+      _formatGroupsItemValue(value, nulls) {
+        const column = super._formatGroupsItemValue(value);
+        if (nulls && !(value instanceof Raw)) {
+          const collNulls = `IIF(${column} is null,`;
+          if (nulls === "first") {
+            return `${collNulls}0,1)`;
+          } else if (nulls === "last") {
+            return `${collNulls}1,0)`;
+          }
+        }
+        return column;
+      }
+      standardUpdate() {
+        const top = this.top();
+        const withSQL = this.with();
+        const updates = this._prepUpdate(this.single.update);
+        const join = this.join();
+        const where = this.where();
+        const order = this.order();
+        const { returning } = this.single;
+        return {
+          sql: withSQL + `update ${top ? top + " " : ""}${this.tableName} set ` + updates.join(", ") + (returning ? ` ${this._returning("update", returning)}` : "") + (join ? ` from ${this.tableName} ${join}` : "") + (where ? ` ${where}` : "") + (order ? ` ${order}` : "") + (!returning ? this._returning("rowcount", "@@rowcount") : ""),
+          returning: returning || "@@rowcount"
+        };
+      }
+      del() {
+        if (this.single.options && this.single.options.includeTriggerModifications) {
+          return this.deleteWithTriggers();
+        } else {
+          return this.standardDelete();
+        }
+      }
+      deleteWithTriggers() {
+        const withSQL = this.with();
+        const { tableName } = this;
+        const wheres = this.where();
+        const joins = this.join();
+        const { returning } = this.single;
+        const returningStr = returning ? ` ${this._returning("del", returning, true)}` : "";
+        const deleteSelector = joins ? `${tableName}${returningStr} ` : "";
+        return {
+          sql: withSQL + `${this._buildTempTable(returning)}delete ${deleteSelector}from ${tableName}` + (!joins ? returningStr : "") + (joins ? ` ${joins}` : "") + (wheres ? ` ${wheres}` : "") + (!returning ? this._returning("rowcount", "@@rowcount") : this._buildReturningSelect(returning)),
+          returning: returning || "@@rowcount"
+        };
+      }
+      standardDelete() {
+        const withSQL = this.with();
+        const { tableName } = this;
+        const wheres = this.where();
+        const joins = this.join();
+        const { returning } = this.single;
+        const returningStr = returning ? ` ${this._returning("del", returning)}` : "";
+        const deleteSelector = joins ? `${tableName}${returningStr} ` : "";
+        return {
+          sql: withSQL + `delete ${deleteSelector}from ${tableName}` + (!joins ? returningStr : "") + (joins ? ` ${joins}` : "") + (wheres ? ` ${wheres}` : "") + (!returning ? this._returning("rowcount", "@@rowcount") : ""),
+          returning: returning || "@@rowcount"
+        };
+      }
+      columns() {
+        let distinctClause = "";
+        if (this.onlyUnions())
+          return "";
+        const top = this.top();
+        const hints = this._hintComments();
+        const columns = this.grouped.columns || [];
+        let i = -1, sql = [];
+        if (columns) {
+          while (++i < columns.length) {
+            const stmt = columns[i];
+            if (stmt.distinct)
+              distinctClause = "distinct ";
+            if (stmt.distinctOn) {
+              distinctClause = this.distinctOn(stmt.value);
+              continue;
+            }
+            if (stmt.type === "aggregate") {
+              sql.push(...this.aggregate(stmt));
+            } else if (stmt.type === "aggregateRaw") {
+              sql.push(this.aggregateRaw(stmt));
+            } else if (stmt.type === "analytic") {
+              sql.push(this.analytic(stmt));
+            } else if (stmt.type === "json") {
+              sql.push(this.json(stmt));
+            } else if (stmt.value && stmt.value.length > 0) {
+              sql.push(this.formatter.columnize(stmt.value));
+            }
+          }
+        }
+        if (sql.length === 0)
+          sql = ["*"];
+        const select = this.onlyJson() ? "" : "select ";
+        return `${select}${hints}${distinctClause}` + (top ? top + " " : "") + sql.join(", ") + (this.tableName ? ` from ${this.tableName}` : "");
+      }
+      _returning(method, value, withTrigger) {
+        switch (method) {
+          case "update":
+          case "insert":
+            return value ? `output ${this.formatter.columnizeWithPrefix("inserted.", value)}${withTrigger ? " into #out" : ""}` : "";
+          case "del":
+            return value ? `output ${this.formatter.columnizeWithPrefix("deleted.", value)}${withTrigger ? " into #out" : ""}` : "";
+          case "rowcount":
+            return value ? ";select @@rowcount" : "";
+        }
+      }
+      _buildTempTable(values) {
+        if (values && values.length > 0) {
+          let selections = "";
+          if (Array.isArray(values)) {
+            selections = values.map((value) => `[t].${this.formatter.columnize(value)}`).join(",");
+          } else {
+            selections = `[t].${this.formatter.columnize(values)}`;
+          }
+          let sql = `select top(0) ${selections} into #out `;
+          sql += `from ${this.tableName} as t `;
+          sql += `left join ${this.tableName} on 0=1;`;
+          return sql;
+        }
+        return "";
+      }
+      _buildReturningSelect(values) {
+        if (values && values.length > 0) {
+          let selections = "";
+          if (Array.isArray(values)) {
+            selections = values.map((value) => `${this.formatter.columnize(value)}`).join(",");
+          } else {
+            selections = this.formatter.columnize(values);
+          }
+          let sql = `; select ${selections} from #out; `;
+          sql += `drop table #out;`;
+          return sql;
+        }
+        return "";
+      }
+      truncate() {
+        return `truncate table ${this.tableName}`;
+      }
+      forUpdate() {
+        return "with (UPDLOCK)";
+      }
+      forShare() {
+        return "with (HOLDLOCK)";
+      }
+      columnInfo() {
+        const column = this.single.columnInfo;
+        let schema = this.single.schema;
+        const table = this.client.customWrapIdentifier(this.single.table, identity);
+        if (schema) {
+          schema = this.client.customWrapIdentifier(schema, identity);
+        }
+        let sql = `select [COLUMN_NAME], [COLUMN_DEFAULT], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [IS_NULLABLE] from INFORMATION_SCHEMA.COLUMNS where table_name = ? and table_catalog = ?`;
+        const bindings = [table, this.client.database()];
+        if (schema) {
+          sql += " and table_schema = ?";
+          bindings.push(schema);
+        } else {
+          sql += ` and table_schema = 'dbo'`;
+        }
+        return {
+          sql,
+          bindings,
+          output(resp) {
+            const out = resp.reduce((columns, val) => {
+              columns[val[0].value] = {
+                defaultValue: val[1].value,
+                type: val[2].value,
+                maxLength: val[3].value,
+                nullable: val[4].value === "YES"
+              };
+              return columns;
+            }, {});
+            return column && out[column] || out;
+          }
+        };
+      }
+      top() {
+        const noLimit = !this.single.limit && this.single.limit !== 0;
+        const noOffset = !this.single.offset;
+        if (noLimit || !noOffset)
+          return "";
+        return `top (${this._getValueOrParameterFromAttribute("limit")})`;
+      }
+      limit() {
+        return "";
+      }
+      offset() {
+        const noLimit = !this.single.limit && this.single.limit !== 0;
+        const noOffset = !this.single.offset;
+        if (noOffset)
+          return "";
+        let offset = `offset ${noOffset ? "0" : this._getValueOrParameterFromAttribute("offset")} rows`;
+        if (!noLimit) {
+          offset += ` fetch next ${this._getValueOrParameterFromAttribute("limit")} rows only`;
+        }
+        return offset;
+      }
+      whereLike(statement) {
+        return `${this._columnClause(statement)} collate SQL_Latin1_General_CP1_CS_AS ${this._not(statement, "like ")}${this._valueClause(statement)}`;
+      }
+      whereILike(statement) {
+        return `${this._columnClause(statement)} collate SQL_Latin1_General_CP1_CI_AS ${this._not(statement, "like ")}${this._valueClause(statement)}`;
+      }
+      jsonExtract(params) {
+        return this._jsonExtract(params.singleValue ? "JSON_VALUE" : "JSON_QUERY", params);
+      }
+      jsonSet(params) {
+        return this._jsonSet("JSON_MODIFY", params);
+      }
+      jsonInsert(params) {
+        return this._jsonSet("JSON_MODIFY", params);
+      }
+      jsonRemove(params) {
+        const jsonCol = `JSON_MODIFY(${columnize_(params.column, this.builder, this.client, this.bindingsHolder)},${this.client.parameter(params.path, this.builder, this.bindingsHolder)}, NULL)`;
+        return params.alias ? this.client.alias(jsonCol, this.formatter.wrap(params.alias)) : jsonCol;
+      }
+      whereJsonPath(statement) {
+        return this._whereJsonPath("JSON_VALUE", statement);
+      }
+      whereJsonSupersetOf(statement) {
+        throw new Error("Json superset where clause not actually supported by MSSQL");
+      }
+      whereJsonSubsetOf(statement) {
+        throw new Error("Json subset where clause not actually supported by MSSQL");
+      }
+      _getExtracts(statement, operator) {
+        const column = columnize_(statement.column, this.builder, this.client, this.bindingsHolder);
+        return (Array.isArray(statement.values) ? statement.values : [statement.values]).map(function(value) {
+          return "JSON_VALUE(" + column + "," + this.client.parameter(value, this.builder, this.bindingsHolder) + ")";
+        }, this).join(operator);
+      }
+      onJsonPathEquals(clause) {
+        return this._onJsonPathEquals("JSON_VALUE", clause);
+      }
+    };
+    module2.exports = QueryCompiler_MSSQL;
+  }
+});
+
+// node_modules/knex/lib/dialects/mssql/schema/mssql-compiler.js
+var require_mssql_compiler = __commonJS({
+  "node_modules/knex/lib/dialects/mssql/schema/mssql-compiler.js"(exports2, module2) {
+    var SchemaCompiler = require_compiler();
+    var SchemaCompiler_MSSQL = class extends SchemaCompiler {
+      constructor(client, builder) {
+        super(client, builder);
+      }
+      dropTableIfExists(tableName) {
+        const name = this.formatter.wrap(prefixedTableName(this.schema, tableName));
+        this.pushQuery(`if object_id('${name}', 'U') is not null DROP TABLE ${name}`);
+      }
+      dropViewIfExists(viewName) {
+        const name = this.formatter.wrap(prefixedTableName(this.schema, viewName));
+        this.pushQuery(`if object_id('${name}', 'V') is not null DROP VIEW ${name}`);
+      }
+      renameTable(tableName, to) {
+        this.pushQuery(`exec sp_rename ${this.client.parameter(prefixedTableName(this.schema, tableName), this.builder, this.bindingsHolder)}, ${this.client.parameter(to, this.builder, this.bindingsHolder)}`);
+      }
+      renameView(viewTable, to) {
+        this.pushQuery(`exec sp_rename ${this.client.parameter(prefixedTableName(this.schema, viewTable), this.builder, this.bindingsHolder)}, ${this.client.parameter(to, this.builder, this.bindingsHolder)}`);
+      }
+      hasTable(tableName) {
+        const formattedTable = this.client.parameter(prefixedTableName(this.schema, tableName), this.builder, this.bindingsHolder);
+        const bindings = [tableName];
+        let sql = `SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = ${formattedTable}`;
+        if (this.schema) {
+          sql += " AND TABLE_SCHEMA = ?";
+          bindings.push(this.schema);
+        }
+        this.pushQuery({ sql, bindings, output: (resp) => resp.length > 0 });
+      }
+      hasColumn(tableName, column) {
+        const formattedColumn = this.client.parameter(column, this.builder, this.bindingsHolder);
+        const formattedTable = this.client.parameter(this.formatter.wrap(prefixedTableName(this.schema, tableName)), this.builder, this.bindingsHolder);
+        const sql = `select object_id from sys.columns where name = ${formattedColumn} and object_id = object_id(${formattedTable})`;
+        this.pushQuery({ sql, output: (resp) => resp.length > 0 });
+      }
+    };
+    SchemaCompiler_MSSQL.prototype.dropTablePrefix = "DROP TABLE ";
+    function prefixedTableName(prefix, table) {
+      return prefix ? `${prefix}.${table}` : table;
+    }
+    module2.exports = SchemaCompiler_MSSQL;
+  }
+});
+
+// node_modules/knex/lib/dialects/mssql/schema/mssql-tablecompiler.js
+var require_mssql_tablecompiler = __commonJS({
+  "node_modules/knex/lib/dialects/mssql/schema/mssql-tablecompiler.js"(exports2, module2) {
+    var TableCompiler = require_tablecompiler();
+    var helpers = require_helpers();
+    var { isObject } = require_is();
+    var TableCompiler_MSSQL = class extends TableCompiler {
+      constructor(client, tableBuilder) {
+        super(client, tableBuilder);
+      }
+      createQuery(columns, ifNot, like) {
+        let createStatement = ifNot ? `if object_id('${this.tableName()}', 'U') is null ` : "";
+        if (like) {
+          createStatement += `SELECT * INTO ${this.tableName()} FROM ${this.tableNameLike()} WHERE 0=1`;
+        } else {
+          createStatement += "CREATE TABLE " + this.tableName() + (this._formatting ? " (\n    " : " (") + columns.sql.join(this._formatting ? ",\n    " : ", ") + this._addChecks() + ")";
+        }
+        this.pushQuery(createStatement);
+        if (this.single.comment) {
+          this.comment(this.single.comment);
+        }
+        if (like) {
+          this.addColumns(columns, this.addColumnsPrefix);
+        }
+      }
+      comment(comment) {
+        if (!comment) {
+          return;
+        }
+        if (comment.length > 7500 / 2) {
+          this.client.logger.warn("Your comment might be longer than the max comment length for MSSQL of 7,500 bytes.");
+        }
+        const value = this.formatter.escapingStringDelimiters(comment);
+        const level0name = this.formatter.escapingStringDelimiters(this.schemaNameRaw || "dbo");
+        const level1name = this.formatter.escapingStringDelimiters(this.tableNameRaw);
+        const args = `N'MS_Description', N'${value}', N'Schema', N'${level0name}', N'Table', N'${level1name}'`;
+        const isAlreadyDefined = `EXISTS(SELECT * FROM sys.fn_listextendedproperty(N'MS_Description', N'Schema', N'${level0name}', N'Table', N'${level1name}', NULL, NULL))`;
+        this.pushQuery(`IF ${isAlreadyDefined}
+  EXEC sys.sp_updateextendedproperty ${args}
+ELSE
+  EXEC sys.sp_addextendedproperty ${args}`);
+      }
+      addColumns(columns, prefix) {
+        prefix = prefix || this.addColumnsPrefix;
+        if (columns.sql.length > 0) {
+          this.pushQuery({
+            sql: (this.lowerCase ? "alter table " : "ALTER TABLE ") + this.tableName() + " " + prefix + columns.sql.join(", "),
+            bindings: columns.bindings
+          });
+        }
+      }
+      alterColumns(columns, colBuilder) {
+        for (let i = 0, l = colBuilder.length; i < l; i++) {
+          const builder = colBuilder[i];
+          if (builder.modified.defaultTo) {
+            const schema = this.schemaNameRaw || "dbo";
+            const baseQuery = `
+              DECLARE @constraint varchar(100) = (SELECT default_constraints.name
+                                                  FROM sys.all_columns
+                                                  INNER JOIN sys.tables
+                                                    ON all_columns.object_id = tables.object_id
+                                                  INNER JOIN sys.schemas
+                                                    ON tables.schema_id = schemas.schema_id
+                                                  INNER JOIN sys.default_constraints
+                                                    ON all_columns.default_object_id = default_constraints.object_id
+                                                  WHERE schemas.name = '${schema}'
+                                                  AND tables.name = '${this.tableNameRaw}'
+                                                  AND all_columns.name = '${builder.getColumnName()}')
+
+              IF @constraint IS NOT NULL EXEC('ALTER TABLE ${this.tableNameRaw} DROP CONSTRAINT ' + @constraint)`;
+            this.pushQuery(baseQuery);
+          }
+        }
+        columns.sql.forEach((sql) => {
+          this.pushQuery({
+            sql: (this.lowerCase ? "alter table " : "ALTER TABLE ") + this.tableName() + " " + (this.lowerCase ? this.alterColumnPrefix.toLowerCase() : this.alterColumnPrefix) + sql,
+            bindings: columns.bindings
+          });
+        });
+      }
+      dropColumn() {
+        const _this2 = this;
+        const columns = helpers.normalizeArr.apply(null, arguments);
+        const columnsArray = Array.isArray(columns) ? columns : [columns];
+        const drops = columnsArray.map((column) => _this2.formatter.wrap(column));
+        const schema = this.schemaNameRaw || "dbo";
+        for (const column of columns) {
+          const baseQuery = `
+              DECLARE @constraint varchar(100) = (SELECT default_constraints.name
+                                                  FROM sys.all_columns
+                                                  INNER JOIN sys.tables
+                                                    ON all_columns.object_id = tables.object_id
+                                                  INNER JOIN sys.schemas
+                                                    ON tables.schema_id = schemas.schema_id
+                                                  INNER JOIN sys.default_constraints
+                                                    ON all_columns.default_object_id = default_constraints.object_id
+                                                  WHERE schemas.name = '${schema}'
+                                                  AND tables.name = '${this.tableNameRaw}'
+                                                  AND all_columns.name = '${column}')
+
+              IF @constraint IS NOT NULL EXEC('ALTER TABLE ${this.tableNameRaw} DROP CONSTRAINT ' + @constraint)`;
+          this.pushQuery(baseQuery);
+        }
+        this.pushQuery((this.lowerCase ? "alter table " : "ALTER TABLE ") + this.tableName() + " " + this.dropColumnPrefix + drops.join(", "));
+      }
+      changeType() {
+      }
+      renameColumn(from, to) {
+        this.pushQuery(`exec sp_rename ${this.client.parameter(this.tableName() + "." + from, this.tableBuilder, this.bindingsHolder)}, ${this.client.parameter(to, this.tableBuilder, this.bindingsHolder)}, 'COLUMN'`);
+      }
+      dropFKRefs(runner, refs) {
+        const formatter = this.client.formatter(this.tableBuilder);
+        return Promise.all(refs.map(function(ref) {
+          const constraintName = formatter.wrap(ref.CONSTRAINT_NAME);
+          const tableName = formatter.wrap(ref.TABLE_NAME);
+          return runner.query({
+            sql: `ALTER TABLE ${tableName} DROP CONSTRAINT ${constraintName}`
+          });
+        }));
+      }
+      createFKRefs(runner, refs) {
+        const formatter = this.client.formatter(this.tableBuilder);
+        return Promise.all(refs.map(function(ref) {
+          const tableName = formatter.wrap(ref.TABLE_NAME);
+          const keyName = formatter.wrap(ref.CONSTRAINT_NAME);
+          const column = formatter.columnize(ref.COLUMN_NAME);
+          const references = formatter.columnize(ref.REFERENCED_COLUMN_NAME);
+          const inTable = formatter.wrap(ref.REFERENCED_TABLE_NAME);
+          const onUpdate = ` ON UPDATE ${ref.UPDATE_RULE}`;
+          const onDelete = ` ON DELETE ${ref.DELETE_RULE}`;
+          return runner.query({
+            sql: `ALTER TABLE ${tableName} ADD CONSTRAINT ${keyName} FOREIGN KEY (` + column + ") REFERENCES " + inTable + " (" + references + ")" + onUpdate + onDelete
+          });
+        }));
+      }
+      index(columns, indexName, options) {
+        indexName = indexName ? this.formatter.wrap(indexName) : this._indexCommand("index", this.tableNameRaw, columns);
+        let predicate;
+        if (isObject(options)) {
+          ({ predicate } = options);
+        }
+        const predicateQuery = predicate ? " " + this.client.queryCompiler(predicate).where() : "";
+        this.pushQuery(`CREATE INDEX ${indexName} ON ${this.tableName()} (${this.formatter.columnize(columns)})${predicateQuery}`);
+      }
+      primary(columns, constraintName) {
+        let deferrable;
+        if (isObject(constraintName)) {
+          ({ constraintName, deferrable } = constraintName);
+        }
+        if (deferrable && deferrable !== "not deferrable") {
+          this.client.logger.warn(`mssql: primary key constraint [${constraintName}] will not be deferrable ${deferrable} because mssql does not support deferred constraints.`);
+        }
+        constraintName = constraintName ? this.formatter.wrap(constraintName) : this.formatter.wrap(`${this.tableNameRaw}_pkey`);
+        if (!this.forCreate) {
+          this.pushQuery(`ALTER TABLE ${this.tableName()} ADD CONSTRAINT ${constraintName} PRIMARY KEY (${this.formatter.columnize(columns)})`);
+        } else {
+          this.pushQuery(`CONSTRAINT ${constraintName} PRIMARY KEY (${this.formatter.columnize(columns)})`);
+        }
+      }
+      unique(columns, indexName) {
+        let deferrable;
+        let useConstraint = false;
+        if (isObject(indexName)) {
+          ({ indexName, deferrable, useConstraint } = indexName);
+        }
+        if (deferrable && deferrable !== "not deferrable") {
+          this.client.logger.warn(`mssql: unique index [${indexName}] will not be deferrable ${deferrable} because mssql does not support deferred constraints.`);
+        }
+        indexName = indexName ? this.formatter.wrap(indexName) : this._indexCommand("unique", this.tableNameRaw, columns);
+        if (!Array.isArray(columns)) {
+          columns = [columns];
+        }
+        const whereAllTheColumnsAreNotNull = columns.map((column) => this.formatter.columnize(column) + " IS NOT NULL").join(" AND ");
+        if (useConstraint) {
+          this.pushQuery(`ALTER TABLE ${this.tableName()} ADD CONSTRAINT ${indexName} UNIQUE (${this.formatter.columnize(columns)})`);
+        } else {
+          this.pushQuery(`CREATE UNIQUE INDEX ${indexName} ON ${this.tableName()} (${this.formatter.columnize(columns)}) WHERE ${whereAllTheColumnsAreNotNull}`);
+        }
+      }
+      dropIndex(columns, indexName) {
+        indexName = indexName ? this.formatter.wrap(indexName) : this._indexCommand("index", this.tableNameRaw, columns);
+        this.pushQuery(`DROP INDEX ${indexName} ON ${this.tableName()}`);
+      }
+      dropForeign(columns, indexName) {
+        indexName = indexName ? this.formatter.wrap(indexName) : this._indexCommand("foreign", this.tableNameRaw, columns);
+        this.pushQuery(`ALTER TABLE ${this.tableName()} DROP CONSTRAINT ${indexName}`);
+      }
+      dropPrimary(constraintName) {
+        constraintName = constraintName ? this.formatter.wrap(constraintName) : this.formatter.wrap(`${this.tableNameRaw}_pkey`);
+        this.pushQuery(`ALTER TABLE ${this.tableName()} DROP CONSTRAINT ${constraintName}`);
+      }
+      dropUnique(column, indexName) {
+        indexName = indexName ? this.formatter.wrap(indexName) : this._indexCommand("unique", this.tableNameRaw, column);
+        this.pushQuery(`DROP INDEX ${indexName} ON ${this.tableName()}`);
+      }
+    };
+    TableCompiler_MSSQL.prototype.createAlterTableMethods = ["foreign", "primary"];
+    TableCompiler_MSSQL.prototype.lowerCase = false;
+    TableCompiler_MSSQL.prototype.addColumnsPrefix = "ADD ";
+    TableCompiler_MSSQL.prototype.dropColumnPrefix = "DROP COLUMN ";
+    TableCompiler_MSSQL.prototype.alterColumnPrefix = "ALTER COLUMN ";
+    module2.exports = TableCompiler_MSSQL;
+  }
+});
+
+// node_modules/knex/lib/dialects/mssql/schema/mssql-viewcompiler.js
+var require_mssql_viewcompiler = __commonJS({
+  "node_modules/knex/lib/dialects/mssql/schema/mssql-viewcompiler.js"(exports2, module2) {
+    var ViewCompiler = require_viewcompiler();
+    var {
+      columnize: columnize_
+    } = require_wrappingFormatter();
+    var ViewCompiler_MSSQL = class extends ViewCompiler {
+      constructor(client, viewCompiler) {
+        super(client, viewCompiler);
+      }
+      createQuery(columns, selectQuery, materialized, replace) {
+        const createStatement = "CREATE " + (replace ? "OR ALTER " : "") + "VIEW ";
+        let sql = createStatement + this.viewName();
+        const columnList = columns ? " (" + columnize_(columns, this.viewBuilder, this.client, this.bindingsHolder) + ")" : "";
+        sql += columnList;
+        sql += " AS ";
+        sql += selectQuery.toString();
+        this.pushQuery({
+          sql
+        });
+      }
+      renameColumn(from, to) {
+        this.pushQuery(`exec sp_rename ${this.client.parameter(this.viewName() + "." + from, this.viewBuilder, this.bindingsHolder)}, ${this.client.parameter(to, this.viewBuilder, this.bindingsHolder)}, 'COLUMN'`);
+      }
+      createOrReplace() {
+        this.createQuery(this.columns, this.selectQuery, false, true);
+      }
+    };
+    module2.exports = ViewCompiler_MSSQL;
+  }
+});
+
+// node_modules/knex/lib/dialects/mssql/schema/mssql-columncompiler.js
+var require_mssql_columncompiler = __commonJS({
+  "node_modules/knex/lib/dialects/mssql/schema/mssql-columncompiler.js"(exports2, module2) {
+    var ColumnCompiler = require_columncompiler();
+    var { toNumber } = require_helpers();
+    var { formatDefault } = require_formatterUtils();
+    var { operator: operator_ } = require_wrappingFormatter();
+    var ColumnCompiler_MSSQL = class extends ColumnCompiler {
+      constructor(client, tableCompiler, columnBuilder) {
+        super(client, tableCompiler, columnBuilder);
+        this.modifiers = ["nullable", "defaultTo", "first", "after", "comment"];
+        this._addCheckModifiers();
+      }
+      double(precision, scale) {
+        return "float";
+      }
+      floating(precision, scale) {
+        return `float`;
+      }
+      integer() {
+        return "int";
+      }
+      tinyint() {
+        return "tinyint";
+      }
+      varchar(length) {
+        return `nvarchar(${toNumber(length, 255)})`;
+      }
+      timestamp({ useTz = false } = {}) {
+        return useTz ? "datetimeoffset" : "datetime2";
+      }
+      bit(length) {
+        if (length > 1) {
+          this.client.logger.warn("Bit field is exactly 1 bit length for MSSQL");
+        }
+        return "bit";
+      }
+      binary(length) {
+        return length ? `varbinary(${toNumber(length)})` : "varbinary(max)";
+      }
+      first() {
+        this.client.logger.warn("Column first modifier not available for MSSQL");
+        return "";
+      }
+      after(column) {
+        this.client.logger.warn("Column after modifier not available for MSSQL");
+        return "";
+      }
+      defaultTo(value, { constraintName } = {}) {
+        const formattedValue = formatDefault(value, this.type, this.client);
+        constraintName = typeof constraintName !== "undefined" ? constraintName : `${this.tableCompiler.tableNameRaw}_${this.getColumnName()}_default`.toLowerCase();
+        if (this.columnBuilder._method === "alter") {
+          this.pushAdditional(function() {
+            this.pushQuery(`ALTER TABLE ${this.tableCompiler.tableName()} ADD CONSTRAINT ${this.formatter.wrap(constraintName)} DEFAULT ${formattedValue} FOR ${this.formatter.wrap(this.getColumnName())}`);
+          });
+          return "";
+        }
+        if (!constraintName) {
+          return `DEFAULT ${formattedValue}`;
+        }
+        return `CONSTRAINT ${this.formatter.wrap(constraintName)} DEFAULT ${formattedValue}`;
+      }
+      comment(comment) {
+        if (!comment) {
+          return;
+        }
+        if (comment && comment.length > 7500 / 2) {
+          this.client.logger.warn("Your comment might be longer than the max comment length for MSSQL of 7,500 bytes.");
+        }
+        const value = this.formatter.escapingStringDelimiters(comment);
+        const level0name = this.tableCompiler.schemaNameRaw || "dbo";
+        const level1name = this.formatter.escapingStringDelimiters(this.tableCompiler.tableNameRaw);
+        const level2name = this.formatter.escapingStringDelimiters(this.args[0] || this.defaults("columnName"));
+        const args = `N'MS_Description', N'${value}', N'Schema', N'${level0name}', N'Table', N'${level1name}', N'Column', N'${level2name}'`;
+        this.pushAdditional(function() {
+          const isAlreadyDefined = `EXISTS(SELECT * FROM sys.fn_listextendedproperty(N'MS_Description', N'Schema', N'${level0name}', N'Table', N'${level1name}', N'Column', N'${level2name}'))`;
+          this.pushQuery(`IF ${isAlreadyDefined}
+  EXEC sys.sp_updateextendedproperty ${args}
+ELSE
+  EXEC sys.sp_addextendedproperty ${args}`);
+        });
+        return "";
+      }
+      checkLength(operator, length, constraintName) {
+        return this._check(`LEN(${this.formatter.wrap(this.getColumnName())}) ${operator_(operator, this.columnBuilder, this.bindingsHolder)} ${toNumber(length)}`, constraintName);
+      }
+      checkRegex(regex, constraintName) {
+        return this._check(`${this.formatter.wrap(this.getColumnName())} LIKE ${this.client._escapeBinding("%" + regex + "%")}`, constraintName);
+      }
+      increments(options = { primaryKey: true }) {
+        return "int identity(1,1) not null" + (this.tableCompiler._canBeAddPrimaryKey(options) ? " primary key" : "");
+      }
+      bigincrements(options = { primaryKey: true }) {
+        return "bigint identity(1,1) not null" + (this.tableCompiler._canBeAddPrimaryKey(options) ? " primary key" : "");
+      }
+    };
+    ColumnCompiler_MSSQL.prototype.bigint = "bigint";
+    ColumnCompiler_MSSQL.prototype.mediumint = "int";
+    ColumnCompiler_MSSQL.prototype.smallint = "smallint";
+    ColumnCompiler_MSSQL.prototype.text = "nvarchar(max)";
+    ColumnCompiler_MSSQL.prototype.mediumtext = "nvarchar(max)";
+    ColumnCompiler_MSSQL.prototype.longtext = "nvarchar(max)";
+    ColumnCompiler_MSSQL.prototype.json = ColumnCompiler_MSSQL.prototype.jsonb = "nvarchar(max)";
+    ColumnCompiler_MSSQL.prototype.enu = "nvarchar(100)";
+    ColumnCompiler_MSSQL.prototype.uuid = ({ useBinaryUuid = false } = {}) => useBinaryUuid ? "binary(16)" : "uniqueidentifier";
+    ColumnCompiler_MSSQL.prototype.datetime = "datetime2";
+    ColumnCompiler_MSSQL.prototype.bool = "bit";
+    module2.exports = ColumnCompiler_MSSQL;
+  }
+});
+
+// node_modules/knex/lib/dialects/mssql/index.js
+var require_mssql = __commonJS({
+  "node_modules/knex/lib/dialects/mssql/index.js"(exports2, module2) {
+    var map = require_map();
+    var isNil = require_isNil();
+    var Client = require_client2();
+    var MSSQL_Formatter = require_mssql_formatter();
+    var Transaction = require_transaction2();
+    var QueryCompiler = require_mssql_querycompiler();
+    var SchemaCompiler = require_mssql_compiler();
+    var TableCompiler = require_mssql_tablecompiler();
+    var ViewCompiler = require_mssql_viewcompiler();
+    var ColumnCompiler = require_mssql_columncompiler();
+    var QueryBuilder = require_querybuilder();
+    var debug = require_src6()("knex:mssql");
+    var SQL_INT4 = { MIN: -2147483648, MAX: 2147483647 };
+    var SQL_BIGINT_SAFE = { MIN: -9007199254740991, MAX: 9007199254740991 };
+    var Client_MSSQL = class extends Client {
+      constructor(config = {}) {
+        super(config);
+      }
+      _generateConnection() {
+        const settings = this.connectionSettings;
+        settings.options = settings.options || {};
+        const cfg = {
+          authentication: {
+            type: settings.type || "default",
+            options: {
+              userName: settings.userName || settings.user,
+              password: settings.password,
+              domain: settings.domain,
+              token: settings.token,
+              clientId: settings.clientId,
+              clientSecret: settings.clientSecret,
+              tenantId: settings.tenantId,
+              msiEndpoint: settings.msiEndpoint
+            }
+          },
+          server: settings.server || settings.host,
+          options: {
+            database: settings.database,
+            encrypt: settings.encrypt || false,
+            port: settings.port || 1433,
+            connectTimeout: settings.connectionTimeout || settings.timeout || 15e3,
+            requestTimeout: !isNil(settings.requestTimeout) ? settings.requestTimeout : 15e3,
+            rowCollectionOnDone: false,
+            rowCollectionOnRequestCompletion: false,
+            useColumnNames: false,
+            tdsVersion: settings.options.tdsVersion || "7_4",
+            appName: settings.options.appName || "knex",
+            trustServerCertificate: false,
+            ...settings.options
+          }
+        };
+        if (cfg.options.instanceName)
+          delete cfg.options.port;
+        if (isNaN(cfg.options.requestTimeout))
+          cfg.options.requestTimeout = 15e3;
+        if (cfg.options.requestTimeout === Infinity)
+          cfg.options.requestTimeout = 0;
+        if (cfg.options.requestTimeout < 0)
+          cfg.options.requestTimeout = 0;
+        if (settings.debug) {
+          cfg.options.debug = {
+            packet: true,
+            token: true,
+            data: true,
+            payload: true
+          };
+        }
+        return cfg;
+      }
+      _driver() {
+        const tds = require("tedious");
+        return tds;
+      }
+      formatter() {
+        return new MSSQL_Formatter(this, ...arguments);
+      }
+      transaction() {
+        return new Transaction(this, ...arguments);
+      }
+      queryCompiler() {
+        return new QueryCompiler(this, ...arguments);
+      }
+      schemaCompiler() {
+        return new SchemaCompiler(this, ...arguments);
+      }
+      tableCompiler() {
+        return new TableCompiler(this, ...arguments);
+      }
+      viewCompiler() {
+        return new ViewCompiler(this, ...arguments);
+      }
+      queryBuilder() {
+        const b = new QueryBuilder(this);
+        return b;
+      }
+      columnCompiler() {
+        return new ColumnCompiler(this, ...arguments);
+      }
+      wrapIdentifierImpl(value) {
+        if (value === "*") {
+          return "*";
+        }
+        return `[${value.replace(/[[\]]+/g, "")}]`;
+      }
+      acquireRawConnection() {
+        return new Promise((resolver, rejecter) => {
+          debug("connection::connection new connection requested");
+          const Driver = this._driver();
+          const settings = Object.assign({}, this._generateConnection());
+          const connection = new Driver.Connection(settings);
+          connection.connect((err) => {
+            if (err) {
+              debug("connection::connect error: %s", err.message);
+              return rejecter(err);
+            }
+            debug("connection::connect connected to server");
+            connection.connected = true;
+            connection.on("error", (e) => {
+              debug("connection::error message=%s", e.message);
+              connection.__knex__disposed = e;
+              connection.connected = false;
+            });
+            connection.once("end", () => {
+              connection.connected = false;
+              connection.__knex__disposed = "Connection to server was terminated.";
+              debug("connection::end connection ended.");
+            });
+            return resolver(connection);
+          });
+        });
+      }
+      validateConnection(connection) {
+        return connection && connection.connected;
+      }
+      destroyRawConnection(connection) {
+        debug("connection::destroy");
+        return new Promise((resolve) => {
+          connection.once("end", () => {
+            resolve();
+          });
+          connection.close();
+        });
+      }
+      positionBindings(sql) {
+        let questionCount = -1;
+        return sql.replace(/\\?\?/g, (match) => {
+          if (match === "\\?") {
+            return "?";
+          }
+          questionCount += 1;
+          return `@p${questionCount}`;
+        });
+      }
+      _chomp(connection) {
+        if (connection.state.name === "LoggedIn") {
+          const nextRequest = this.requestQueue.pop();
+          if (nextRequest) {
+            debug("connection::query executing query, %d more in queue", this.requestQueue.length);
+            connection.execSql(nextRequest);
+          }
+        }
+      }
+      _enqueueRequest(request, connection) {
+        this.requestQueue.push(request);
+        this._chomp(connection);
+      }
+      _makeRequest(query, callback) {
+        const Driver = this._driver();
+        const sql = typeof query === "string" ? query : query.sql;
+        let rowCount = 0;
+        if (!sql)
+          throw new Error("The query is empty");
+        debug("request::request sql=%s", sql);
+        const request = new Driver.Request(sql, (err, remoteRowCount) => {
+          if (err) {
+            debug("request::error message=%s", err.message);
+            return callback(err);
+          }
+          rowCount = remoteRowCount;
+          debug("request::callback rowCount=%d", rowCount);
+        });
+        request.on("prepared", () => {
+          debug("request %s::request prepared", this.id);
+        });
+        request.on("done", (rowCount2, more) => {
+          debug("request::done rowCount=%d more=%s", rowCount2, more);
+        });
+        request.on("doneProc", (rowCount2, more) => {
+          debug("request::doneProc id=%s rowCount=%d more=%s", request.id, rowCount2, more);
+        });
+        request.on("doneInProc", (rowCount2, more) => {
+          debug("request::doneInProc id=%s rowCount=%d more=%s", request.id, rowCount2, more);
+        });
+        request.once("requestCompleted", () => {
+          debug("request::completed id=%s", request.id);
+          return callback(null, rowCount);
+        });
+        request.on("error", (err) => {
+          debug("request::error id=%s message=%s", request.id, err.message);
+          return callback(err);
+        });
+        return request;
+      }
+      _stream(connection, query, stream) {
+        return new Promise((resolve, reject) => {
+          const request = this._makeRequest(query, (err) => {
+            if (err) {
+              stream.emit("error", err);
+              return reject(err);
+            }
+            resolve();
+          });
+          request.on("row", (row) => {
+            stream.write(row.reduce((prev, curr) => ({
+              ...prev,
+              [curr.metadata.colName]: curr.value
+            }), {}));
+          });
+          request.on("error", (err) => {
+            stream.emit("error", err);
+            reject(err);
+          });
+          request.once("requestCompleted", () => {
+            stream.end();
+            resolve();
+          });
+          this._assignBindings(request, query.bindings);
+          this._enqueueRequest(request, connection);
+        });
+      }
+      _assignBindings(request, bindings) {
+        if (Array.isArray(bindings)) {
+          for (let i = 0; i < bindings.length; i++) {
+            const binding = bindings[i];
+            this._setReqInput(request, i, binding);
+          }
+        }
+      }
+      _scaleForBinding(binding) {
+        if (binding % 1 === 0) {
+          throw new Error(`The binding value ${binding} must be a decimal number.`);
+        }
+        return { scale: 10 };
+      }
+      _typeForBinding(binding) {
+        const Driver = this._driver();
+        switch (typeof binding) {
+          case "string":
+            return Driver.TYPES.NVarChar;
+          case "boolean":
+            return Driver.TYPES.Bit;
+          case "number": {
+            if (binding % 1 !== 0) {
+              return Driver.TYPES.Float;
+            }
+            if (binding < SQL_INT4.MIN || binding > SQL_INT4.MAX) {
+              if (binding < SQL_BIGINT_SAFE.MIN || binding > SQL_BIGINT_SAFE.MAX) {
+                throw new Error(`Bigint must be safe integer or must be passed as string, saw ${binding}`);
+              }
+              return Driver.TYPES.BigInt;
+            }
+            return Driver.TYPES.Int;
+          }
+          default: {
+            if (binding instanceof Date) {
+              return Driver.TYPES.DateTime;
+            }
+            if (binding instanceof Buffer) {
+              return Driver.TYPES.VarBinary;
+            }
+            return Driver.TYPES.NVarChar;
+          }
+        }
+      }
+      _query(connection, query) {
+        return new Promise((resolve, reject) => {
+          const rows = [];
+          const request = this._makeRequest(query, (err, count) => {
+            if (err) {
+              return reject(err);
+            }
+            query.response = rows;
+            process.nextTick(() => this._chomp(connection));
+            resolve(query);
+          });
+          request.on("row", (row) => {
+            debug("request::row");
+            rows.push(row);
+          });
+          this._assignBindings(request, query.bindings);
+          this._enqueueRequest(request, connection);
+        });
+      }
+      _setReqInput(req, i, binding) {
+        const tediousType = this._typeForBinding(binding);
+        const bindingName = "p".concat(i);
+        let options;
+        if (typeof binding === "number" && binding % 1 !== 0) {
+          options = this._scaleForBinding(binding);
+        }
+        debug("request::binding pos=%d type=%s value=%s", i, tediousType.name, binding);
+        if (Buffer.isBuffer(binding)) {
+          options = {
+            length: "max"
+          };
+        }
+        req.addParameter(bindingName, tediousType, binding, options);
+      }
+      processResponse(query, runner) {
+        if (query == null)
+          return;
+        let { response } = query;
+        const { method } = query;
+        if (query.output) {
+          return query.output.call(runner, response);
+        }
+        response = response.map((row) => row.reduce((columns, r) => {
+          const colName = r.metadata.colName;
+          if (columns[colName]) {
+            if (!Array.isArray(columns[colName])) {
+              columns[colName] = [columns[colName]];
+            }
+            columns[colName].push(r.value);
+          } else {
+            columns[colName] = r.value;
+          }
+          return columns;
+        }, {}));
+        if (query.output)
+          return query.output.call(runner, response);
+        switch (method) {
+          case "select":
+            return response;
+          case "first":
+            return response[0];
+          case "pluck":
+            return map(response, query.pluck);
+          case "insert":
+          case "del":
+          case "update":
+          case "counter":
+            if (query.returning) {
+              if (query.returning === "@@rowcount") {
+                return response[0][""];
+              }
+            }
+            return response;
+          default:
+            return response;
+        }
+      }
+    };
+    Object.assign(Client_MSSQL.prototype, {
+      requestQueue: [],
+      dialect: "mssql",
+      driverName: "mssql"
+    });
+    module2.exports = Client_MSSQL;
+  }
+});
+
+// node_modules/lodash/_baseDelay.js
+var require_baseDelay = __commonJS({
+  "node_modules/lodash/_baseDelay.js"(exports2, module2) {
+    var FUNC_ERROR_TEXT = "Expected a function";
+    function baseDelay(func, wait, args) {
+      if (typeof func != "function") {
+        throw new TypeError(FUNC_ERROR_TEXT);
+      }
+      return setTimeout(function() {
+        func.apply(void 0, args);
+      }, wait);
+    }
+    module2.exports = baseDelay;
+  }
+});
+
+// node_modules/lodash/defer.js
+var require_defer = __commonJS({
+  "node_modules/lodash/defer.js"(exports2, module2) {
+    var baseDelay = require_baseDelay();
+    var baseRest = require_baseRest();
+    var defer = baseRest(function(func, args) {
+      return baseDelay(func, 1, args);
+    });
+    module2.exports = defer;
+  }
+});
+
+// node_modules/knex/lib/dialects/mysql/transaction.js
+var require_transaction3 = __commonJS({
+  "node_modules/knex/lib/dialects/mysql/transaction.js"(exports2, module2) {
+    var Transaction = require_transaction();
+    var Debug = require_src6();
+    var debug = Debug("knex:tx");
+    var Transaction_MySQL = class extends Transaction {
+      query(conn, sql, status, value) {
+        const t = this;
+        const q = this.trxClient.query(conn, sql).catch((err) => {
+          if (err.errno === 1305) {
+            this.trxClient.logger.warn("Transaction was implicitly committed, do not mix transactions and DDL with MySQL (#805)");
+            return;
+          }
+          status = 2;
+          value = err;
+          t._completed = true;
+          debug("%s error running transaction query", t.txid);
+        }).then(function(res) {
+          if (status === 1)
+            t._resolver(value);
+          if (status === 2) {
+            if (value === void 0) {
+              if (t.doNotRejectOnRollback && /^ROLLBACK\b/i.test(sql)) {
+                t._resolver();
+                return;
+              }
+              value = new Error(`Transaction rejected with non-error: ${value}`);
+            }
+            t._rejecter(value);
+          }
+          return res;
+        });
+        if (status === 1 || status === 2) {
+          t._completed = true;
+        }
+        return q;
+      }
+    };
+    module2.exports = Transaction_MySQL;
+  }
+});
+
+// node_modules/knex/lib/dialects/mysql/query/mysql-querycompiler.js
+var require_mysql_querycompiler = __commonJS({
+  "node_modules/knex/lib/dialects/mysql/query/mysql-querycompiler.js"(exports2, module2) {
+    var identity = require_identity();
+    var QueryCompiler = require_querycompiler();
+    var { wrapAsIdentifier } = require_formatterUtils();
+    var {
+      columnize: columnize_,
+      wrap: wrap_
+    } = require_wrappingFormatter();
+    var QueryCompiler_MySQL = class extends QueryCompiler {
+      constructor(client, builder, formatter) {
+        super(client, builder, formatter);
+        const { returning } = this.single;
+        if (returning) {
+          this.client.logger.warn(".returning() is not supported by mysql and will not have any effect.");
+        }
+        this._emptyInsertValue = "() values ()";
+      }
+      insert() {
+        let sql = super.insert();
+        if (sql === "")
+          return sql;
+        const { ignore, merge, insert } = this.single;
+        if (ignore)
+          sql = sql.replace("insert into", "insert ignore into");
+        if (merge) {
+          sql += this._merge(merge.updates, insert);
+          const wheres = this.where();
+          if (wheres) {
+            throw new Error(".onConflict().merge().where() is not supported for mysql");
+          }
+        }
+        return sql;
+      }
+      _merge(updates, insert) {
+        const sql = " on duplicate key update ";
+        if (updates && Array.isArray(updates)) {
+          return sql + updates.map((column) => wrapAsIdentifier(column, this.formatter.builder, this.client)).map((column) => `${column} = values(${column})`).join(", ");
+        } else if (updates && typeof updates === "object") {
+          const updateData = this._prepUpdate(updates);
+          return sql + updateData.join(",");
+        } else {
+          const insertData = this._prepInsert(insert);
+          if (typeof insertData === "string") {
+            throw new Error("If using merge with a raw insert query, then updates must be provided");
+          }
+          return sql + insertData.columns.map((column) => wrapAsIdentifier(column, this.builder, this.client)).map((column) => `${column} = values(${column})`).join(", ");
+        }
+      }
+      update() {
+        const withSQL = this.with();
+        const join = this.join();
+        const updates = this._prepUpdate(this.single.update);
+        const where = this.where();
+        const order = this.order();
+        const limit = this.limit();
+        return withSQL + `update ${this.tableName}` + (join ? ` ${join}` : "") + " set " + updates.join(", ") + (where ? ` ${where}` : "") + (order ? ` ${order}` : "") + (limit ? ` ${limit}` : "");
+      }
+      forUpdate() {
+        return "for update";
+      }
+      forShare() {
+        return "lock in share mode";
+      }
+      skipLocked() {
+        return "skip locked";
+      }
+      noWait() {
+        return "nowait";
+      }
+      columnInfo() {
+        const column = this.single.columnInfo;
+        const table = this.client.customWrapIdentifier(this.single.table, identity);
+        return {
+          sql: "select * from information_schema.columns where table_name = ? and table_schema = ?",
+          bindings: [table, this.client.database()],
+          output(resp) {
+            const out = resp.reduce(function(columns, val) {
+              columns[val.COLUMN_NAME] = {
+                defaultValue: val.COLUMN_DEFAULT === "NULL" ? null : val.COLUMN_DEFAULT,
+                type: val.DATA_TYPE,
+                maxLength: val.CHARACTER_MAXIMUM_LENGTH,
+                nullable: val.IS_NULLABLE === "YES"
+              };
+              return columns;
+            }, {});
+            return column && out[column] || out;
+          }
+        };
+      }
+      limit() {
+        const noLimit = !this.single.limit && this.single.limit !== 0;
+        if (noLimit && !this.single.offset)
+          return "";
+        const limit = this.single.offset && noLimit ? "18446744073709551615" : this._getValueOrParameterFromAttribute("limit");
+        return `limit ${limit}`;
+      }
+      whereLike(statement) {
+        return `${this._columnClause(statement)} ${this._not(statement, "like ")}${this._valueClause(statement)} COLLATE utf8_bin`;
+      }
+      whereILike(statement) {
+        return `${this._columnClause(statement)} ${this._not(statement, "like ")}${this._valueClause(statement)}`;
+      }
+      jsonExtract(params) {
+        return this._jsonExtract(["json_extract", "json_unquote"], params);
+      }
+      jsonSet(params) {
+        return this._jsonSet("json_set", params);
+      }
+      jsonInsert(params) {
+        return this._jsonSet("json_insert", params);
+      }
+      jsonRemove(params) {
+        const jsonCol = `json_remove(${columnize_(params.column, this.builder, this.client, this.bindingsHolder)},${this.client.parameter(params.path, this.builder, this.bindingsHolder)})`;
+        return params.alias ? this.client.alias(jsonCol, this.formatter.wrap(params.alias)) : jsonCol;
+      }
+      whereJsonObject(statement) {
+        return this._not(statement, `json_contains(${this._columnClause(statement)}, ${this._jsonValueClause(statement)})`);
+      }
+      whereJsonPath(statement) {
+        return this._whereJsonPath("json_extract", statement);
+      }
+      whereJsonSupersetOf(statement) {
+        return this._not(statement, `json_contains(${wrap_(statement.column, void 0, this.builder, this.client, this.bindingsHolder)},${this._jsonValueClause(statement)})`);
+      }
+      whereJsonSubsetOf(statement) {
+        return this._not(statement, `json_contains(${this._jsonValueClause(statement)},${wrap_(statement.column, void 0, this.builder, this.client, this.bindingsHolder)})`);
+      }
+      onJsonPathEquals(clause) {
+        return this._onJsonPathEquals("json_extract", clause);
+      }
+    };
+    module2.exports = QueryCompiler_MySQL;
+  }
+});
+
+// node_modules/knex/lib/dialects/mysql/schema/mysql-compiler.js
+var require_mysql_compiler = __commonJS({
+  "node_modules/knex/lib/dialects/mysql/schema/mysql-compiler.js"(exports2, module2) {
+    var SchemaCompiler = require_compiler();
+    var SchemaCompiler_MySQL = class extends SchemaCompiler {
+      constructor(client, builder) {
+        super(client, builder);
+      }
+      renameTable(tableName, to) {
+        this.pushQuery(`rename table ${this.formatter.wrap(tableName)} to ${this.formatter.wrap(to)}`);
+      }
+      renameView(from, to) {
+        this.renameTable(from, to);
+      }
+      hasTable(tableName) {
+        let sql = "select * from information_schema.tables where table_name = ?";
+        const bindings = [tableName];
+        if (this.schema) {
+          sql += " and table_schema = ?";
+          bindings.push(this.schema);
+        } else {
+          sql += " and table_schema = database()";
+        }
+        this.pushQuery({
+          sql,
+          bindings,
+          output: function output(resp) {
+            return resp.length > 0;
+          }
+        });
+      }
+      hasColumn(tableName, column) {
+        this.pushQuery({
+          sql: `show columns from ${this.formatter.wrap(tableName)}`,
+          output(resp) {
+            return resp.some((row) => {
+              return this.client.wrapIdentifier(row.Field.toLowerCase()) === this.client.wrapIdentifier(column.toLowerCase());
+            });
+          }
+        });
+      }
+    };
+    module2.exports = SchemaCompiler_MySQL;
+  }
+});
+
+// node_modules/knex/lib/dialects/mysql/schema/mysql-tablecompiler.js
+var require_mysql_tablecompiler = __commonJS({
+  "node_modules/knex/lib/dialects/mysql/schema/mysql-tablecompiler.js"(exports2, module2) {
+    var TableCompiler = require_tablecompiler();
+    var { isObject, isString } = require_is();
+    var TableCompiler_MySQL = class extends TableCompiler {
+      constructor(client, tableBuilder) {
+        super(client, tableBuilder);
+      }
+      createQuery(columns, ifNot, like) {
+        const createStatement = ifNot ? "create table if not exists " : "create table ";
+        const { client } = this;
+        let conn = {};
+        let columnsSql = " (" + columns.sql.join(", ");
+        columnsSql += this.primaryKeys() || "";
+        columnsSql += this._addChecks();
+        columnsSql += ")";
+        let sql = createStatement + this.tableName() + (like && this.tableNameLike() ? " like " + this.tableNameLike() : columnsSql);
+        if (client.connectionSettings) {
+          conn = client.connectionSettings;
+        }
+        const charset = this.single.charset || conn.charset || "";
+        const collation = this.single.collate || conn.collate || "";
+        const engine = this.single.engine || "";
+        if (charset && !like)
+          sql += ` default character set ${charset}`;
+        if (collation)
+          sql += ` collate ${collation}`;
+        if (engine)
+          sql += ` engine = ${engine}`;
+        if (this.single.comment) {
+          const comment = this.single.comment || "";
+          const MAX_COMMENT_LENGTH = 1024;
+          if (comment.length > MAX_COMMENT_LENGTH)
+            this.client.logger.warn(`The max length for a table comment is ${MAX_COMMENT_LENGTH} characters`);
+          sql += ` comment = '${comment}'`;
+        }
+        this.pushQuery(sql);
+        if (like) {
+          this.addColumns(columns, this.addColumnsPrefix);
+        }
+      }
+      comment(comment) {
+        this.pushQuery(`alter table ${this.tableName()} comment = '${comment}'`);
+      }
+      changeType() {
+      }
+      renameColumn(from, to) {
+        const compiler = this;
+        const table = this.tableName();
+        const wrapped = this.formatter.wrap(from) + " " + this.formatter.wrap(to);
+        this.pushQuery({
+          sql: `show full fields from ${table} where field = ` + this.client.parameter(from, this.tableBuilder, this.bindingsHolder),
+          output(resp) {
+            const column = resp[0];
+            const runner = this;
+            return compiler.getFKRefs(runner).then(([refs]) => new Promise((resolve, reject) => {
+              try {
+                if (!refs.length) {
+                  resolve();
+                }
+                resolve(compiler.dropFKRefs(runner, refs));
+              } catch (e) {
+                reject(e);
+              }
+            }).then(function() {
+              let sql = `alter table ${table} change ${wrapped} ${column.Type}`;
+              if (String(column.Null).toUpperCase() !== "YES") {
+                sql += ` NOT NULL`;
+              } else {
+                sql += ` NULL`;
+              }
+              if (column.Default !== void 0 && column.Default !== null) {
+                sql += ` DEFAULT '${column.Default}'`;
+              }
+              if (column.Collation !== void 0 && column.Collation !== null) {
+                sql += ` COLLATE '${column.Collation}'`;
+              }
+              if (column.Extra == "auto_increment") {
+                sql += ` AUTO_INCREMENT`;
+              }
+              return runner.query({
+                sql
+              });
+            }).then(function() {
+              if (!refs.length) {
+                return;
+              }
+              return compiler.createFKRefs(runner, refs.map(function(ref) {
+                if (ref.REFERENCED_COLUMN_NAME === from) {
+                  ref.REFERENCED_COLUMN_NAME = to;
+                }
+                if (ref.COLUMN_NAME === from) {
+                  ref.COLUMN_NAME = to;
+                }
+                return ref;
+              }));
+            }));
+          }
+        });
+      }
+      primaryKeys() {
+        const pks = (this.grouped.alterTable || []).filter((k) => k.method === "primary");
+        if (pks.length > 0 && pks[0].args.length > 0) {
+          const columns = pks[0].args[0];
+          let constraintName = pks[0].args[1] || "";
+          if (constraintName) {
+            constraintName = " constraint " + this.formatter.wrap(constraintName);
+          }
+          if (this.grouped.columns) {
+            const incrementsCols = this._getIncrementsColumnNames();
+            if (incrementsCols.length) {
+              incrementsCols.forEach((c) => {
+                if (!columns.includes(c)) {
+                  columns.unshift(c);
+                }
+              });
+            }
+          }
+          return `,${constraintName} primary key (${this.formatter.columnize(columns)})`;
+        }
+      }
+      getFKRefs(runner) {
+        const bindingsHolder = {
+          bindings: []
+        };
+        const sql = "SELECT KCU.CONSTRAINT_NAME, KCU.TABLE_NAME, KCU.COLUMN_NAME,        KCU.REFERENCED_TABLE_NAME, KCU.REFERENCED_COLUMN_NAME,        RC.UPDATE_RULE, RC.DELETE_RULE FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE AS KCU JOIN INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS AS RC        USING(CONSTRAINT_NAME)WHERE KCU.REFERENCED_TABLE_NAME = " + this.client.parameter(this.tableNameRaw, this.tableBuilder, bindingsHolder) + "   AND KCU.CONSTRAINT_SCHEMA = " + this.client.parameter(this.client.database(), this.tableBuilder, bindingsHolder) + "   AND RC.CONSTRAINT_SCHEMA = " + this.client.parameter(this.client.database(), this.tableBuilder, bindingsHolder);
+        return runner.query({
+          sql,
+          bindings: bindingsHolder.bindings
+        });
+      }
+      dropFKRefs(runner, refs) {
+        const formatter = this.client.formatter(this.tableBuilder);
+        return Promise.all(refs.map(function(ref) {
+          const constraintName = formatter.wrap(ref.CONSTRAINT_NAME);
+          const tableName = formatter.wrap(ref.TABLE_NAME);
+          return runner.query({
+            sql: `alter table ${tableName} drop foreign key ${constraintName}`
+          });
+        }));
+      }
+      createFKRefs(runner, refs) {
+        const formatter = this.client.formatter(this.tableBuilder);
+        return Promise.all(refs.map(function(ref) {
+          const tableName = formatter.wrap(ref.TABLE_NAME);
+          const keyName = formatter.wrap(ref.CONSTRAINT_NAME);
+          const column = formatter.columnize(ref.COLUMN_NAME);
+          const references = formatter.columnize(ref.REFERENCED_COLUMN_NAME);
+          const inTable = formatter.wrap(ref.REFERENCED_TABLE_NAME);
+          const onUpdate = ` ON UPDATE ${ref.UPDATE_RULE}`;
+          const onDelete = ` ON DELETE ${ref.DELETE_RULE}`;
+          return runner.query({
+            sql: `alter table ${tableName} add constraint ${keyName} foreign key (` + column + ") references " + inTable + " (" + references + ")" + onUpdate + onDelete
+          });
+        }));
+      }
+      index(columns, indexName, options) {
+        let storageEngineIndexType;
+        let indexType;
+        if (isString(options)) {
+          indexType = options;
+        } else if (isObject(options)) {
+          ({ indexType, storageEngineIndexType } = options);
+        }
+        indexName = indexName ? this.formatter.wrap(indexName) : this._indexCommand("index", this.tableNameRaw, columns);
+        storageEngineIndexType = storageEngineIndexType ? ` using ${storageEngineIndexType}` : "";
+        this.pushQuery(`alter table ${this.tableName()} add${indexType ? ` ${indexType}` : ""} index ${indexName}(${this.formatter.columnize(columns)})${storageEngineIndexType}`);
+      }
+      primary(columns, constraintName) {
+        let deferrable;
+        if (isObject(constraintName)) {
+          ({ constraintName, deferrable } = constraintName);
+        }
+        if (deferrable && deferrable !== "not deferrable") {
+          this.client.logger.warn(`mysql: primary key constraint \`${constraintName}\` will not be deferrable ${deferrable} because mysql does not support deferred constraints.`);
+        }
+        constraintName = constraintName ? this.formatter.wrap(constraintName) : this.formatter.wrap(`${this.tableNameRaw}_pkey`);
+        const primaryCols = columns;
+        let incrementsCols = [];
+        if (this.grouped.columns) {
+          incrementsCols = this._getIncrementsColumnNames();
+          if (incrementsCols) {
+            incrementsCols.forEach((c) => {
+              if (!primaryCols.includes(c)) {
+                primaryCols.unshift(c);
+              }
+            });
+          }
+        }
+        if (this.method !== "create" && this.method !== "createIfNot") {
+          this.pushQuery(`alter table ${this.tableName()} add primary key ${constraintName}(${this.formatter.columnize(primaryCols)})`);
+        }
+        if (incrementsCols.length) {
+          this.pushQuery(`alter table ${this.tableName()} modify column ${this.formatter.columnize(incrementsCols)} int unsigned not null auto_increment`);
+        }
+      }
+      unique(columns, indexName) {
+        let storageEngineIndexType;
+        let deferrable;
+        if (isObject(indexName)) {
+          ({ indexName, deferrable, storageEngineIndexType } = indexName);
+        }
+        if (deferrable && deferrable !== "not deferrable") {
+          this.client.logger.warn(`mysql: unique index \`${indexName}\` will not be deferrable ${deferrable} because mysql does not support deferred constraints.`);
+        }
+        indexName = indexName ? this.formatter.wrap(indexName) : this._indexCommand("unique", this.tableNameRaw, columns);
+        storageEngineIndexType = storageEngineIndexType ? ` using ${storageEngineIndexType}` : "";
+        this.pushQuery(`alter table ${this.tableName()} add unique ${indexName}(${this.formatter.columnize(columns)})${storageEngineIndexType}`);
+      }
+      dropIndex(columns, indexName) {
+        indexName = indexName ? this.formatter.wrap(indexName) : this._indexCommand("index", this.tableNameRaw, columns);
+        this.pushQuery(`alter table ${this.tableName()} drop index ${indexName}`);
+      }
+      dropForeign(columns, indexName) {
+        indexName = indexName ? this.formatter.wrap(indexName) : this._indexCommand("foreign", this.tableNameRaw, columns);
+        this.pushQuery(`alter table ${this.tableName()} drop foreign key ${indexName}`);
+      }
+      dropPrimary() {
+        this.pushQuery(`alter table ${this.tableName()} drop primary key`);
+      }
+      dropUnique(column, indexName) {
+        indexName = indexName ? this.formatter.wrap(indexName) : this._indexCommand("unique", this.tableNameRaw, column);
+        this.pushQuery(`alter table ${this.tableName()} drop index ${indexName}`);
+      }
+    };
+    TableCompiler_MySQL.prototype.addColumnsPrefix = "add ";
+    TableCompiler_MySQL.prototype.alterColumnsPrefix = "modify ";
+    TableCompiler_MySQL.prototype.dropColumnPrefix = "drop ";
+    module2.exports = TableCompiler_MySQL;
+  }
+});
+
+// node_modules/knex/lib/dialects/mysql/schema/mysql-columncompiler.js
+var require_mysql_columncompiler = __commonJS({
+  "node_modules/knex/lib/dialects/mysql/schema/mysql-columncompiler.js"(exports2, module2) {
+    var ColumnCompiler = require_columncompiler();
+    var { isObject } = require_is();
+    var { toNumber } = require_helpers();
+    var commentEscapeRegex = /(?<!\\)'/g;
+    var ColumnCompiler_MySQL = class extends ColumnCompiler {
+      constructor(client, tableCompiler, columnBuilder) {
+        super(client, tableCompiler, columnBuilder);
+        this.modifiers = [
+          "unsigned",
+          "nullable",
+          "defaultTo",
+          "comment",
+          "collate",
+          "first",
+          "after"
+        ];
+        this._addCheckModifiers();
+      }
+      double(precision, scale) {
+        if (!precision)
+          return "double";
+        return `double(${toNumber(precision, 8)}, ${toNumber(scale, 2)})`;
+      }
+      integer(length) {
+        length = length ? `(${toNumber(length, 11)})` : "";
+        return `int${length}`;
+      }
+      tinyint(length) {
+        length = length ? `(${toNumber(length, 1)})` : "";
+        return `tinyint${length}`;
+      }
+      text(column) {
+        switch (column) {
+          case "medium":
+          case "mediumtext":
+            return "mediumtext";
+          case "long":
+          case "longtext":
+            return "longtext";
+          default:
+            return "text";
+        }
+      }
+      mediumtext() {
+        return this.text("medium");
+      }
+      longtext() {
+        return this.text("long");
+      }
+      enu(allowed) {
+        return `enum('${allowed.join("', '")}')`;
+      }
+      datetime(precision) {
+        if (isObject(precision)) {
+          ({ precision } = precision);
+        }
+        return typeof precision === "number" ? `datetime(${precision})` : "datetime";
+      }
+      timestamp(precision) {
+        if (isObject(precision)) {
+          ({ precision } = precision);
+        }
+        return typeof precision === "number" ? `timestamp(${precision})` : "timestamp";
+      }
+      time(precision) {
+        if (isObject(precision)) {
+          ({ precision } = precision);
+        }
+        return typeof precision === "number" ? `time(${precision})` : "time";
+      }
+      bit(length) {
+        return length ? `bit(${toNumber(length)})` : "bit";
+      }
+      binary(length) {
+        return length ? `varbinary(${toNumber(length)})` : "blob";
+      }
+      json() {
+        return "json";
+      }
+      jsonb() {
+        return "json";
+      }
+      defaultTo(value) {
+        if (value === null || value === void 0) {
+          return;
+        }
+        if ((this.type === "json" || this.type === "jsonb") && isObject(value)) {
+          return `default ('${JSON.stringify(value)}')`;
+        }
+        const defaultVal = super.defaultTo.apply(this, arguments);
+        if (this.type !== "blob" && this.type.indexOf("text") === -1) {
+          return defaultVal;
+        }
+        return "";
+      }
+      unsigned() {
+        return "unsigned";
+      }
+      comment(comment) {
+        if (comment && comment.length > 255) {
+          this.client.logger.warn("Your comment is longer than the max comment length for MySQL");
+        }
+        return comment && `comment '${comment.replace(commentEscapeRegex, "\\'")}'`;
+      }
+      first() {
+        return "first";
+      }
+      after(column) {
+        return `after ${this.formatter.wrap(column)}`;
+      }
+      collate(collation) {
+        return collation && `collate '${collation}'`;
+      }
+      checkRegex(regex, constraintName) {
+        return this._check(`${this.formatter.wrap(this.getColumnName())} REGEXP ${this.client._escapeBinding(regex)}`, constraintName);
+      }
+      increments(options = { primaryKey: true }) {
+        return "int unsigned not null" + (this.tableCompiler._canBeAddPrimaryKey(options) ? " auto_increment primary key" : "");
+      }
+      bigincrements(options = { primaryKey: true }) {
+        return "bigint unsigned not null" + (this.tableCompiler._canBeAddPrimaryKey(options) ? " auto_increment primary key" : "");
+      }
+    };
+    ColumnCompiler_MySQL.prototype.bigint = "bigint";
+    ColumnCompiler_MySQL.prototype.mediumint = "mediumint";
+    ColumnCompiler_MySQL.prototype.smallint = "smallint";
+    module2.exports = ColumnCompiler_MySQL;
+  }
+});
+
+// node_modules/knex/lib/dialects/mysql/schema/mysql-viewcompiler.js
+var require_mysql_viewcompiler = __commonJS({
+  "node_modules/knex/lib/dialects/mysql/schema/mysql-viewcompiler.js"(exports2, module2) {
+    var ViewCompiler = require_viewcompiler();
+    var ViewCompiler_MySQL = class extends ViewCompiler {
+      constructor(client, viewCompiler) {
+        super(client, viewCompiler);
+      }
+      createOrReplace() {
+        this.createQuery(this.columns, this.selectQuery, false, true);
+      }
+    };
+    module2.exports = ViewCompiler_MySQL;
+  }
+});
+
+// node_modules/knex/lib/dialects/mysql/schema/mysql-viewbuilder.js
+var require_mysql_viewbuilder = __commonJS({
+  "node_modules/knex/lib/dialects/mysql/schema/mysql-viewbuilder.js"(exports2, module2) {
+    var ViewBuilder = require_viewbuilder();
+    var ViewBuilder_MySQL = class extends ViewBuilder {
+      constructor() {
+        super(...arguments);
+      }
+      checkOption() {
+        this._single.checkOption = "default_option";
+      }
+      localCheckOption() {
+        this._single.checkOption = "local";
+      }
+      cascadedCheckOption() {
+        this._single.checkOption = "cascaded";
+      }
+    };
+    module2.exports = ViewBuilder_MySQL;
+  }
+});
+
+// node_modules/knex/lib/dialects/mysql/index.js
+var require_mysql = __commonJS({
+  "node_modules/knex/lib/dialects/mysql/index.js"(exports2, module2) {
+    var defer = require_defer();
+    var map = require_map();
+    var { promisify } = require("util");
+    var Client = require_client2();
+    var Transaction = require_transaction3();
+    var QueryCompiler = require_mysql_querycompiler();
+    var SchemaCompiler = require_mysql_compiler();
+    var TableCompiler = require_mysql_tablecompiler();
+    var ColumnCompiler = require_mysql_columncompiler();
+    var { makeEscape } = require_string();
+    var ViewCompiler = require_mysql_viewcompiler();
+    var ViewBuilder = require_mysql_viewbuilder();
+    var Client_MySQL = class extends Client {
+      _driver() {
+        return require("mysql");
+      }
+      queryCompiler(builder, formatter) {
+        return new QueryCompiler(this, builder, formatter);
+      }
+      schemaCompiler() {
+        return new SchemaCompiler(this, ...arguments);
+      }
+      tableCompiler() {
+        return new TableCompiler(this, ...arguments);
+      }
+      viewCompiler() {
+        return new ViewCompiler(this, ...arguments);
+      }
+      viewBuilder() {
+        return new ViewBuilder(this, ...arguments);
+      }
+      columnCompiler() {
+        return new ColumnCompiler(this, ...arguments);
+      }
+      transaction() {
+        return new Transaction(this, ...arguments);
+      }
+      wrapIdentifierImpl(value) {
+        return value !== "*" ? `\`${value.replace(/`/g, "``")}\`` : "*";
+      }
+      acquireRawConnection() {
+        return new Promise((resolver, rejecter) => {
+          const connection = this.driver.createConnection(this.connectionSettings);
+          connection.on("error", (err) => {
+            connection.__knex__disposed = err;
+          });
+          connection.connect((err) => {
+            if (err) {
+              connection.removeAllListeners();
+              return rejecter(err);
+            }
+            resolver(connection);
+          });
+        });
+      }
+      async destroyRawConnection(connection) {
+        try {
+          const end = promisify((cb) => connection.end(cb));
+          return await end();
+        } catch (err) {
+          connection.__knex__disposed = err;
+        } finally {
+          defer(() => connection.removeAllListeners());
+        }
+      }
+      validateConnection(connection) {
+        return connection.state === "connected" || connection.state === "authenticated";
+      }
+      _stream(connection, obj, stream, options) {
+        if (!obj.sql)
+          throw new Error("The query is empty");
+        options = options || {};
+        const queryOptions = Object.assign({ sql: obj.sql }, obj.options);
+        return new Promise((resolver, rejecter) => {
+          stream.on("error", rejecter);
+          stream.on("end", resolver);
+          const queryStream = connection.query(queryOptions, obj.bindings).stream(options);
+          queryStream.on("error", (err) => {
+            rejecter(err);
+            stream.emit("error", err);
+          });
+          queryStream.pipe(stream);
+        });
+      }
+      _query(connection, obj) {
+        if (!obj || typeof obj === "string")
+          obj = { sql: obj };
+        if (!obj.sql)
+          throw new Error("The query is empty");
+        return new Promise(function(resolver, rejecter) {
+          if (!obj.sql) {
+            resolver();
+            return;
+          }
+          const queryOptions = Object.assign({ sql: obj.sql }, obj.options);
+          connection.query(queryOptions, obj.bindings, function(err, rows, fields) {
+            if (err)
+              return rejecter(err);
+            obj.response = [rows, fields];
+            resolver(obj);
+          });
+        });
+      }
+      processResponse(obj, runner) {
+        if (obj == null)
+          return;
+        const { response } = obj;
+        const { method } = obj;
+        const rows = response[0];
+        const fields = response[1];
+        if (obj.output)
+          return obj.output.call(runner, rows, fields);
+        switch (method) {
+          case "select":
+            return rows;
+          case "first":
+            return rows[0];
+          case "pluck":
+            return map(rows, obj.pluck);
+          case "insert":
+            return [rows.insertId];
+          case "del":
+          case "update":
+          case "counter":
+            return rows.affectedRows;
+          default:
+            return response;
+        }
+      }
+      async cancelQuery(connectionToKill) {
+        const conn = await this.acquireRawConnection();
+        try {
+          return await this._wrappedCancelQueryCall(conn, connectionToKill);
+        } finally {
+          await this.destroyRawConnection(conn);
+          if (conn.__knex__disposed) {
+            this.logger.warn(`Connection Error: ${conn.__knex__disposed}`);
+          }
+        }
+      }
+      _wrappedCancelQueryCall(conn, connectionToKill) {
+        return this._query(conn, {
+          sql: "KILL QUERY ?",
+          bindings: [connectionToKill.threadId],
+          options: {}
+        });
+      }
+    };
+    Object.assign(Client_MySQL.prototype, {
+      dialect: "mysql",
+      driverName: "mysql",
+      _escapeBinding: makeEscape(),
+      canCancelQuery: true
+    });
+    module2.exports = Client_MySQL;
+  }
+});
+
+// node_modules/knex/lib/dialects/mysql2/transaction.js
+var require_transaction4 = __commonJS({
+  "node_modules/knex/lib/dialects/mysql2/transaction.js"(exports2, module2) {
+    var Transaction = require_transaction();
+    var debug = require_src6()("knex:tx");
+    var Transaction_MySQL2 = class extends Transaction {
+      query(conn, sql, status, value) {
+        const t = this;
+        const q = this.trxClient.query(conn, sql).catch((err) => {
+          if (err.code === "ER_SP_DOES_NOT_EXIST") {
+            this.trxClient.logger.warn("Transaction was implicitly committed, do not mix transactions and DDL with MySQL (#805)");
+            return;
+          }
+          status = 2;
+          value = err;
+          t._completed = true;
+          debug("%s error running transaction query", t.txid);
+        }).then(function(res) {
+          if (status === 1)
+            t._resolver(value);
+          if (status === 2) {
+            if (value === void 0) {
+              if (t.doNotRejectOnRollback && /^ROLLBACK\b/i.test(sql)) {
+                t._resolver();
+                return;
+              }
+              value = new Error(`Transaction rejected with non-error: ${value}`);
+            }
+            t._rejecter(value);
+            return res;
+          }
+        });
+        if (status === 1 || status === 2) {
+          t._completed = true;
+        }
+        return q;
+      }
+    };
+    module2.exports = Transaction_MySQL2;
+  }
+});
+
+// node_modules/knex/lib/dialects/mysql2/index.js
+var require_mysql2 = __commonJS({
+  "node_modules/knex/lib/dialects/mysql2/index.js"(exports2, module2) {
+    var Client_MySQL = require_mysql();
+    var Transaction = require_transaction4();
+    var Client_MySQL2 = class extends Client_MySQL {
+      transaction() {
+        return new Transaction(this, ...arguments);
+      }
+      _driver() {
+        return require("mysql2");
+      }
+      validateConnection(connection) {
+        return connection && !connection._fatalError && !connection._protocolError && !connection._closing && !connection.stream.destroyed;
+      }
+    };
+    Object.assign(Client_MySQL2.prototype, {
+      driverName: "mysql2"
+    });
+    module2.exports = Client_MySQL2;
+  }
+});
+
+// node_modules/knex/lib/dialects/oracle/utils.js
+var require_utils6 = __commonJS({
+  "node_modules/knex/lib/dialects/oracle/utils.js"(exports2, module2) {
+    function generateCombinedName(logger, postfix, name, subNames) {
+      const crypto2 = require("crypto");
+      const limit = 30;
+      if (!Array.isArray(subNames))
+        subNames = subNames ? [subNames] : [];
+      const table = name.replace(/\.|-/g, "_");
+      const subNamesPart = subNames.join("_");
+      let result = `${table}_${subNamesPart.length ? subNamesPart + "_" : ""}${postfix}`.toLowerCase();
+      if (result.length > limit) {
+        logger.warn(`Automatically generated name "${result}" exceeds ${limit} character limit for Oracle. Using base64 encoded sha1 of that name instead.`);
+        result = crypto2.createHash("sha1").update(result).digest("base64").replace("=", "");
+      }
+      return result;
+    }
+    function wrapSqlWithCatch(sql, errorNumberToCatch) {
+      return `begin execute immediate '${sql.replace(/'/g, "''")}'; exception when others then if sqlcode != ${errorNumberToCatch} then raise; end if; end;`;
+    }
+    function ReturningHelper(columnName) {
+      this.columnName = columnName;
+    }
+    ReturningHelper.prototype.toString = function() {
+      return `[object ReturningHelper:${this.columnName}]`;
+    };
+    function isConnectionError(err) {
+      return [
+        "DPI-1010",
+        "DPI-1080",
+        "ORA-03114",
+        "ORA-03113",
+        "ORA-03135",
+        "ORA-12514",
+        "ORA-00022",
+        "ORA-00028",
+        "ORA-00031",
+        "ORA-00045",
+        "ORA-00378",
+        "ORA-00602",
+        "ORA-00603",
+        "ORA-00609",
+        "ORA-01012",
+        "ORA-01041",
+        "ORA-01043",
+        "ORA-01089",
+        "ORA-01092",
+        "ORA-02396",
+        "ORA-03122",
+        "ORA-12153",
+        "ORA-12537",
+        "ORA-12547",
+        "ORA-12570",
+        "ORA-12583",
+        "ORA-27146",
+        "ORA-28511",
+        "ORA-56600",
+        "NJS-024",
+        "NJS-003"
+      ].some(function(prefix) {
+        return err.message.indexOf(prefix) === 0;
+      });
+    }
+    module2.exports = {
+      generateCombinedName,
+      isConnectionError,
+      wrapSqlWithCatch,
+      ReturningHelper
+    };
+  }
+});
+
+// node_modules/knex/lib/dialects/oracle/schema/internal/trigger.js
+var require_trigger = __commonJS({
+  "node_modules/knex/lib/dialects/oracle/schema/internal/trigger.js"(exports2, module2) {
+    var utils = require_utils6();
+    var trigger = {
+      renameColumnTrigger: function(logger, tableName, columnName, to) {
+        const triggerName = utils.generateCombinedName(logger, "autoinc_trg", tableName);
+        const sequenceName = utils.generateCombinedName(logger, "seq", tableName);
+        return `DECLARE PK_NAME VARCHAR(200); IS_AUTOINC NUMBER := 0; BEGIN  EXECUTE IMMEDIATE ('ALTER TABLE "${tableName}" RENAME COLUMN "${columnName}" TO "${to}"');  SELECT COUNT(*) INTO IS_AUTOINC from "USER_TRIGGERS" where trigger_name = '${triggerName}';  IF (IS_AUTOINC > 0) THEN    SELECT cols.column_name INTO PK_NAME    FROM all_constraints cons, all_cons_columns cols    WHERE cons.constraint_type = 'P'    AND cons.constraint_name = cols.constraint_name    AND cons.owner = cols.owner    AND cols.table_name = '${tableName}';    IF ('${to}' = PK_NAME) THEN      EXECUTE IMMEDIATE ('DROP TRIGGER "${triggerName}"');      EXECUTE IMMEDIATE ('create or replace trigger "${triggerName}"      BEFORE INSERT on "${tableName}" for each row        declare        checking number := 1;        begin          if (:new."${to}" is null) then            while checking >= 1 loop              select "${sequenceName}".nextval into :new."${to}" from dual;              select count("${to}") into checking from "${tableName}"              where "${to}" = :new."${to}";            end loop;          end if;        end;');    end if;  end if;END;`;
+      },
+      createAutoIncrementTrigger: function(logger, tableName, schemaName) {
+        const tableQuoted = `"${tableName}"`;
+        const tableUnquoted = tableName;
+        const schemaQuoted = schemaName ? `"${schemaName}".` : "";
+        const constraintOwner = schemaName ? `'${schemaName}'` : "cols.owner";
+        const triggerName = utils.generateCombinedName(logger, "autoinc_trg", tableName);
+        const sequenceNameUnquoted = utils.generateCombinedName(logger, "seq", tableName);
+        const sequenceNameQuoted = `"${sequenceNameUnquoted}"`;
+        return `DECLARE PK_NAME VARCHAR(200); BEGIN  EXECUTE IMMEDIATE ('CREATE SEQUENCE ${schemaQuoted}${sequenceNameQuoted}');  SELECT cols.column_name INTO PK_NAME  FROM all_constraints cons, all_cons_columns cols  WHERE cons.constraint_type = 'P'  AND cons.constraint_name = cols.constraint_name  AND cons.owner = ${constraintOwner}  AND cols.table_name = '${tableUnquoted}';  execute immediate ('create or replace trigger ${schemaQuoted}"${triggerName}"  BEFORE INSERT on ${schemaQuoted}${tableQuoted}  for each row  declare  checking number := 1;  begin    if (:new."' || PK_NAME || '" is null) then      while checking >= 1 loop        select ${schemaQuoted}${sequenceNameQuoted}.nextval into :new."' || PK_NAME || '" from dual;        select count("' || PK_NAME || '") into checking from ${schemaQuoted}${tableQuoted}        where "' || PK_NAME || '" = :new."' || PK_NAME || '";      end loop;    end if;  end;'); END;`;
+      },
+      renameTableAndAutoIncrementTrigger: function(logger, tableName, to) {
+        const triggerName = utils.generateCombinedName(logger, "autoinc_trg", tableName);
+        const sequenceName = utils.generateCombinedName(logger, "seq", tableName);
+        const toTriggerName = utils.generateCombinedName(logger, "autoinc_trg", to);
+        const toSequenceName = utils.generateCombinedName(logger, "seq", to);
+        return `DECLARE PK_NAME VARCHAR(200); IS_AUTOINC NUMBER := 0; BEGIN  EXECUTE IMMEDIATE ('RENAME "${tableName}" TO "${to}"');  SELECT COUNT(*) INTO IS_AUTOINC from "USER_TRIGGERS" where trigger_name = '${triggerName}';  IF (IS_AUTOINC > 0) THEN    EXECUTE IMMEDIATE ('DROP TRIGGER "${triggerName}"');    EXECUTE IMMEDIATE ('RENAME "${sequenceName}" TO "${toSequenceName}"');    SELECT cols.column_name INTO PK_NAME    FROM all_constraints cons, all_cons_columns cols    WHERE cons.constraint_type = 'P'    AND cons.constraint_name = cols.constraint_name    AND cons.owner = cols.owner    AND cols.table_name = '${to}';    EXECUTE IMMEDIATE ('create or replace trigger "${toTriggerName}"    BEFORE INSERT on "${to}" for each row      declare      checking number := 1;      begin        if (:new."' || PK_NAME || '" is null) then          while checking >= 1 loop            select "${toSequenceName}".nextval into :new."' || PK_NAME || '" from dual;            select count("' || PK_NAME || '") into checking from "${to}"            where "' || PK_NAME || '" = :new."' || PK_NAME || '";          end loop;        end if;      end;');  end if;END;`;
+      }
+    };
+    module2.exports = trigger;
+  }
+});
+
+// node_modules/knex/lib/dialects/oracle/schema/oracle-compiler.js
+var require_oracle_compiler = __commonJS({
+  "node_modules/knex/lib/dialects/oracle/schema/oracle-compiler.js"(exports2, module2) {
+    var SchemaCompiler = require_compiler();
+    var utils = require_utils6();
+    var Trigger = require_trigger();
+    var SchemaCompiler_Oracle = class extends SchemaCompiler {
+      constructor() {
+        super(...arguments);
+      }
+      renameTable(tableName, to) {
+        const renameTable = Trigger.renameTableAndAutoIncrementTrigger(this.client.logger, tableName, to);
+        this.pushQuery(renameTable);
+      }
+      hasTable(tableName) {
+        this.pushQuery({
+          sql: "select TABLE_NAME from USER_TABLES where TABLE_NAME = " + this.client.parameter(tableName, this.builder, this.bindingsHolder),
+          output(resp) {
+            return resp.length > 0;
+          }
+        });
+      }
+      hasColumn(tableName, column) {
+        const sql = `select COLUMN_NAME from ALL_TAB_COLUMNS where TABLE_NAME = ${this.client.parameter(tableName, this.builder, this.bindingsHolder)} and COLUMN_NAME = ${this.client.parameter(column, this.builder, this.bindingsHolder)}`;
+        this.pushQuery({ sql, output: (resp) => resp.length > 0 });
+      }
+      dropSequenceIfExists(sequenceName) {
+        const prefix = this.schema ? `"${this.schema}".` : "";
+        this.pushQuery(utils.wrapSqlWithCatch(`drop sequence ${prefix}${this.formatter.wrap(sequenceName)}`, -2289));
+      }
+      _dropRelatedSequenceIfExists(tableName) {
+        const sequenceName = utils.generateCombinedName(this.client.logger, "seq", tableName);
+        this.dropSequenceIfExists(sequenceName);
+      }
+      dropTable(tableName) {
+        const prefix = this.schema ? `"${this.schema}".` : "";
+        this.pushQuery(`drop table ${prefix}${this.formatter.wrap(tableName)}`);
+        this._dropRelatedSequenceIfExists(tableName);
+      }
+      dropTableIfExists(tableName) {
+        this.dropObject(tableName, "table");
+      }
+      dropViewIfExists(viewName) {
+        this.dropObject(viewName, "view");
+      }
+      dropObject(objectName, type) {
+        const prefix = this.schema ? `"${this.schema}".` : "";
+        let errorCode = -942;
+        if (type === "materialized view") {
+          errorCode = -12003;
+        }
+        this.pushQuery(utils.wrapSqlWithCatch(`drop ${type} ${prefix}${this.formatter.wrap(objectName)}`, errorCode));
+        this._dropRelatedSequenceIfExists(objectName);
+      }
+      refreshMaterializedView(viewName) {
+        return this.pushQuery({
+          sql: `BEGIN DBMS_MVIEW.REFRESH('${this.schemaNameRaw ? this.schemaNameRaw + "." : ""}${viewName}'); END;`
+        });
+      }
+      dropMaterializedView(viewName) {
+        this._dropView(viewName, false, true);
+      }
+      dropMaterializedViewIfExists(viewName) {
+        this.dropObject(viewName, "materialized view");
+      }
+    };
+    module2.exports = SchemaCompiler_Oracle;
+  }
+});
+
+// node_modules/knex/lib/dialects/oracle/schema/oracle-columnbuilder.js
+var require_oracle_columnbuilder = __commonJS({
+  "node_modules/knex/lib/dialects/oracle/schema/oracle-columnbuilder.js"(exports2, module2) {
+    var ColumnBuilder = require_columnbuilder();
+    var toArray = require_toArray();
+    var ColumnBuilder_Oracle = class extends ColumnBuilder {
+      constructor() {
+        super(...arguments);
+      }
+      checkIn() {
+        this._modifiers.checkIn = toArray(arguments);
+        return this;
+      }
+    };
+    module2.exports = ColumnBuilder_Oracle;
+  }
+});
+
+// node_modules/lodash/noop.js
+var require_noop2 = __commonJS({
+  "node_modules/lodash/noop.js"(exports2, module2) {
+    function noop() {
+    }
+    module2.exports = noop;
+  }
+});
+
+// node_modules/lodash/_createSet.js
+var require_createSet = __commonJS({
+  "node_modules/lodash/_createSet.js"(exports2, module2) {
+    var Set2 = require_Set();
+    var noop = require_noop2();
+    var setToArray = require_setToArray();
+    var INFINITY = 1 / 0;
+    var createSet = !(Set2 && 1 / setToArray(new Set2([, -0]))[1] == INFINITY) ? noop : function(values) {
+      return new Set2(values);
+    };
+    module2.exports = createSet;
+  }
+});
+
+// node_modules/lodash/_baseUniq.js
+var require_baseUniq = __commonJS({
+  "node_modules/lodash/_baseUniq.js"(exports2, module2) {
+    var SetCache = require_SetCache();
+    var arrayIncludes = require_arrayIncludes();
+    var arrayIncludesWith = require_arrayIncludesWith();
+    var cacheHas = require_cacheHas();
+    var createSet = require_createSet();
+    var setToArray = require_setToArray();
+    var LARGE_ARRAY_SIZE = 200;
+    function baseUniq(array, iteratee, comparator) {
+      var index = -1, includes = arrayIncludes, length = array.length, isCommon = true, result = [], seen = result;
+      if (comparator) {
+        isCommon = false;
+        includes = arrayIncludesWith;
+      } else if (length >= LARGE_ARRAY_SIZE) {
+        var set = iteratee ? null : createSet(array);
+        if (set) {
+          return setToArray(set);
+        }
+        isCommon = false;
+        includes = cacheHas;
+        seen = new SetCache();
+      } else {
+        seen = iteratee ? [] : result;
+      }
+      outer:
+        while (++index < length) {
+          var value = array[index], computed = iteratee ? iteratee(value) : value;
+          value = comparator || value !== 0 ? value : 0;
+          if (isCommon && computed === computed) {
+            var seenIndex = seen.length;
+            while (seenIndex--) {
+              if (seen[seenIndex] === computed) {
+                continue outer;
+              }
+            }
+            if (iteratee) {
+              seen.push(computed);
+            }
+            result.push(value);
+          } else if (!includes(seen, computed, comparator)) {
+            if (seen !== result) {
+              seen.push(computed);
+            }
+            result.push(value);
+          }
+        }
+      return result;
+    }
+    module2.exports = baseUniq;
+  }
+});
+
+// node_modules/lodash/uniq.js
+var require_uniq = __commonJS({
+  "node_modules/lodash/uniq.js"(exports2, module2) {
+    var baseUniq = require_baseUniq();
+    function uniq(array) {
+      return array && array.length ? baseUniq(array) : [];
+    }
+    module2.exports = uniq;
+  }
+});
+
+// node_modules/knex/lib/dialects/oracle/schema/internal/incrementUtils.js
+var require_incrementUtils = __commonJS({
+  "node_modules/knex/lib/dialects/oracle/schema/internal/incrementUtils.js"(exports2, module2) {
+    var Trigger = require_trigger();
+    function createAutoIncrementTriggerAndSequence(columnCompiler) {
+      columnCompiler.pushAdditional(function() {
+        const tableName = this.tableCompiler.tableNameRaw;
+        const schemaName = this.tableCompiler.schemaNameRaw;
+        const createTriggerSQL = Trigger.createAutoIncrementTrigger(this.client.logger, tableName, schemaName);
+        this.pushQuery(createTriggerSQL);
+      });
+    }
+    module2.exports = {
+      createAutoIncrementTriggerAndSequence
+    };
+  }
+});
+
+// node_modules/knex/lib/dialects/oracle/schema/oracle-columncompiler.js
+var require_oracle_columncompiler = __commonJS({
+  "node_modules/knex/lib/dialects/oracle/schema/oracle-columncompiler.js"(exports2, module2) {
+    var uniq = require_uniq();
+    var Raw = require_raw2();
+    var ColumnCompiler = require_columncompiler();
+    var {
+      createAutoIncrementTriggerAndSequence
+    } = require_incrementUtils();
+    var { toNumber } = require_helpers();
+    var ColumnCompiler_Oracle = class extends ColumnCompiler {
+      constructor() {
+        super(...arguments);
+        this.modifiers = ["defaultTo", "checkIn", "nullable", "comment"];
+      }
+      increments(options = { primaryKey: true }) {
+        createAutoIncrementTriggerAndSequence(this);
+        return "integer not null" + (this.tableCompiler._canBeAddPrimaryKey(options) ? " primary key" : "");
+      }
+      bigincrements(options = { primaryKey: true }) {
+        createAutoIncrementTriggerAndSequence(this);
+        return "number(20, 0) not null" + (this.tableCompiler._canBeAddPrimaryKey(options) ? " primary key" : "");
+      }
+      floating(precision) {
+        const parsedPrecision = toNumber(precision, 0);
+        return `float${parsedPrecision ? `(${parsedPrecision})` : ""}`;
+      }
+      double(precision, scale) {
+        return `number(${toNumber(precision, 8)}, ${toNumber(scale, 2)})`;
+      }
+      decimal(precision, scale) {
+        if (precision === null)
+          return "decimal";
+        return `decimal(${toNumber(precision, 8)}, ${toNumber(scale, 2)})`;
+      }
+      integer(length) {
+        return length ? `number(${toNumber(length, 11)})` : "integer";
+      }
+      enu(allowed) {
+        allowed = uniq(allowed);
+        const maxLength = (allowed || []).reduce((maxLength2, name) => Math.max(maxLength2, String(name).length), 1);
+        this.columnBuilder._modifiers.checkIn = [allowed];
+        return `varchar2(${maxLength})`;
+      }
+      datetime(without) {
+        return without ? "timestamp" : "timestamp with time zone";
+      }
+      timestamp(without) {
+        return without ? "timestamp" : "timestamp with time zone";
+      }
+      bool() {
+        this.columnBuilder._modifiers.checkIn = [[0, 1]];
+        return "number(1, 0)";
+      }
+      varchar(length) {
+        return `varchar2(${toNumber(length, 255)})`;
+      }
+      comment(comment) {
+        const columnName = this.args[0] || this.defaults("columnName");
+        this.pushAdditional(function() {
+          this.pushQuery(`comment on column ${this.tableCompiler.tableName()}.` + this.formatter.wrap(columnName) + " is '" + (comment || "") + "'");
+        }, comment);
+      }
+      checkIn(value) {
+        if (value === void 0) {
+          return "";
+        } else if (value instanceof Raw) {
+          value = value.toQuery();
+        } else if (Array.isArray(value)) {
+          value = value.map((v) => `'${v}'`).join(", ");
+        } else {
+          value = `'${value}'`;
+        }
+        return `check (${this.formatter.wrap(this.args[0])} in (${value}))`;
+      }
+    };
+    ColumnCompiler_Oracle.prototype.tinyint = "smallint";
+    ColumnCompiler_Oracle.prototype.smallint = "smallint";
+    ColumnCompiler_Oracle.prototype.mediumint = "integer";
+    ColumnCompiler_Oracle.prototype.biginteger = "number(20, 0)";
+    ColumnCompiler_Oracle.prototype.text = "clob";
+    ColumnCompiler_Oracle.prototype.time = "timestamp with time zone";
+    ColumnCompiler_Oracle.prototype.bit = "clob";
+    ColumnCompiler_Oracle.prototype.json = "clob";
+    module2.exports = ColumnCompiler_Oracle;
+  }
+});
+
+// node_modules/knex/lib/dialects/oracle/schema/oracle-tablecompiler.js
+var require_oracle_tablecompiler = __commonJS({
+  "node_modules/knex/lib/dialects/oracle/schema/oracle-tablecompiler.js"(exports2, module2) {
+    var utils = require_utils6();
+    var TableCompiler = require_tablecompiler();
+    var helpers = require_helpers();
+    var Trigger = require_trigger();
+    var { isObject } = require_is();
+    var TableCompiler_Oracle = class extends TableCompiler {
+      constructor() {
+        super(...arguments);
+      }
+      addColumns(columns, prefix) {
+        if (columns.sql.length > 0) {
+          prefix = prefix || this.addColumnsPrefix;
+          const columnSql = columns.sql;
+          const alter = this.lowerCase ? "alter table " : "ALTER TABLE ";
+          let sql = `${alter}${this.tableName()} ${prefix}`;
+          if (columns.sql.length > 1) {
+            sql += `(${columnSql.join(", ")})`;
+          } else {
+            sql += columnSql.join(", ");
+          }
+          this.pushQuery({
+            sql,
+            bindings: columns.bindings
+          });
+        }
+      }
+      renameColumn(from, to) {
+        const tableName = this.tableName().slice(1, -1);
+        return this.pushQuery(Trigger.renameColumnTrigger(this.client.logger, tableName, from, to));
+      }
+      compileAdd(builder) {
+        const table = this.formatter.wrap(builder);
+        const columns = this.prefixArray("add column", this.getColumns(builder));
+        return this.pushQuery({
+          sql: `alter table ${table} ${columns.join(", ")}`
+        });
+      }
+      createQuery(columns, ifNot, like) {
+        const columnsSql = like && this.tableNameLike() ? " as (select * from " + this.tableNameLike() + " where 0=1)" : " (" + columns.sql.join(", ") + this._addChecks() + ")";
+        const sql = `create table ${this.tableName()}${columnsSql}`;
+        this.pushQuery({
+          sql: ifNot ? utils.wrapSqlWithCatch(sql, -955) : sql,
+          bindings: columns.bindings
+        });
+        if (this.single.comment)
+          this.comment(this.single.comment);
+        if (like) {
+          this.addColumns(columns, this.addColumnsPrefix);
+        }
+      }
+      comment(comment) {
+        this.pushQuery(`comment on table ${this.tableName()} is '${comment}'`);
+      }
+      dropColumn() {
+        const columns = helpers.normalizeArr.apply(null, arguments);
+        this.pushQuery(`alter table ${this.tableName()} drop (${this.formatter.columnize(columns)})`);
+      }
+      _indexCommand(type, tableName, columns) {
+        return this.formatter.wrap(utils.generateCombinedName(this.client.logger, type, tableName, columns));
+      }
+      primary(columns, constraintName) {
+        let deferrable;
+        if (isObject(constraintName)) {
+          ({ constraintName, deferrable } = constraintName);
+        }
+        deferrable = deferrable ? ` deferrable initially ${deferrable}` : "";
+        constraintName = constraintName ? this.formatter.wrap(constraintName) : this.formatter.wrap(`${this.tableNameRaw}_pkey`);
+        const primaryCols = columns;
+        let incrementsCols = [];
+        if (this.grouped.columns) {
+          incrementsCols = this._getIncrementsColumnNames();
+          if (incrementsCols) {
+            incrementsCols.forEach((c) => {
+              if (!primaryCols.includes(c)) {
+                primaryCols.unshift(c);
+              }
+            });
+          }
+        }
+        this.pushQuery(`alter table ${this.tableName()} add constraint ${constraintName} primary key (${this.formatter.columnize(primaryCols)})${deferrable}`);
+      }
+      dropPrimary(constraintName) {
+        constraintName = constraintName ? this.formatter.wrap(constraintName) : this.formatter.wrap(this.tableNameRaw + "_pkey");
+        this.pushQuery(`alter table ${this.tableName()} drop constraint ${constraintName}`);
+      }
+      index(columns, indexName) {
+        indexName = indexName ? this.formatter.wrap(indexName) : this._indexCommand("index", this.tableNameRaw, columns);
+        this.pushQuery(`create index ${indexName} on ${this.tableName()} (` + this.formatter.columnize(columns) + ")");
+      }
+      dropIndex(columns, indexName) {
+        indexName = indexName ? this.formatter.wrap(indexName) : this._indexCommand("index", this.tableNameRaw, columns);
+        this.pushQuery(`drop index ${indexName}`);
+      }
+      unique(columns, indexName) {
+        let deferrable;
+        if (isObject(indexName)) {
+          ({ indexName, deferrable } = indexName);
+        }
+        deferrable = deferrable ? ` deferrable initially ${deferrable}` : "";
+        indexName = indexName ? this.formatter.wrap(indexName) : this._indexCommand("unique", this.tableNameRaw, columns);
+        this.pushQuery(`alter table ${this.tableName()} add constraint ${indexName} unique (` + this.formatter.columnize(columns) + ")" + deferrable);
+      }
+      dropUnique(columns, indexName) {
+        indexName = indexName ? this.formatter.wrap(indexName) : this._indexCommand("unique", this.tableNameRaw, columns);
+        this.pushQuery(`alter table ${this.tableName()} drop constraint ${indexName}`);
+      }
+      dropForeign(columns, indexName) {
+        indexName = indexName ? this.formatter.wrap(indexName) : this._indexCommand("foreign", this.tableNameRaw, columns);
+        this.pushQuery(`alter table ${this.tableName()} drop constraint ${indexName}`);
+      }
+    };
+    TableCompiler_Oracle.prototype.addColumnsPrefix = "add ";
+    TableCompiler_Oracle.prototype.alterColumnsPrefix = "modify ";
+    module2.exports = TableCompiler_Oracle;
+  }
+});
+
+// node_modules/knex/lib/dialects/oracle/index.js
+var require_oracle = __commonJS({
+  "node_modules/knex/lib/dialects/oracle/index.js"(exports2, module2) {
+    var { ReturningHelper } = require_utils6();
+    var { isConnectionError } = require_utils6();
+    var Client = require_client2();
+    var SchemaCompiler = require_oracle_compiler();
+    var ColumnBuilder = require_oracle_columnbuilder();
+    var ColumnCompiler = require_oracle_columncompiler();
+    var TableCompiler = require_oracle_tablecompiler();
+    var Client_Oracle = class extends Client {
+      schemaCompiler() {
+        return new SchemaCompiler(this, ...arguments);
+      }
+      columnBuilder() {
+        return new ColumnBuilder(this, ...arguments);
+      }
+      columnCompiler() {
+        return new ColumnCompiler(this, ...arguments);
+      }
+      tableCompiler() {
+        return new TableCompiler(this, ...arguments);
+      }
+      database() {
+        return this.connectionSettings.database;
+      }
+      positionBindings(sql) {
+        let questionCount = 0;
+        return sql.replace(/\?/g, function() {
+          questionCount += 1;
+          return `:${questionCount}`;
+        });
+      }
+      _stream(connection, obj, stream, options) {
+        if (!obj.sql)
+          throw new Error("The query is empty");
+        return new Promise(function(resolver, rejecter) {
+          stream.on("error", (err) => {
+            if (isConnectionError(err)) {
+              connection.__knex__disposed = err;
+            }
+            rejecter(err);
+          });
+          stream.on("end", resolver);
+          const queryStream = connection.queryStream(obj.sql, obj.bindings, options);
+          queryStream.pipe(stream);
+          queryStream.on("error", function(error) {
+            rejecter(error);
+            stream.emit("error", error);
+          });
+        });
+      }
+      alias(first, second) {
+        return first + " " + second;
+      }
+      parameter(value, builder, formatter) {
+        if (value instanceof ReturningHelper && this.driver) {
+          value = new this.driver.OutParam(this.driver.OCCISTRING);
+        } else if (typeof value === "boolean") {
+          value = value ? 1 : 0;
+        }
+        return super.parameter(value, builder, formatter);
+      }
+    };
+    Object.assign(Client_Oracle.prototype, {
+      dialect: "oracle",
+      driverName: "oracle"
+    });
+    module2.exports = Client_Oracle;
+  }
+});
+
+// node_modules/knex/lib/dialects/oracle/query/oracle-querycompiler.js
+var require_oracle_querycompiler = __commonJS({
+  "node_modules/knex/lib/dialects/oracle/query/oracle-querycompiler.js"(exports2, module2) {
+    var compact = require_compact();
+    var identity = require_identity();
+    var isEmpty = require_isEmpty();
+    var isPlainObject = require_isPlainObject();
+    var reduce = require_reduce();
+    var QueryCompiler = require_querycompiler();
+    var { ReturningHelper } = require_utils6();
+    var { isString } = require_is();
+    var components = [
+      "columns",
+      "join",
+      "where",
+      "union",
+      "group",
+      "having",
+      "order",
+      "lock"
+    ];
+    var QueryCompiler_Oracle = class extends QueryCompiler {
+      constructor(client, builder, formatter) {
+        super(client, builder, formatter);
+        const { onConflict } = this.single;
+        if (onConflict) {
+          throw new Error(".onConflict() is not supported for oracledb.");
+        }
+        this.first = this.select;
+      }
+      insert() {
+        let insertValues = this.single.insert || [];
+        let { returning } = this.single;
+        if (!Array.isArray(insertValues) && isPlainObject(this.single.insert)) {
+          insertValues = [this.single.insert];
+        }
+        if (returning && !Array.isArray(returning)) {
+          returning = [returning];
+        }
+        if (Array.isArray(insertValues) && insertValues.length === 1 && isEmpty(insertValues[0])) {
+          return this._addReturningToSqlAndConvert(`insert into ${this.tableName} (${this.formatter.wrap(this.single.returning)}) values (default)`, returning, this.tableName);
+        }
+        if (isEmpty(this.single.insert) && typeof this.single.insert !== "function") {
+          return "";
+        }
+        const insertData = this._prepInsert(insertValues);
+        const sql = {};
+        if (isString(insertData)) {
+          return this._addReturningToSqlAndConvert(`insert into ${this.tableName} ${insertData}`, returning);
+        }
+        if (insertData.values.length === 1) {
+          return this._addReturningToSqlAndConvert(`insert into ${this.tableName} (${this.formatter.columnize(insertData.columns)}) values (${this.client.parameterize(insertData.values[0], void 0, this.builder, this.bindingsHolder)})`, returning, this.tableName);
+        }
+        const insertDefaultsOnly = insertData.columns.length === 0;
+        sql.sql = "begin " + insertData.values.map((value) => {
+          let returningHelper;
+          const parameterizedValues = !insertDefaultsOnly ? this.client.parameterize(value, this.client.valueForUndefined, this.builder, this.bindingsHolder) : "";
+          const returningValues = Array.isArray(returning) ? returning : [returning];
+          let subSql = `insert into ${this.tableName} `;
+          if (returning) {
+            returningHelper = new ReturningHelper(returningValues.join(":"));
+            sql.outParams = (sql.outParams || []).concat(returningHelper);
+          }
+          if (insertDefaultsOnly) {
+            subSql += `(${this.formatter.wrap(this.single.returning)}) values (default)`;
+          } else {
+            subSql += `(${this.formatter.columnize(insertData.columns)}) values (${parameterizedValues})`;
+          }
+          subSql += returning ? ` returning ROWID into ${this.client.parameter(returningHelper, this.builder, this.bindingsHolder)}` : "";
+          subSql = this.formatter.client.positionBindings(subSql);
+          const parameterizedValuesWithoutDefault = parameterizedValues.replace("DEFAULT, ", "").replace(", DEFAULT", "");
+          return `execute immediate '${subSql.replace(/'/g, "''")}` + (parameterizedValuesWithoutDefault || returning ? "' using " : "") + parameterizedValuesWithoutDefault + (parameterizedValuesWithoutDefault && returning ? ", " : "") + (returning ? "out ?" : "") + ";";
+        }).join(" ") + "end;";
+        if (returning) {
+          sql.returning = returning;
+          sql.returningSql = `select ${this.formatter.columnize(returning)} from ` + this.tableName + " where ROWID in (" + sql.outParams.map((v, i) => `:${i + 1}`).join(", ") + ") order by case ROWID " + sql.outParams.map((v, i) => `when CHARTOROWID(:${i + 1}) then ${i}`).join(" ") + " end";
+        }
+        return sql;
+      }
+      update() {
+        const updates = this._prepUpdate(this.single.update);
+        const where = this.where();
+        let { returning } = this.single;
+        const sql = `update ${this.tableName} set ` + updates.join(", ") + (where ? ` ${where}` : "");
+        if (!returning) {
+          return sql;
+        }
+        if (!Array.isArray(returning)) {
+          returning = [returning];
+        }
+        return this._addReturningToSqlAndConvert(sql, returning, this.tableName);
+      }
+      truncate() {
+        return `truncate table ${this.tableName}`;
+      }
+      forUpdate() {
+        return "for update";
+      }
+      forShare() {
+        this.client.logger.warn("lock for share is not supported by oracle dialect");
+        return "";
+      }
+      columnInfo() {
+        const column = this.single.columnInfo;
+        const table = this.client.customWrapIdentifier(this.single.table, identity);
+        const sql = `select * from xmltable( '/ROWSET/ROW'
+      passing dbms_xmlgen.getXMLType('
+      select char_col_decl_length, column_name, data_type, data_default, nullable
+      from all_tab_columns where table_name = ''${table}'' ')
+      columns
+      CHAR_COL_DECL_LENGTH number, COLUMN_NAME varchar2(200), DATA_TYPE varchar2(106),
+      DATA_DEFAULT clob, NULLABLE varchar2(1))`;
+        return {
+          sql,
+          output(resp) {
+            const out = reduce(resp, function(columns, val) {
+              columns[val.COLUMN_NAME] = {
+                type: val.DATA_TYPE,
+                defaultValue: val.DATA_DEFAULT,
+                maxLength: val.CHAR_COL_DECL_LENGTH,
+                nullable: val.NULLABLE === "Y"
+              };
+              return columns;
+            }, {});
+            return column && out[column] || out;
+          }
+        };
+      }
+      select() {
+        let query = this.with();
+        const statements = components.map((component) => {
+          return this[component]();
+        });
+        query += compact(statements).join(" ");
+        return this._surroundQueryWithLimitAndOffset(query);
+      }
+      aggregate(stmt) {
+        return this._aggregate(stmt, { aliasSeparator: " " });
+      }
+      _addReturningToSqlAndConvert(sql, returning, tableName) {
+        const res = {
+          sql
+        };
+        if (!returning) {
+          return res;
+        }
+        const returningValues = Array.isArray(returning) ? returning : [returning];
+        const returningHelper = new ReturningHelper(returningValues.join(":"));
+        res.sql = sql + " returning ROWID into " + this.client.parameter(returningHelper, this.builder, this.bindingsHolder);
+        res.returningSql = `select ${this.formatter.columnize(returning)} from ${tableName} where ROWID = :1`;
+        res.outParams = [returningHelper];
+        res.returning = returning;
+        return res;
+      }
+      _surroundQueryWithLimitAndOffset(query) {
+        let { limit } = this.single;
+        const { offset } = this.single;
+        const hasLimit = limit || limit === 0 || limit === "0";
+        limit = +limit;
+        if (!hasLimit && !offset)
+          return query;
+        query = query || "";
+        if (hasLimit && !offset) {
+          return `select * from (${query}) where rownum <= ${this._getValueOrParameterFromAttribute("limit", limit)}`;
+        }
+        const endRow = +offset + (hasLimit ? limit : 1e13);
+        return "select * from (select row_.*, ROWNUM rownum_ from (" + query + ") row_ where rownum <= " + (this.single.skipBinding["offset"] ? endRow : this.client.parameter(endRow, this.builder, this.bindingsHolder)) + ") where rownum_ > " + this._getValueOrParameterFromAttribute("offset", offset);
+      }
+    };
+    module2.exports = QueryCompiler_Oracle;
+  }
+});
+
+// node_modules/knex/lib/dialects/oracledb/utils.js
+var require_utils7 = __commonJS({
+  "node_modules/knex/lib/dialects/oracledb/utils.js"(exports2, module2) {
+    var Utils = require_utils6();
+    var { promisify } = require("util");
+    var stream = require("stream");
+    function BlobHelper(columnName, value) {
+      this.columnName = columnName;
+      this.value = value;
+      this.returning = false;
+    }
+    BlobHelper.prototype.toString = function() {
+      return "[object BlobHelper:" + this.columnName + "]";
+    };
+    function readStream(stream2, type) {
+      return new Promise((resolve, reject) => {
+        let data = type === "string" ? "" : Buffer.alloc(0);
+        stream2.on("error", function(err) {
+          reject(err);
+        });
+        stream2.on("data", function(chunk) {
+          if (type === "string") {
+            data += chunk;
+          } else {
+            data = Buffer.concat([data, chunk]);
+          }
+        });
+        stream2.on("end", function() {
+          resolve(data);
+        });
+      });
+    }
+    var lobProcessing = function(stream2) {
+      const oracledb = require("oracledb");
+      let type;
+      if (stream2.type) {
+        if (stream2.type === oracledb.BLOB) {
+          type = "buffer";
+        } else if (stream2.type === oracledb.CLOB) {
+          type = "string";
+        }
+      } else if (stream2.iLob) {
+        if (stream2.iLob.type === oracledb.CLOB) {
+          type = "string";
+        } else if (stream2.iLob.type === oracledb.BLOB) {
+          type = "buffer";
+        }
+      } else {
+        throw new Error("Unrecognized oracledb lob stream type");
+      }
+      if (type === "string") {
+        stream2.setEncoding("utf-8");
+      }
+      return readStream(stream2, type);
+    };
+    function monkeyPatchConnection(connection, client) {
+      if (connection.executeAsync) {
+        return;
+      }
+      connection.commitAsync = function() {
+        return new Promise((commitResolve, commitReject) => {
+          this.commit(function(err) {
+            if (err) {
+              return commitReject(err);
+            }
+            commitResolve();
+          });
+        });
+      };
+      connection.rollbackAsync = function() {
+        return new Promise((rollbackResolve, rollbackReject) => {
+          this.rollback(function(err) {
+            if (err) {
+              return rollbackReject(err);
+            }
+            rollbackResolve();
+          });
+        });
+      };
+      const fetchAsync = promisify(function(sql, bindParams, options, cb) {
+        options = options || {};
+        options.outFormat = client.driver.OUT_FORMAT_OBJECT || client.driver.OBJECT;
+        if (!options.outFormat) {
+          throw new Error("not found oracledb.outFormat constants");
+        }
+        if (options.resultSet) {
+          connection.execute(sql, bindParams || [], options, function(err, result) {
+            if (err) {
+              if (Utils.isConnectionError(err)) {
+                connection.close().catch(function(err2) {
+                });
+                connection.__knex__disposed = err;
+              }
+              return cb(err);
+            }
+            const fetchResult = { rows: [], resultSet: result.resultSet };
+            const numRows = 100;
+            const fetchRowsFromRS = function(connection2, resultSet, numRows2) {
+              resultSet.getRows(numRows2, function(err2, rows) {
+                if (err2) {
+                  if (Utils.isConnectionError(err2)) {
+                    connection2.close().catch(function(err3) {
+                    });
+                    connection2.__knex__disposed = err2;
+                  }
+                  resultSet.close(function() {
+                    return cb(err2);
+                  });
+                } else if (rows.length === 0) {
+                  return cb(null, fetchResult);
+                } else if (rows.length > 0) {
+                  if (rows.length === numRows2) {
+                    fetchResult.rows = fetchResult.rows.concat(rows);
+                    fetchRowsFromRS(connection2, resultSet, numRows2);
+                  } else {
+                    fetchResult.rows = fetchResult.rows.concat(rows);
+                    return cb(null, fetchResult);
+                  }
+                }
+              });
+            };
+            fetchRowsFromRS(connection, result.resultSet, numRows);
+          });
+        } else {
+          connection.execute(sql, bindParams || [], options, function(err, result) {
+            if (err) {
+              if (Utils.isConnectionError(err)) {
+                connection.close().catch(function(err2) {
+                });
+                connection.__knex__disposed = err;
+              }
+              return cb(err);
+            }
+            return cb(null, result);
+          });
+        }
+      });
+      connection.executeAsync = function(sql, bindParams, options) {
+        return fetchAsync(sql, bindParams, options).then(async (results) => {
+          const closeResultSet = () => {
+            return results.resultSet ? promisify(results.resultSet.close).call(results.resultSet) : Promise.resolve();
+          };
+          const lobs = [];
+          if (results.rows) {
+            if (Array.isArray(results.rows)) {
+              for (let i = 0; i < results.rows.length; i++) {
+                const row = results.rows[i];
+                for (const column in row) {
+                  if (row[column] instanceof stream.Readable) {
+                    lobs.push({ index: i, key: column, stream: row[column] });
+                  }
+                }
+              }
+            }
+          }
+          try {
+            for (const lob of lobs) {
+              results.rows[lob.index][lob.key] = await lobProcessing(lob.stream);
+            }
+          } catch (e) {
+            await closeResultSet().catch(() => {
+            });
+            throw e;
+          }
+          await closeResultSet();
+          return results;
+        });
+      };
+    }
+    Utils.BlobHelper = BlobHelper;
+    Utils.monkeyPatchConnection = monkeyPatchConnection;
+    module2.exports = Utils;
+  }
+});
+
+// node_modules/knex/lib/dialects/oracledb/query/oracledb-querycompiler.js
+var require_oracledb_querycompiler = __commonJS({
+  "node_modules/knex/lib/dialects/oracledb/query/oracledb-querycompiler.js"(exports2, module2) {
+    var clone = require_clone();
+    var each = require_each();
+    var isEmpty = require_isEmpty();
+    var isPlainObject = require_isPlainObject();
+    var Oracle_Compiler = require_oracle_querycompiler();
+    var ReturningHelper = require_utils7().ReturningHelper;
+    var BlobHelper = require_utils7().BlobHelper;
+    var { isString } = require_is();
+    var {
+      columnize: columnize_
+    } = require_wrappingFormatter();
+    var Oracledb_Compiler = class extends Oracle_Compiler {
+      insert() {
+        const self2 = this;
+        const outBindPrep = this._prepOutbindings(this.single.insert, this.single.returning);
+        const outBinding = outBindPrep.outBinding;
+        const returning = outBindPrep.returning;
+        const insertValues = outBindPrep.values;
+        if (Array.isArray(insertValues) && insertValues.length === 1 && isEmpty(insertValues[0])) {
+          const returningFragment = this.single.returning ? " (" + this.formatter.wrap(this.single.returning) + ")" : "";
+          return this._addReturningToSqlAndConvert("insert into " + this.tableName + returningFragment + " values (default)", outBinding[0], this.tableName, returning);
+        }
+        if (isEmpty(this.single.insert) && typeof this.single.insert !== "function") {
+          return "";
+        }
+        const insertData = this._prepInsert(insertValues);
+        const sql = {};
+        if (isString(insertData)) {
+          return this._addReturningToSqlAndConvert("insert into " + this.tableName + " " + insertData, outBinding[0], this.tableName, returning);
+        }
+        if (insertData.values.length === 1) {
+          return this._addReturningToSqlAndConvert("insert into " + this.tableName + " (" + this.formatter.columnize(insertData.columns) + ") values (" + this.client.parameterize(insertData.values[0], void 0, this.builder, this.bindingsHolder) + ")", outBinding[0], this.tableName, returning);
+        }
+        const insertDefaultsOnly = insertData.columns.length === 0;
+        sql.returning = returning;
+        sql.sql = "begin " + insertData.values.map(function(value, index) {
+          const parameterizedValues = !insertDefaultsOnly ? self2.client.parameterize(value, self2.client.valueForUndefined, self2.builder, self2.bindingsHolder) : "";
+          let subSql = "insert into " + self2.tableName;
+          if (insertDefaultsOnly) {
+            subSql += " (" + self2.formatter.wrap(self2.single.returning) + ") values (default)";
+          } else {
+            subSql += " (" + self2.formatter.columnize(insertData.columns) + ") values (" + parameterizedValues + ")";
+          }
+          let returningClause = "";
+          let intoClause = "";
+          let usingClause = "";
+          let outClause = "";
+          each(value, function(val) {
+            if (!(val instanceof BlobHelper)) {
+              usingClause += " ?,";
+            }
+          });
+          usingClause = usingClause.slice(0, -1);
+          outBinding[index].forEach(function(ret) {
+            const columnName = ret.columnName || ret;
+            returningClause += self2.formatter.wrap(columnName) + ",";
+            intoClause += " ?,";
+            outClause += " out ?,";
+            if (ret instanceof BlobHelper) {
+              return self2.formatter.bindings.push(ret);
+            }
+            self2.formatter.bindings.push(new ReturningHelper(columnName));
+          });
+          returningClause = returningClause.slice(0, -1);
+          intoClause = intoClause.slice(0, -1);
+          outClause = outClause.slice(0, -1);
+          if (returningClause && intoClause) {
+            subSql += " returning " + returningClause + " into" + intoClause;
+          }
+          subSql = self2.formatter.client.positionBindings(subSql);
+          const parameterizedValuesWithoutDefaultAndBlob = parameterizedValues.replace(/DEFAULT, /g, "").replace(/, DEFAULT/g, "").replace("EMPTY_BLOB(), ", "").replace(", EMPTY_BLOB()", "");
+          return "execute immediate '" + subSql.replace(/'/g, "''") + (parameterizedValuesWithoutDefaultAndBlob || value ? "' using " : "") + parameterizedValuesWithoutDefaultAndBlob + (parameterizedValuesWithoutDefaultAndBlob && outClause ? "," : "") + outClause + ";";
+        }).join(" ") + "end;";
+        sql.outBinding = outBinding;
+        if (returning[0] === "*") {
+          sql.returningSql = function() {
+            return "select * from " + self2.tableName + " where ROWID in (" + this.outBinding.map(function(v, i) {
+              return ":" + (i + 1);
+            }).join(", ") + ") order by case ROWID " + this.outBinding.map(function(v, i) {
+              return "when CHARTOROWID(:" + (i + 1) + ") then " + i;
+            }).join(" ") + " end";
+          };
+        }
+        return sql;
+      }
+      with() {
+        const undoList = [];
+        if (this.grouped.with) {
+          for (const stmt of this.grouped.with) {
+            if (stmt.recursive) {
+              undoList.push(stmt);
+              stmt.recursive = false;
+            }
+          }
+        }
+        const result = super.with();
+        for (const stmt of undoList) {
+          stmt.recursive = true;
+        }
+        return result;
+      }
+      _addReturningToSqlAndConvert(sql, outBinding, tableName, returning) {
+        const self2 = this;
+        const res = {
+          sql
+        };
+        if (!outBinding) {
+          return res;
+        }
+        const returningValues = Array.isArray(outBinding) ? outBinding : [outBinding];
+        let returningClause = "";
+        let intoClause = "";
+        returningValues.forEach(function(ret) {
+          const columnName = ret.columnName || ret;
+          returningClause += self2.formatter.wrap(columnName) + ",";
+          intoClause += "?,";
+          if (ret instanceof BlobHelper) {
+            return self2.formatter.bindings.push(ret);
+          }
+          self2.formatter.bindings.push(new ReturningHelper(columnName));
+        });
+        res.sql = sql;
+        returningClause = returningClause.slice(0, -1);
+        intoClause = intoClause.slice(0, -1);
+        if (returningClause && intoClause) {
+          res.sql += " returning " + returningClause + " into " + intoClause;
+        }
+        res.outBinding = [outBinding];
+        if (returning[0] === "*") {
+          res.returningSql = function() {
+            return "select * from " + self2.tableName + " where ROWID = :1";
+          };
+        }
+        res.returning = returning;
+        return res;
+      }
+      _prepOutbindings(paramValues, paramReturning) {
+        const result = {};
+        let params = paramValues || [];
+        let returning = paramReturning || [];
+        if (!Array.isArray(params) && isPlainObject(paramValues)) {
+          params = [params];
+        }
+        if (returning && !Array.isArray(returning)) {
+          returning = [returning];
+        }
+        const outBinding = [];
+        each(params, function(values, index) {
+          if (returning[0] === "*") {
+            outBinding[index] = ["ROWID"];
+          } else {
+            outBinding[index] = clone(returning);
+          }
+          each(values, function(value, key) {
+            if (value instanceof Buffer) {
+              values[key] = new BlobHelper(key, value);
+              const blobIndex = outBinding[index].indexOf(key);
+              if (blobIndex >= 0) {
+                outBinding[index].splice(blobIndex, 1);
+                values[key].returning = true;
+              }
+              outBinding[index].push(values[key]);
+            }
+            if (value === void 0) {
+              delete params[index][key];
+            }
+          });
+        });
+        result.returning = returning;
+        result.outBinding = outBinding;
+        result.values = params;
+        return result;
+      }
+      _groupOrder(item, type) {
+        return super._groupOrderNulls(item, type);
+      }
+      update() {
+        const self2 = this;
+        const sql = {};
+        const outBindPrep = this._prepOutbindings(this.single.update || this.single.counter, this.single.returning);
+        const outBinding = outBindPrep.outBinding;
+        const returning = outBindPrep.returning;
+        const updates = this._prepUpdate(this.single.update);
+        const where = this.where();
+        let returningClause = "";
+        let intoClause = "";
+        if (isEmpty(updates) && typeof this.single.update !== "function") {
+          return "";
+        }
+        outBinding.forEach(function(out) {
+          out.forEach(function(ret) {
+            const columnName = ret.columnName || ret;
+            returningClause += self2.formatter.wrap(columnName) + ",";
+            intoClause += " ?,";
+            if (ret instanceof BlobHelper) {
+              return self2.formatter.bindings.push(ret);
+            }
+            self2.formatter.bindings.push(new ReturningHelper(columnName));
+          });
+        });
+        returningClause = returningClause.slice(0, -1);
+        intoClause = intoClause.slice(0, -1);
+        sql.outBinding = outBinding;
+        sql.returning = returning;
+        sql.sql = "update " + this.tableName + " set " + updates.join(", ") + (where ? " " + where : "");
+        if (outBinding.length && !isEmpty(outBinding[0])) {
+          sql.sql += " returning " + returningClause + " into" + intoClause;
+        }
+        if (returning[0] === "*") {
+          sql.returningSql = function() {
+            let sql2 = "select * from " + self2.tableName;
+            const modifiedRowsCount = this.rowsAffected.length || this.rowsAffected;
+            let returningSqlIn = " where ROWID in (";
+            let returningSqlOrderBy = ") order by case ROWID ";
+            for (let i = 0; i < modifiedRowsCount; i++) {
+              if (this.returning[0] === "*") {
+                returningSqlIn += ":" + (i + 1) + ", ";
+                returningSqlOrderBy += "when CHARTOROWID(:" + (i + 1) + ") then " + i + " ";
+              }
+            }
+            if (this.returning[0] === "*") {
+              this.returning = this.returning.slice(0, -1);
+              returningSqlIn = returningSqlIn.slice(0, -2);
+              returningSqlOrderBy = returningSqlOrderBy.slice(0, -1);
+            }
+            return sql2 += returningSqlIn + returningSqlOrderBy + " end";
+          };
+        }
+        return sql;
+      }
+      _jsonPathWrap(extraction) {
+        return `'${extraction.path || extraction[1]}'`;
+      }
+      jsonExtract(params) {
+        return this._jsonExtract(params.singleValue ? "json_value" : "json_query", params);
+      }
+      jsonSet(params) {
+        return `json_transform(${columnize_(params.column, this.builder, this.client, this.bindingsHolder)}, set ${this.client.parameter(params.path, this.builder, this.bindingsHolder)} = ${this.client.parameter(params.value, this.builder, this.bindingsHolder)})`;
+      }
+      jsonInsert(params) {
+        return `json_transform(${columnize_(params.column, this.builder, this.client, this.bindingsHolder)}, insert ${this.client.parameter(params.path, this.builder, this.bindingsHolder)} = ${this.client.parameter(params.value, this.builder, this.bindingsHolder)})`;
+      }
+      jsonRemove(params) {
+        const jsonCol = `json_transform(${columnize_(params.column, this.builder, this.client, this.bindingsHolder)}, remove ${this.client.parameter(params.path, this.builder, this.bindingsHolder)})`;
+        return params.alias ? this.client.alias(jsonCol, this.formatter.wrap(params.alias)) : jsonCol;
+      }
+      whereJsonPath(statement) {
+        return this._whereJsonPath("json_value", statement);
+      }
+      whereJsonSupersetOf(statement) {
+        throw new Error("Json superset where clause not actually supported by Oracle");
+      }
+      whereJsonSubsetOf(statement) {
+        throw new Error("Json subset where clause not actually supported by Oracle");
+      }
+      onJsonPathEquals(clause) {
+        return this._onJsonPathEquals("json_value", clause);
+      }
+    };
+    module2.exports = Oracledb_Compiler;
+  }
+});
+
+// node_modules/knex/lib/dialects/oracledb/schema/oracledb-tablecompiler.js
+var require_oracledb_tablecompiler = __commonJS({
+  "node_modules/knex/lib/dialects/oracledb/schema/oracledb-tablecompiler.js"(exports2, module2) {
+    var TableCompiler_Oracle = require_oracle_tablecompiler();
+    var TableCompiler_Oracledb = class extends TableCompiler_Oracle {
+      constructor(client, tableBuilder) {
+        super(client, tableBuilder);
+      }
+      _setNullableState(column, isNullable) {
+        const nullability = isNullable ? "NULL" : "NOT NULL";
+        const sql = `alter table ${this.tableName()} modify (${this.formatter.wrap(column)} ${nullability})`;
+        return this.pushQuery({
+          sql
+        });
+      }
+    };
+    module2.exports = TableCompiler_Oracledb;
+  }
+});
+
+// node_modules/knex/lib/dialects/oracledb/schema/oracledb-columncompiler.js
+var require_oracledb_columncompiler = __commonJS({
+  "node_modules/knex/lib/dialects/oracledb/schema/oracledb-columncompiler.js"(exports2, module2) {
+    var ColumnCompiler_Oracle = require_oracle_columncompiler();
+    var { isObject } = require_is();
+    var ColumnCompiler_Oracledb = class extends ColumnCompiler_Oracle {
+      constructor() {
+        super(...arguments);
+        this.modifiers = ["defaultTo", "nullable", "comment"];
+        this._addCheckModifiers();
+      }
+      datetime(withoutTz) {
+        let useTz;
+        if (isObject(withoutTz)) {
+          ({ useTz } = withoutTz);
+        } else {
+          useTz = !withoutTz;
+        }
+        return useTz ? "timestamp with local time zone" : "timestamp";
+      }
+      timestamp(withoutTz) {
+        let useTz;
+        if (isObject(withoutTz)) {
+          ({ useTz } = withoutTz);
+        } else {
+          useTz = !withoutTz;
+        }
+        return useTz ? "timestamp with local time zone" : "timestamp";
+      }
+      checkRegex(regex, constraintName) {
+        return this._check(`REGEXP_LIKE(${this.formatter.wrap(this.getColumnName())},${this.client._escapeBinding(regex)})`, constraintName);
+      }
+      json() {
+        return `varchar2(4000) check (${this.formatter.columnize(this.getColumnName())} is json)`;
+      }
+      jsonb() {
+        return this.json();
+      }
+    };
+    ColumnCompiler_Oracledb.prototype.time = "timestamp with local time zone";
+    ColumnCompiler_Oracledb.prototype.uuid = ({ useBinaryUuid = false } = {}) => useBinaryUuid ? "raw(16)" : "char(36)";
+    module2.exports = ColumnCompiler_Oracledb;
+  }
+});
+
+// node_modules/knex/lib/dialects/oracledb/schema/oracledb-viewcompiler.js
+var require_oracledb_viewcompiler = __commonJS({
+  "node_modules/knex/lib/dialects/oracledb/schema/oracledb-viewcompiler.js"(exports2, module2) {
+    var ViewCompiler = require_viewcompiler();
+    var ViewCompiler_Oracledb = class extends ViewCompiler {
+      constructor(client, viewCompiler) {
+        super(client, viewCompiler);
+      }
+      createOrReplace() {
+        this.createQuery(this.columns, this.selectQuery, false, true);
+      }
+      createMaterializedView() {
+        this.createQuery(this.columns, this.selectQuery, true);
+      }
+    };
+    module2.exports = ViewCompiler_Oracledb;
+  }
+});
+
+// node_modules/knex/lib/dialects/oracledb/schema/oracledb-viewbuilder.js
+var require_oracledb_viewbuilder = __commonJS({
+  "node_modules/knex/lib/dialects/oracledb/schema/oracledb-viewbuilder.js"(exports2, module2) {
+    var ViewBuilder = require_viewbuilder();
+    var ViewBuilder_Oracledb = class extends ViewBuilder {
+      constructor() {
+        super(...arguments);
+      }
+      checkOption() {
+        this._single.checkOption = "default_option";
+      }
+    };
+    module2.exports = ViewBuilder_Oracledb;
+  }
+});
+
+// node_modules/knex/lib/dialects/oracledb/transaction.js
+var require_transaction5 = __commonJS({
+  "node_modules/knex/lib/dialects/oracledb/transaction.js"(exports2, module2) {
+    var Transaction = require_transaction();
+    var { timeout, KnexTimeoutError } = require_timeout();
+    var debugTx = require_src6()("knex:tx");
+    var supportedIsolationLevels = ["read committed", "serializable"];
+    var isIsolationLevelEnabled = false;
+    module2.exports = class Oracle_Transaction extends Transaction {
+      begin(conn) {
+        if (this.isolationLevel) {
+          if (isIsolationLevelEnabled) {
+            if (!supportedIsolationLevels.includes(this.isolationLevel)) {
+              this.client.logger.warn("Oracle only supports read committed and serializable transactions, ignoring the isolation level param");
+            } else {
+              return this.query(conn, `SET TRANSACTION ${this.isolationLevel}`);
+            }
+          } else {
+            this.client.logger.warn("Transaction isolation is not currently supported for Oracle");
+          }
+        }
+        return Promise.resolve();
+      }
+      async commit(conn, value) {
+        this._completed = true;
+        try {
+          await conn.commitAsync();
+          this._resolver(value);
+        } catch (err) {
+          this._rejecter(err);
+        }
+      }
+      release(conn, value) {
+        return this._resolver(value);
+      }
+      rollback(conn, err) {
+        this._completed = true;
+        debugTx("%s: rolling back", this.txid);
+        return timeout(conn.rollbackAsync(), 5e3).catch((e) => {
+          if (!(e instanceof KnexTimeoutError)) {
+            return Promise.reject(e);
+          }
+          this._rejecter(e);
+        }).then(() => {
+          if (err === void 0) {
+            if (this.doNotRejectOnRollback) {
+              this._resolver();
+              return;
+            }
+            err = new Error(`Transaction rejected with non-error: ${err}`);
+          }
+          this._rejecter(err);
+        });
+      }
+      savepoint(conn) {
+        return this.query(conn, `SAVEPOINT ${this.txid}`);
+      }
+      async acquireConnection(config, cb) {
+        const configConnection = config && config.connection;
+        const connection = configConnection || await this.client.acquireConnection();
+        try {
+          connection.__knexTxId = this.txid;
+          connection.isTransaction = true;
+          return await cb(connection);
+        } finally {
+          debugTx("%s: releasing connection", this.txid);
+          connection.isTransaction = false;
+          try {
+            await connection.commitAsync();
+          } catch (err) {
+            this._rejecter(err);
+          } finally {
+            if (!configConnection) {
+              await this.client.releaseConnection(connection);
+            } else {
+              debugTx("%s: not releasing external connection", this.txid);
+            }
+          }
+        }
+      }
+    };
+  }
+});
+
+// node_modules/knex/lib/dialects/oracledb/index.js
+var require_oracledb = __commonJS({
+  "node_modules/knex/lib/dialects/oracledb/index.js"(exports2, module2) {
+    var each = require_each();
+    var flatten = require_flatten();
+    var isEmpty = require_isEmpty();
+    var map = require_map();
+    var Formatter = require_formatter();
+    var QueryCompiler = require_oracledb_querycompiler();
+    var TableCompiler = require_oracledb_tablecompiler();
+    var ColumnCompiler = require_oracledb_columncompiler();
+    var {
+      BlobHelper,
+      ReturningHelper,
+      monkeyPatchConnection
+    } = require_utils7();
+    var ViewCompiler = require_oracledb_viewcompiler();
+    var ViewBuilder = require_oracledb_viewbuilder();
+    var Transaction = require_transaction5();
+    var Client_Oracle = require_oracle();
+    var { isString } = require_is();
+    var { outputQuery, unwrapRaw } = require_wrappingFormatter();
+    var { compileCallback } = require_formatterUtils();
+    var Client_Oracledb = class extends Client_Oracle {
+      constructor(config) {
+        super(config);
+        if (this.driver) {
+          process.env.UV_THREADPOOL_SIZE = process.env.UV_THREADPOOL_SIZE || 1;
+          process.env.UV_THREADPOOL_SIZE = parseInt(process.env.UV_THREADPOOL_SIZE) + this.driver.poolMax;
+        }
+      }
+      _driver() {
+        const client = this;
+        const oracledb = require("oracledb");
+        client.fetchAsString = [];
+        if (this.config.fetchAsString && Array.isArray(this.config.fetchAsString)) {
+          this.config.fetchAsString.forEach(function(type) {
+            if (!isString(type))
+              return;
+            type = type.toUpperCase();
+            if (oracledb[type]) {
+              if (type !== "NUMBER" && type !== "DATE" && type !== "CLOB" && type !== "BUFFER") {
+                this.logger.warn('Only "date", "number", "clob" and "buffer" are supported for fetchAsString');
+              }
+              client.fetchAsString.push(oracledb[type]);
+            }
+          });
+        }
+        return oracledb;
+      }
+      queryCompiler(builder, formatter) {
+        return new QueryCompiler(this, builder, formatter);
+      }
+      tableCompiler() {
+        return new TableCompiler(this, ...arguments);
+      }
+      columnCompiler() {
+        return new ColumnCompiler(this, ...arguments);
+      }
+      viewBuilder() {
+        return new ViewBuilder(this, ...arguments);
+      }
+      viewCompiler() {
+        return new ViewCompiler(this, ...arguments);
+      }
+      formatter(builder) {
+        return new Formatter(this, builder);
+      }
+      transaction() {
+        return new Transaction(this, ...arguments);
+      }
+      prepBindings(bindings) {
+        return map(bindings, (value) => {
+          if (value instanceof BlobHelper && this.driver) {
+            return { type: this.driver.BLOB, dir: this.driver.BIND_OUT };
+          } else if (value instanceof ReturningHelper && this.driver) {
+            return { type: this.driver.STRING, dir: this.driver.BIND_OUT };
+          } else if (typeof value === "boolean") {
+            return value ? 1 : 0;
+          }
+          return value;
+        });
+      }
+      parameter(value, builder, formatter) {
+        if (typeof value === "function") {
+          return outputQuery(compileCallback(value, void 0, this, formatter), true, builder, this);
+        } else if (value instanceof BlobHelper) {
+          formatter.bindings.push(value.value);
+          return "?";
+        }
+        return unwrapRaw(value, true, builder, this, formatter) || "?";
+      }
+      acquireRawConnection() {
+        const client = this;
+        const asyncConnection = new Promise(function(resolver, rejecter) {
+          const oracleDbConfig = client.connectionSettings.externalAuth ? { externalAuth: client.connectionSettings.externalAuth } : {
+            user: client.connectionSettings.user,
+            password: client.connectionSettings.password
+          };
+          oracleDbConfig.connectString = resolveConnectString(client.connectionSettings);
+          if (client.connectionSettings.prefetchRowCount) {
+            oracleDbConfig.prefetchRows = client.connectionSettings.prefetchRowCount;
+          }
+          if (client.connectionSettings.stmtCacheSize !== void 0) {
+            oracleDbConfig.stmtCacheSize = client.connectionSettings.stmtCacheSize;
+          }
+          client.driver.fetchAsString = client.fetchAsString;
+          client.driver.getConnection(oracleDbConfig, function(err, connection) {
+            if (err) {
+              return rejecter(err);
+            }
+            monkeyPatchConnection(connection, client);
+            resolver(connection);
+          });
+        });
+        return asyncConnection;
+      }
+      destroyRawConnection(connection) {
+        return connection.release();
+      }
+      _query(connection, obj) {
+        if (!obj.sql)
+          throw new Error("The query is empty");
+        const options = { autoCommit: false };
+        if (obj.method === "select") {
+          options.resultSet = true;
+        }
+        return connection.executeAsync(obj.sql, obj.bindings, options).then(async function(response) {
+          let outBinds = flatten(response.outBinds);
+          obj.response = response.rows || [];
+          obj.rowsAffected = response.rows ? response.rows.rowsAffected : response.rowsAffected;
+          if (obj.method === "raw" && outBinds.length > 0) {
+            return {
+              response: outBinds
+            };
+          }
+          if (obj.method === "update") {
+            const modifiedRowsCount = obj.rowsAffected.length || obj.rowsAffected;
+            const updatedObjOutBinding = [];
+            const updatedOutBinds = [];
+            const updateOutBinds = (i) => function(value, index) {
+              const OutBindsOffset = index * modifiedRowsCount;
+              updatedOutBinds.push(outBinds[i + OutBindsOffset]);
+            };
+            for (let i = 0; i < modifiedRowsCount; i++) {
+              updatedObjOutBinding.push(obj.outBinding[0]);
+              each(obj.outBinding[0], updateOutBinds(i));
+            }
+            outBinds = updatedOutBinds;
+            obj.outBinding = updatedObjOutBinding;
+          }
+          if (!obj.returning && outBinds.length === 0) {
+            if (!connection.isTransaction) {
+              await connection.commitAsync();
+            }
+            return obj;
+          }
+          const rowIds = [];
+          let offset = 0;
+          for (let line = 0; line < obj.outBinding.length; line++) {
+            const ret = obj.outBinding[line];
+            offset = offset + (obj.outBinding[line - 1] ? obj.outBinding[line - 1].length : 0);
+            for (let index = 0; index < ret.length; index++) {
+              const out = ret[index];
+              await new Promise(function(bindResolver, bindRejecter) {
+                if (out instanceof BlobHelper) {
+                  const blob = outBinds[index + offset];
+                  if (out.returning) {
+                    obj.response[line] = obj.response[line] || {};
+                    obj.response[line][out.columnName] = out.value;
+                  }
+                  blob.on("error", function(err) {
+                    bindRejecter(err);
+                  });
+                  blob.on("finish", function() {
+                    bindResolver();
+                  });
+                  blob.write(out.value);
+                  blob.end();
+                } else if (obj.outBinding[line][index] === "ROWID") {
+                  rowIds.push(outBinds[index + offset]);
+                  bindResolver();
+                } else {
+                  obj.response[line] = obj.response[line] || {};
+                  obj.response[line][out] = outBinds[index + offset];
+                  bindResolver();
+                }
+              });
+            }
+          }
+          if (connection.isTransaction) {
+            return obj;
+          }
+          await connection.commitAsync();
+          if (obj.returningSql) {
+            const response2 = await connection.executeAsync(obj.returningSql(), rowIds, { resultSet: true });
+            obj.response = response2.rows;
+          }
+          return obj;
+        });
+      }
+      processResponse(obj, runner) {
+        const { response } = obj;
+        if (obj.output) {
+          return obj.output.call(runner, response);
+        }
+        switch (obj.method) {
+          case "select":
+            return response;
+          case "first":
+            return response[0];
+          case "pluck":
+            return map(response, obj.pluck);
+          case "insert":
+          case "del":
+          case "update":
+          case "counter":
+            if (obj.returning && !isEmpty(obj.returning)) {
+              return response;
+            } else if (obj.rowsAffected !== void 0) {
+              return obj.rowsAffected;
+            } else {
+              return 1;
+            }
+          default:
+            return response;
+        }
+      }
+      processPassedConnection(connection) {
+        monkeyPatchConnection(connection, this);
+      }
+    };
+    Client_Oracledb.prototype.driverName = "oracledb";
+    function resolveConnectString(connectionSettings) {
+      if (connectionSettings.connectString) {
+        return connectionSettings.connectString;
+      }
+      if (!connectionSettings.port) {
+        return connectionSettings.host + "/" + connectionSettings.database;
+      }
+      return connectionSettings.host + ":" + connectionSettings.port + "/" + connectionSettings.database;
+    }
+    module2.exports = Client_Oracledb;
+  }
+});
+
+// node_modules/knex/lib/dialects/pgnative/index.js
+var require_pgnative = __commonJS({
+  "node_modules/knex/lib/dialects/pgnative/index.js"(exports2, module2) {
+    var Client_PG = require_postgres();
+    var Client_PgNative = class extends Client_PG {
+      constructor(...args) {
+        super(...args);
+        this.driverName = "pgnative";
+        this.canCancelQuery = true;
+      }
+      _driver() {
+        return require_lib5().native;
+      }
+      _stream(connection, obj, stream, options) {
+        if (!obj.sql)
+          throw new Error("The query is empty");
+        const client = this;
+        return new Promise((resolver, rejecter) => {
+          stream.on("error", rejecter);
+          stream.on("end", resolver);
+          return client._query(connection, obj).then((obj2) => obj2.response).then(({ rows }) => rows.forEach((row) => stream.write(row))).catch(function(err) {
+            stream.emit("error", err);
+          }).then(function() {
+            stream.end();
+          });
+        });
+      }
+      async cancelQuery(connectionToKill) {
+        try {
+          return await this._wrappedCancelQueryCall(null, connectionToKill);
+        } catch (err) {
+          this.logger.warn(`Connection Error: ${err}`);
+          throw err;
+        }
+      }
+      _wrappedCancelQueryCall(emptyConnection, connectionToKill) {
+        return new Promise(function(resolve, reject) {
+          connectionToKill.native.cancel(function(err) {
+            if (err) {
+              reject(err);
+              return;
+            }
+            resolve(true);
+          });
+        });
+      }
+    };
+    module2.exports = Client_PgNative;
+  }
+});
+
+// node_modules/knex/lib/dialects/redshift/transaction.js
+var require_transaction6 = __commonJS({
+  "node_modules/knex/lib/dialects/redshift/transaction.js"(exports2, module2) {
+    var Transaction = require_transaction();
+    module2.exports = class Redshift_Transaction extends Transaction {
+      begin(conn) {
+        if (this.isolationLevel) {
+          return this.query(conn, `BEGIN ISOLATION LEVEL ${this.isolationLevel};`);
+        }
+        return this.query(conn, "BEGIN;");
+      }
+      savepoint(conn) {
+        this.trxClient.logger("Redshift does not support savepoints.");
+        return Promise.resolve();
+      }
+      release(conn, value) {
+        this.trxClient.logger("Redshift does not support savepoints.");
+        return Promise.resolve();
+      }
+      rollbackTo(conn, error) {
+        this.trxClient.logger("Redshift does not support savepoints.");
+        return Promise.resolve();
+      }
+    };
+  }
+});
+
+// node_modules/knex/lib/dialects/redshift/query/redshift-querycompiler.js
+var require_redshift_querycompiler = __commonJS({
+  "node_modules/knex/lib/dialects/redshift/query/redshift-querycompiler.js"(exports2, module2) {
+    var QueryCompiler = require_querycompiler();
+    var QueryCompiler_PG = require_pg_querycompiler();
+    var identity = require_identity();
+    var {
+      columnize: columnize_
+    } = require_wrappingFormatter();
+    var QueryCompiler_Redshift = class extends QueryCompiler_PG {
+      truncate() {
+        return `truncate ${this.tableName.toLowerCase()}`;
+      }
+      insert() {
+        const sql = QueryCompiler.prototype.insert.apply(this, arguments);
+        if (sql === "")
+          return sql;
+        this._slightReturn();
+        return {
+          sql
+        };
+      }
+      update() {
+        const sql = QueryCompiler.prototype.update.apply(this, arguments);
+        this._slightReturn();
+        return {
+          sql
+        };
+      }
+      del() {
+        const sql = QueryCompiler.prototype.del.apply(this, arguments);
+        this._slightReturn();
+        return {
+          sql
+        };
+      }
+      _slightReturn() {
+        if (this.single.isReturning) {
+          this.client.logger.warn("insert/update/delete returning is not supported by redshift dialect");
+        }
+      }
+      forUpdate() {
+        this.client.logger.warn("table lock is not supported by redshift dialect");
+        return "";
+      }
+      forShare() {
+        this.client.logger.warn("lock for share is not supported by redshift dialect");
+        return "";
+      }
+      forNoKeyUpdate() {
+        this.client.logger.warn("table lock is not supported by redshift dialect");
+        return "";
+      }
+      forKeyShare() {
+        this.client.logger.warn("lock for share is not supported by redshift dialect");
+        return "";
+      }
+      columnInfo() {
+        const column = this.single.columnInfo;
+        let schema = this.single.schema;
+        const table = this.client.customWrapIdentifier(this.single.table, identity);
+        if (schema) {
+          schema = this.client.customWrapIdentifier(schema, identity);
+        }
+        const sql = "select * from information_schema.columns where table_name = ? and table_catalog = ?";
+        const bindings = [
+          table.toLowerCase(),
+          this.client.database().toLowerCase()
+        ];
+        return this._buildColumnInfoQuery(schema, sql, bindings, column);
+      }
+      jsonExtract(params) {
+        let extractions;
+        if (Array.isArray(params.column)) {
+          extractions = params.column;
+        } else {
+          extractions = [params];
+        }
+        return extractions.map((extraction) => {
+          const jsonCol = `json_extract_path_text(${columnize_(extraction.column || extraction[0], this.builder, this.client, this.bindingsHolder)}, ${this.client.toPathForJson(params.path || extraction[1], this.builder, this.bindingsHolder)})`;
+          const alias = extraction.alias || extraction[2];
+          return alias ? this.client.alias(jsonCol, this.formatter.wrap(alias)) : jsonCol;
+        }).join(", ");
+      }
+      jsonSet(params) {
+        throw new Error("Json set is not supported by Redshift");
+      }
+      jsonInsert(params) {
+        throw new Error("Json insert is not supported by Redshift");
+      }
+      jsonRemove(params) {
+        throw new Error("Json remove is not supported by Redshift");
+      }
+      whereJsonPath(statement) {
+        return this._whereJsonPath("json_extract_path_text", Object.assign({}, statement, {
+          path: this.client.toPathForJson(statement.path)
+        }));
+      }
+      whereJsonSupersetOf(statement) {
+        throw new Error("Json superset is not supported by Redshift");
+      }
+      whereJsonSubsetOf(statement) {
+        throw new Error("Json subset is not supported by Redshift");
+      }
+      onJsonPathEquals(clause) {
+        return this._onJsonPathEquals("json_extract_path_text", clause);
+      }
+    };
+    module2.exports = QueryCompiler_Redshift;
+  }
+});
+
+// node_modules/knex/lib/dialects/redshift/schema/redshift-columnbuilder.js
+var require_redshift_columnbuilder = __commonJS({
+  "node_modules/knex/lib/dialects/redshift/schema/redshift-columnbuilder.js"(exports2, module2) {
+    var ColumnBuilder = require_columnbuilder();
+    var ColumnBuilder_Redshift = class extends ColumnBuilder {
+      constructor() {
+        super(...arguments);
+      }
+      primary() {
+        this.notNullable();
+        return super.primary(...arguments);
+      }
+      index() {
+        this.client.logger.warn("Redshift does not support the creation of indexes.");
+        return this;
+      }
+    };
+    module2.exports = ColumnBuilder_Redshift;
+  }
+});
+
+// node_modules/knex/lib/dialects/redshift/schema/redshift-columncompiler.js
+var require_redshift_columncompiler = __commonJS({
+  "node_modules/knex/lib/dialects/redshift/schema/redshift-columncompiler.js"(exports2, module2) {
+    var ColumnCompiler_PG = require_pg_columncompiler();
+    var ColumnCompiler = require_columncompiler();
+    var ColumnCompiler_Redshift = class extends ColumnCompiler_PG {
+      constructor() {
+        super(...arguments);
+      }
+      bit(column) {
+        return column.length !== false ? `char(${column.length})` : "char(1)";
+      }
+      datetime(without) {
+        return without ? "timestamp" : "timestamptz";
+      }
+      timestamp(without) {
+        return without ? "timestamp" : "timestamptz";
+      }
+      comment(comment) {
+        this.pushAdditional(function() {
+          this.pushQuery(`comment on column ${this.tableCompiler.tableName()}.` + this.formatter.wrap(this.args[0]) + " is " + (comment ? `'${comment}'` : "NULL"));
+        }, comment);
+      }
+    };
+    ColumnCompiler_Redshift.prototype.increments = ({ primaryKey = true } = {}) => "integer identity(1,1)" + (primaryKey ? " primary key" : "") + " not null";
+    ColumnCompiler_Redshift.prototype.bigincrements = ({
+      primaryKey = true
+    } = {}) => "bigint identity(1,1)" + (primaryKey ? " primary key" : "") + " not null";
+    ColumnCompiler_Redshift.prototype.binary = "varchar(max)";
+    ColumnCompiler_Redshift.prototype.blob = "varchar(max)";
+    ColumnCompiler_Redshift.prototype.enu = "varchar(255)";
+    ColumnCompiler_Redshift.prototype.enum = "varchar(255)";
+    ColumnCompiler_Redshift.prototype.json = "varchar(max)";
+    ColumnCompiler_Redshift.prototype.jsonb = "varchar(max)";
+    ColumnCompiler_Redshift.prototype.longblob = "varchar(max)";
+    ColumnCompiler_Redshift.prototype.mediumblob = "varchar(16777218)";
+    ColumnCompiler_Redshift.prototype.set = "text";
+    ColumnCompiler_Redshift.prototype.text = "varchar(max)";
+    ColumnCompiler_Redshift.prototype.tinyblob = "varchar(256)";
+    ColumnCompiler_Redshift.prototype.uuid = ColumnCompiler.prototype.uuid;
+    ColumnCompiler_Redshift.prototype.varbinary = "varchar(max)";
+    ColumnCompiler_Redshift.prototype.bigint = "bigint";
+    ColumnCompiler_Redshift.prototype.bool = "boolean";
+    ColumnCompiler_Redshift.prototype.double = "double precision";
+    ColumnCompiler_Redshift.prototype.floating = "real";
+    ColumnCompiler_Redshift.prototype.smallint = "smallint";
+    ColumnCompiler_Redshift.prototype.tinyint = "smallint";
+    module2.exports = ColumnCompiler_Redshift;
+  }
+});
+
+// node_modules/knex/lib/dialects/redshift/schema/redshift-tablecompiler.js
+var require_redshift_tablecompiler = __commonJS({
+  "node_modules/knex/lib/dialects/redshift/schema/redshift-tablecompiler.js"(exports2, module2) {
+    var has = require_has();
+    var TableCompiler_PG = require_pg_tablecompiler();
+    var TableCompiler_Redshift = class extends TableCompiler_PG {
+      constructor() {
+        super(...arguments);
+      }
+      index(columns, indexName, options) {
+        this.client.logger.warn("Redshift does not support the creation of indexes.");
+      }
+      dropIndex(columns, indexName) {
+        this.client.logger.warn("Redshift does not support the deletion of indexes.");
+      }
+      createQuery(columns, ifNot, like) {
+        const createStatement = ifNot ? "create table if not exists " : "create table ";
+        const columnsSql = " (" + columns.sql.join(", ") + this._addChecks() + ")";
+        let sql = createStatement + this.tableName() + (like && this.tableNameLike() ? " (like " + this.tableNameLike() + ")" : columnsSql);
+        if (this.single.inherits)
+          sql += ` like (${this.formatter.wrap(this.single.inherits)})`;
+        this.pushQuery({
+          sql,
+          bindings: columns.bindings
+        });
+        const hasComment = has(this.single, "comment");
+        if (hasComment)
+          this.comment(this.single.comment);
+        if (like) {
+          this.addColumns(columns, this.addColumnsPrefix);
+        }
+      }
+      primary(columns, constraintName) {
+        const self2 = this;
+        constraintName = constraintName ? self2.formatter.wrap(constraintName) : self2.formatter.wrap(`${this.tableNameRaw}_pkey`);
+        if (columns.constructor !== Array) {
+          columns = [columns];
+        }
+        const thiscolumns = self2.grouped.columns;
+        if (thiscolumns) {
+          for (let i = 0; i < columns.length; i++) {
+            let exists = thiscolumns.find((tcb) => tcb.grouping === "columns" && tcb.builder && tcb.builder._method === "add" && tcb.builder._args && tcb.builder._args.indexOf(columns[i]) > -1);
+            if (exists) {
+              exists = exists.builder;
+            }
+            const nullable = !(exists && exists._modifiers && exists._modifiers["nullable"] && exists._modifiers["nullable"][0] === false);
+            if (nullable) {
+              if (exists) {
+                return this.client.logger.warn("Redshift does not allow primary keys to contain nullable columns.");
+              } else {
+                return this.client.logger.warn("Redshift does not allow primary keys to contain nonexistent columns.");
+              }
+            }
+          }
+        }
+        return self2.pushQuery(`alter table ${self2.tableName()} add constraint ${constraintName} primary key (${self2.formatter.columnize(columns)})`);
+      }
+      addColumns(columns, prefix, colCompilers) {
+        if (prefix === this.alterColumnsPrefix) {
+          super.addColumns(columns, prefix, colCompilers);
+        } else {
+          prefix = prefix || this.addColumnsPrefix;
+          colCompilers = colCompilers || this.getColumns();
+          for (const col of colCompilers) {
+            const quotedTableName = this.tableName();
+            const colCompiled = col.compileColumn();
+            this.pushQuery({
+              sql: `alter table ${quotedTableName} ${prefix}${colCompiled}`,
+              bindings: []
+            });
+          }
+        }
+      }
+    };
+    module2.exports = TableCompiler_Redshift;
+  }
+});
+
+// node_modules/knex/lib/dialects/redshift/schema/redshift-compiler.js
+var require_redshift_compiler = __commonJS({
+  "node_modules/knex/lib/dialects/redshift/schema/redshift-compiler.js"(exports2, module2) {
+    var SchemaCompiler_PG = require_pg_compiler();
+    var SchemaCompiler_Redshift = class extends SchemaCompiler_PG {
+      constructor() {
+        super(...arguments);
+      }
+    };
+    module2.exports = SchemaCompiler_Redshift;
+  }
+});
+
+// node_modules/knex/lib/dialects/redshift/schema/redshift-viewcompiler.js
+var require_redshift_viewcompiler = __commonJS({
+  "node_modules/knex/lib/dialects/redshift/schema/redshift-viewcompiler.js"(exports2, module2) {
+    var ViewCompiler_PG = require_pg_viewcompiler();
+    var ViewCompiler_Redshift = class extends ViewCompiler_PG {
+      constructor(client, viewCompiler) {
+        super(client, viewCompiler);
+      }
+    };
+    module2.exports = ViewCompiler_Redshift;
+  }
+});
+
+// node_modules/knex/lib/dialects/redshift/index.js
+var require_redshift = __commonJS({
+  "node_modules/knex/lib/dialects/redshift/index.js"(exports2, module2) {
+    var Client_PG = require_postgres();
+    var map = require_map();
+    var Transaction = require_transaction6();
+    var QueryCompiler = require_redshift_querycompiler();
+    var ColumnBuilder = require_redshift_columnbuilder();
+    var ColumnCompiler = require_redshift_columncompiler();
+    var TableCompiler = require_redshift_tablecompiler();
+    var SchemaCompiler = require_redshift_compiler();
+    var ViewCompiler = require_redshift_viewcompiler();
+    var Client_Redshift = class extends Client_PG {
+      transaction() {
+        return new Transaction(this, ...arguments);
+      }
+      queryCompiler(builder, formatter) {
+        return new QueryCompiler(this, builder, formatter);
+      }
+      columnBuilder() {
+        return new ColumnBuilder(this, ...arguments);
+      }
+      columnCompiler() {
+        return new ColumnCompiler(this, ...arguments);
+      }
+      tableCompiler() {
+        return new TableCompiler(this, ...arguments);
+      }
+      schemaCompiler() {
+        return new SchemaCompiler(this, ...arguments);
+      }
+      viewCompiler() {
+        return new ViewCompiler(this, ...arguments);
+      }
+      _driver() {
+        return require_lib5();
+      }
+      processResponse(obj, runner) {
+        const resp = obj.response;
+        if (obj.output)
+          return obj.output.call(runner, resp);
+        if (obj.method === "raw")
+          return resp;
+        if (resp.command === "SELECT") {
+          if (obj.method === "first")
+            return resp.rows[0];
+          if (obj.method === "pluck")
+            return map(resp.rows, obj.pluck);
+          return resp.rows;
+        }
+        if (resp.command === "INSERT" || resp.command === "UPDATE" || resp.command === "DELETE") {
+          return resp.rowCount;
+        }
+        return resp;
+      }
+      toPathForJson(jsonPath, builder, bindingsHolder) {
+        return jsonPath.replace(/^(\$\.)/, "").split(".").map(function(v) {
+          return this.parameter(v, builder, bindingsHolder);
+        }.bind(this)).join(", ");
+      }
+    };
+    Object.assign(Client_Redshift.prototype, {
+      dialect: "redshift",
+      driverName: "pg-redshift"
+    });
+    module2.exports = Client_Redshift;
+  }
+});
+
+// node_modules/knex/lib/dialects/index.js
+var require_dialects = __commonJS({
+  "node_modules/knex/lib/dialects/index.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.getDialectByNameOrAlias = void 0;
+    var { resolveClientNameWithAliases } = require_helpers();
+    var dbNameToDialectLoader = Object.freeze({
+      "better-sqlite3": () => require_better_sqlite3(),
+      cockroachdb: () => require_cockroachdb(),
+      mssql: () => require_mssql(),
+      mysql: () => require_mysql(),
+      mysql2: () => require_mysql2(),
+      oracle: () => require_oracle(),
+      oracledb: () => require_oracledb(),
+      pgnative: () => require_pgnative(),
+      postgres: () => require_postgres(),
+      redshift: () => require_redshift(),
+      sqlite3: () => require_sqlite3()
+    });
+    function getDialectByNameOrAlias(clientName) {
+      const resolvedClientName = resolveClientNameWithAliases(clientName);
+      const dialectLoader = dbNameToDialectLoader[resolvedClientName];
+      if (!dialectLoader) {
+        throw new Error(`Invalid clientName given: ${clientName}`);
+      }
+      return dialectLoader();
+    }
+    exports2.getDialectByNameOrAlias = getDialectByNameOrAlias;
+  }
+});
+
+// node_modules/knex/lib/knex-builder/internal/config-resolver.js
+var require_config_resolver = __commonJS({
+  "node_modules/knex/lib/knex-builder/internal/config-resolver.js"(exports2, module2) {
+    var Client = require_client2();
+    var { SUPPORTED_CLIENTS } = require_constants2();
+    var parseConnection = require_parse_connection();
+    var { getDialectByNameOrAlias } = require_dialects();
+    function resolveConfig(config) {
+      let Dialect;
+      let resolvedConfig;
+      const parsedConfig = typeof config === "string" ? Object.assign(parseConnection(config), arguments[2]) : config;
+      if (arguments.length === 0 || !parsedConfig.client && !parsedConfig.dialect) {
+        Dialect = Client;
+      } else if (typeof parsedConfig.client === "function") {
+        Dialect = parsedConfig.client;
+      } else {
+        const clientName = parsedConfig.client || parsedConfig.dialect;
+        if (!SUPPORTED_CLIENTS.includes(clientName)) {
+          throw new Error(`knex: Unknown configuration option 'client' value ${clientName}. Note that it is case-sensitive, check documentation for supported values.`);
+        }
+        Dialect = getDialectByNameOrAlias(clientName);
+      }
+      if (typeof parsedConfig.connection === "string") {
+        resolvedConfig = Object.assign({}, parsedConfig, {
+          connection: parseConnection(parsedConfig.connection).connection
+        });
+      } else {
+        resolvedConfig = Object.assign({}, parsedConfig);
+      }
+      return {
+        resolvedConfig,
+        Dialect
+      };
+    }
+    module2.exports = {
+      resolveConfig
+    };
+  }
+});
+
+// node_modules/knex/lib/knex-builder/Knex.js
+var require_Knex = __commonJS({
+  "node_modules/knex/lib/knex-builder/Knex.js"(exports2, module2) {
+    var Client = require_client2();
+    var QueryBuilder = require_querybuilder();
+    var QueryInterface = require_method_constants();
+    var makeKnex = require_make_knex();
+    var { KnexTimeoutError } = require_timeout();
+    var { resolveConfig } = require_config_resolver();
+    var SchemaBuilder = require_builder();
+    var ViewBuilder = require_viewbuilder();
+    var ColumnBuilder = require_columnbuilder();
+    var TableBuilder = require_tablebuilder();
+    function knex2(config) {
+      const { resolvedConfig, Dialect } = resolveConfig(...arguments);
+      const newKnex = makeKnex(new Dialect(resolvedConfig));
+      if (resolvedConfig.userParams) {
+        newKnex.userParams = resolvedConfig.userParams;
+      }
+      return newKnex;
+    }
+    knex2.Client = Client;
+    knex2.KnexTimeoutError = KnexTimeoutError;
+    knex2.QueryBuilder = {
+      extend: function(methodName, fn) {
+        QueryBuilder.extend(methodName, fn);
+        QueryInterface.push(methodName);
+      }
+    };
+    knex2.SchemaBuilder = {
+      extend: function(methodName, fn) {
+        SchemaBuilder.extend(methodName, fn);
+      }
+    };
+    knex2.ViewBuilder = {
+      extend: function(methodName, fn) {
+        ViewBuilder.extend(methodName, fn);
+      }
+    };
+    knex2.ColumnBuilder = {
+      extend: function(methodName, fn) {
+        ColumnBuilder.extend(methodName, fn);
+      }
+    };
+    knex2.TableBuilder = {
+      extend: function(methodName, fn) {
+        TableBuilder.extend(methodName, fn);
+      }
+    };
+    module2.exports = knex2;
+  }
+});
+
+// node_modules/knex/lib/index.js
+var require_lib6 = __commonJS({
+  "node_modules/knex/lib/index.js"(exports2, module2) {
+    var Knex2 = require_Knex();
+    module2.exports = Knex2;
+  }
+});
+
+// node_modules/knex/knex.js
+var require_knex = __commonJS({
+  "node_modules/knex/knex.js"(exports2, module2) {
+    var knex2 = require_lib6();
+    knex2.knex = knex2;
+    knex2.default = knex2;
+    module2.exports = knex2;
   }
 });
 
@@ -50334,26 +59055,38 @@ var require_dist6 = __commonJS({
 var require_bind = __commonJS({
   "node_modules/axios/lib/helpers/bind.js"(exports2, module2) {
     "use strict";
-    module2.exports = function bind(fn2, thisArg) {
+    module2.exports = function bind(fn, thisArg) {
       return function wrap() {
-        var args2 = new Array(arguments.length);
-        for (var i = 0; i < args2.length; i++) {
-          args2[i] = arguments[i];
+        var args = new Array(arguments.length);
+        for (var i = 0; i < args.length; i++) {
+          args[i] = arguments[i];
         }
-        return fn2.apply(thisArg, args2);
+        return fn.apply(thisArg, args);
       };
     };
   }
 });
 
 // node_modules/axios/lib/utils.js
-var require_utils5 = __commonJS({
+var require_utils8 = __commonJS({
   "node_modules/axios/lib/utils.js"(exports2, module2) {
     "use strict";
     var bind = require_bind();
     var toString = Object.prototype.toString;
+    var kindOf = function(cache) {
+      return function(thing) {
+        var str = toString.call(thing);
+        return cache[str] || (cache[str] = str.slice(8, -1).toLowerCase());
+      };
+    }(/* @__PURE__ */ Object.create(null));
+    function kindOfTest(type) {
+      type = type.toLowerCase();
+      return function isKindOf(thing) {
+        return kindOf(thing) === type;
+      };
+    }
     function isArray(val) {
-      return toString.call(val) === "[object Array]";
+      return Array.isArray(val);
     }
     function isUndefined(val) {
       return typeof val === "undefined";
@@ -50361,18 +59094,13 @@ var require_utils5 = __commonJS({
     function isBuffer(val) {
       return val !== null && !isUndefined(val) && val.constructor !== null && !isUndefined(val.constructor) && typeof val.constructor.isBuffer === "function" && val.constructor.isBuffer(val);
     }
-    function isArrayBuffer(val) {
-      return toString.call(val) === "[object ArrayBuffer]";
-    }
-    function isFormData(val) {
-      return typeof FormData !== "undefined" && val instanceof FormData;
-    }
+    var isArrayBuffer = kindOfTest("ArrayBuffer");
     function isArrayBufferView(val) {
       var result;
       if (typeof ArrayBuffer !== "undefined" && ArrayBuffer.isView) {
         result = ArrayBuffer.isView(val);
       } else {
-        result = val && val.buffer && val.buffer instanceof ArrayBuffer;
+        result = val && val.buffer && isArrayBuffer(val.buffer);
       }
       return result;
     }
@@ -50386,30 +59114,27 @@ var require_utils5 = __commonJS({
       return val !== null && typeof val === "object";
     }
     function isPlainObject(val) {
-      if (toString.call(val) !== "[object Object]") {
+      if (kindOf(val) !== "object") {
         return false;
       }
       var prototype = Object.getPrototypeOf(val);
       return prototype === null || prototype === Object.prototype;
     }
-    function isDate(val) {
-      return toString.call(val) === "[object Date]";
-    }
-    function isFile(val) {
-      return toString.call(val) === "[object File]";
-    }
-    function isBlob(val) {
-      return toString.call(val) === "[object Blob]";
-    }
+    var isDate = kindOfTest("Date");
+    var isFile = kindOfTest("File");
+    var isBlob = kindOfTest("Blob");
+    var isFileList = kindOfTest("FileList");
     function isFunction(val) {
       return toString.call(val) === "[object Function]";
     }
     function isStream(val) {
       return isObject(val) && isFunction(val.pipe);
     }
-    function isURLSearchParams(val) {
-      return typeof URLSearchParams !== "undefined" && val instanceof URLSearchParams;
+    function isFormData(thing) {
+      var pattern = "[object FormData]";
+      return thing && (typeof FormData === "function" && thing instanceof FormData || toString.call(thing) === pattern || isFunction(thing.toString) && thing.toString() === pattern);
     }
+    var isURLSearchParams = kindOfTest("URLSearchParams");
     function trim(str) {
       return str.trim ? str.trim() : str.replace(/^\s+|\s+$/g, "");
     }
@@ -50419,7 +59144,7 @@ var require_utils5 = __commonJS({
       }
       return typeof window !== "undefined" && typeof document !== "undefined";
     }
-    function forEach(obj, fn2) {
+    function forEach(obj, fn) {
       if (obj === null || typeof obj === "undefined") {
         return;
       }
@@ -50428,12 +59153,12 @@ var require_utils5 = __commonJS({
       }
       if (isArray(obj)) {
         for (var i = 0, l = obj.length; i < l; i++) {
-          fn2.call(null, obj[i], i, obj);
+          fn.call(null, obj[i], i, obj);
         }
       } else {
         for (var key in obj) {
           if (Object.prototype.hasOwnProperty.call(obj, key)) {
-            fn2.call(null, obj[key], key, obj);
+            fn.call(null, obj[key], key, obj);
           }
         }
       }
@@ -50472,6 +59197,57 @@ var require_utils5 = __commonJS({
       }
       return content;
     }
+    function inherits(constructor, superConstructor, props, descriptors) {
+      constructor.prototype = Object.create(superConstructor.prototype, descriptors);
+      constructor.prototype.constructor = constructor;
+      props && Object.assign(constructor.prototype, props);
+    }
+    function toFlatObject(sourceObj, destObj, filter) {
+      var props;
+      var i;
+      var prop;
+      var merged = {};
+      destObj = destObj || {};
+      do {
+        props = Object.getOwnPropertyNames(sourceObj);
+        i = props.length;
+        while (i-- > 0) {
+          prop = props[i];
+          if (!merged[prop]) {
+            destObj[prop] = sourceObj[prop];
+            merged[prop] = true;
+          }
+        }
+        sourceObj = Object.getPrototypeOf(sourceObj);
+      } while (sourceObj && (!filter || filter(sourceObj, destObj)) && sourceObj !== Object.prototype);
+      return destObj;
+    }
+    function endsWith(str, searchString, position) {
+      str = String(str);
+      if (position === void 0 || position > str.length) {
+        position = str.length;
+      }
+      position -= searchString.length;
+      var lastIndex = str.indexOf(searchString, position);
+      return lastIndex !== -1 && lastIndex === position;
+    }
+    function toArray(thing) {
+      if (!thing)
+        return null;
+      var i = thing.length;
+      if (isUndefined(i))
+        return null;
+      var arr = new Array(i);
+      while (i-- > 0) {
+        arr[i] = thing[i];
+      }
+      return arr;
+    }
+    var isTypedArray = function(TypedArray) {
+      return function(thing) {
+        return TypedArray && thing instanceof TypedArray;
+      };
+    }(typeof Uint8Array !== "undefined" && Object.getPrototypeOf(Uint8Array));
     module2.exports = {
       isArray,
       isArrayBuffer,
@@ -50494,7 +59270,15 @@ var require_utils5 = __commonJS({
       merge,
       extend,
       trim,
-      stripBOM
+      stripBOM,
+      inherits,
+      toFlatObject,
+      kindOf,
+      kindOfTest,
+      endsWith,
+      toArray,
+      isTypedArray,
+      isFileList
     };
   }
 });
@@ -50503,7 +59287,7 @@ var require_utils5 = __commonJS({
 var require_buildURL = __commonJS({
   "node_modules/axios/lib/helpers/buildURL.js"(exports2, module2) {
     "use strict";
-    var utils = require_utils5();
+    var utils = require_utils8();
     function encode(val) {
       return encodeURIComponent(val).replace(/%3A/gi, ":").replace(/%24/g, "$").replace(/%2C/gi, ",").replace(/%20/g, "+").replace(/%5B/gi, "[").replace(/%5D/gi, "]");
     }
@@ -50554,7 +59338,7 @@ var require_buildURL = __commonJS({
 var require_InterceptorManager = __commonJS({
   "node_modules/axios/lib/core/InterceptorManager.js"(exports2, module2) {
     "use strict";
-    var utils = require_utils5();
+    var utils = require_utils8();
     function InterceptorManager() {
       this.handlers = [];
     }
@@ -50572,10 +59356,10 @@ var require_InterceptorManager = __commonJS({
         this.handlers[id] = null;
       }
     };
-    InterceptorManager.prototype.forEach = function forEach(fn2) {
+    InterceptorManager.prototype.forEach = function forEach(fn) {
       utils.forEach(this.handlers, function forEachHandler(h) {
         if (h !== null) {
-          fn2(h);
+          fn(h);
         }
       });
     };
@@ -50587,7 +59371,7 @@ var require_InterceptorManager = __commonJS({
 var require_normalizeHeaderName = __commonJS({
   "node_modules/axios/lib/helpers/normalizeHeaderName.js"(exports2, module2) {
     "use strict";
-    var utils = require_utils5();
+    var utils = require_utils8();
     module2.exports = function normalizeHeaderName(headers, normalizedName) {
       utils.forEach(headers, function processHeader(value, name) {
         if (name !== normalizedName && name.toUpperCase() === normalizedName.toUpperCase()) {
@@ -50599,19 +59383,22 @@ var require_normalizeHeaderName = __commonJS({
   }
 });
 
-// node_modules/axios/lib/core/enhanceError.js
-var require_enhanceError = __commonJS({
-  "node_modules/axios/lib/core/enhanceError.js"(exports2, module2) {
+// node_modules/axios/lib/core/AxiosError.js
+var require_AxiosError = __commonJS({
+  "node_modules/axios/lib/core/AxiosError.js"(exports2, module2) {
     "use strict";
-    module2.exports = function enhanceError(error, config, code, request, response) {
-      error.config = config;
-      if (code) {
-        error.code = code;
-      }
-      error.request = request;
-      error.response = response;
-      error.isAxiosError = true;
-      error.toJSON = function toJSON() {
+    var utils = require_utils8();
+    function AxiosError(message, code, config, request, response) {
+      Error.call(this);
+      this.message = message;
+      this.name = "AxiosError";
+      code && (this.code = code);
+      config && (this.config = config);
+      request && (this.request = request);
+      response && (this.response = response);
+    }
+    utils.inherits(AxiosError, Error, {
+      toJSON: function toJSON() {
         return {
           message: this.message,
           name: this.name,
@@ -50625,21 +59412,103 @@ var require_enhanceError = __commonJS({
           code: this.code,
           status: this.response && this.response.status ? this.response.status : null
         };
-      };
-      return error;
+      }
+    });
+    var prototype = AxiosError.prototype;
+    var descriptors = {};
+    [
+      "ERR_BAD_OPTION_VALUE",
+      "ERR_BAD_OPTION",
+      "ECONNABORTED",
+      "ETIMEDOUT",
+      "ERR_NETWORK",
+      "ERR_FR_TOO_MANY_REDIRECTS",
+      "ERR_DEPRECATED",
+      "ERR_BAD_RESPONSE",
+      "ERR_BAD_REQUEST",
+      "ERR_CANCELED"
+    ].forEach(function(code) {
+      descriptors[code] = { value: code };
+    });
+    Object.defineProperties(AxiosError, descriptors);
+    Object.defineProperty(prototype, "isAxiosError", { value: true });
+    AxiosError.from = function(error, code, config, request, response, customProps) {
+      var axiosError = Object.create(prototype);
+      utils.toFlatObject(error, axiosError, function filter(obj) {
+        return obj !== Error.prototype;
+      });
+      AxiosError.call(axiosError, error.message, code, config, request, response);
+      axiosError.name = error.name;
+      customProps && Object.assign(axiosError, customProps);
+      return axiosError;
+    };
+    module2.exports = AxiosError;
+  }
+});
+
+// node_modules/axios/lib/defaults/transitional.js
+var require_transitional = __commonJS({
+  "node_modules/axios/lib/defaults/transitional.js"(exports2, module2) {
+    "use strict";
+    module2.exports = {
+      silentJSONParsing: true,
+      forcedJSONParsing: true,
+      clarifyTimeoutError: false
     };
   }
 });
 
-// node_modules/axios/lib/core/createError.js
-var require_createError = __commonJS({
-  "node_modules/axios/lib/core/createError.js"(exports2, module2) {
+// node_modules/axios/lib/helpers/toFormData.js
+var require_toFormData = __commonJS({
+  "node_modules/axios/lib/helpers/toFormData.js"(exports2, module2) {
     "use strict";
-    var enhanceError = require_enhanceError();
-    module2.exports = function createError(message2, config, code, request, response) {
-      var error = new Error(message2);
-      return enhanceError(error, config, code, request, response);
-    };
+    var utils = require_utils8();
+    function toFormData(obj, formData) {
+      formData = formData || new FormData();
+      var stack = [];
+      function convertValue(value) {
+        if (value === null)
+          return "";
+        if (utils.isDate(value)) {
+          return value.toISOString();
+        }
+        if (utils.isArrayBuffer(value) || utils.isTypedArray(value)) {
+          return typeof Blob === "function" ? new Blob([value]) : Buffer.from(value);
+        }
+        return value;
+      }
+      function build(data, parentKey) {
+        if (utils.isPlainObject(data) || utils.isArray(data)) {
+          if (stack.indexOf(data) !== -1) {
+            throw Error("Circular reference detected in " + parentKey);
+          }
+          stack.push(data);
+          utils.forEach(data, function each(value, key) {
+            if (utils.isUndefined(value))
+              return;
+            var fullKey = parentKey ? parentKey + "." + key : key;
+            var arr;
+            if (value && !parentKey && typeof value === "object") {
+              if (utils.endsWith(key, "{}")) {
+                value = JSON.stringify(value);
+              } else if (utils.endsWith(key, "[]") && (arr = utils.toArray(value))) {
+                arr.forEach(function(el) {
+                  !utils.isUndefined(el) && formData.append(fullKey, convertValue(el));
+                });
+                return;
+              }
+            }
+            build(value, fullKey);
+          });
+          stack.pop();
+        } else {
+          formData.append(parentKey, convertValue(data));
+        }
+      }
+      build(obj);
+      return formData;
+    }
+    module2.exports = toFormData;
   }
 });
 
@@ -50647,13 +59516,13 @@ var require_createError = __commonJS({
 var require_settle = __commonJS({
   "node_modules/axios/lib/core/settle.js"(exports2, module2) {
     "use strict";
-    var createError = require_createError();
+    var AxiosError = require_AxiosError();
     module2.exports = function settle(resolve, reject, response) {
       var validateStatus = response.config.validateStatus;
       if (!response.status || !validateStatus || validateStatus(response.status)) {
         resolve(response);
       } else {
-        reject(createError("Request failed with status code " + response.status, response.config, null, response.request, response));
+        reject(new AxiosError("Request failed with status code " + response.status, [AxiosError.ERR_BAD_REQUEST, AxiosError.ERR_BAD_RESPONSE][Math.floor(response.status / 100) - 4], response.config, response.request, response));
       }
     };
   }
@@ -50663,7 +59532,7 @@ var require_settle = __commonJS({
 var require_cookies = __commonJS({
   "node_modules/axios/lib/helpers/cookies.js"(exports2, module2) {
     "use strict";
-    var utils = require_utils5();
+    var utils = require_utils8();
     module2.exports = utils.isStandardBrowserEnv() ? function standardBrowserEnv() {
       return {
         write: function write(name, value, expires, path, domain, secure) {
@@ -50710,7 +59579,7 @@ var require_isAbsoluteURL = __commonJS({
   "node_modules/axios/lib/helpers/isAbsoluteURL.js"(exports2, module2) {
     "use strict";
     module2.exports = function isAbsoluteURL(url) {
-      return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url);
+      return /^([a-z][a-z\d+\-.]*:)?\/\//i.test(url);
     };
   }
 });
@@ -50744,7 +59613,7 @@ var require_buildFullPath = __commonJS({
 var require_parseHeaders = __commonJS({
   "node_modules/axios/lib/helpers/parseHeaders.js"(exports2, module2) {
     "use strict";
-    var utils = require_utils5();
+    var utils = require_utils8();
     var ignoreDuplicateOf = [
       "age",
       "authorization",
@@ -50796,7 +59665,7 @@ var require_parseHeaders = __commonJS({
 var require_isURLSameOrigin = __commonJS({
   "node_modules/axios/lib/helpers/isURLSameOrigin.js"(exports2, module2) {
     "use strict";
-    var utils = require_utils5();
+    var utils = require_utils8();
     module2.exports = utils.isStandardBrowserEnv() ? function standardBrowserEnv() {
       var msie = /(msie|trident)/i.test(navigator.userAgent);
       var urlParsingNode = document.createElement("a");
@@ -50832,18 +59701,31 @@ var require_isURLSameOrigin = __commonJS({
   }
 });
 
-// node_modules/axios/lib/cancel/Cancel.js
-var require_Cancel = __commonJS({
-  "node_modules/axios/lib/cancel/Cancel.js"(exports2, module2) {
+// node_modules/axios/lib/cancel/CanceledError.js
+var require_CanceledError = __commonJS({
+  "node_modules/axios/lib/cancel/CanceledError.js"(exports2, module2) {
     "use strict";
-    function Cancel(message2) {
-      this.message = message2;
+    var AxiosError = require_AxiosError();
+    var utils = require_utils8();
+    function CanceledError(message) {
+      AxiosError.call(this, message == null ? "canceled" : message, AxiosError.ERR_CANCELED);
+      this.name = "CanceledError";
     }
-    Cancel.prototype.toString = function toString() {
-      return "Cancel" + (this.message ? ": " + this.message : "");
+    utils.inherits(CanceledError, AxiosError, {
+      __CANCEL__: true
+    });
+    module2.exports = CanceledError;
+  }
+});
+
+// node_modules/axios/lib/helpers/parseProtocol.js
+var require_parseProtocol = __commonJS({
+  "node_modules/axios/lib/helpers/parseProtocol.js"(exports2, module2) {
+    "use strict";
+    module2.exports = function parseProtocol(url) {
+      var match = /^([-+\w]{1,25})(:?\/\/|:)/.exec(url);
+      return match && match[1] || "";
     };
-    Cancel.prototype.__CANCEL__ = true;
-    module2.exports = Cancel;
   }
 });
 
@@ -50851,16 +59733,17 @@ var require_Cancel = __commonJS({
 var require_xhr = __commonJS({
   "node_modules/axios/lib/adapters/xhr.js"(exports2, module2) {
     "use strict";
-    var utils = require_utils5();
+    var utils = require_utils8();
     var settle = require_settle();
     var cookies = require_cookies();
     var buildURL = require_buildURL();
     var buildFullPath = require_buildFullPath();
     var parseHeaders = require_parseHeaders();
     var isURLSameOrigin = require_isURLSameOrigin();
-    var createError = require_createError();
-    var defaults = require_defaults3();
-    var Cancel = require_Cancel();
+    var transitionalDefaults = require_transitional();
+    var AxiosError = require_AxiosError();
+    var CanceledError = require_CanceledError();
+    var parseProtocol = require_parseProtocol();
     module2.exports = function xhrAdapter(config) {
       return new Promise(function dispatchXhrRequest(resolve, reject) {
         var requestData = config.data;
@@ -50875,7 +59758,7 @@ var require_xhr = __commonJS({
             config.signal.removeEventListener("abort", onCanceled);
           }
         }
-        if (utils.isFormData(requestData)) {
+        if (utils.isFormData(requestData) && utils.isStandardBrowserEnv()) {
           delete requestHeaders["Content-Type"];
         }
         var request = new XMLHttpRequest();
@@ -50927,20 +59810,20 @@ var require_xhr = __commonJS({
           if (!request) {
             return;
           }
-          reject(createError("Request aborted", config, "ECONNABORTED", request));
+          reject(new AxiosError("Request aborted", AxiosError.ECONNABORTED, config, request));
           request = null;
         };
         request.onerror = function handleError() {
-          reject(createError("Network Error", config, null, request));
+          reject(new AxiosError("Network Error", AxiosError.ERR_NETWORK, config, request, request));
           request = null;
         };
         request.ontimeout = function handleTimeout() {
           var timeoutErrorMessage = config.timeout ? "timeout of " + config.timeout + "ms exceeded" : "timeout exceeded";
-          var transitional = config.transitional || defaults.transitional;
+          var transitional = config.transitional || transitionalDefaults;
           if (config.timeoutErrorMessage) {
             timeoutErrorMessage = config.timeoutErrorMessage;
           }
-          reject(createError(timeoutErrorMessage, config, transitional.clarifyTimeoutError ? "ETIMEDOUT" : "ECONNABORTED", request));
+          reject(new AxiosError(timeoutErrorMessage, transitional.clarifyTimeoutError ? AxiosError.ETIMEDOUT : AxiosError.ECONNABORTED, config, request));
           request = null;
         };
         if (utils.isStandardBrowserEnv()) {
@@ -50975,7 +59858,7 @@ var require_xhr = __commonJS({
             if (!request) {
               return;
             }
-            reject(!cancel || cancel && cancel.type ? new Cancel("canceled") : cancel);
+            reject(!cancel || cancel && cancel.type ? new CanceledError() : cancel);
             request.abort();
             request = null;
           };
@@ -50986,6 +59869,11 @@ var require_xhr = __commonJS({
         }
         if (!requestData) {
           requestData = null;
+        }
+        var protocol = parseProtocol(fullPath);
+        if (protocol && ["http", "https", "file"].indexOf(protocol) === -1) {
+          reject(new AxiosError("Unsupported protocol " + protocol + ":", AxiosError.ERR_BAD_REQUEST, config));
+          return;
         }
         request.send(requestData);
       });
@@ -51024,7 +59912,7 @@ var require_follow_redirects = __commonJS({
     var assert = require("assert");
     var debug = require_debug2();
     var events = ["abort", "aborted", "connect", "error", "socket", "timeout"];
-    var eventHandlers = Object.create(null);
+    var eventHandlers = /* @__PURE__ */ Object.create(null);
     events.forEach(function(event) {
       eventHandlers[event] = function(arg1, arg2, arg3) {
         this._redirectable.emit(event, arg1, arg2, arg3);
@@ -51204,15 +60092,15 @@ var require_follow_redirects = __commonJS({
         return;
       }
       if (this._options.agents) {
-        var scheme = protocol.substr(0, protocol.length - 1);
+        var scheme = protocol.slice(0, -1);
         this._options.agent = this._options.agents[scheme];
       }
       var request = this._currentRequest = nativeProtocol.request(this._options, this._onNativeResponse);
-      this._currentUrl = url.format(this._options);
       request._redirectable = this;
-      for (var e = 0; e < events.length; e++) {
-        request.on(events[e], eventHandlers[events[e]]);
+      for (var event of events) {
+        request.on(event, eventHandlers[event]);
       }
+      this._currentUrl = /^\//.test(this._options.path) ? url.format(this._options) : this._currentUrl = this._options.path;
       if (this._isRedirect) {
         var i = 0;
         var self2 = this;
@@ -51243,56 +60131,72 @@ var require_follow_redirects = __commonJS({
         });
       }
       var location = response.headers.location;
-      if (location && this._options.followRedirects !== false && statusCode >= 300 && statusCode < 400) {
-        abortRequest(this._currentRequest);
-        response.destroy();
-        if (++this._redirectCount > this._options.maxRedirects) {
-          this.emit("error", new TooManyRedirectsError());
-          return;
-        }
-        if ((statusCode === 301 || statusCode === 302) && this._options.method === "POST" || statusCode === 303 && !/^(?:GET|HEAD)$/.test(this._options.method)) {
-          this._options.method = "GET";
-          this._requestBodyBuffers = [];
-          removeMatchingHeaders(/^content-/i, this._options.headers);
-        }
-        var currentHostHeader = removeMatchingHeaders(/^host$/i, this._options.headers);
-        var currentUrlParts = url.parse(this._currentUrl);
-        var currentHost = currentHostHeader || currentUrlParts.host;
-        var currentUrl = /^\w+:/.test(location) ? this._currentUrl : url.format(Object.assign(currentUrlParts, { host: currentHost }));
-        var redirectUrl;
-        try {
-          redirectUrl = url.resolve(currentUrl, location);
-        } catch (cause) {
-          this.emit("error", new RedirectionError(cause));
-          return;
-        }
-        debug("redirecting to", redirectUrl);
-        this._isRedirect = true;
-        var redirectUrlParts = url.parse(redirectUrl);
-        Object.assign(this._options, redirectUrlParts);
-        if (!(redirectUrlParts.host === currentHost || isSubdomainOf(redirectUrlParts.host, currentHost))) {
-          removeMatchingHeaders(/^(?:authorization|cookie)$/i, this._options.headers);
-        }
-        if (typeof this._options.beforeRedirect === "function") {
-          var responseDetails = { headers: response.headers };
-          try {
-            this._options.beforeRedirect.call(null, this._options, responseDetails);
-          } catch (err) {
-            this.emit("error", err);
-            return;
-          }
-          this._sanitizeOptions(this._options);
-        }
-        try {
-          this._performRequest();
-        } catch (cause) {
-          this.emit("error", new RedirectionError(cause));
-        }
-      } else {
+      if (!location || this._options.followRedirects === false || statusCode < 300 || statusCode >= 400) {
         response.responseUrl = this._currentUrl;
         response.redirects = this._redirects;
         this.emit("response", response);
         this._requestBodyBuffers = [];
+        return;
+      }
+      abortRequest(this._currentRequest);
+      response.destroy();
+      if (++this._redirectCount > this._options.maxRedirects) {
+        this.emit("error", new TooManyRedirectsError());
+        return;
+      }
+      var requestHeaders;
+      var beforeRedirect = this._options.beforeRedirect;
+      if (beforeRedirect) {
+        requestHeaders = Object.assign({
+          Host: response.req.getHeader("host")
+        }, this._options.headers);
+      }
+      var method = this._options.method;
+      if ((statusCode === 301 || statusCode === 302) && this._options.method === "POST" || statusCode === 303 && !/^(?:GET|HEAD)$/.test(this._options.method)) {
+        this._options.method = "GET";
+        this._requestBodyBuffers = [];
+        removeMatchingHeaders(/^content-/i, this._options.headers);
+      }
+      var currentHostHeader = removeMatchingHeaders(/^host$/i, this._options.headers);
+      var currentUrlParts = url.parse(this._currentUrl);
+      var currentHost = currentHostHeader || currentUrlParts.host;
+      var currentUrl = /^\w+:/.test(location) ? this._currentUrl : url.format(Object.assign(currentUrlParts, { host: currentHost }));
+      var redirectUrl;
+      try {
+        redirectUrl = url.resolve(currentUrl, location);
+      } catch (cause) {
+        this.emit("error", new RedirectionError(cause));
+        return;
+      }
+      debug("redirecting to", redirectUrl);
+      this._isRedirect = true;
+      var redirectUrlParts = url.parse(redirectUrl);
+      Object.assign(this._options, redirectUrlParts);
+      if (redirectUrlParts.protocol !== currentUrlParts.protocol && redirectUrlParts.protocol !== "https:" || redirectUrlParts.host !== currentHost && !isSubdomain(redirectUrlParts.host, currentHost)) {
+        removeMatchingHeaders(/^(?:authorization|cookie)$/i, this._options.headers);
+      }
+      if (typeof beforeRedirect === "function") {
+        var responseDetails = {
+          headers: response.headers,
+          statusCode
+        };
+        var requestDetails = {
+          url: currentUrl,
+          method,
+          headers: requestHeaders
+        };
+        try {
+          beforeRedirect(this._options, responseDetails, requestDetails);
+        } catch (err) {
+          this.emit("error", err);
+          return;
+        }
+        this._sanitizeOptions(this._options);
+      }
+      try {
+        this._performRequest();
+      } catch (cause) {
+        this.emit("error", new RedirectionError(cause));
       }
     };
     function wrap(protocols) {
@@ -51372,13 +60276,13 @@ var require_follow_redirects = __commonJS({
       }
       return lastValue === null || typeof lastValue === "undefined" ? void 0 : String(lastValue).trim();
     }
-    function createErrorType(code, defaultMessage2) {
+    function createErrorType(code, defaultMessage) {
       function CustomError(cause) {
         Error.captureStackTrace(this, this.constructor);
         if (!cause) {
-          this.message = defaultMessage2;
+          this.message = defaultMessage;
         } else {
-          this.message = defaultMessage2 + ": " + cause.message;
+          this.message = defaultMessage + ": " + cause.message;
           this.cause = cause;
         }
       }
@@ -51389,13 +60293,13 @@ var require_follow_redirects = __commonJS({
       return CustomError;
     }
     function abortRequest(request) {
-      for (var e = 0; e < events.length; e++) {
-        request.removeListener(events[e], eventHandlers[events[e]]);
+      for (var event of events) {
+        request.removeListener(event, eventHandlers[event]);
       }
       request.on("error", noop);
       request.abort();
     }
-    function isSubdomainOf(subdomain, domain) {
+    function isSubdomain(subdomain, domain) {
       const dot = subdomain.length - domain.length - 1;
       return dot > 0 && subdomain[dot] === "." && subdomain.endsWith(domain);
     }
@@ -51408,7 +60312,7 @@ var require_follow_redirects = __commonJS({
 var require_data = __commonJS({
   "node_modules/axios/lib/env/data.js"(exports2, module2) {
     module2.exports = {
-      "version": "0.24.0"
+      "version": "0.27.2"
     };
   }
 });
@@ -51417,7 +60321,7 @@ var require_data = __commonJS({
 var require_http = __commonJS({
   "node_modules/axios/lib/adapters/http.js"(exports2, module2) {
     "use strict";
-    var utils = require_utils5();
+    var utils = require_utils8();
     var settle = require_settle();
     var buildFullPath = require_buildFullPath();
     var buildURL = require_buildURL();
@@ -51428,11 +60332,11 @@ var require_http = __commonJS({
     var url = require("url");
     var zlib = require("zlib");
     var VERSION = require_data().version;
-    var createError = require_createError();
-    var enhanceError = require_enhanceError();
-    var defaults = require_defaults3();
-    var Cancel = require_Cancel();
+    var transitionalDefaults = require_transitional();
+    var AxiosError = require_AxiosError();
+    var CanceledError = require_CanceledError();
     var isHttps = /https:?/;
+    var supportedProtocols = ["http:", "https:", "file:"];
     function setProxy(options, proxy, location) {
       options.hostname = proxy.host;
       options.host = proxy.host;
@@ -51462,8 +60366,10 @@ var require_http = __commonJS({
           done();
           resolvePromise(value);
         };
+        var rejected = false;
         var reject = function reject2(value) {
           done();
+          rejected = true;
           rejectPromise(value);
         };
         var data = config.data;
@@ -51479,14 +60385,19 @@ var require_http = __commonJS({
         } else {
           headers["User-Agent"] = "axios/" + VERSION;
         }
-        if (data && !utils.isStream(data)) {
+        if (utils.isFormData(data) && utils.isFunction(data.getHeaders)) {
+          Object.assign(headers, data.getHeaders());
+        } else if (data && !utils.isStream(data)) {
           if (Buffer.isBuffer(data)) {
           } else if (utils.isArrayBuffer(data)) {
             data = Buffer.from(new Uint8Array(data));
           } else if (utils.isString(data)) {
             data = Buffer.from(data, "utf-8");
           } else {
-            return reject(createError("Data after transformation must be a string, an ArrayBuffer, a Buffer, or a Stream", config));
+            return reject(new AxiosError("Data after transformation must be a string, an ArrayBuffer, a Buffer, or a Stream", AxiosError.ERR_BAD_REQUEST, config));
+          }
+          if (config.maxBodyLength > -1 && data.length > config.maxBodyLength) {
+            return reject(new AxiosError("Request body larger than maxBodyLength limit", AxiosError.ERR_BAD_REQUEST, config));
           }
           if (!headerNames["content-length"]) {
             headers["Content-Length"] = data.length;
@@ -51500,7 +60411,10 @@ var require_http = __commonJS({
         }
         var fullPath = buildFullPath(config.baseURL, config.url);
         var parsed = url.parse(fullPath);
-        var protocol = parsed.protocol || "http:";
+        var protocol = parsed.protocol || supportedProtocols[0];
+        if (supportedProtocols.indexOf(protocol) === -1) {
+          return reject(new AxiosError("Unsupported protocol " + protocol, AxiosError.ERR_BAD_REQUEST, config));
+        }
         if (!auth && parsed.auth) {
           var urlAuth = parsed.auth.split(":");
           var urlUsername = urlAuth[0] || "";
@@ -51512,6 +60426,15 @@ var require_http = __commonJS({
         }
         var isHttpsRequest = isHttps.test(protocol);
         var agent = isHttpsRequest ? config.httpsAgent : config.httpAgent;
+        try {
+          buildURL(parsed.path, config.params, config.paramsSerializer).replace(/^\?/, "");
+        } catch (err) {
+          var customErr = new Error(err.message);
+          customErr.config = config;
+          customErr.url = config.url;
+          customErr.exists = true;
+          reject(customErr);
+        }
         var options = {
           path: buildURL(parsed.path, config.params, config.paramsSerializer).replace(/^\?/, ""),
           method: config.method.toUpperCase(),
@@ -51581,6 +60504,9 @@ var require_http = __commonJS({
           if (config.maxRedirects) {
             options.maxRedirects = config.maxRedirects;
           }
+          if (config.beforeRedirect) {
+            options.beforeRedirect = config.beforeRedirect;
+          }
           transport = isHttpsProxy ? httpsFollow : httpFollow;
         }
         if (config.maxBodyLength > -1) {
@@ -51621,43 +60547,56 @@ var require_http = __commonJS({
               responseBuffer.push(chunk);
               totalResponseBytes += chunk.length;
               if (config.maxContentLength > -1 && totalResponseBytes > config.maxContentLength) {
+                rejected = true;
                 stream.destroy();
-                reject(createError("maxContentLength size of " + config.maxContentLength + " exceeded", config, null, lastRequest));
+                reject(new AxiosError("maxContentLength size of " + config.maxContentLength + " exceeded", AxiosError.ERR_BAD_RESPONSE, config, lastRequest));
               }
+            });
+            stream.on("aborted", function handlerStreamAborted() {
+              if (rejected) {
+                return;
+              }
+              stream.destroy();
+              reject(new AxiosError("maxContentLength size of " + config.maxContentLength + " exceeded", AxiosError.ERR_BAD_RESPONSE, config, lastRequest));
             });
             stream.on("error", function handleStreamError(err) {
               if (req.aborted)
                 return;
-              reject(enhanceError(err, config, null, lastRequest));
+              reject(AxiosError.from(err, null, config, lastRequest));
             });
             stream.on("end", function handleStreamEnd() {
-              var responseData = Buffer.concat(responseBuffer);
-              if (config.responseType !== "arraybuffer") {
-                responseData = responseData.toString(config.responseEncoding);
-                if (!config.responseEncoding || config.responseEncoding === "utf8") {
-                  responseData = utils.stripBOM(responseData);
+              try {
+                var responseData = responseBuffer.length === 1 ? responseBuffer[0] : Buffer.concat(responseBuffer);
+                if (config.responseType !== "arraybuffer") {
+                  responseData = responseData.toString(config.responseEncoding);
+                  if (!config.responseEncoding || config.responseEncoding === "utf8") {
+                    responseData = utils.stripBOM(responseData);
+                  }
                 }
+                response.data = responseData;
+              } catch (err) {
+                reject(AxiosError.from(err, null, config, response.request, response));
               }
-              response.data = responseData;
               settle(resolve, reject, response);
             });
           }
         });
         req.on("error", function handleRequestError(err) {
-          if (req.aborted && err.code !== "ERR_FR_TOO_MANY_REDIRECTS")
-            return;
-          reject(enhanceError(err, config, null, req));
+          reject(AxiosError.from(err, null, config, req));
+        });
+        req.on("socket", function handleRequestSocket(socket) {
+          socket.setKeepAlive(true, 1e3 * 60);
         });
         if (config.timeout) {
           var timeout = parseInt(config.timeout, 10);
           if (isNaN(timeout)) {
-            reject(createError("error trying to parse `config.timeout` to int", config, "ERR_PARSE_TIMEOUT", req));
+            reject(new AxiosError("error trying to parse `config.timeout` to int", AxiosError.ERR_BAD_OPTION_VALUE, config, req));
             return;
           }
           req.setTimeout(timeout, function handleRequestTimeout() {
             req.abort();
-            var transitional = config.transitional || defaults.transitional;
-            reject(createError("timeout of " + timeout + "ms exceeded", config, transitional.clarifyTimeoutError ? "ETIMEDOUT" : "ECONNABORTED", req));
+            var transitional = config.transitional || transitionalDefaults;
+            reject(new AxiosError("timeout of " + timeout + "ms exceeded", transitional.clarifyTimeoutError ? AxiosError.ETIMEDOUT : AxiosError.ECONNABORTED, config, req));
           });
         }
         if (config.cancelToken || config.signal) {
@@ -51665,7 +60604,7 @@ var require_http = __commonJS({
             if (req.aborted)
               return;
             req.abort();
-            reject(!cancel || cancel && cancel.type ? new Cancel("canceled") : cancel);
+            reject(!cancel || cancel && cancel.type ? new CanceledError() : cancel);
           };
           config.cancelToken && config.cancelToken.subscribe(onCanceled);
           if (config.signal) {
@@ -51674,7 +60613,7 @@ var require_http = __commonJS({
         }
         if (utils.isStream(data)) {
           data.on("error", function handleStreamError(err) {
-            reject(enhanceError(err, config, null, req));
+            reject(AxiosError.from(err, config, null, req));
           }).pipe(req);
         } else {
           req.end(data);
@@ -51684,13 +60623,818 @@ var require_http = __commonJS({
   }
 });
 
-// node_modules/axios/lib/defaults.js
+// node_modules/delayed-stream/lib/delayed_stream.js
+var require_delayed_stream = __commonJS({
+  "node_modules/delayed-stream/lib/delayed_stream.js"(exports2, module2) {
+    var Stream = require("stream").Stream;
+    var util = require("util");
+    module2.exports = DelayedStream;
+    function DelayedStream() {
+      this.source = null;
+      this.dataSize = 0;
+      this.maxDataSize = 1024 * 1024;
+      this.pauseStream = true;
+      this._maxDataSizeExceeded = false;
+      this._released = false;
+      this._bufferedEvents = [];
+    }
+    util.inherits(DelayedStream, Stream);
+    DelayedStream.create = function(source, options) {
+      var delayedStream = new this();
+      options = options || {};
+      for (var option in options) {
+        delayedStream[option] = options[option];
+      }
+      delayedStream.source = source;
+      var realEmit = source.emit;
+      source.emit = function() {
+        delayedStream._handleEmit(arguments);
+        return realEmit.apply(source, arguments);
+      };
+      source.on("error", function() {
+      });
+      if (delayedStream.pauseStream) {
+        source.pause();
+      }
+      return delayedStream;
+    };
+    Object.defineProperty(DelayedStream.prototype, "readable", {
+      configurable: true,
+      enumerable: true,
+      get: function() {
+        return this.source.readable;
+      }
+    });
+    DelayedStream.prototype.setEncoding = function() {
+      return this.source.setEncoding.apply(this.source, arguments);
+    };
+    DelayedStream.prototype.resume = function() {
+      if (!this._released) {
+        this.release();
+      }
+      this.source.resume();
+    };
+    DelayedStream.prototype.pause = function() {
+      this.source.pause();
+    };
+    DelayedStream.prototype.release = function() {
+      this._released = true;
+      this._bufferedEvents.forEach(function(args) {
+        this.emit.apply(this, args);
+      }.bind(this));
+      this._bufferedEvents = [];
+    };
+    DelayedStream.prototype.pipe = function() {
+      var r = Stream.prototype.pipe.apply(this, arguments);
+      this.resume();
+      return r;
+    };
+    DelayedStream.prototype._handleEmit = function(args) {
+      if (this._released) {
+        this.emit.apply(this, args);
+        return;
+      }
+      if (args[0] === "data") {
+        this.dataSize += args[1].length;
+        this._checkIfMaxDataSizeExceeded();
+      }
+      this._bufferedEvents.push(args);
+    };
+    DelayedStream.prototype._checkIfMaxDataSizeExceeded = function() {
+      if (this._maxDataSizeExceeded) {
+        return;
+      }
+      if (this.dataSize <= this.maxDataSize) {
+        return;
+      }
+      this._maxDataSizeExceeded = true;
+      var message = "DelayedStream#maxDataSize of " + this.maxDataSize + " bytes exceeded.";
+      this.emit("error", new Error(message));
+    };
+  }
+});
+
+// node_modules/combined-stream/lib/combined_stream.js
+var require_combined_stream = __commonJS({
+  "node_modules/combined-stream/lib/combined_stream.js"(exports2, module2) {
+    var util = require("util");
+    var Stream = require("stream").Stream;
+    var DelayedStream = require_delayed_stream();
+    module2.exports = CombinedStream;
+    function CombinedStream() {
+      this.writable = false;
+      this.readable = true;
+      this.dataSize = 0;
+      this.maxDataSize = 2 * 1024 * 1024;
+      this.pauseStreams = true;
+      this._released = false;
+      this._streams = [];
+      this._currentStream = null;
+      this._insideLoop = false;
+      this._pendingNext = false;
+    }
+    util.inherits(CombinedStream, Stream);
+    CombinedStream.create = function(options) {
+      var combinedStream = new this();
+      options = options || {};
+      for (var option in options) {
+        combinedStream[option] = options[option];
+      }
+      return combinedStream;
+    };
+    CombinedStream.isStreamLike = function(stream) {
+      return typeof stream !== "function" && typeof stream !== "string" && typeof stream !== "boolean" && typeof stream !== "number" && !Buffer.isBuffer(stream);
+    };
+    CombinedStream.prototype.append = function(stream) {
+      var isStreamLike = CombinedStream.isStreamLike(stream);
+      if (isStreamLike) {
+        if (!(stream instanceof DelayedStream)) {
+          var newStream = DelayedStream.create(stream, {
+            maxDataSize: Infinity,
+            pauseStream: this.pauseStreams
+          });
+          stream.on("data", this._checkDataSize.bind(this));
+          stream = newStream;
+        }
+        this._handleErrors(stream);
+        if (this.pauseStreams) {
+          stream.pause();
+        }
+      }
+      this._streams.push(stream);
+      return this;
+    };
+    CombinedStream.prototype.pipe = function(dest, options) {
+      Stream.prototype.pipe.call(this, dest, options);
+      this.resume();
+      return dest;
+    };
+    CombinedStream.prototype._getNext = function() {
+      this._currentStream = null;
+      if (this._insideLoop) {
+        this._pendingNext = true;
+        return;
+      }
+      this._insideLoop = true;
+      try {
+        do {
+          this._pendingNext = false;
+          this._realGetNext();
+        } while (this._pendingNext);
+      } finally {
+        this._insideLoop = false;
+      }
+    };
+    CombinedStream.prototype._realGetNext = function() {
+      var stream = this._streams.shift();
+      if (typeof stream == "undefined") {
+        this.end();
+        return;
+      }
+      if (typeof stream !== "function") {
+        this._pipeNext(stream);
+        return;
+      }
+      var getStream = stream;
+      getStream(function(stream2) {
+        var isStreamLike = CombinedStream.isStreamLike(stream2);
+        if (isStreamLike) {
+          stream2.on("data", this._checkDataSize.bind(this));
+          this._handleErrors(stream2);
+        }
+        this._pipeNext(stream2);
+      }.bind(this));
+    };
+    CombinedStream.prototype._pipeNext = function(stream) {
+      this._currentStream = stream;
+      var isStreamLike = CombinedStream.isStreamLike(stream);
+      if (isStreamLike) {
+        stream.on("end", this._getNext.bind(this));
+        stream.pipe(this, { end: false });
+        return;
+      }
+      var value = stream;
+      this.write(value);
+      this._getNext();
+    };
+    CombinedStream.prototype._handleErrors = function(stream) {
+      var self2 = this;
+      stream.on("error", function(err) {
+        self2._emitError(err);
+      });
+    };
+    CombinedStream.prototype.write = function(data) {
+      this.emit("data", data);
+    };
+    CombinedStream.prototype.pause = function() {
+      if (!this.pauseStreams) {
+        return;
+      }
+      if (this.pauseStreams && this._currentStream && typeof this._currentStream.pause == "function")
+        this._currentStream.pause();
+      this.emit("pause");
+    };
+    CombinedStream.prototype.resume = function() {
+      if (!this._released) {
+        this._released = true;
+        this.writable = true;
+        this._getNext();
+      }
+      if (this.pauseStreams && this._currentStream && typeof this._currentStream.resume == "function")
+        this._currentStream.resume();
+      this.emit("resume");
+    };
+    CombinedStream.prototype.end = function() {
+      this._reset();
+      this.emit("end");
+    };
+    CombinedStream.prototype.destroy = function() {
+      this._reset();
+      this.emit("close");
+    };
+    CombinedStream.prototype._reset = function() {
+      this.writable = false;
+      this._streams = [];
+      this._currentStream = null;
+    };
+    CombinedStream.prototype._checkDataSize = function() {
+      this._updateDataSize();
+      if (this.dataSize <= this.maxDataSize) {
+        return;
+      }
+      var message = "DelayedStream#maxDataSize of " + this.maxDataSize + " bytes exceeded.";
+      this._emitError(new Error(message));
+    };
+    CombinedStream.prototype._updateDataSize = function() {
+      this.dataSize = 0;
+      var self2 = this;
+      this._streams.forEach(function(stream) {
+        if (!stream.dataSize) {
+          return;
+        }
+        self2.dataSize += stream.dataSize;
+      });
+      if (this._currentStream && this._currentStream.dataSize) {
+        this.dataSize += this._currentStream.dataSize;
+      }
+    };
+    CombinedStream.prototype._emitError = function(err) {
+      this._reset();
+      this.emit("error", err);
+    };
+  }
+});
+
+// node_modules/asynckit/lib/defer.js
+var require_defer2 = __commonJS({
+  "node_modules/asynckit/lib/defer.js"(exports2, module2) {
+    module2.exports = defer;
+    function defer(fn) {
+      var nextTick = typeof setImmediate == "function" ? setImmediate : typeof process == "object" && typeof process.nextTick == "function" ? process.nextTick : null;
+      if (nextTick) {
+        nextTick(fn);
+      } else {
+        setTimeout(fn, 0);
+      }
+    }
+  }
+});
+
+// node_modules/asynckit/lib/async.js
+var require_async2 = __commonJS({
+  "node_modules/asynckit/lib/async.js"(exports2, module2) {
+    var defer = require_defer2();
+    module2.exports = async;
+    function async(callback) {
+      var isAsync = false;
+      defer(function() {
+        isAsync = true;
+      });
+      return function async_callback(err, result) {
+        if (isAsync) {
+          callback(err, result);
+        } else {
+          defer(function nextTick_callback() {
+            callback(err, result);
+          });
+        }
+      };
+    }
+  }
+});
+
+// node_modules/asynckit/lib/abort.js
+var require_abort = __commonJS({
+  "node_modules/asynckit/lib/abort.js"(exports2, module2) {
+    module2.exports = abort;
+    function abort(state) {
+      Object.keys(state.jobs).forEach(clean.bind(state));
+      state.jobs = {};
+    }
+    function clean(key) {
+      if (typeof this.jobs[key] == "function") {
+        this.jobs[key]();
+      }
+    }
+  }
+});
+
+// node_modules/asynckit/lib/iterate.js
+var require_iterate = __commonJS({
+  "node_modules/asynckit/lib/iterate.js"(exports2, module2) {
+    var async = require_async2();
+    var abort = require_abort();
+    module2.exports = iterate;
+    function iterate(list, iterator, state, callback) {
+      var key = state["keyedList"] ? state["keyedList"][state.index] : state.index;
+      state.jobs[key] = runJob(iterator, key, list[key], function(error, output) {
+        if (!(key in state.jobs)) {
+          return;
+        }
+        delete state.jobs[key];
+        if (error) {
+          abort(state);
+        } else {
+          state.results[key] = output;
+        }
+        callback(error, state.results);
+      });
+    }
+    function runJob(iterator, key, item, callback) {
+      var aborter;
+      if (iterator.length == 2) {
+        aborter = iterator(item, async(callback));
+      } else {
+        aborter = iterator(item, key, async(callback));
+      }
+      return aborter;
+    }
+  }
+});
+
+// node_modules/asynckit/lib/state.js
+var require_state = __commonJS({
+  "node_modules/asynckit/lib/state.js"(exports2, module2) {
+    module2.exports = state;
+    function state(list, sortMethod) {
+      var isNamedList = !Array.isArray(list), initState = {
+        index: 0,
+        keyedList: isNamedList || sortMethod ? Object.keys(list) : null,
+        jobs: {},
+        results: isNamedList ? {} : [],
+        size: isNamedList ? Object.keys(list).length : list.length
+      };
+      if (sortMethod) {
+        initState.keyedList.sort(isNamedList ? sortMethod : function(a, b) {
+          return sortMethod(list[a], list[b]);
+        });
+      }
+      return initState;
+    }
+  }
+});
+
+// node_modules/asynckit/lib/terminator.js
+var require_terminator = __commonJS({
+  "node_modules/asynckit/lib/terminator.js"(exports2, module2) {
+    var abort = require_abort();
+    var async = require_async2();
+    module2.exports = terminator;
+    function terminator(callback) {
+      if (!Object.keys(this.jobs).length) {
+        return;
+      }
+      this.index = this.size;
+      abort(this);
+      async(callback)(null, this.results);
+    }
+  }
+});
+
+// node_modules/asynckit/parallel.js
+var require_parallel = __commonJS({
+  "node_modules/asynckit/parallel.js"(exports2, module2) {
+    var iterate = require_iterate();
+    var initState = require_state();
+    var terminator = require_terminator();
+    module2.exports = parallel;
+    function parallel(list, iterator, callback) {
+      var state = initState(list);
+      while (state.index < (state["keyedList"] || list).length) {
+        iterate(list, iterator, state, function(error, result) {
+          if (error) {
+            callback(error, result);
+            return;
+          }
+          if (Object.keys(state.jobs).length === 0) {
+            callback(null, state.results);
+            return;
+          }
+        });
+        state.index++;
+      }
+      return terminator.bind(state, callback);
+    }
+  }
+});
+
+// node_modules/asynckit/serialOrdered.js
+var require_serialOrdered = __commonJS({
+  "node_modules/asynckit/serialOrdered.js"(exports2, module2) {
+    var iterate = require_iterate();
+    var initState = require_state();
+    var terminator = require_terminator();
+    module2.exports = serialOrdered;
+    module2.exports.ascending = ascending;
+    module2.exports.descending = descending;
+    function serialOrdered(list, iterator, sortMethod, callback) {
+      var state = initState(list, sortMethod);
+      iterate(list, iterator, state, function iteratorHandler(error, result) {
+        if (error) {
+          callback(error, result);
+          return;
+        }
+        state.index++;
+        if (state.index < (state["keyedList"] || list).length) {
+          iterate(list, iterator, state, iteratorHandler);
+          return;
+        }
+        callback(null, state.results);
+      });
+      return terminator.bind(state, callback);
+    }
+    function ascending(a, b) {
+      return a < b ? -1 : a > b ? 1 : 0;
+    }
+    function descending(a, b) {
+      return -1 * ascending(a, b);
+    }
+  }
+});
+
+// node_modules/asynckit/serial.js
+var require_serial = __commonJS({
+  "node_modules/asynckit/serial.js"(exports2, module2) {
+    var serialOrdered = require_serialOrdered();
+    module2.exports = serial;
+    function serial(list, iterator, callback) {
+      return serialOrdered(list, iterator, null, callback);
+    }
+  }
+});
+
+// node_modules/asynckit/index.js
+var require_asynckit = __commonJS({
+  "node_modules/asynckit/index.js"(exports2, module2) {
+    module2.exports = {
+      parallel: require_parallel(),
+      serial: require_serial(),
+      serialOrdered: require_serialOrdered()
+    };
+  }
+});
+
+// node_modules/form-data/lib/populate.js
+var require_populate = __commonJS({
+  "node_modules/form-data/lib/populate.js"(exports2, module2) {
+    module2.exports = function(dst, src) {
+      Object.keys(src).forEach(function(prop) {
+        dst[prop] = dst[prop] || src[prop];
+      });
+      return dst;
+    };
+  }
+});
+
+// node_modules/form-data/lib/form_data.js
+var require_form_data = __commonJS({
+  "node_modules/form-data/lib/form_data.js"(exports2, module2) {
+    var CombinedStream = require_combined_stream();
+    var util = require("util");
+    var path = require("path");
+    var http2 = require("http");
+    var https = require("https");
+    var parseUrl = require("url").parse;
+    var fs = require("fs");
+    var Stream = require("stream").Stream;
+    var mime = require_mime_types();
+    var asynckit = require_asynckit();
+    var populate = require_populate();
+    module2.exports = FormData2;
+    util.inherits(FormData2, CombinedStream);
+    function FormData2(options) {
+      if (!(this instanceof FormData2)) {
+        return new FormData2(options);
+      }
+      this._overheadLength = 0;
+      this._valueLength = 0;
+      this._valuesToMeasure = [];
+      CombinedStream.call(this);
+      options = options || {};
+      for (var option in options) {
+        this[option] = options[option];
+      }
+    }
+    FormData2.LINE_BREAK = "\r\n";
+    FormData2.DEFAULT_CONTENT_TYPE = "application/octet-stream";
+    FormData2.prototype.append = function(field, value, options) {
+      options = options || {};
+      if (typeof options == "string") {
+        options = { filename: options };
+      }
+      var append = CombinedStream.prototype.append.bind(this);
+      if (typeof value == "number") {
+        value = "" + value;
+      }
+      if (util.isArray(value)) {
+        this._error(new Error("Arrays are not supported."));
+        return;
+      }
+      var header = this._multiPartHeader(field, value, options);
+      var footer = this._multiPartFooter();
+      append(header);
+      append(value);
+      append(footer);
+      this._trackLength(header, value, options);
+    };
+    FormData2.prototype._trackLength = function(header, value, options) {
+      var valueLength = 0;
+      if (options.knownLength != null) {
+        valueLength += +options.knownLength;
+      } else if (Buffer.isBuffer(value)) {
+        valueLength = value.length;
+      } else if (typeof value === "string") {
+        valueLength = Buffer.byteLength(value);
+      }
+      this._valueLength += valueLength;
+      this._overheadLength += Buffer.byteLength(header) + FormData2.LINE_BREAK.length;
+      if (!value || !value.path && !(value.readable && value.hasOwnProperty("httpVersion")) && !(value instanceof Stream)) {
+        return;
+      }
+      if (!options.knownLength) {
+        this._valuesToMeasure.push(value);
+      }
+    };
+    FormData2.prototype._lengthRetriever = function(value, callback) {
+      if (value.hasOwnProperty("fd")) {
+        if (value.end != void 0 && value.end != Infinity && value.start != void 0) {
+          callback(null, value.end + 1 - (value.start ? value.start : 0));
+        } else {
+          fs.stat(value.path, function(err, stat) {
+            var fileSize;
+            if (err) {
+              callback(err);
+              return;
+            }
+            fileSize = stat.size - (value.start ? value.start : 0);
+            callback(null, fileSize);
+          });
+        }
+      } else if (value.hasOwnProperty("httpVersion")) {
+        callback(null, +value.headers["content-length"]);
+      } else if (value.hasOwnProperty("httpModule")) {
+        value.on("response", function(response) {
+          value.pause();
+          callback(null, +response.headers["content-length"]);
+        });
+        value.resume();
+      } else {
+        callback("Unknown stream");
+      }
+    };
+    FormData2.prototype._multiPartHeader = function(field, value, options) {
+      if (typeof options.header == "string") {
+        return options.header;
+      }
+      var contentDisposition = this._getContentDisposition(value, options);
+      var contentType = this._getContentType(value, options);
+      var contents = "";
+      var headers = {
+        "Content-Disposition": ["form-data", 'name="' + field + '"'].concat(contentDisposition || []),
+        "Content-Type": [].concat(contentType || [])
+      };
+      if (typeof options.header == "object") {
+        populate(headers, options.header);
+      }
+      var header;
+      for (var prop in headers) {
+        if (!headers.hasOwnProperty(prop))
+          continue;
+        header = headers[prop];
+        if (header == null) {
+          continue;
+        }
+        if (!Array.isArray(header)) {
+          header = [header];
+        }
+        if (header.length) {
+          contents += prop + ": " + header.join("; ") + FormData2.LINE_BREAK;
+        }
+      }
+      return "--" + this.getBoundary() + FormData2.LINE_BREAK + contents + FormData2.LINE_BREAK;
+    };
+    FormData2.prototype._getContentDisposition = function(value, options) {
+      var filename, contentDisposition;
+      if (typeof options.filepath === "string") {
+        filename = path.normalize(options.filepath).replace(/\\/g, "/");
+      } else if (options.filename || value.name || value.path) {
+        filename = path.basename(options.filename || value.name || value.path);
+      } else if (value.readable && value.hasOwnProperty("httpVersion")) {
+        filename = path.basename(value.client._httpMessage.path || "");
+      }
+      if (filename) {
+        contentDisposition = 'filename="' + filename + '"';
+      }
+      return contentDisposition;
+    };
+    FormData2.prototype._getContentType = function(value, options) {
+      var contentType = options.contentType;
+      if (!contentType && value.name) {
+        contentType = mime.lookup(value.name);
+      }
+      if (!contentType && value.path) {
+        contentType = mime.lookup(value.path);
+      }
+      if (!contentType && value.readable && value.hasOwnProperty("httpVersion")) {
+        contentType = value.headers["content-type"];
+      }
+      if (!contentType && (options.filepath || options.filename)) {
+        contentType = mime.lookup(options.filepath || options.filename);
+      }
+      if (!contentType && typeof value == "object") {
+        contentType = FormData2.DEFAULT_CONTENT_TYPE;
+      }
+      return contentType;
+    };
+    FormData2.prototype._multiPartFooter = function() {
+      return function(next) {
+        var footer = FormData2.LINE_BREAK;
+        var lastPart = this._streams.length === 0;
+        if (lastPart) {
+          footer += this._lastBoundary();
+        }
+        next(footer);
+      }.bind(this);
+    };
+    FormData2.prototype._lastBoundary = function() {
+      return "--" + this.getBoundary() + "--" + FormData2.LINE_BREAK;
+    };
+    FormData2.prototype.getHeaders = function(userHeaders) {
+      var header;
+      var formHeaders = {
+        "content-type": "multipart/form-data; boundary=" + this.getBoundary()
+      };
+      for (header in userHeaders) {
+        if (userHeaders.hasOwnProperty(header)) {
+          formHeaders[header.toLowerCase()] = userHeaders[header];
+        }
+      }
+      return formHeaders;
+    };
+    FormData2.prototype.setBoundary = function(boundary) {
+      this._boundary = boundary;
+    };
+    FormData2.prototype.getBoundary = function() {
+      if (!this._boundary) {
+        this._generateBoundary();
+      }
+      return this._boundary;
+    };
+    FormData2.prototype.getBuffer = function() {
+      var dataBuffer = new Buffer.alloc(0);
+      var boundary = this.getBoundary();
+      for (var i = 0, len = this._streams.length; i < len; i++) {
+        if (typeof this._streams[i] !== "function") {
+          if (Buffer.isBuffer(this._streams[i])) {
+            dataBuffer = Buffer.concat([dataBuffer, this._streams[i]]);
+          } else {
+            dataBuffer = Buffer.concat([dataBuffer, Buffer.from(this._streams[i])]);
+          }
+          if (typeof this._streams[i] !== "string" || this._streams[i].substring(2, boundary.length + 2) !== boundary) {
+            dataBuffer = Buffer.concat([dataBuffer, Buffer.from(FormData2.LINE_BREAK)]);
+          }
+        }
+      }
+      return Buffer.concat([dataBuffer, Buffer.from(this._lastBoundary())]);
+    };
+    FormData2.prototype._generateBoundary = function() {
+      var boundary = "--------------------------";
+      for (var i = 0; i < 24; i++) {
+        boundary += Math.floor(Math.random() * 10).toString(16);
+      }
+      this._boundary = boundary;
+    };
+    FormData2.prototype.getLengthSync = function() {
+      var knownLength = this._overheadLength + this._valueLength;
+      if (this._streams.length) {
+        knownLength += this._lastBoundary().length;
+      }
+      if (!this.hasKnownLength()) {
+        this._error(new Error("Cannot calculate proper length in synchronous way."));
+      }
+      return knownLength;
+    };
+    FormData2.prototype.hasKnownLength = function() {
+      var hasKnownLength = true;
+      if (this._valuesToMeasure.length) {
+        hasKnownLength = false;
+      }
+      return hasKnownLength;
+    };
+    FormData2.prototype.getLength = function(cb) {
+      var knownLength = this._overheadLength + this._valueLength;
+      if (this._streams.length) {
+        knownLength += this._lastBoundary().length;
+      }
+      if (!this._valuesToMeasure.length) {
+        process.nextTick(cb.bind(this, null, knownLength));
+        return;
+      }
+      asynckit.parallel(this._valuesToMeasure, this._lengthRetriever, function(err, values) {
+        if (err) {
+          cb(err);
+          return;
+        }
+        values.forEach(function(length) {
+          knownLength += length;
+        });
+        cb(null, knownLength);
+      });
+    };
+    FormData2.prototype.submit = function(params, cb) {
+      var request, options, defaults = { method: "post" };
+      if (typeof params == "string") {
+        params = parseUrl(params);
+        options = populate({
+          port: params.port,
+          path: params.pathname,
+          host: params.hostname,
+          protocol: params.protocol
+        }, defaults);
+      } else {
+        options = populate(params, defaults);
+        if (!options.port) {
+          options.port = options.protocol == "https:" ? 443 : 80;
+        }
+      }
+      options.headers = this.getHeaders(params.headers);
+      if (options.protocol == "https:") {
+        request = https.request(options);
+      } else {
+        request = http2.request(options);
+      }
+      this.getLength(function(err, length) {
+        if (err && err !== "Unknown stream") {
+          this._error(err);
+          return;
+        }
+        if (length) {
+          request.setHeader("Content-Length", length);
+        }
+        this.pipe(request);
+        if (cb) {
+          var onResponse;
+          var callback = function(error, responce) {
+            request.removeListener("error", callback);
+            request.removeListener("response", onResponse);
+            return cb.call(this, error, responce);
+          };
+          onResponse = callback.bind(this, null);
+          request.on("error", callback);
+          request.on("response", onResponse);
+        }
+      }.bind(this));
+      return request;
+    };
+    FormData2.prototype._error = function(err) {
+      if (!this.error) {
+        this.error = err;
+        this.pause();
+        this.emit("error", err);
+      }
+    };
+    FormData2.prototype.toString = function() {
+      return "[object FormData]";
+    };
+  }
+});
+
+// node_modules/axios/lib/defaults/env/FormData.js
+var require_FormData = __commonJS({
+  "node_modules/axios/lib/defaults/env/FormData.js"(exports2, module2) {
+    module2.exports = require_form_data();
+  }
+});
+
+// node_modules/axios/lib/defaults/index.js
 var require_defaults3 = __commonJS({
-  "node_modules/axios/lib/defaults.js"(exports2, module2) {
+  "node_modules/axios/lib/defaults/index.js"(exports2, module2) {
     "use strict";
-    var utils = require_utils5();
+    var utils = require_utils8();
     var normalizeHeaderName = require_normalizeHeaderName();
-    var enhanceError = require_enhanceError();
+    var AxiosError = require_AxiosError();
+    var transitionalDefaults = require_transitional();
+    var toFormData = require_toFormData();
     var DEFAULT_CONTENT_TYPE = {
       "Content-Type": "application/x-www-form-urlencoded"
     };
@@ -51722,11 +61466,7 @@ var require_defaults3 = __commonJS({
       return (encoder || JSON.stringify)(rawValue);
     }
     var defaults = {
-      transitional: {
-        silentJSONParsing: true,
-        forcedJSONParsing: true,
-        clarifyTimeoutError: false
-      },
+      transitional: transitionalDefaults,
       adapter: getDefaultAdapter(),
       transformRequest: [function transformRequest(data, headers) {
         normalizeHeaderName(headers, "Accept");
@@ -51741,7 +61481,13 @@ var require_defaults3 = __commonJS({
           setContentTypeIfUnset(headers, "application/x-www-form-urlencoded;charset=utf-8");
           return data.toString();
         }
-        if (utils.isObject(data) || headers && headers["Content-Type"] === "application/json") {
+        var isObjectPayload = utils.isObject(data);
+        var contentType = headers && headers["Content-Type"];
+        var isFileList;
+        if ((isFileList = utils.isFileList(data)) || isObjectPayload && contentType === "multipart/form-data") {
+          var _FormData = this.env && this.env.FormData;
+          return toFormData(isFileList ? { "files[]": data } : data, _FormData && new _FormData());
+        } else if (isObjectPayload || contentType === "application/json") {
           setContentTypeIfUnset(headers, "application/json");
           return stringifySafely(data);
         }
@@ -51758,7 +61504,7 @@ var require_defaults3 = __commonJS({
           } catch (e) {
             if (strictJSONParsing) {
               if (e.name === "SyntaxError") {
-                throw enhanceError(e, this, "E_JSON_PARSE");
+                throw AxiosError.from(e, AxiosError.ERR_BAD_RESPONSE, this, null, this.response);
               }
               throw e;
             }
@@ -51771,6 +61517,9 @@ var require_defaults3 = __commonJS({
       xsrfHeaderName: "X-XSRF-TOKEN",
       maxContentLength: -1,
       maxBodyLength: -1,
+      env: {
+        FormData: require_FormData()
+      },
       validateStatus: function validateStatus(status) {
         return status >= 200 && status < 300;
       },
@@ -51794,12 +61543,12 @@ var require_defaults3 = __commonJS({
 var require_transformData = __commonJS({
   "node_modules/axios/lib/core/transformData.js"(exports2, module2) {
     "use strict";
-    var utils = require_utils5();
+    var utils = require_utils8();
     var defaults = require_defaults3();
     module2.exports = function transformData(data, headers, fns) {
       var context = this || defaults;
-      utils.forEach(fns, function transform(fn2) {
-        data = fn2.call(context, data, headers);
+      utils.forEach(fns, function transform(fn) {
+        data = fn.call(context, data, headers);
       });
       return data;
     };
@@ -51820,17 +61569,17 @@ var require_isCancel = __commonJS({
 var require_dispatchRequest = __commonJS({
   "node_modules/axios/lib/core/dispatchRequest.js"(exports2, module2) {
     "use strict";
-    var utils = require_utils5();
+    var utils = require_utils8();
     var transformData = require_transformData();
     var isCancel = require_isCancel();
     var defaults = require_defaults3();
-    var Cancel = require_Cancel();
+    var CanceledError = require_CanceledError();
     function throwIfCancellationRequested(config) {
       if (config.cancelToken) {
         config.cancelToken.throwIfRequested();
       }
       if (config.signal && config.signal.aborted) {
-        throw new Cancel("canceled");
+        throw new CanceledError();
       }
     }
     module2.exports = function dispatchRequest(config) {
@@ -51863,7 +61612,7 @@ var require_dispatchRequest = __commonJS({
 var require_mergeConfig = __commonJS({
   "node_modules/axios/lib/core/mergeConfig.js"(exports2, module2) {
     "use strict";
-    var utils = require_utils5();
+    var utils = require_utils8();
     module2.exports = function mergeConfig(config1, config2) {
       config2 = config2 || {};
       var config = {};
@@ -51923,6 +61672,7 @@ var require_mergeConfig = __commonJS({
         "decompress": defaultToConfig2,
         "maxContentLength": defaultToConfig2,
         "maxBodyLength": defaultToConfig2,
+        "beforeRedirect": defaultToConfig2,
         "transport": defaultToConfig2,
         "httpAgent": defaultToConfig2,
         "httpsAgent": defaultToConfig2,
@@ -51946,6 +61696,7 @@ var require_validator = __commonJS({
   "node_modules/axios/lib/helpers/validator.js"(exports2, module2) {
     "use strict";
     var VERSION = require_data().version;
+    var AxiosError = require_AxiosError();
     var validators = {};
     ["object", "boolean", "number", "function", "string", "symbol"].forEach(function(type, i) {
       validators[type] = function validator(thing) {
@@ -51953,13 +61704,13 @@ var require_validator = __commonJS({
       };
     });
     var deprecatedWarnings = {};
-    validators.transitional = function transitional(validator, version, message2) {
+    validators.transitional = function transitional(validator, version, message) {
       function formatMessage(opt, desc) {
-        return "[Axios v" + VERSION + "] Transitional option '" + opt + "'" + desc + (message2 ? ". " + message2 : "");
+        return "[Axios v" + VERSION + "] Transitional option '" + opt + "'" + desc + (message ? ". " + message : "");
       }
       return function(value, opt, opts) {
         if (validator === false) {
-          throw new Error(formatMessage(opt, " has been removed" + (version ? " in " + version : "")));
+          throw new AxiosError(formatMessage(opt, " has been removed" + (version ? " in " + version : "")), AxiosError.ERR_DEPRECATED);
         }
         if (version && !deprecatedWarnings[opt]) {
           deprecatedWarnings[opt] = true;
@@ -51970,7 +61721,7 @@ var require_validator = __commonJS({
     };
     function assertOptions(options, schema, allowUnknown) {
       if (typeof options !== "object") {
-        throw new TypeError("options must be an object");
+        throw new AxiosError("options must be an object", AxiosError.ERR_BAD_OPTION_VALUE);
       }
       var keys = Object.keys(options);
       var i = keys.length;
@@ -51981,12 +61732,12 @@ var require_validator = __commonJS({
           var value = options[opt];
           var result = value === void 0 || validator(value, opt, options);
           if (result !== true) {
-            throw new TypeError("option " + opt + " must be " + result);
+            throw new AxiosError("option " + opt + " must be " + result, AxiosError.ERR_BAD_OPTION_VALUE);
           }
           continue;
         }
         if (allowUnknown !== true) {
-          throw Error("Unknown option " + opt);
+          throw new AxiosError("Unknown option " + opt, AxiosError.ERR_BAD_OPTION);
         }
       }
     }
@@ -52001,11 +61752,12 @@ var require_validator = __commonJS({
 var require_Axios = __commonJS({
   "node_modules/axios/lib/core/Axios.js"(exports2, module2) {
     "use strict";
-    var utils = require_utils5();
+    var utils = require_utils8();
     var buildURL = require_buildURL();
     var InterceptorManager = require_InterceptorManager();
     var dispatchRequest = require_dispatchRequest();
     var mergeConfig = require_mergeConfig();
+    var buildFullPath = require_buildFullPath();
     var validator = require_validator();
     var validators = validator.validators;
     function Axios(instanceConfig) {
@@ -52015,12 +61767,12 @@ var require_Axios = __commonJS({
         response: new InterceptorManager()
       };
     }
-    Axios.prototype.request = function request(config) {
-      if (typeof config === "string") {
-        config = arguments[1] || {};
-        config.url = arguments[0];
-      } else {
+    Axios.prototype.request = function request(configOrUrl, config) {
+      if (typeof configOrUrl === "string") {
         config = config || {};
+        config.url = configOrUrl;
+      } else {
+        config = configOrUrl || {};
       }
       config = mergeConfig(this.defaults, config);
       if (config.method) {
@@ -52085,7 +61837,8 @@ var require_Axios = __commonJS({
     };
     Axios.prototype.getUri = function getUri(config) {
       config = mergeConfig(this.defaults, config);
-      return buildURL(config.url, config.params, config.paramsSerializer).replace(/^\?/, "");
+      var fullPath = buildFullPath(config.baseURL, config.url);
+      return buildURL(fullPath, config.params, config.paramsSerializer);
     };
     utils.forEach(["delete", "get", "head", "options"], function forEachMethodNoData(method) {
       Axios.prototype[method] = function(url, config) {
@@ -52097,13 +61850,20 @@ var require_Axios = __commonJS({
       };
     });
     utils.forEach(["post", "put", "patch"], function forEachMethodWithData(method) {
-      Axios.prototype[method] = function(url, data, config) {
-        return this.request(mergeConfig(config || {}, {
-          method,
-          url,
-          data
-        }));
-      };
+      function generateHTTPMethod(isForm) {
+        return function httpMethod(url, data, config) {
+          return this.request(mergeConfig(config || {}, {
+            method,
+            headers: isForm ? {
+              "Content-Type": "multipart/form-data"
+            } : {},
+            url,
+            data
+          }));
+        };
+      }
+      Axios.prototype[method] = generateHTTPMethod();
+      Axios.prototype[method + "Form"] = generateHTTPMethod(true);
     });
     module2.exports = Axios;
   }
@@ -52113,7 +61873,7 @@ var require_Axios = __commonJS({
 var require_CancelToken = __commonJS({
   "node_modules/axios/lib/cancel/CancelToken.js"(exports2, module2) {
     "use strict";
-    var Cancel = require_Cancel();
+    var CanceledError = require_CanceledError();
     function CancelToken(executor) {
       if (typeof executor !== "function") {
         throw new TypeError("executor must be a function.");
@@ -52144,11 +61904,11 @@ var require_CancelToken = __commonJS({
         };
         return promise;
       };
-      executor(function cancel(message2) {
+      executor(function cancel(message) {
         if (token.reason) {
           return;
         }
-        token.reason = new Cancel(message2);
+        token.reason = new CanceledError(message);
         resolvePromise(token.reason);
       });
     }
@@ -52207,8 +61967,9 @@ var require_spread = __commonJS({
 var require_isAxiosError = __commonJS({
   "node_modules/axios/lib/helpers/isAxiosError.js"(exports2, module2) {
     "use strict";
+    var utils = require_utils8();
     module2.exports = function isAxiosError(payload) {
-      return typeof payload === "object" && payload.isAxiosError === true;
+      return utils.isObject(payload) && payload.isAxiosError === true;
     };
   }
 });
@@ -52217,7 +61978,7 @@ var require_isAxiosError = __commonJS({
 var require_axios = __commonJS({
   "node_modules/axios/lib/axios.js"(exports2, module2) {
     "use strict";
-    var utils = require_utils5();
+    var utils = require_utils8();
     var bind = require_bind();
     var Axios = require_Axios();
     var mergeConfig = require_mergeConfig();
@@ -52234,10 +61995,13 @@ var require_axios = __commonJS({
     }
     var axios2 = createInstance(defaults);
     axios2.Axios = Axios;
-    axios2.Cancel = require_Cancel();
+    axios2.CanceledError = require_CanceledError();
     axios2.CancelToken = require_CancelToken();
     axios2.isCancel = require_isCancel();
     axios2.VERSION = require_data().version;
+    axios2.toFormData = require_toFormData();
+    axios2.AxiosError = require_AxiosError();
+    axios2.Cancel = axios2.CanceledError;
     axios2.all = function all(promises) {
       return Promise.all(promises);
     };
@@ -52261,70 +62025,78 @@ var require_main = __commonJS({
     var fs = require("fs");
     var path = require("path");
     var os = require("os");
-    function log2(message2) {
-      console.log(`[dotenv][DEBUG] ${message2}`);
-    }
-    var NEWLINE = "\n";
-    var RE_INI_KEY_VAL = /^\s*([\w.-]+)\s*=\s*(.*)?\s*$/;
-    var RE_NEWLINES = /\\n/g;
-    var NEWLINES_MATCH = /\r\n|\n|\r/;
-    function parse(src, options) {
-      const debug = Boolean(options && options.debug);
+    var LINE = /(?:^|^)\s*(?:export\s+)?([\w.-]+)(?:\s*=\s*?|:\s+?)(\s*'(?:\\'|[^'])*'|\s*"(?:\\"|[^"])*"|\s*`(?:\\`|[^`])*`|[^#\r\n]+)?\s*(?:#.*)?(?:$|$)/mg;
+    function parse(src) {
       const obj = {};
-      src.toString().split(NEWLINES_MATCH).forEach(function(line, idx) {
-        const keyValueArr = line.match(RE_INI_KEY_VAL);
-        if (keyValueArr != null) {
-          const key = keyValueArr[1];
-          let val = keyValueArr[2] || "";
-          const end = val.length - 1;
-          const isDoubleQuoted = val[0] === '"' && val[end] === '"';
-          const isSingleQuoted = val[0] === "'" && val[end] === "'";
-          if (isSingleQuoted || isDoubleQuoted) {
-            val = val.substring(1, end);
-            if (isDoubleQuoted) {
-              val = val.replace(RE_NEWLINES, NEWLINE);
-            }
-          } else {
-            val = val.trim();
-          }
-          obj[key] = val;
-        } else if (debug) {
-          log2(`did not match key and value when parsing line ${idx + 1}: ${line}`);
+      let lines = src.toString();
+      lines = lines.replace(/\r\n?/mg, "\n");
+      let match;
+      while ((match = LINE.exec(lines)) != null) {
+        const key = match[1];
+        let value = match[2] || "";
+        value = value.trim();
+        const maybeQuote = value[0];
+        value = value.replace(/^(['"`])([\s\S]*)\1$/mg, "$2");
+        if (maybeQuote === '"') {
+          value = value.replace(/\\n/g, "\n");
+          value = value.replace(/\\r/g, "\r");
         }
-      });
+        obj[key] = value;
+      }
       return obj;
     }
-    function resolveHome(envPath) {
+    function _log(message) {
+      console.log(`[dotenv][DEBUG] ${message}`);
+    }
+    function _resolveHome(envPath) {
       return envPath[0] === "~" ? path.join(os.homedir(), envPath.slice(1)) : envPath;
     }
     function config(options) {
       let dotenvPath = path.resolve(process.cwd(), ".env");
       let encoding = "utf8";
       const debug = Boolean(options && options.debug);
+      const override = Boolean(options && options.override);
       if (options) {
         if (options.path != null) {
-          dotenvPath = resolveHome(options.path);
+          dotenvPath = _resolveHome(options.path);
         }
         if (options.encoding != null) {
           encoding = options.encoding;
         }
       }
       try {
-        const parsed = parse(fs.readFileSync(dotenvPath, { encoding }), { debug });
+        const parsed = DotenvModule.parse(fs.readFileSync(dotenvPath, { encoding }));
         Object.keys(parsed).forEach(function(key) {
           if (!Object.prototype.hasOwnProperty.call(process.env, key)) {
             process.env[key] = parsed[key];
-          } else if (debug) {
-            log2(`"${key}" is already defined in \`process.env\` and will not be overwritten`);
+          } else {
+            if (override === true) {
+              process.env[key] = parsed[key];
+            }
+            if (debug) {
+              if (override === true) {
+                _log(`"${key}" is already defined in \`process.env\` and WAS overwritten`);
+              } else {
+                _log(`"${key}" is already defined in \`process.env\` and was NOT overwritten`);
+              }
+            }
           }
         });
         return { parsed };
       } catch (e) {
+        if (debug) {
+          _log(`Failed to load ${dotenvPath} ${e.message}`);
+        }
         return { error: e };
       }
     }
-    module2.exports.config = config;
-    module2.exports.parse = parse;
+    var DotenvModule = {
+      config,
+      parse
+    };
+    module2.exports.config = DotenvModule.config;
+    module2.exports.parse = DotenvModule.parse;
+    module2.exports = DotenvModule;
   }
 });
 
@@ -52358,9 +62130,9 @@ var require_requiredArgs = __commonJS({
       value: true
     });
     exports2.default = requiredArgs;
-    function requiredArgs(required, args2) {
-      if (args2.length < required) {
-        throw new TypeError(required + " argument" + (required > 1 ? "s" : "") + " required, but only " + args2.length + " present");
+    function requiredArgs(required, args) {
+      if (args.length < required) {
+        throw new TypeError(required + " argument" + (required > 1 ? "s" : "") + " required, but only " + args.length + " present");
       }
     }
     module2.exports = exports2.default;
@@ -54919,11 +64691,11 @@ var require_buildFormatLongFn = __commonJS({
       value: true
     });
     exports2.default = buildFormatLongFn;
-    function buildFormatLongFn(args2) {
+    function buildFormatLongFn(args) {
       return function() {
         var options = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
-        var width = options.width ? String(options.width) : args2.defaultWidth;
-        var format2 = args2.formats[width] || args2.formats[args2.defaultWidth];
+        var width = options.width ? String(options.width) : args.defaultWidth;
+        var format2 = args.formats[width] || args.formats[args.defaultWidth];
         return format2;
       };
     }
@@ -55014,21 +64786,21 @@ var require_buildLocalizeFn = __commonJS({
       value: true
     });
     exports2.default = buildLocalizeFn;
-    function buildLocalizeFn(args2) {
+    function buildLocalizeFn(args) {
       return function(dirtyIndex, dirtyOptions) {
         var options = dirtyOptions || {};
         var context = options.context ? String(options.context) : "standalone";
         var valuesArray;
-        if (context === "formatting" && args2.formattingValues) {
-          var defaultWidth = args2.defaultFormattingWidth || args2.defaultWidth;
+        if (context === "formatting" && args.formattingValues) {
+          var defaultWidth = args.defaultFormattingWidth || args.defaultWidth;
           var width = options.width ? String(options.width) : defaultWidth;
-          valuesArray = args2.formattingValues[width] || args2.formattingValues[defaultWidth];
+          valuesArray = args.formattingValues[width] || args.formattingValues[defaultWidth];
         } else {
-          var _defaultWidth = args2.defaultWidth;
-          var _width = options.width ? String(options.width) : args2.defaultWidth;
-          valuesArray = args2.values[_width] || args2.values[_defaultWidth];
+          var _defaultWidth = args.defaultWidth;
+          var _width = options.width ? String(options.width) : args.defaultWidth;
+          valuesArray = args.values[_width] || args.values[_defaultWidth];
         }
-        var index = args2.argumentCallback ? args2.argumentCallback(dirtyIndex) : dirtyIndex;
+        var index = args.argumentCallback ? args.argumentCallback(dirtyIndex) : dirtyIndex;
         return valuesArray[index];
       };
     }
@@ -55190,24 +64962,24 @@ var require_buildMatchFn = __commonJS({
       value: true
     });
     exports2.default = buildMatchFn;
-    function buildMatchFn(args2) {
+    function buildMatchFn(args) {
       return function(string) {
         var options = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
         var width = options.width;
-        var matchPattern = width && args2.matchPatterns[width] || args2.matchPatterns[args2.defaultMatchWidth];
+        var matchPattern = width && args.matchPatterns[width] || args.matchPatterns[args.defaultMatchWidth];
         var matchResult = string.match(matchPattern);
         if (!matchResult) {
           return null;
         }
         var matchedString = matchResult[0];
-        var parsePatterns = width && args2.parsePatterns[width] || args2.parsePatterns[args2.defaultParseWidth];
+        var parsePatterns = width && args.parsePatterns[width] || args.parsePatterns[args.defaultParseWidth];
         var key = Array.isArray(parsePatterns) ? findIndex(parsePatterns, function(pattern) {
           return pattern.test(matchedString);
         }) : findKey(parsePatterns, function(pattern) {
           return pattern.test(matchedString);
         });
         var value;
-        value = args2.valueCallback ? args2.valueCallback(key) : key;
+        value = args.valueCallback ? args.valueCallback(key) : key;
         value = options.valueCallback ? options.valueCallback(value) : value;
         var rest = string.slice(matchedString.length);
         return {
@@ -55244,17 +65016,17 @@ var require_buildMatchPatternFn = __commonJS({
       value: true
     });
     exports2.default = buildMatchPatternFn;
-    function buildMatchPatternFn(args2) {
+    function buildMatchPatternFn(args) {
       return function(string) {
         var options = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
-        var matchResult = string.match(args2.matchPattern);
+        var matchResult = string.match(args.matchPattern);
         if (!matchResult)
           return null;
         var matchedString = matchResult[0];
-        var parseResult = string.match(args2.parsePattern);
+        var parseResult = string.match(args.parsePattern);
         if (!parseResult)
           return null;
-        var value = args2.valueCallback ? args2.valueCallback(parseResult[0]) : parseResult[0];
+        var value = args.valueCallback ? args.valueCallback(parseResult[0]) : parseResult[0];
         value = options.valueCallback ? options.valueCallback(value) : value;
         var rest = string.slice(matchedString.length);
         return {
@@ -64388,10 +74160,9 @@ var { Server, Namespace, Socket } = import_dist.default;
 var import_body_parser = __toESM(require_body_parser());
 var import_cors = __toESM(require_lib3());
 var import_knex = __toESM(require_knex());
-var import_postgres = __toESM(require_postgres());
 
 // ../node_modules/nanoid/index.js
-var import_crypto = __toESM(require("crypto"), 1);
+var import_crypto = require("crypto");
 
 // ../node_modules/nanoid/url-alphabet/index.js
 var urlAlphabet = "useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZbfghjklqvwyzrict";
@@ -64403,10 +74174,10 @@ var poolOffset;
 var fillPool = (bytes) => {
   if (!pool || pool.length < bytes) {
     pool = Buffer.allocUnsafe(bytes * POOL_SIZE_MULTIPLIER);
-    import_crypto.default.randomFillSync(pool);
+    (0, import_crypto.randomFillSync)(pool);
     poolOffset = 0;
   } else if (poolOffset + bytes > pool.length) {
-    import_crypto.default.randomFillSync(pool);
+    (0, import_crypto.randomFillSync)(pool);
     poolOffset = 0;
   }
   poolOffset += bytes;
@@ -64525,7 +74296,8 @@ var MemoryStore = class {
     }
   }
   async increment(key) {
-    const totalHits = (this.hits[key] ?? 0) + 1;
+    var _a;
+    const totalHits = ((_a = this.hits[key]) != null ? _a : 0) + 1;
     this.hits[key] = totalHits;
     return {
       totalHits,
@@ -64563,60 +74335,61 @@ var promisifyStore = (passedStore) => {
       });
     }
     async decrement(key) {
-      return Promise.resolve(legacyStore.decrement(key));
+      return legacyStore.decrement(key);
     }
     async resetKey(key) {
-      return Promise.resolve(legacyStore.resetKey(key));
+      return legacyStore.resetKey(key);
     }
     async resetAll() {
       if (typeof legacyStore.resetAll === "function")
-        return Promise.resolve(legacyStore.resetAll());
+        return legacyStore.resetAll();
     }
   }
   return new PromisifiedStore();
 };
 var parseOptions = (passedOptions) => {
-  const options = {
+  var _a, _b, _c;
+  const notUndefinedOptions = omitUndefinedOptions(passedOptions);
+  const config = {
     windowMs: 60 * 1e3,
-    store: new MemoryStore(),
     max: 5,
     message: "Too many requests, please try again later.",
     statusCode: 429,
-    legacyHeaders: passedOptions.headers ?? true,
-    standardHeaders: passedOptions.draft_polli_ratelimit_headers ?? false,
+    legacyHeaders: (_a = passedOptions.headers) != null ? _a : true,
+    standardHeaders: (_b = passedOptions.draft_polli_ratelimit_headers) != null ? _b : false,
     requestPropertyName: "rateLimit",
     skipFailedRequests: false,
     skipSuccessfulRequests: false,
     requestWasSuccessful: (_request, response) => response.statusCode < 400,
     skip: (_request, _response) => false,
-    keyGenerator: (request, _response) => {
+    keyGenerator(request, _response) {
       if (!request.ip) {
         console.error("WARN | `express-rate-limit` | `request.ip` is undefined. You can avoid this by providing a custom `keyGenerator` function, but it may be indicative of a larger issue.");
       }
       return request.ip;
     },
-    handler: (_request, response, _next, _optionsUsed) => {
-      response.status(options.statusCode).send(options.message);
+    handler(_request, response, _next, _optionsUsed) {
+      response.status(config.statusCode).send(config.message);
     },
-    onLimitReached: (_request, _response, _optionsUsed) => {
+    onLimitReached(_request, _response, _optionsUsed) {
     },
-    ...passedOptions
+    ...notUndefinedOptions,
+    store: promisifyStore((_c = notUndefinedOptions.store) != null ? _c : new MemoryStore())
   };
-  if (typeof options.store.incr !== "function" && typeof options.store.increment !== "function" || typeof options.store.decrement !== "function" || typeof options.store.resetKey !== "function" || typeof options.store.resetAll !== "undefined" && typeof options.store.resetAll !== "function" || typeof options.store.init !== "undefined" && typeof options.store.init !== "function") {
+  if (typeof config.store.increment !== "function" || typeof config.store.decrement !== "function" || typeof config.store.resetKey !== "function" || typeof config.store.resetAll !== "undefined" && typeof config.store.resetAll !== "function" || typeof config.store.init !== "undefined" && typeof config.store.init !== "function") {
     throw new TypeError("An invalid store was passed. Please ensure that the store is a class that implements the `Store` interface.");
   }
-  options.store = promisifyStore(options.store);
-  return options;
+  return config;
 };
-var handleAsyncErrors = (fn2) => async (request, response, next) => {
+var handleAsyncErrors = (fn) => async (request, response, next) => {
   try {
-    await Promise.resolve(fn2(request, response, next)).catch(next);
+    await Promise.resolve(fn(request, response, next)).catch(next);
   } catch (error) {
     next(error);
   }
 };
 var rateLimit = (passedOptions) => {
-  const options = parseOptions(passedOptions ?? {});
+  const options = parseOptions(passedOptions != null ? passedOptions : {});
   if (typeof options.store.init === "function")
     options.store.init(options);
   const middleware = handleAsyncErrors(async (request, response, next) => {
@@ -64694,6 +74467,16 @@ var rateLimit = (passedOptions) => {
   });
   middleware.resetKey = options.store.resetKey.bind(options.store);
   return middleware;
+};
+var omitUndefinedOptions = (passedOptions) => {
+  const omittedOptions = {};
+  for (const k of Object.keys(passedOptions)) {
+    const key = k;
+    if (passedOptions[key] !== void 0) {
+      omittedOptions[key] = passedOptions[key];
+    }
+  }
+  return omittedOptions;
 };
 var lib_default = rateLimit;
 
@@ -65076,7 +74859,7 @@ app.use(import_body_parser.default.json({
 }));
 app.use((0, import_cors.default)(corsSettings));
 var knex = (0, import_knex.default)({
-  client: import_postgres.default,
+  client: "pg",
   connection: __spreadValues({
     connectionString: process.env.DATABASE_URL || "postgres://127.0.0.1:5432/postgres"
   }, process.env.DATABASE_URL && {
@@ -65263,27 +75046,13 @@ object-assign
  */
 /*!
  * depd
- * Copyright(c) 2014 Douglas Christopher Wilson
- * MIT Licensed
- */
-/*!
- * depd
- * Copyright(c) 2014-2015 Douglas Christopher Wilson
- * MIT Licensed
- */
-/*!
- * depd
- * Copyright(c) 2014-2017 Douglas Christopher Wilson
- * MIT Licensed
- */
-/*!
- * depd
- * Copyright(c) 2015 Douglas Christopher Wilson
+ * Copyright(c) 2014-2018 Douglas Christopher Wilson
  * MIT Licensed
  */
 /*!
  * destroy
  * Copyright(c) 2014 Jonathan Ong
+ * Copyright(c) 2015-2022 Douglas Christopher Wilson
  * MIT Licensed
  */
 /*!
@@ -65323,7 +75092,7 @@ object-assign
  */
 /*!
  * finalhandler
- * Copyright(c) 2014-2017 Douglas Christopher Wilson
+ * Copyright(c) 2014-2022 Douglas Christopher Wilson
  * MIT Licensed
  */
 /*!
@@ -65404,13 +75173,13 @@ object-assign
 /*!
  * raw-body
  * Copyright(c) 2013-2014 Jonathan Ong
- * Copyright(c) 2014-2015 Douglas Christopher Wilson
+ * Copyright(c) 2014-2022 Douglas Christopher Wilson
  * MIT Licensed
  */
 /*!
  * send
  * Copyright(c) 2012 TJ Holowaychuk
- * Copyright(c) 2014-2016 Douglas Christopher Wilson
+ * Copyright(c) 2014-2022 Douglas Christopher Wilson
  * MIT Licensed
  */
 /*!
@@ -65448,3 +75217,4 @@ object-assign
  * MIT Licensed
  */
 /*! https://mths.be/utf8js v2.1.2 by @mathias */
+/*! safe-buffer. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
