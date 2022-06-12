@@ -6,7 +6,7 @@
 	"author": "Chris Kerr",
 	"license": "GPL-3.0",
 	"scripts": {
-		"predev": "npm i && cd socket-server && npm run bundle",
+		"predev": "npm i --force && cd socket-server && npm run bundle",
 		"dev": "next dev",
 		"build:wasm": "as ./components/bad-factors/worker.asssembly.ts -b public/worker.wasm",
 		"build": "next build",

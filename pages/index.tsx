@@ -50,11 +50,11 @@ export default function Landing(): ReactElement {
 						title="Collaborative Markdown Editor"
 						image="/images/tiles/stacked-waves.png"
 					/>
-					<Tile
+					{/* <Tile
 						url="/bird-eat-bird"
 						title="Bird Eat Bird (WIP)"
 						image="/images/tiles/bird-eat-bird.png"
-					/>
+					/> */}
 					<Tile
 						url={`/writing/${BlogPostSlugs.ASYNC_FUNCTIONS}`}
 						title={BlogPostTitles.ASYNC_FUNCTIONS}
@@ -80,11 +80,11 @@ export default function Landing(): ReactElement {
 						title="Low Earth Orbit"
 						image="/images/tiles/stars.png"
 					/>
-					<Tile
+					{/* <Tile
 						url="/bad-factors"
 						title="Finding Factors with WASM"
 						image="/images/tiles/connections.png"
-					/>
+					/> */}
 				</div>
 			</section>
 		</>
