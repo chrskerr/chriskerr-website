@@ -74816,7 +74816,7 @@ function createPeriodicData({
     const balancesForStart = balancesWithStartDate.filter((curr) => curr.startDate === startDate);
     return accounts.map((account) => {
       var _a;
-      const balancesForAccount = balancesForStart.filter((curr) => curr.accountId === account.id).sort((a, b) => (0, import_date_fns.differenceInSeconds)(new Date(a.createdAt), new Date(b.createdAt)));
+      const balancesForAccount = balancesForStart.filter((curr) => curr.accountId === account.id).sort((a, b) => (0, import_date_fns.differenceInSeconds)(new Date(b.createdAt), new Date(a.createdAt)));
       return {
         balance: ((_a = balancesForAccount == null ? void 0 : balancesForAccount[0]) == null ? void 0 : _a.balance) || 0,
         accountName: account.name

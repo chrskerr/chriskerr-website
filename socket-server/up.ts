@@ -673,8 +673,8 @@ function createPeriodicData({
 					.filter(curr => curr.accountId === account.id)
 					.sort((a, b) =>
 						differenceInSeconds(
-							new Date(a.createdAt),
 							new Date(b.createdAt),
+							new Date(a.createdAt),
 						),
 					);
 
