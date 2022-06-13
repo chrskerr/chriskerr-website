@@ -3,6 +3,7 @@ import NextCors from 'nextjs-cors';
 
 import { confirmCookieAuth } from 'components/finance/helpers';
 import { socketServerUrl } from 'lib/constants';
+import { ReportNabBody } from 'types/finance';
 
 const apiKey = process.env.API_KEY;
 
@@ -19,6 +20,8 @@ const handler: NextApiHandler = async (req, res) => {
 		return res.status(500).end();
 	}
 
+	const body: ReportNabBody = req.body;
+
 	const result = await fetch(socketServerUrl + '/nab/report', {
 		headers: apiKey
 			? new Headers({
@@ -27,7 +30,7 @@ const handler: NextApiHandler = async (req, res) => {
 			  })
 			: {},
 		method: 'POST',
-		body: JSON.stringify(req.body),
+		body: JSON.stringify(body),
 	});
 
 	if (result.ok) {

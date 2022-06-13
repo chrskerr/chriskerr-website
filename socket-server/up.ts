@@ -19,7 +19,7 @@ import {
 	subWeeks,
 } from 'date-fns';
 
-import type {
+import {
 	Balance,
 	Transaction,
 	Account,
@@ -31,6 +31,8 @@ import type {
 	ChartData,
 	UpTransactions,
 	ReportNabBody,
+	Cents,
+	toCents,
 } from '../types/finance';
 import { chartLookbackWeeks } from '../lib/constants';
 
@@ -92,7 +94,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 
 	async function insertAccountBalance(
 		accountId: string,
-		balance: number,
+		balance: Cents,
 	): Promise<void> {
 		await knex
 			.table<Balance>(TableNames.BALANCES)
@@ -432,7 +434,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 				});
 				await insertAccountBalance(
 					mortgageAccountId,
-					Math.round(loanDollars * 100),
+					toCents(Math.round(loanDollars * 100)),
 				);
 
 				const savingsAccountId = '753037756';
@@ -444,7 +446,7 @@ export default function createUpRoutes(app: Express, knex: Knex): void {
 				});
 				await insertAccountBalance(
 					savingsAccountId,
-					Math.round(savingsDollars * 100),
+					toCents(Math.round(savingsDollars * 100)),
 				);
 
 				res.status(200).end();

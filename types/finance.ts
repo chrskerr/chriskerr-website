@@ -1,3 +1,16 @@
+import { Nominal } from './nominal';
+
+export type Cents = Nominal<number, 'Cents'>;
+export type Dollars = Nominal<number, 'Dollars'>;
+
+export function toCents(input: number): Cents {
+	return input as Cents;
+}
+
+export function toDollars(input: number): Dollars {
+	return input as Dollars;
+}
+
 export type UpApiReturn = {
 	balances: ChartData[];
 	cashFlow: ChartData[];
@@ -17,7 +30,7 @@ export type Account = {
 export type Balance = {
 	id: number;
 	/** balances in cents */
-	balance: number;
+	balance: Cents;
 	createdAt: Date;
 	accountId: string;
 };
@@ -26,7 +39,7 @@ export type Transaction = {
 	id: number;
 	transactionId: string | null;
 	/** transaction value in cents */
-	amount: number;
+	amount: Cents;
 	category: string | undefined;
 	parentCategory: string | undefined;
 	description: string;
@@ -65,7 +78,7 @@ export type UpTransaction = {
 		message: null;
 		amount: {
 			currencyCode: string;
-			valueInBaseUnits: number;
+			valueInBaseUnits: Cents;
 		};
 		/** ISO8601 date string */
 		settledAt: string;
@@ -104,7 +117,7 @@ export type UpAccount = {
 	attributes: {
 		displayName: string;
 		balance: {
-			valueInBaseUnits: number;
+			valueInBaseUnits: Cents;
 		};
 	};
 };
@@ -115,6 +128,6 @@ export type ChartData = {
 };
 
 export type ReportNabBody = {
-	savingsDollars: number;
-	loanDollars: number;
+	savingsDollars: Dollars;
+	loanDollars: Dollars;
 };

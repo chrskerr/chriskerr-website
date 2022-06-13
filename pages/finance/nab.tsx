@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import { confirmCookieAuth } from 'components/finance/helpers';
-import { ReportNabBody } from 'types/finance';
+import { ReportNabBody, toDollars } from 'types/finance';
 import { socketServerUrl } from 'lib/constants';
 
 export default function FinancesPage(): ReactElement {
@@ -24,8 +24,8 @@ export default function FinancesPage(): ReactElement {
 			setIsLoading(true);
 
 			const body: ReportNabBody = {
-				savingsDollars: Math.floor(Number(savingsDollars)),
-				loanDollars: Math.floor(Number(loanDollars)),
+				savingsDollars: toDollars(Math.floor(Number(savingsDollars))),
+				loanDollars: toDollars(Math.floor(Number(loanDollars))),
 			};
 			await fetch('/api/finance/nab', {
 				method: 'POST',
