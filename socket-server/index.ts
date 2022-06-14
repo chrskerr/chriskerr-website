@@ -16,9 +16,13 @@ import { processAllChanges } from '../components/editable-canvas/helpers';
 import { generateSlug, RandomWordOptions } from 'random-word-slugs';
 
 import { unsavedNoteId } from '../lib/constants';
-import { TableNames } from './up';
 
-import createUpRoutes from './up';
+import {
+	createUpFetchRoutes,
+	createUpUpdateRoutes,
+	// createUpAdminRoutes,
+} from './up/routes';
+import { migrate, TableNames } from './migrations';
 
 const corsSettings: CorsOptions = {
 	origin: [
@@ -168,88 +172,14 @@ io.on('connection', socket => {
 	});
 });
 
-createUpRoutes(app, knex);
+app.set('trust proxy', 1);
+createUpFetchRoutes(app, knex);
+createUpUpdateRoutes(app, knex);
+// createUpAdminRoutes(app);
 
 const port = process.env.PORT || 8080;
 server.listen(port, () => {
 	console.log(`listening on *:${port}`);
 });
 
-(async () => {
-	const hasNotesTable = await knex.schema.hasTable(TableNames.NOTES);
-	if (!hasNotesTable) {
-		await knex.schema.createTable(TableNames.NOTES, table => {
-			table.text('id').unique().index();
-			table.jsonb('data').notNullable();
-		});
-	}
-
-	const hasAccountsTable = await knex.schema.hasTable(TableNames.ACCOUNTS);
-	if (!hasAccountsTable) {
-		await knex.schema.createTable(TableNames.ACCOUNTS, table => {
-			table.text('id').unique().index();
-			table.text('name').notNullable();
-		});
-	}
-
-	const hasBalancesTable = await knex.schema.hasTable(TableNames.BALANCES);
-	if (!hasBalancesTable) {
-		await knex.schema.createTable(TableNames.BALANCES, table => {
-			table.increments('id');
-			table.integer('balance').notNullable();
-			table.dateTime('createdAt').defaultTo(knex.fn.now());
-
-			table.text('accountId').notNullable();
-			table.foreign('accountId').references(TableNames.ACCOUNTS + '.id');
-		});
-	}
-
-	const hasTransactionsTable = await knex.schema.hasTable(
-		TableNames.TRANSACTIONS,
-	);
-	if (!hasTransactionsTable) {
-		await knex.schema.createTable(TableNames.TRANSACTIONS, table => {
-			table.increments('id');
-
-			table.integer('amount').notNullable();
-			table.dateTime('createdAt').defaultTo(knex.fn.now());
-
-			table.text('category').nullable();
-			table.text('parentCategory').nullable();
-			table.text('description').nullable();
-
-			table.text('accountId').notNullable();
-			table.foreign('accountId').references(TableNames.ACCOUNTS + '.id');
-		});
-	}
-
-	const hasTransactionId = await knex.schema.hasColumn(
-		TableNames.TRANSACTIONS,
-		'transactionId',
-	);
-	if (!hasTransactionId) {
-		await knex.schema.alterTable(TableNames.TRANSACTIONS, table => {
-			table.text('transactionId').nullable().unique();
-		});
-	}
-
-	const hasTransactionIsTransfer = await knex.schema.hasColumn(
-		TableNames.TRANSACTIONS,
-		'isTransfer',
-	);
-	if (!hasTransactionIsTransfer) {
-		await knex.schema.alterTable(TableNames.TRANSACTIONS, table => {
-			table.boolean('isTransfer').defaultTo(false).index();
-		});
-	}
-
-	const hasBankNameColumn = await knex.schema.hasColumn(
-		TableNames.ACCOUNTS,
-		'bankName',
-	);
-	if (!hasBankNameColumn) {
-		await knex.schema.alterTable(TableNames.ACCOUNTS, table => {
-			table.text('bankName').defaultTo('up').notNullable();
-		});
-	}
-})();
+migrate(knex);

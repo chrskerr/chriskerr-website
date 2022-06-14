@@ -27,6 +27,11 @@ export type Account = {
 	bankName: 'up' | 'nab';
 };
 
+export type MigrationVersion = {
+	id: 1;
+	version: Date;
+};
+
 export type Balance = {
 	id: number;
 	/** balances in cents */
@@ -130,4 +135,16 @@ export type ChartData = {
 export type ReportNabBody = {
 	savingsDollars: Dollars;
 	loanDollars: Dollars;
+};
+
+export type Saver = {
+	id: number;
+	name: string;
+};
+
+export type SaverTransaction = {
+	id: number;
+	saverId: number;
+	amountCents: Cents;
+	createdAt: Date;
 };

@@ -61993,22 +61993,22 @@ var require_axios = __commonJS({
       };
       return instance;
     }
-    var axios2 = createInstance(defaults);
-    axios2.Axios = Axios;
-    axios2.CanceledError = require_CanceledError();
-    axios2.CancelToken = require_CancelToken();
-    axios2.isCancel = require_isCancel();
-    axios2.VERSION = require_data().version;
-    axios2.toFormData = require_toFormData();
-    axios2.AxiosError = require_AxiosError();
-    axios2.Cancel = axios2.CanceledError;
-    axios2.all = function all(promises) {
+    var axios4 = createInstance(defaults);
+    axios4.Axios = Axios;
+    axios4.CanceledError = require_CanceledError();
+    axios4.CancelToken = require_CancelToken();
+    axios4.isCancel = require_isCancel();
+    axios4.VERSION = require_data().version;
+    axios4.toFormData = require_toFormData();
+    axios4.AxiosError = require_AxiosError();
+    axios4.Cancel = axios4.CanceledError;
+    axios4.all = function all(promises) {
       return Promise.all(promises);
     };
-    axios2.spread = require_spread();
-    axios2.isAxiosError = require_isAxiosError();
-    module2.exports = axios2;
-    module2.exports.default = axios2;
+    axios4.spread = require_spread();
+    axios4.isAxiosError = require_isAxiosError();
+    module2.exports = axios4;
+    module2.exports.default = axios4;
   }
 });
 
@@ -62447,14 +62447,14 @@ var require_startOfWeek = __commonJS({
     Object.defineProperty(exports2, "__esModule", {
       value: true
     });
-    exports2.default = startOfWeek2;
+    exports2.default = startOfWeek3;
     var _index = _interopRequireDefault(require_toDate());
     var _index2 = _interopRequireDefault(require_toInteger2());
     var _index3 = _interopRequireDefault(require_requiredArgs());
     function _interopRequireDefault(obj) {
       return obj && obj.__esModule ? obj : { default: obj };
     }
-    function startOfWeek2(dirtyDate, dirtyOptions) {
+    function startOfWeek3(dirtyDate, dirtyOptions) {
       (0, _index3.default)(1, arguments);
       var options = dirtyOptions || {};
       var locale = options.locale;
@@ -74274,8 +74274,113 @@ var import_random_word_slugs = __toESM(require_dist6());
 var unsavedNoteId = "n";
 var chartLookbackWeeks = 6;
 
-// up.ts
-var import_crypto2 = __toESM(require("crypto"));
+// up/routes/admin.ts
+var import_axios3 = __toESM(require_axios2());
+var import_dotenv3 = __toESM(require_main());
+
+// up/helpers/accounts.ts
+var import_axios = __toESM(require_axios2());
+var import_dotenv = __toESM(require_main());
+
+// migrations.ts
+function setMigrationVersion(knex2, version) {
+  return __async(this, null, function* () {
+    yield knex2.table("migration_version" /* MIGRATION_VERSION */).insert({ id: 1, version }).onConflict("id").merge();
+  });
+}
+function getMigrationVersion(knex2) {
+  return __async(this, null, function* () {
+    var _a;
+    const migrationVersion = yield knex2.table("migration_version" /* MIGRATION_VERSION */).where({ id: 1 }).select("*").first();
+    return (_a = migrationVersion == null ? void 0 : migrationVersion.version) != null ? _a : null;
+  });
+}
+var migrate = (knex2) => __async(void 0, null, function* () {
+  const hasNotesTable = yield knex2.schema.hasTable("notes" /* NOTES */);
+  if (!hasNotesTable) {
+    yield knex2.schema.createTable("notes" /* NOTES */, (table) => {
+      table.text("id").unique().index();
+      table.jsonb("data").notNullable();
+    });
+  }
+  const hasAccountsTable = yield knex2.schema.hasTable("accounts" /* ACCOUNTS */);
+  if (!hasAccountsTable) {
+    yield knex2.schema.createTable("accounts" /* ACCOUNTS */, (table) => {
+      table.text("id").unique().index();
+      table.text("name").notNullable();
+    });
+  }
+  const hasBalancesTable = yield knex2.schema.hasTable("account_balances" /* BALANCES */);
+  if (!hasBalancesTable) {
+    yield knex2.schema.createTable("account_balances" /* BALANCES */, (table) => {
+      table.increments("id");
+      table.integer("balance").notNullable();
+      table.dateTime("createdAt").defaultTo(knex2.fn.now());
+      table.text("accountId").notNullable();
+      table.foreign("accountId").references("accounts" /* ACCOUNTS */ + ".id");
+    });
+  }
+  const hasTransactionsTable = yield knex2.schema.hasTable("account_transactions" /* TRANSACTIONS */);
+  if (!hasTransactionsTable) {
+    yield knex2.schema.createTable("account_transactions" /* TRANSACTIONS */, (table) => {
+      table.increments("id");
+      table.integer("amount").notNullable();
+      table.dateTime("createdAt").defaultTo(knex2.fn.now());
+      table.text("category").nullable();
+      table.text("parentCategory").nullable();
+      table.text("description").nullable();
+      table.text("accountId").notNullable();
+      table.foreign("accountId").references("accounts" /* ACCOUNTS */ + ".id");
+    });
+  }
+  const hasTransactionId = yield knex2.schema.hasColumn("account_transactions" /* TRANSACTIONS */, "transactionId");
+  if (!hasTransactionId) {
+    yield knex2.schema.alterTable("account_transactions" /* TRANSACTIONS */, (table) => {
+      table.text("transactionId").nullable().unique();
+    });
+  }
+  const hasTransactionIsTransfer = yield knex2.schema.hasColumn("account_transactions" /* TRANSACTIONS */, "isTransfer");
+  if (!hasTransactionIsTransfer) {
+    yield knex2.schema.alterTable("account_transactions" /* TRANSACTIONS */, (table) => {
+      table.boolean("isTransfer").defaultTo(false).index();
+    });
+  }
+  const hasBankNameColumn = yield knex2.schema.hasColumn("accounts" /* ACCOUNTS */, "bankName");
+  if (!hasBankNameColumn) {
+    yield knex2.schema.alterTable("accounts" /* ACCOUNTS */, (table) => {
+      table.text("bankName").defaultTo("up").notNullable();
+    });
+  }
+  const hasVersionTable = yield knex2.schema.hasTable("migration_version" /* MIGRATION_VERSION */);
+  if (!hasVersionTable) {
+    yield knex2.schema.createTable("migration_version" /* MIGRATION_VERSION */, (table) => {
+      table.increments();
+      table.datetime("version").notNullable();
+    });
+    yield setMigrationVersion(knex2, new Date("2022-06-13"));
+  }
+  const migrationVersion = yield getMigrationVersion(knex2);
+  if (!migrationVersion)
+    return;
+  yield knex2.table("account_balances" /* BALANCES */).where("createdAt", "<=", new Date("2022-06-14")).delete();
+  if (migrationVersion < new Date("2022-06-14")) {
+    yield knex2.schema.alterTable("account_balances" /* BALANCES */, (table) => {
+      table.unique(["createdAt", "accountId"]);
+    });
+    yield knex2.schema.createTable("savers" /* SAVERS */, (table) => {
+      table.increments("id");
+      table.text("name").notNullable();
+    });
+    yield knex2.schema.createTable("saver_transactions" /* SAVER_TRANSACTIONS */, (table) => {
+      table.increments("id");
+      table.integer("saverId").notNullable();
+      table.foreign("saverId").references(`${"savers" /* SAVERS */}.id`);
+      table.integer("amountCents").notNullable();
+      table.datetime("createdAt").notNullable().defaultTo(knex2.fn.now());
+    });
+    yield setMigrationVersion(knex2, new Date("2022-06-14"));
+  }
+});
 
 // node_modules/express-rate-limit/dist/index.mjs
 var calculateNextResetTime = (windowMs) => {
@@ -74480,15 +74585,20 @@ var omitUndefinedOptions = (passedOptions) => {
 };
 var lib_default = rateLimit;
 
-// up.ts
-var import_axios = __toESM(require_axios2());
-var import_dotenv = __toESM(require_main());
-var import_date_fns = __toESM(require_date_fns());
-import_dotenv.default.config({ path: ".env.local" });
+// up/helpers/misc.ts
 var apiKey = process.env.API_KEY || "";
 var upApiKeyChris = process.env.UP_API_KEY;
 var upApiKeyKate = process.env.UP_API_KEY_KATE;
 var urlBase = "https://api.up.com.au/api/v1";
+var isEventType = (string) => {
+  return string === "TRANSACTION_CREATED";
+};
+var isProbablyTransfer = (transaction) => transaction.isTransfer || isDescriptionTransferLike(transaction.description);
+var isDescriptionTransferLike = (description) => description.startsWith("Transfer from ") || description.startsWith("Transfer to ") || description.startsWith("Forward from ") || description.startsWith("Forward to ") || description === "Chris Kerr" || description.startsWith("Auto Transfer to ") || description === "Round Up";
+var isProbablyInvestment = (transaction) => {
+  var _a;
+  return !!((_a = transaction.category) == null ? void 0 : _a.includes("investment"));
+};
 var getHasAuthHeaders = (req) => req.headers["api_key"] === apiKey;
 var limiter = lib_default({
   windowMs: 1e3,
@@ -74496,242 +74606,66 @@ var limiter = lib_default({
   standardHeaders: true,
   legacyHeaders: false
 });
-function createUpRoutes(app2, knex2) {
-  function createOrUpdateAccount(_0) {
-    return __async(this, arguments, function* ({
-      id,
-      accountName = "Unnamed",
-      bankName,
-      isChris
-    }) {
-      let name = accountName;
-      if (name === "Spending" && bankName === "up") {
-        name = isChris ? "Chris Spending" : "Kate Spending";
-      }
-      let r = yield knex2.table("accounts" /* ACCOUNTS */).where({ id }).update({ name, bankName }).returning("*");
-      if (!r || r.length < 1) {
-        r = yield knex2.table("accounts" /* ACCOUNTS */).insert({ id, name, bankName }).returning("*");
-      }
-      return r;
-    });
-  }
-  function insertAccountBalance(accountId, balance) {
-    return __async(this, null, function* () {
-      yield knex2.table("account_balances" /* BALANCES */).insert({ accountId, balance });
-    });
-  }
-  function createOrUpdateTransaction(accountId, txn) {
-    return __async(this, null, function* () {
-      var _a, _b;
-      const transaction = {
-        accountId,
-        transactionId: txn.id,
-        amount: txn.attributes.amount.valueInBaseUnits,
-        category: (_a = txn.relationships.category.data) == null ? void 0 : _a.id,
-        parentCategory: (_b = txn.relationships.parentCategory.data) == null ? void 0 : _b.id,
-        description: txn.attributes.description,
-        createdAt: txn.attributes.createdAt,
-        isTransfer: !!txn.relationships.transferAccount.data || isDescriptionTransferLike(txn.attributes.description)
-      };
-      const r = yield knex2.table("account_transactions" /* TRANSACTIONS */).where({ transactionId: txn.id }).update(transaction).returning("*");
-      if (!r || r.length === 0) {
-        yield knex2.table("account_transactions" /* TRANSACTIONS */).insert(transaction).returning("*");
-      }
-    });
-  }
-  const fetchTransactions = (_0) => __async(this, [_0], function* ({
+
+// up/helpers/accounts.ts
+import_dotenv.default.config({ path: ".env.local" });
+function createOrUpdateAccount(_0) {
+  return __async(this, arguments, function* ({
+    id,
+    accountName = "Unnamed",
+    bankName,
     isChris,
-    shouldFetchAll,
-    link
+    knex: knex2
   }) {
-    const res = yield import_axios.default.get(link || urlBase + `/transactions?page[size]=${shouldFetchAll ? 100 : 20}`, {
-      headers: {
-        Authorization: `Bearer ${isChris ? upApiKeyChris : upApiKeyKate}`
-      }
-    });
-    const txnData = res.data;
-    const next = txnData.links.next;
-    return [
-      ...txnData.data,
-      ...next && shouldFetchAll ? yield fetchTransactions({
-        isChris,
-        shouldFetchAll,
-        link: next
-      }) : []
-    ];
+    let name = accountName;
+    if (name === "Spending" && bankName === "up") {
+      name = isChris ? "Chris Spending" : "Kate Spending";
+    }
+    return yield knex2.table("accounts" /* ACCOUNTS */).insert({ id, name, bankName }).onConflict("id").merge().returning("*");
   });
-  const updateAllTransactions = (isChris, shouldFetchAll) => __async(this, null, function* () {
-    const allTransactions = yield fetchTransactions({
-      isChris,
-      shouldFetchAll
-    });
-    const accountsIds = [
-      ...new Set(allTransactions.map((txn) => txn.relationships.account.data.id))
-    ];
-    const failedAccounts = [];
-    yield Promise.all(accountsIds.map((accountId) => __async(this, null, function* () {
-      try {
-        const accountRes = yield import_axios.default.get(urlBase + "/accounts/" + accountId, {
-          headers: {
-            Authorization: `Bearer ${isChris ? upApiKeyChris : upApiKeyKate}`
-          }
-        });
-        const account = accountRes.data.data;
-        yield createOrUpdateAccount({
-          id: accountId,
-          accountName: account == null ? void 0 : account.attributes.displayName,
-          bankName: "up",
-          isChris
-        });
-      } catch (e) {
-        failedAccounts.push(accountId);
-      }
-    })));
-    allTransactions.forEach((txn) => __async(this, null, function* () {
-      try {
-        if (!failedAccounts.includes(txn.relationships.account.data.id)) {
-          const accountId = txn.relationships.account.data.id;
-          yield createOrUpdateTransaction(accountId, txn);
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    }));
-  });
-  app2.set("trust proxy", 1);
-  app2.get("/up/balances", limiter, (req, res, next) => __async(this, null, function* () {
-    try {
-      const hasAuthHeaders = getHasAuthHeaders(req);
-      updateAllTransactions(true, true);
-      updateAllTransactions(false, true);
-      if (upApiKeyChris && hasAuthHeaders) {
-        const fetchRes = yield import_axios.default.get(urlBase + "/accounts", {
-          headers: { Authorization: `Bearer ${upApiKeyChris}` }
-        });
-        const accounts = fetchRes.data;
-        yield Promise.all(accounts.data.map((account) => __async(this, null, function* () {
-          yield createOrUpdateAccount({
-            id: account.id,
-            accountName: account == null ? void 0 : account.attributes.displayName,
-            bankName: "up",
-            isChris: true
-          });
-          yield insertAccountBalance(account.id, account.attributes.balance.valueInBaseUnits);
-        })));
-      }
-      if (upApiKeyKate && hasAuthHeaders) {
-        const fetchRes = yield import_axios.default.get(urlBase + "/accounts", {
-          headers: { Authorization: `Bearer ${upApiKeyKate}` }
-        });
-        const accounts = fetchRes.data;
-        yield Promise.all(accounts.data.map((account) => __async(this, null, function* () {
-          yield createOrUpdateAccount({
-            id: account.id,
-            accountName: account == null ? void 0 : account.attributes.displayName,
-            bankName: "up",
-            isChris: false
-          });
-          yield insertAccountBalance(account.id, account.attributes.balance.valueInBaseUnits);
-        })));
-      }
-      res.status(200).end();
-    } catch (e) {
-      next(e);
-    }
-  }));
-  app2.post("/up", limiter, (req, res, next) => __async(this, null, function* () {
-    var _a, _b, _c;
-    try {
-      const body = req.body.data;
-      const upSigningSecret = process.env.UP_SIGNING_SECRET;
-      const upSigningSecretKate = process.env.UP_SIGNING_SECRET_KATE;
-      if (!body || !upSigningSecret || !upSigningSecretKate) {
-        console.log("secrets or data missing");
-        return res.status(200).end();
-      }
-      const txnId = (_c = (_b = (_a = body.relationships) == null ? void 0 : _a.transaction) == null ? void 0 : _b.data) == null ? void 0 : _c.id;
-      const hashChris = import_crypto2.default.createHmac("sha256", upSigningSecret).update(req.rawBody).digest("hex");
-      const hashKate = import_crypto2.default.createHmac("sha256", upSigningSecretKate).update(req.rawBody).digest("hex");
-      const upSignature = req.headers["x-up-authenticity-signature"];
-      const isChris = hashChris === upSignature;
-      const isKate = hashKate === upSignature;
-      const eventType = isEventType(body.attributes.eventType) ? body.attributes.eventType : void 0;
-      if (eventType && txnId && (isChris || isKate)) {
-        yield updateAllTransactions(isChris, false);
-      } else {
-        console.log("hmac not matched", body);
-      }
-      res.status(200).end();
-    } catch (e) {
-      next(e);
-    }
-  }));
-  app2.post("/nab/report", limiter, (req, res, next) => __async(this, null, function* () {
-    try {
-      const hasAuthHeaders = getHasAuthHeaders(req);
-      const body = req.body;
-      if (hasAuthHeaders && typeof body === "object") {
-        const { loanDollars, savingsDollars } = body;
-        const mortgageAccountId = "753061668";
-        yield createOrUpdateAccount({
-          id: mortgageAccountId,
-          accountName: "Mortgage",
-          bankName: "nab",
-          isChris: true
-        });
-        yield insertAccountBalance(mortgageAccountId, Math.round(loanDollars * 100));
-        const savingsAccountId = "753037756";
-        yield createOrUpdateAccount({
-          id: savingsAccountId,
-          accountName: "NAB Savings",
-          bankName: "nab",
-          isChris: true
-        });
-        yield insertAccountBalance(savingsAccountId, Math.round(savingsDollars * 100));
-        res.status(200).end();
-      } else {
-        res.status(500).end();
-      }
-    } catch (e) {
-      next(e);
-    }
-  }));
-  app2.get("/up/:period", limiter, (req, res, next) => __async(this, null, function* () {
-    try {
-      const hasAuth = getHasAuthHeaders(req);
-      const period = req.params.period;
-      let weeksLookback = Math.max(chartLookbackWeeks, 20);
-      if (period === "month")
-        weeksLookback = weeksLookback * 3;
-      const fromDate = (0, import_date_fns.subWeeks)((0, import_date_fns.startOfWeek)(new Date(), {
-        weekStartsOn: 1
-      }), weeksLookback);
-      if (hasAuth) {
-        const accounts = yield knex2.table("accounts" /* ACCOUNTS */).select();
-        const balances = yield knex2.table("account_balances" /* BALANCES */).where("createdAt", ">", fromDate).select();
-        const transactions = yield knex2.table("account_transactions" /* TRANSACTIONS */).where("createdAt", ">", fromDate).select();
-        let result = void 0;
-        if (period === "week" || period === "month") {
-          result = createPeriodicData({
-            period,
-            balances,
-            accounts,
-            transactions
-          });
-        }
-        if (result) {
-          res.status(200).json(result);
-        }
-      }
-      res.status(500).end();
-    } catch (e) {
-      next(e);
-    }
-  }));
 }
-var isEventType = (string) => {
-  return string === "TRANSACTION_CREATED";
-};
+function insertAccountBalance(accountId, balance, knex2) {
+  return __async(this, null, function* () {
+    yield knex2.table("account_balances" /* BALANCES */).insert({ accountId, balance });
+  });
+}
+var updateBalances = (knex2) => __async(void 0, null, function* () {
+  if (upApiKeyChris) {
+    const fetchRes = yield import_axios.default.get(urlBase + "/accounts", {
+      headers: { Authorization: `Bearer ${upApiKeyChris}` }
+    });
+    const accounts = fetchRes.data;
+    yield Promise.all(accounts.data.map((account) => __async(void 0, null, function* () {
+      yield createOrUpdateAccount({
+        id: account.id,
+        accountName: account == null ? void 0 : account.attributes.displayName,
+        bankName: "up",
+        isChris: true,
+        knex: knex2
+      });
+      yield insertAccountBalance(account.id, account.attributes.balance.valueInBaseUnits, knex2);
+    })));
+  }
+  if (upApiKeyKate) {
+    const fetchRes = yield import_axios.default.get(urlBase + "/accounts", {
+      headers: { Authorization: `Bearer ${upApiKeyKate}` }
+    });
+    const accounts = fetchRes.data;
+    yield Promise.all(accounts.data.map((account) => __async(void 0, null, function* () {
+      yield createOrUpdateAccount({
+        id: account.id,
+        accountName: account == null ? void 0 : account.attributes.displayName,
+        bankName: "up",
+        isChris: false,
+        knex: knex2
+      });
+      yield insertAccountBalance(account.id, account.attributes.balance.valueInBaseUnits, knex2);
+    })));
+  }
+});
+
+// up/helpers/preparePeriodData.ts
+var import_date_fns = __toESM(require_date_fns());
 function createPeriodicData({
   period,
   balances,
@@ -74831,12 +74765,208 @@ function createPeriodicData({
     cashFlow
   };
 }
-var isProbablyTransfer = (transaction) => transaction.isTransfer || isDescriptionTransferLike(transaction.description);
-var isDescriptionTransferLike = (description) => description.startsWith("Transfer from ") || description.startsWith("Transfer to ") || description.startsWith("Forward from ") || description.startsWith("Forward to ") || description === "Chris Kerr" || description.startsWith("Auto Transfer to ") || description === "Round Up";
-var isProbablyInvestment = (transaction) => {
-  var _a;
-  return !!((_a = transaction.category) == null ? void 0 : _a.includes("investment"));
-};
+
+// up/helpers/transactions.ts
+var import_axios2 = __toESM(require_axios2());
+var import_dotenv2 = __toESM(require_main());
+import_dotenv2.default.config({ path: ".env.local" });
+function createOrUpdateTransaction(accountId, txn, knex2) {
+  return __async(this, null, function* () {
+    var _a, _b;
+    const transaction = {
+      accountId,
+      transactionId: txn.id,
+      amount: txn.attributes.amount.valueInBaseUnits,
+      category: (_a = txn.relationships.category.data) == null ? void 0 : _a.id,
+      parentCategory: (_b = txn.relationships.parentCategory.data) == null ? void 0 : _b.id,
+      description: txn.attributes.description,
+      createdAt: txn.attributes.createdAt,
+      isTransfer: !!txn.relationships.transferAccount.data || isDescriptionTransferLike(txn.attributes.description)
+    };
+    yield knex2.table("account_transactions" /* TRANSACTIONS */).insert(transaction).onConflict("id").merge();
+  });
+}
+var fetchTransactions = (_0) => __async(void 0, [_0], function* ({
+  isChris,
+  shouldFetchAll,
+  link
+}) {
+  const res = yield import_axios2.default.get(link || urlBase + `/transactions?page[size]=${shouldFetchAll ? 100 : 20}`, {
+    headers: {
+      Authorization: `Bearer ${isChris ? upApiKeyChris : upApiKeyKate}`
+    }
+  });
+  const txnData = res.data;
+  const next = txnData.links.next;
+  return [
+    ...txnData.data,
+    ...next && shouldFetchAll ? yield fetchTransactions({
+      isChris,
+      shouldFetchAll,
+      link: next
+    }) : []
+  ];
+});
+var updateAllTransactions = (isChris, shouldFetchAll, knex2) => __async(void 0, null, function* () {
+  const allTransactions = yield fetchTransactions({
+    isChris,
+    shouldFetchAll
+  });
+  const accountsIds = [
+    ...new Set(allTransactions.map((txn) => txn.relationships.account.data.id))
+  ];
+  const failedAccounts = [];
+  yield Promise.all(accountsIds.map((accountId) => __async(void 0, null, function* () {
+    try {
+      const accountRes = yield import_axios2.default.get(urlBase + "/accounts/" + accountId, {
+        headers: {
+          Authorization: `Bearer ${isChris ? upApiKeyChris : upApiKeyKate}`
+        }
+      });
+      const account = accountRes.data.data;
+      yield createOrUpdateAccount({
+        id: accountId,
+        accountName: account == null ? void 0 : account.attributes.displayName,
+        bankName: "up",
+        isChris,
+        knex: knex2
+      });
+    } catch (e) {
+      failedAccounts.push(accountId);
+    }
+  })));
+  allTransactions.forEach((txn) => __async(void 0, null, function* () {
+    try {
+      if (!failedAccounts.includes(txn.relationships.account.data.id)) {
+        const accountId = txn.relationships.account.data.id;
+        yield createOrUpdateTransaction(accountId, txn, knex2);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }));
+});
+
+// up/routes/admin.ts
+import_dotenv3.default.config({ path: ".env.local" });
+var upApiKeyChris2 = process.env.UP_API_KEY;
+var upApiKeyKate2 = process.env.UP_API_KEY_KATE;
+var upApiKey = upApiKeyChris2 != null ? upApiKeyChris2 : upApiKeyKate2;
+
+// up/routes/update.ts
+var import_crypto2 = __toESM(require("crypto"));
+var import_dotenv4 = __toESM(require_main());
+
+// ../types/finance.ts
+function toCents(input) {
+  return input;
+}
+
+// up/routes/update.ts
+import_dotenv4.default.config({ path: ".env.local" });
+function createUpUpdateRoutes(app2, knex2) {
+  app2.post("/up", limiter, (req, res, next) => __async(this, null, function* () {
+    var _a, _b, _c;
+    try {
+      const body = req.body.data;
+      const upSigningSecret = process.env.UP_SIGNING_SECRET;
+      const upSigningSecretKate = process.env.UP_SIGNING_SECRET_KATE;
+      if (!body || !upSigningSecret || !upSigningSecretKate) {
+        console.log("secrets or data missing");
+        return res.status(200).end();
+      }
+      const txnId = (_c = (_b = (_a = body.relationships) == null ? void 0 : _a.transaction) == null ? void 0 : _b.data) == null ? void 0 : _c.id;
+      const hashChris = import_crypto2.default.createHmac("sha256", upSigningSecret).update(req.rawBody).digest("hex");
+      const hashKate = import_crypto2.default.createHmac("sha256", upSigningSecretKate).update(req.rawBody).digest("hex");
+      const upSignature = req.headers["x-up-authenticity-signature"];
+      const isChris = hashChris === upSignature;
+      const isKate = hashKate === upSignature;
+      const eventType = isEventType(body.attributes.eventType) ? body.attributes.eventType : void 0;
+      if (eventType && txnId && (isChris || isKate)) {
+        yield updateAllTransactions(isChris, false, knex2);
+      } else {
+        console.log("hmac not matched", body);
+      }
+      res.status(200).end();
+    } catch (e) {
+      next(e);
+    }
+  }));
+  app2.post("/nab/report", limiter, (req, res, next) => __async(this, null, function* () {
+    try {
+      const hasAuthHeaders = getHasAuthHeaders(req);
+      const body = req.body;
+      if (hasAuthHeaders && typeof body === "object") {
+        const { loanDollars, savingsDollars } = body;
+        const mortgageAccountId = "753061668";
+        yield createOrUpdateAccount({
+          id: mortgageAccountId,
+          accountName: "Mortgage",
+          bankName: "nab",
+          isChris: true,
+          knex: knex2
+        });
+        yield insertAccountBalance(mortgageAccountId, toCents(Math.round(loanDollars * 100)), knex2);
+        const savingsAccountId = "753037756";
+        yield createOrUpdateAccount({
+          id: savingsAccountId,
+          accountName: "NAB Savings",
+          bankName: "nab",
+          isChris: true,
+          knex: knex2
+        });
+        yield insertAccountBalance(savingsAccountId, toCents(Math.round(savingsDollars * 100)), knex2);
+        yield updateAllTransactions(true, true, knex2);
+        yield updateAllTransactions(false, true, knex2);
+        yield updateBalances(knex2);
+        res.status(200).end();
+      } else {
+        res.status(500).end();
+      }
+    } catch (e) {
+      next(e);
+    }
+  }));
+}
+
+// up/routes/fetch.ts
+var import_dotenv5 = __toESM(require_main());
+var import_date_fns2 = __toESM(require_date_fns());
+import_dotenv5.default.config({ path: ".env.local" });
+function createUpFetchRoutes(app2, knex2) {
+  app2.get("/up/:period", limiter, (req, res, next) => __async(this, null, function* () {
+    try {
+      const hasAuth = getHasAuthHeaders(req);
+      const period = req.params.period;
+      let weeksLookback = Math.max(chartLookbackWeeks, 20);
+      if (period === "month")
+        weeksLookback = weeksLookback * 3;
+      const fromDate = (0, import_date_fns2.subWeeks)((0, import_date_fns2.startOfWeek)(new Date(), {
+        weekStartsOn: 1
+      }), weeksLookback);
+      if (hasAuth) {
+        const accounts = yield knex2.table("accounts" /* ACCOUNTS */).select();
+        const balances = yield knex2.table("account_balances" /* BALANCES */).where("createdAt", ">", fromDate).select();
+        const transactions = yield knex2.table("account_transactions" /* TRANSACTIONS */).where("createdAt", ">", fromDate).select();
+        let result = void 0;
+        if (period === "week" || period === "month") {
+          result = createPeriodicData({
+            period,
+            balances,
+            accounts,
+            transactions
+          });
+        }
+        if (result) {
+          res.status(200).json(result);
+        }
+      }
+      res.status(500).end();
+    } catch (e) {
+      next(e);
+    }
+  }));
+}
 
 // index.ts
 var corsSettings = {
@@ -74935,68 +75065,14 @@ io2.on("connection", (socket) => {
     socket.join(room);
   });
 });
-createUpRoutes(app, knex);
+app.set("trust proxy", 1);
+createUpFetchRoutes(app, knex);
+createUpUpdateRoutes(app, knex);
 var port = process.env.PORT || 8080;
 server.listen(port, () => {
   console.log(`listening on *:${port}`);
 });
-(() => __async(exports, null, function* () {
-  const hasNotesTable = yield knex.schema.hasTable("notes" /* NOTES */);
-  if (!hasNotesTable) {
-    yield knex.schema.createTable("notes" /* NOTES */, (table) => {
-      table.text("id").unique().index();
-      table.jsonb("data").notNullable();
-    });
-  }
-  const hasAccountsTable = yield knex.schema.hasTable("accounts" /* ACCOUNTS */);
-  if (!hasAccountsTable) {
-    yield knex.schema.createTable("accounts" /* ACCOUNTS */, (table) => {
-      table.text("id").unique().index();
-      table.text("name").notNullable();
-    });
-  }
-  const hasBalancesTable = yield knex.schema.hasTable("account_balances" /* BALANCES */);
-  if (!hasBalancesTable) {
-    yield knex.schema.createTable("account_balances" /* BALANCES */, (table) => {
-      table.increments("id");
-      table.integer("balance").notNullable();
-      table.dateTime("createdAt").defaultTo(knex.fn.now());
-      table.text("accountId").notNullable();
-      table.foreign("accountId").references("accounts" /* ACCOUNTS */ + ".id");
-    });
-  }
-  const hasTransactionsTable = yield knex.schema.hasTable("account_transactions" /* TRANSACTIONS */);
-  if (!hasTransactionsTable) {
-    yield knex.schema.createTable("account_transactions" /* TRANSACTIONS */, (table) => {
-      table.increments("id");
-      table.integer("amount").notNullable();
-      table.dateTime("createdAt").defaultTo(knex.fn.now());
-      table.text("category").nullable();
-      table.text("parentCategory").nullable();
-      table.text("description").nullable();
-      table.text("accountId").notNullable();
-      table.foreign("accountId").references("accounts" /* ACCOUNTS */ + ".id");
-    });
-  }
-  const hasTransactionId = yield knex.schema.hasColumn("account_transactions" /* TRANSACTIONS */, "transactionId");
-  if (!hasTransactionId) {
-    yield knex.schema.alterTable("account_transactions" /* TRANSACTIONS */, (table) => {
-      table.text("transactionId").nullable().unique();
-    });
-  }
-  const hasTransactionIsTransfer = yield knex.schema.hasColumn("account_transactions" /* TRANSACTIONS */, "isTransfer");
-  if (!hasTransactionIsTransfer) {
-    yield knex.schema.alterTable("account_transactions" /* TRANSACTIONS */, (table) => {
-      table.boolean("isTransfer").defaultTo(false).index();
-    });
-  }
-  const hasBankNameColumn = yield knex.schema.hasColumn("accounts" /* ACCOUNTS */, "bankName");
-  if (!hasBankNameColumn) {
-    yield knex.schema.alterTable("accounts" /* ACCOUNTS */, (table) => {
-      table.text("bankName").defaultTo("up").notNullable();
-    });
-  }
-}))();
+migrate(knex);
 /*
 object-assign
 (c) Sindre Sorhus
