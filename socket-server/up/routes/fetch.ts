@@ -11,6 +11,8 @@ import {
 	Transaction,
 	Account,
 	UpApiReturn,
+	Saver,
+	SaverTransaction,
 } from '../../../types/finance';
 import { chartLookbackWeeks } from '../../../lib/constants';
 import { createPeriodicData, getHasAuthHeaders, limiter } from '../helpers';
@@ -33,18 +35,30 @@ export function createUpFetchRoutes(app: Express, knex: Knex): void {
 			);
 
 			if (hasAuth) {
-				const accounts = await knex
-					.table<Account>(TableNames.ACCOUNTS)
-					.where({ excludeFromCalcs: false })
-					.select();
-				const balances = await knex
-					.table<Balance>(TableNames.BALANCES)
-					.where('createdAt', '>', fromDate)
-					.select();
-				const transactions = await knex
-					.table<Transaction>(TableNames.TRANSACTIONS)
-					.where('createdAt', '>', fromDate)
-					.select();
+				const [
+					accounts,
+					balances,
+					transactions,
+					savers,
+					saverTransactions,
+				] = await Promise.all([
+					knex
+						.table<Account>(TableNames.ACCOUNTS)
+						.where({ excludeFromCalcs: false })
+						.select(),
+					knex
+						.table<Balance>(TableNames.BALANCES)
+						.where('createdAt', '>', fromDate)
+						.select(),
+					knex
+						.table<Transaction>(TableNames.TRANSACTIONS)
+						.where('createdAt', '>', fromDate)
+						.select(),
+					knex.table<Saver>(TableNames.SAVERS).select(),
+					knex
+						.table<SaverTransaction>(TableNames.SAVER_TRANSACTIONS)
+						.select(),
+				]);
 
 				let result: UpApiReturn | undefined = undefined;
 
@@ -54,6 +68,8 @@ export function createUpFetchRoutes(app: Express, knex: Knex): void {
 						balances,
 						accounts,
 						transactions,
+						savers,
+						saverTransactions,
 					});
 				}
 

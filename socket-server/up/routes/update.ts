@@ -6,7 +6,12 @@ import dotenv from 'dotenv';
 import { Knex } from 'knex';
 dotenv.config({ path: '.env.local' });
 
-import { UpWebhook, ReportNabBody, toCents } from '../../../types/finance';
+import {
+	UpWebhook,
+	ReportNabBody,
+	toCents,
+	redrawAccountId,
+} from '../../../types/finance';
 import {
 	getHasAuthHeaders,
 	insertAccountBalance,
@@ -16,6 +21,9 @@ import {
 	updateBalances,
 	fetchTransactions,
 } from '../helpers';
+
+const mortgageAccountId = '753061668';
+const savingsAccountId = '753037756';
 
 export function createUpUpdateRoutes(app: Express, knex: Knex): void {
 	app.post('/up', limiter, async (req, res, next) => {
@@ -112,9 +120,6 @@ export function createUpUpdateRoutes(app: Express, knex: Knex): void {
 			if (hasAuthHeaders && typeof body === 'object') {
 				const { loanDollars, savingsDollars, redrawDollars } = body;
 
-				const mortgageAccountId = '753061668';
-				const savingsAccountId = '753037756';
-				const redrawAccountId = 'nab-redraw';
 				await Promise.all([
 					insertAccountBalance({
 						accountId: mortgageAccountId,

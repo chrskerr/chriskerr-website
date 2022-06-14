@@ -189,8 +189,8 @@ var require_depd = __commonJS({
         process.emit("deprecation", err);
         return;
       }
-      var format2 = process.stderr.isTTY ? formatColor : formatPlain;
-      var output = format2.call(this, msg, caller, stack.slice(i));
+      var format4 = process.stderr.isTTY ? formatColor : formatPlain;
+      var output = format4.call(this, msg, caller, stack.slice(i));
       process.stderr.write(output + "\n", "utf8");
     }
     function callSiteLocation(callSite) {
@@ -358,7 +358,7 @@ var require_bytes = __commonJS({
   "node_modules/bytes/index.js"(exports2, module2) {
     "use strict";
     module2.exports = bytes;
-    module2.exports.format = format2;
+    module2.exports.format = format4;
     module2.exports.parse = parse;
     var formatThousandsRegExp = /\B(?=(\d{3})+(?!\d))/g;
     var formatDecimalsRegExp = /(?:\.0*|(\.[^0]+)0+)$/;
@@ -376,11 +376,11 @@ var require_bytes = __commonJS({
         return parse(value);
       }
       if (typeof value === "number") {
-        return format2(value, options);
+        return format4(value, options);
       }
       return null;
     }
-    function format2(value, options) {
+    function format4(value, options) {
       if (!Number.isFinite(value)) {
         return null;
       }
@@ -452,9 +452,9 @@ var require_content_type = __commonJS({
     var QESC_REGEXP = /\\([\u000b\u0020-\u00ff])/g;
     var QUOTE_REGEXP = /([\\"])/g;
     var TYPE_REGEXP = /^[!#$%&'*+.^_`|~0-9A-Za-z-]+\/[!#$%&'*+.^_`|~0-9A-Za-z-]+$/;
-    exports2.format = format2;
+    exports2.format = format4;
     exports2.parse = parse;
-    function format2(obj) {
+    function format4(obj) {
       if (!obj || typeof obj !== "object") {
         throw new TypeError("argument obj is required");
       }
@@ -1068,11 +1068,11 @@ var require_debug = __commonJS({
           args.unshift("%O");
         }
         var index = 0;
-        args[0] = args[0].replace(/%([a-zA-Z%])/g, function(match, format2) {
+        args[0] = args[0].replace(/%([a-zA-Z%])/g, function(match, format4) {
           if (match === "%%")
             return match;
           index++;
-          var formatter = exports2.formatters[format2];
+          var formatter = exports2.formatters[format4];
           if (typeof formatter === "function") {
             var val = args[index];
             match = formatter.call(self2, val);
@@ -5350,9 +5350,9 @@ var require_media_typer = __commonJS({
     var subtypeNameRegExp = /^[A-Za-z0-9][A-Za-z0-9!#$&^_.-]{0,126}$/;
     var typeNameRegExp = /^[A-Za-z0-9][A-Za-z0-9!#$&^_-]{0,126}$/;
     var typeRegExp = /^ *([A-Za-z0-9][A-Za-z0-9!#$&^_-]{0,126})\/([A-Za-z0-9][A-Za-z0-9!#$&^_.+-]{0,126}) *$/;
-    exports2.format = format2;
+    exports2.format = format4;
     exports2.parse = parse;
-    function format2(obj) {
+    function format4(obj) {
       if (!obj || typeof obj !== "object") {
         throw new TypeError("argument obj is required");
       }
@@ -15629,7 +15629,7 @@ var require_utils = __commonJS({
         return strWithoutPlus;
       }
     };
-    var encode = function encode2(str, defaultEncoder, charset, kind, format2) {
+    var encode = function encode2(str, defaultEncoder, charset, kind, format4) {
       if (str.length === 0) {
         return str;
       }
@@ -15647,7 +15647,7 @@ var require_utils = __commonJS({
       var out = "";
       for (var i = 0; i < string.length; ++i) {
         var c = string.charCodeAt(i);
-        if (c === 45 || c === 46 || c === 95 || c === 126 || c >= 48 && c <= 57 || c >= 65 && c <= 90 || c >= 97 && c <= 122 || format2 === formats.RFC1738 && (c === 40 || c === 41)) {
+        if (c === 45 || c === 46 || c === 95 || c === 126 || c >= 48 && c <= 57 || c >= 65 && c <= 90 || c >= 97 && c <= 122 || format4 === formats.RFC1738 && (c === 40 || c === 41)) {
           out += string.charAt(i);
           continue;
         }
@@ -15775,7 +15775,7 @@ var require_stringify = __commonJS({
       return typeof v === "string" || typeof v === "number" || typeof v === "boolean" || typeof v === "symbol" || typeof v === "bigint";
     };
     var sentinel = {};
-    var stringify = function stringify2(object, prefix, generateArrayPrefix, strictNullHandling, skipNulls, encoder, filter, sort, allowDots, serializeDate, format2, formatter, encodeValuesOnly, charset, sideChannel) {
+    var stringify = function stringify2(object, prefix, generateArrayPrefix, strictNullHandling, skipNulls, encoder, filter, sort, allowDots, serializeDate, format4, formatter, encodeValuesOnly, charset, sideChannel) {
       var obj = object;
       var tmpSc = sideChannel;
       var step = 0;
@@ -15808,22 +15808,22 @@ var require_stringify = __commonJS({
       }
       if (obj === null) {
         if (strictNullHandling) {
-          return encoder && !encodeValuesOnly ? encoder(prefix, defaults.encoder, charset, "key", format2) : prefix;
+          return encoder && !encodeValuesOnly ? encoder(prefix, defaults.encoder, charset, "key", format4) : prefix;
         }
         obj = "";
       }
       if (isNonNullishPrimitive(obj) || utils.isBuffer(obj)) {
         if (encoder) {
-          var keyValue = encodeValuesOnly ? prefix : encoder(prefix, defaults.encoder, charset, "key", format2);
+          var keyValue = encodeValuesOnly ? prefix : encoder(prefix, defaults.encoder, charset, "key", format4);
           if (generateArrayPrefix === "comma" && encodeValuesOnly) {
             var valuesArray = split.call(String(obj), ",");
             var valuesJoined = "";
             for (var i = 0; i < valuesArray.length; ++i) {
-              valuesJoined += (i === 0 ? "" : ",") + formatter(encoder(valuesArray[i], defaults.encoder, charset, "value", format2));
+              valuesJoined += (i === 0 ? "" : ",") + formatter(encoder(valuesArray[i], defaults.encoder, charset, "value", format4));
             }
             return [formatter(keyValue) + "=" + valuesJoined];
           }
-          return [formatter(keyValue) + "=" + formatter(encoder(obj, defaults.encoder, charset, "value", format2))];
+          return [formatter(keyValue) + "=" + formatter(encoder(obj, defaults.encoder, charset, "value", format4))];
         }
         return [formatter(prefix) + "=" + formatter(String(obj))];
       }
@@ -15850,7 +15850,7 @@ var require_stringify = __commonJS({
         sideChannel.set(object, step);
         var valueSideChannel = getSideChannel();
         valueSideChannel.set(sentinel, sideChannel);
-        pushToArray(values, stringify2(value, keyPrefix, generateArrayPrefix, strictNullHandling, skipNulls, encoder, filter, sort, allowDots, serializeDate, format2, formatter, encodeValuesOnly, charset, valueSideChannel));
+        pushToArray(values, stringify2(value, keyPrefix, generateArrayPrefix, strictNullHandling, skipNulls, encoder, filter, sort, allowDots, serializeDate, format4, formatter, encodeValuesOnly, charset, valueSideChannel));
       }
       return values;
     };
@@ -15865,14 +15865,14 @@ var require_stringify = __commonJS({
       if (typeof opts.charset !== "undefined" && opts.charset !== "utf-8" && opts.charset !== "iso-8859-1") {
         throw new TypeError("The charset option must be either utf-8, iso-8859-1, or undefined");
       }
-      var format2 = formats["default"];
+      var format4 = formats["default"];
       if (typeof opts.format !== "undefined") {
         if (!has.call(formats.formatters, opts.format)) {
           throw new TypeError("Unknown format option provided.");
         }
-        format2 = opts.format;
+        format4 = opts.format;
       }
-      var formatter = formats.formatters[format2];
+      var formatter = formats.formatters[format4];
       var filter = defaults.filter;
       if (typeof opts.filter === "function" || isArray(opts.filter)) {
         filter = opts.filter;
@@ -15887,7 +15887,7 @@ var require_stringify = __commonJS({
         encoder: typeof opts.encoder === "function" ? opts.encoder : defaults.encoder,
         encodeValuesOnly: typeof opts.encodeValuesOnly === "boolean" ? opts.encodeValuesOnly : defaults.encodeValuesOnly,
         filter,
-        format: format2,
+        format: format4,
         formatter,
         serializeDate: typeof opts.serializeDate === "function" ? opts.serializeDate : defaults.serializeDate,
         skipNulls: typeof opts.skipNulls === "boolean" ? opts.skipNulls : defaults.skipNulls,
@@ -16775,17 +16775,17 @@ var require_path_to_regexp = __commonJS({
         });
         return new RegExp("(?:" + path.join("|") + ")", flags);
       }
-      path = ("^" + path + (strict ? "" : path[path.length - 1] === "/" ? "?" : "/?")).replace(/\/\(/g, "/(?:").replace(/([\/\.])/g, "\\$1").replace(/(\\\/)?(\\\.)?:(\w+)(\(.*?\))?(\*)?(\?)?/g, function(match, slash, format2, key, capture, star, optional, offset) {
+      path = ("^" + path + (strict ? "" : path[path.length - 1] === "/" ? "?" : "/?")).replace(/\/\(/g, "/(?:").replace(/([\/\.])/g, "\\$1").replace(/(\\\/)?(\\\.)?:(\w+)(\(.*?\))?(\*)?(\?)?/g, function(match, slash, format4, key, capture, star, optional, offset) {
         slash = slash || "";
-        format2 = format2 || "";
-        capture = capture || "([^\\/" + format2 + "]+?)";
+        format4 = format4 || "";
+        capture = capture || "([^\\/" + format4 + "]+?)";
         optional = optional || "";
         keys.push({
           name: key,
           optional: !!optional,
           offset: offset + extraOffset
         });
-        var result = "" + (optional ? "" : slash) + "(?:" + format2 + (optional ? slash : "") + capture + (star ? "((?:[\\/" + format2 + "].+?)?)" : "") + ")" + optional;
+        var result = "" + (optional ? "" : slash) + "(?:" + format4 + (optional ? slash : "") + capture + (star ? "((?:[\\/" + format4 + "].+?)?)" : "") + ")" + optional;
         extraOffset += result.length - match.length;
         return result;
       }).replace(/\*/g, function(star, index2) {
@@ -17681,7 +17681,7 @@ var require_content_disposition = __commonJS({
       var opts = options || {};
       var type = opts.type || "attachment";
       var params = createparams(filename, opts.fallback);
-      return format2(new ContentDisposition(type, params));
+      return format4(new ContentDisposition(type, params));
     }
     function createparams(filename, fallback) {
       if (filename === void 0) {
@@ -17712,7 +17712,7 @@ var require_content_disposition = __commonJS({
       }
       return params;
     }
-    function format2(obj) {
+    function format4(obj) {
       var parameters = obj.parameters;
       var type = obj.type;
       if (!type || typeof type !== "string" || !TOKEN_REGEXP.test(type)) {
@@ -22523,12 +22523,12 @@ var require_common = __commonJS({
             args.unshift("%O");
           }
           let index = 0;
-          args[0] = args[0].replace(/%([a-zA-Z%])/g, (match, format2) => {
+          args[0] = args[0].replace(/%([a-zA-Z%])/g, (match, format4) => {
             if (match === "%%") {
               return "%";
             }
             index++;
-            const formatter = createDebug.formatters[format2];
+            const formatter = createDebug.formatters[format4];
             if (typeof formatter === "function") {
               const val = args[index];
               match = formatter.call(self2, val);
@@ -25413,7 +25413,7 @@ var require_extension = __commonJS({
       }
       return offers;
     }
-    function format2(extensions) {
+    function format4(extensions) {
       return Object.keys(extensions).map((extension) => {
         let configurations = extensions[extension];
         if (!Array.isArray(configurations))
@@ -25428,7 +25428,7 @@ var require_extension = __commonJS({
         }).join(", ");
       }).join(", ");
     }
-    module2.exports = { format: format2, parse };
+    module2.exports = { format: format4, parse };
   }
 });
 
@@ -25460,7 +25460,7 @@ var require_websocket2 = __commonJS({
     var {
       EventTarget: { addEventListener, removeEventListener }
     } = require_event_target();
-    var { format: format2, parse } = require_extension();
+    var { format: format4, parse } = require_extension();
     var { toBuffer } = require_buffer_util();
     var readyStates = ["CONNECTING", "OPEN", "CLOSING", "CLOSED"];
     var subprotocolRegex = /^[!#$%&'*+\-.0-9A-Z^_`|a-z~]+$/;
@@ -25822,7 +25822,7 @@ var require_websocket2 = __commonJS({
       opts.timeout = opts.handshakeTimeout;
       if (opts.perMessageDeflate) {
         perMessageDeflate = new PerMessageDeflate(opts.perMessageDeflate !== true ? opts.perMessageDeflate : {}, false, opts.maxPayload);
-        opts.headers["Sec-WebSocket-Extensions"] = format2({
+        opts.headers["Sec-WebSocket-Extensions"] = format4({
           [PerMessageDeflate.extensionName]: perMessageDeflate.offer()
         });
       }
@@ -28451,12 +28451,12 @@ var require_common2 = __commonJS({
             args.unshift("%O");
           }
           let index = 0;
-          args[0] = args[0].replace(/%([a-zA-Z%])/g, (match, format2) => {
+          args[0] = args[0].replace(/%([a-zA-Z%])/g, (match, format4) => {
             if (match === "%%") {
               return "%";
             }
             index++;
-            const formatter = createDebug.formatters[format2];
+            const formatter = createDebug.formatters[format4];
             if (typeof formatter === "function") {
               const val = args[index];
               match = formatter.call(self2, val);
@@ -29270,12 +29270,12 @@ var require_common3 = __commonJS({
             args.unshift("%O");
           }
           let index = 0;
-          args[0] = args[0].replace(/%([a-zA-Z%])/g, (match, format2) => {
+          args[0] = args[0].replace(/%([a-zA-Z%])/g, (match, format4) => {
             if (match === "%%") {
               return "%";
             }
             index++;
-            const formatter = createDebug.formatters[format2];
+            const formatter = createDebug.formatters[format4];
             if (typeof formatter === "function") {
               const val = args[index];
               match = formatter.call(self2, val);
@@ -34714,12 +34714,12 @@ var require_common4 = __commonJS({
             args.unshift("%O");
           }
           let index = 0;
-          args[0] = args[0].replace(/%([a-zA-Z%])/g, (match, format2) => {
+          args[0] = args[0].replace(/%([a-zA-Z%])/g, (match, format4) => {
             if (match === "%%") {
               return "%";
             }
             index++;
-            const formatter = createDebug.formatters[format2];
+            const formatter = createDebug.formatters[format4];
             if (typeof formatter === "function") {
               const val = args[index];
               match = formatter.call(self2, val);
@@ -48383,19 +48383,19 @@ var require_pg_types = __commonJS({
     function noParse(val) {
       return String(val);
     }
-    function getTypeParser(oid, format2) {
-      format2 = format2 || "text";
-      if (!typeParsers[format2]) {
+    function getTypeParser(oid, format4) {
+      format4 = format4 || "text";
+      if (!typeParsers[format4]) {
         return noParse;
       }
-      return typeParsers[format2][oid] || noParse;
+      return typeParsers[format4][oid] || noParse;
     }
-    function setTypeParser(oid, format2, parseFn) {
-      if (typeof format2 == "function") {
-        parseFn = format2;
-        format2 = "text";
+    function setTypeParser(oid, format4, parseFn) {
+      if (typeof format4 == "function") {
+        parseFn = format4;
+        format4 = "text";
       }
-      typeParsers[format2][oid] = parseFn;
+      typeParsers[format4][oid] = parseFn;
     }
     textParsers.init(function(oid, converter) {
       typeParsers.text[oid] = converter;
@@ -49042,8 +49042,8 @@ var require_type_overrides = __commonJS({
       this.text = {};
       this.binary = {};
     }
-    TypeOverrides.prototype.getOverrides = function(format2) {
-      switch (format2) {
+    TypeOverrides.prototype.getOverrides = function(format4) {
+      switch (format4) {
         case "text":
           return this.text;
         case "binary":
@@ -49052,16 +49052,16 @@ var require_type_overrides = __commonJS({
           return {};
       }
     };
-    TypeOverrides.prototype.setTypeParser = function(oid, format2, parseFn) {
-      if (typeof format2 === "function") {
-        parseFn = format2;
-        format2 = "text";
+    TypeOverrides.prototype.setTypeParser = function(oid, format4, parseFn) {
+      if (typeof format4 === "function") {
+        parseFn = format4;
+        format4 = "text";
       }
-      this.getOverrides(format2)[oid] = parseFn;
+      this.getOverrides(format4)[oid] = parseFn;
     };
-    TypeOverrides.prototype.getTypeParser = function(oid, format2) {
-      format2 = format2 || "text";
-      return this.getOverrides(format2)[oid] || this._types.getTypeParser(oid, format2);
+    TypeOverrides.prototype.getTypeParser = function(oid, format4) {
+      format4 = format4 || "text";
+      return this.getOverrides(format4)[oid] || this._types.getTypeParser(oid, format4);
     };
     module2.exports = TypeOverrides;
   }
@@ -49531,14 +49531,14 @@ var require_messages = __commonJS({
     };
     exports2.CopyResponse = CopyResponse;
     var Field = class {
-      constructor(name, tableID, columnID, dataTypeID, dataTypeSize, dataTypeModifier, format2) {
+      constructor(name, tableID, columnID, dataTypeID, dataTypeSize, dataTypeModifier, format4) {
         this.name = name;
         this.tableID = tableID;
         this.columnID = columnID;
         this.dataTypeID = dataTypeID;
         this.dataTypeSize = dataTypeSize;
         this.dataTypeModifier = dataTypeModifier;
-        this.format = format2;
+        this.format = format4;
       }
     };
     exports2.Field = Field;
@@ -50772,11 +50772,11 @@ var require_client3 = __commonJS({
           client.queryQueue.splice(client.queryQueue.indexOf(query), 1);
         }
       }
-      setTypeParser(oid, format2, parseFn) {
-        return this._types.setTypeParser(oid, format2, parseFn);
+      setTypeParser(oid, format4, parseFn) {
+        return this._types.setTypeParser(oid, format4, parseFn);
       }
-      getTypeParser(oid, format2) {
-        return this._types.getTypeParser(oid, format2);
+      getTypeParser(oid, format4) {
+        return this._types.getTypeParser(oid, format4);
       }
       escapeIdentifier(str) {
         return '"' + str.replace(/"/g, '""') + '"';
@@ -52181,19 +52181,19 @@ var require_pg_types2 = __commonJS({
     function noParse(val) {
       return String(val);
     }
-    function getTypeParser(oid, format2) {
-      format2 = format2 || "text";
-      if (!typeParsers[format2]) {
+    function getTypeParser(oid, format4) {
+      format4 = format4 || "text";
+      if (!typeParsers[format4]) {
         return noParse;
       }
-      return typeParsers[format2][oid] || noParse;
+      return typeParsers[format4][oid] || noParse;
     }
-    function setTypeParser(oid, format2, parseFn) {
-      if (typeof format2 == "function") {
-        parseFn = format2;
-        format2 = "text";
+    function setTypeParser(oid, format4, parseFn) {
+      if (typeof format4 == "function") {
+        parseFn = format4;
+        format4 = "text";
       }
-      typeParsers[format2][oid] = parseFn;
+      typeParsers[format4][oid] = parseFn;
     }
     textParsers.init(function(oid, converter) {
       typeParsers.text[oid] = converter;
@@ -53117,11 +53117,11 @@ var require_client4 = __commonJS({
     };
     Client.prototype.unref = function() {
     };
-    Client.prototype.setTypeParser = function(oid, format2, parseFn) {
-      return this._types.setTypeParser(oid, format2, parseFn);
+    Client.prototype.setTypeParser = function(oid, format4, parseFn) {
+      return this._types.setTypeParser(oid, format4, parseFn);
     };
-    Client.prototype.getTypeParser = function(oid, format2) {
-      return this._types.getTypeParser(oid, format2);
+    Client.prototype.getTypeParser = function(oid, format4) {
+      return this._types.getTypeParser(oid, format4);
     };
   }
 });
@@ -59005,21 +59005,21 @@ var require_dist6 = __commonJS({
       partsOfSpeech.push("noun");
       return partsOfSpeech;
     }
-    function formatter(arr, format2) {
-      if (format2 === "kebab") {
+    function formatter(arr, format4) {
+      if (format4 === "kebab") {
         return arr.join("-").toLowerCase();
       }
-      if (format2 === "camel") {
+      if (format4 === "camel") {
         return arr.map(function(el, i) {
           if (i === 0)
             return el.toLowerCase();
           return el[0].toUpperCase() + el.slice(1).toLowerCase();
         }).join("");
       }
-      if (format2 === "lower") {
+      if (format4 === "lower") {
         return arr.join(" ").toLowerCase();
       }
-      if (format2 === "sentence") {
+      if (format4 === "sentence") {
         return arr.map(function(el, i) {
           if (i === 0) {
             return el[0].toUpperCase() + el.slice(1).toLowerCase();
@@ -64695,8 +64695,8 @@ var require_buildFormatLongFn = __commonJS({
       return function() {
         var options = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
         var width = options.width ? String(options.width) : args.defaultWidth;
-        var format2 = args.formats[width] || args.formats[args.defaultWidth];
-        return format2;
+        var format4 = args.formats[width] || args.formats[args.defaultWidth];
+        return format4;
       };
     }
     module2.exports = exports2.default;
@@ -66313,15 +66313,15 @@ var require_protectedTokens = __commonJS({
     function isProtectedWeekYearToken(token) {
       return protectedWeekYearTokens.indexOf(token) !== -1;
     }
-    function throwProtectedError(token, format2, input) {
+    function throwProtectedError(token, format4, input) {
       if (token === "YYYY") {
-        throw new RangeError("Use `yyyy` instead of `YYYY` (in `".concat(format2, "`) for formatting years to the input `").concat(input, "`; see: https://git.io/fxCyr"));
+        throw new RangeError("Use `yyyy` instead of `YYYY` (in `".concat(format4, "`) for formatting years to the input `").concat(input, "`; see: https://git.io/fxCyr"));
       } else if (token === "YY") {
-        throw new RangeError("Use `yy` instead of `YY` (in `".concat(format2, "`) for formatting years to the input `").concat(input, "`; see: https://git.io/fxCyr"));
+        throw new RangeError("Use `yy` instead of `YY` (in `".concat(format4, "`) for formatting years to the input `").concat(input, "`; see: https://git.io/fxCyr"));
       } else if (token === "D") {
-        throw new RangeError("Use `d` instead of `D` (in `".concat(format2, "`) for formatting days of the month to the input `").concat(input, "`; see: https://git.io/fxCyr"));
+        throw new RangeError("Use `d` instead of `D` (in `".concat(format4, "`) for formatting days of the month to the input `").concat(input, "`; see: https://git.io/fxCyr"));
       } else if (token === "DD") {
-        throw new RangeError("Use `dd` instead of `DD` (in `".concat(format2, "`) for formatting days of the month to the input `").concat(input, "`; see: https://git.io/fxCyr"));
+        throw new RangeError("Use `dd` instead of `DD` (in `".concat(format4, "`) for formatting days of the month to the input `").concat(input, "`; see: https://git.io/fxCyr"));
       }
     }
   }
@@ -66334,7 +66334,7 @@ var require_format = __commonJS({
     Object.defineProperty(exports2, "__esModule", {
       value: true
     });
-    exports2.default = format2;
+    exports2.default = format4;
     var _index = _interopRequireDefault(require_isValid());
     var _index2 = _interopRequireDefault(require_en_US());
     var _index3 = _interopRequireDefault(require_subMilliseconds());
@@ -66353,7 +66353,7 @@ var require_format = __commonJS({
     var escapedStringRegExp = /^'([^]*?)'?$/;
     var doubleQuoteRegExp = /''/g;
     var unescapedLatinCharacterRegExp = /[a-zA-Z]/;
-    function format2(dirtyDate, dirtyFormatStr, dirtyOptions) {
+    function format4(dirtyDate, dirtyFormatStr, dirtyOptions) {
       (0, _index10.default)(2, arguments);
       var formatStr = String(dirtyFormatStr);
       var options = dirtyOptions || {};
@@ -66740,11 +66740,11 @@ var require_formatDuration = __commonJS({
       if (arguments.length < 1) {
         throw new TypeError("1 argument required, but only ".concat(arguments.length, " present"));
       }
-      var format2 = (options === null || options === void 0 ? void 0 : options.format) || defaultFormat;
+      var format4 = (options === null || options === void 0 ? void 0 : options.format) || defaultFormat;
       var locale = (options === null || options === void 0 ? void 0 : options.locale) || _index.default;
       var zero = (options === null || options === void 0 ? void 0 : options.zero) || false;
       var delimiter = (options === null || options === void 0 ? void 0 : options.delimiter) || " ";
-      var result = format2.reduce(function(acc, unit) {
+      var result = format4.reduce(function(acc, unit) {
         var token = "x".concat(unit.replace(/(^.)/, function(m) {
           return m.toUpperCase();
         }));
@@ -66777,9 +66777,9 @@ var require_formatISO = __commonJS({
       if (isNaN(originalDate.getTime())) {
         throw new RangeError("Invalid time value");
       }
-      var format2 = !(options !== null && options !== void 0 && options.format) ? "extended" : String(options.format);
+      var format4 = !(options !== null && options !== void 0 && options.format) ? "extended" : String(options.format);
       var representation = !(options !== null && options !== void 0 && options.representation) ? "complete" : String(options.representation);
-      if (format2 !== "extended" && format2 !== "basic") {
+      if (format4 !== "extended" && format4 !== "basic") {
         throw new RangeError("format must be 'extended' or 'basic'");
       }
       if (representation !== "date" && representation !== "time" && representation !== "complete") {
@@ -66787,8 +66787,8 @@ var require_formatISO = __commonJS({
       }
       var result = "";
       var tzOffset = "";
-      var dateDelimiter = format2 === "extended" ? "-" : "";
-      var timeDelimiter = format2 === "extended" ? ":" : "";
+      var dateDelimiter = format4 === "extended" ? "-" : "";
+      var timeDelimiter = format4 === "extended" ? ":" : "";
       if (representation !== "time") {
         var day = (0, _index2.default)(originalDate.getDate(), 2);
         var month = (0, _index2.default)(originalDate.getMonth() + 1, 2);
@@ -66842,17 +66842,17 @@ var require_formatISO9075 = __commonJS({
         throw new RangeError("Invalid time value");
       }
       var options = dirtyOptions || {};
-      var format2 = options.format == null ? "extended" : String(options.format);
+      var format4 = options.format == null ? "extended" : String(options.format);
       var representation = options.representation == null ? "complete" : String(options.representation);
-      if (format2 !== "extended" && format2 !== "basic") {
+      if (format4 !== "extended" && format4 !== "basic") {
         throw new RangeError("format must be 'extended' or 'basic'");
       }
       if (representation !== "date" && representation !== "time" && representation !== "complete") {
         throw new RangeError("representation must be 'date', 'time', or 'complete'");
       }
       var result = "";
-      var dateDelimiter = format2 === "extended" ? "-" : "";
-      var timeDelimiter = format2 === "extended" ? ":" : "";
+      var dateDelimiter = format4 === "extended" ? "-" : "";
+      var timeDelimiter = format4 === "extended" ? ":" : "";
       if (representation !== "time") {
         var day = (0, _index3.default)(originalDate.getDate(), 2);
         var month = (0, _index3.default)(originalDate.getMonth() + 1, 2);
@@ -74693,7 +74693,7 @@ var updateBalances = (knex2) => __async(void 0, null, function* () {
   }
 });
 
-// up/helpers/preparePeriodData.ts
+// up/helpers/preparePeriodData/balances.ts
 var import_date_fns2 = __toESM(require_date_fns());
 function createBalancesData({
   accounts,
@@ -74722,36 +74722,35 @@ function createBalancesData({
     }), { startDate });
   });
 }
-function createPeriodicData({
-  period,
-  balances,
-  accounts,
+
+// up/helpers/preparePeriodData/cashflow.ts
+function createCashFlowData({
+  startDates,
   transactions
 }) {
-  const allStartDates = /* @__PURE__ */ new Set();
-  const categories = /* @__PURE__ */ new Set();
-  const parentCategories = /* @__PURE__ */ new Set();
-  const monthlyDaysOffset = 5;
-  function formattedStartOfDate(date) {
-    return (0, import_date_fns2.format)(period === "week" ? (0, import_date_fns2.startOfWeek)(new Date(date), {
-      weekStartsOn: 1
-    }) : (0, import_date_fns2.subDays)((0, import_date_fns2.startOfMonth)((0, import_date_fns2.addDays)(new Date(date), monthlyDaysOffset)), monthlyDaysOffset), "dd/MM/yy");
-  }
-  const transactionsWithStartDate = transactions.map((txn) => {
-    const startDate = formattedStartOfDate(txn.createdAt);
-    allStartDates.add(startDate);
-    categories.add(txn.category || "Uncategorised");
-    parentCategories.add(txn.parentCategory || "Uncategorised");
-    return __spreadProps(__spreadValues({}, txn), {
-      startDate
-    });
+  return startDates.map((startDate) => {
+    const transactionsForStart = transactions.filter((txn) => txn.startDate === startDate && !isProbablyInvestment(txn) && !isProbablyTransfer(txn));
+    const cashFlowKey = "In/Out";
+    return transactionsForStart.reduce((acc, curr) => __spreadProps(__spreadValues({}, acc), {
+      [cashFlowKey]: curr.amount / 100 + Number(acc[cashFlowKey])
+    }), { startDate, [cashFlowKey]: 0 });
   });
-  const startDates = [...allStartDates].sort((a, b) => (0, import_date_fns2.differenceInSeconds)(new Date(a), new Date(b)));
-  const createAccStart = (startDate, set) => [...set].reduce((acc, curr) => __spreadProps(__spreadValues({}, acc), { [curr]: 0 }), {
+}
+
+// up/helpers/preparePeriodData/expenses.ts
+var createAccStart = (startDate, set) => {
+  return [...set].reduce((acc, curr) => __spreadProps(__spreadValues({}, acc), { [curr]: 0 }), {
     startDate
   });
-  const expenses = startDates.reduce((acc, startDate) => {
-    const transactionsForStart = transactionsWithStartDate.filter((txn) => txn.amount < 0 && txn.startDate === startDate && !isProbablyInvestment(txn) && !isProbablyTransfer(txn));
+};
+function createExpensesData({
+  startDates,
+  transactions,
+  categories,
+  parentCategories
+}) {
+  return startDates.reduce((acc, startDate) => {
+    const transactionsForStart = transactions.filter((txn) => txn.amount < 0 && txn.startDate === startDate && !isProbablyInvestment(txn) && !isProbablyTransfer(txn));
     const all = [
       ...acc.all,
       transactionsForStart.reduce((acc_2, curr) => __spreadProps(__spreadValues({}, acc_2), {
@@ -74786,17 +74785,98 @@ function createPeriodicData({
     byParent: [],
     byCategory: []
   });
-  const cashFlow = startDates.map((startDate) => {
-    const transactionsForStart = transactionsWithStartDate.filter((txn) => txn.startDate === startDate && !isProbablyInvestment(txn) && !isProbablyTransfer(txn));
-    const cashFlowKey = "In/Out";
-    return transactionsForStart.reduce((acc, curr) => __spreadProps(__spreadValues({}, acc), {
-      [cashFlowKey]: curr.amount / 100 + Number(acc[cashFlowKey])
-    }), { startDate, [cashFlowKey]: 0 });
+}
+
+// up/helpers/preparePeriodData/savers.ts
+var import_date_fns3 = __toESM(require_date_fns());
+
+// ../types/finance.ts
+function toCents(input) {
+  return input;
+}
+var redrawAccountId = "nab-redraw";
+
+// up/helpers/preparePeriodData/savers.ts
+function createSaversData({
+  savers,
+  saverTransactions,
+  balances
+}) {
+  const startDates = /* @__PURE__ */ new Set();
+  const balancesWithStartDate = balances.map((txn) => {
+    const startDate = (0, import_date_fns3.format)(txn.createdAt, "dd/MM/yy");
+    startDates.add(startDate);
+    return __spreadProps(__spreadValues({}, txn), {
+      startDate
+    });
   });
+  const sortedStartDates = [...startDates].sort((a, b) => new Date(a).valueOf() - new Date(b).valueOf());
+  console.log(savers, saverTransactions);
+  return sortedStartDates.map((startDate) => {
+    var _a;
+    const redrawBalanceForStartData = balancesWithStartDate.find((balance) => balance.startDate === startDate && balance.accountId === redrawAccountId);
+    return { startDate, Redraw: (_a = redrawBalanceForStartData == null ? void 0 : redrawBalanceForStartData.balance) != null ? _a : 0 };
+  });
+}
+
+// up/helpers/preparePeriodData/transactions.ts
+var import_date_fns4 = __toESM(require_date_fns());
+function createFormattedTransactionData(transactions, period) {
+  const allStartDates = /* @__PURE__ */ new Set();
+  const categories = /* @__PURE__ */ new Set();
+  const parentCategories = /* @__PURE__ */ new Set();
+  const monthlyDaysOffset = 5;
+  function formattedStartOfDate(date) {
+    return (0, import_date_fns4.format)(period === "week" ? (0, import_date_fns4.startOfWeek)(new Date(date), {
+      weekStartsOn: 1
+    }) : (0, import_date_fns4.subDays)((0, import_date_fns4.startOfMonth)((0, import_date_fns4.addDays)(new Date(date), monthlyDaysOffset)), monthlyDaysOffset), "dd/MM/yy");
+  }
+  const transactionsWithStartDate = transactions.map((txn) => {
+    const startDate = formattedStartOfDate(txn.createdAt);
+    allStartDates.add(startDate);
+    categories.add(txn.category || "Uncategorised");
+    parentCategories.add(txn.parentCategory || "Uncategorised");
+    return __spreadProps(__spreadValues({}, txn), {
+      startDate
+    });
+  });
+  const startDates = [...allStartDates].sort((a, b) => new Date(a).valueOf() - new Date(b).valueOf());
   return {
+    categories,
+    parentCategories,
+    startDates,
+    transactionsWithStartDate
+  };
+}
+
+// up/helpers/preparePeriodData/index.ts
+function createPeriodicData({
+  period,
+  balances,
+  accounts,
+  transactions,
+  savers,
+  saverTransactions
+}) {
+  const {
+    startDates,
+    transactionsWithStartDate,
+    categories,
+    parentCategories
+  } = createFormattedTransactionData(transactions, period);
+  return {
+    expenses: createExpensesData({
+      startDates,
+      transactions: transactionsWithStartDate,
+      categories,
+      parentCategories
+    }),
+    cashFlow: createCashFlowData({
+      startDates,
+      transactions: transactionsWithStartDate
+    }),
     balances: createBalancesData({ accounts, balances }),
-    expenses,
-    cashFlow
+    savers: createSaversData({ savers, balances, saverTransactions })
   };
 }
 
@@ -74900,14 +74980,9 @@ var upApiKey = upApiKeyChris2 != null ? upApiKeyChris2 : upApiKeyKate2;
 // up/routes/update.ts
 var import_crypto2 = __toESM(require("crypto"));
 var import_dotenv4 = __toESM(require_main());
-
-// ../types/finance.ts
-function toCents(input) {
-  return input;
-}
-
-// up/routes/update.ts
 import_dotenv4.default.config({ path: ".env.local" });
+var mortgageAccountId = "753061668";
+var savingsAccountId = "753037756";
 function createUpUpdateRoutes(app2, knex2) {
   app2.post("/up", limiter, (req, res, next) => __async(this, null, function* () {
     var _a, _b, _c;
@@ -74979,9 +75054,6 @@ function createUpUpdateRoutes(app2, knex2) {
       const body = req.body;
       if (hasAuthHeaders && typeof body === "object") {
         const { loanDollars, savingsDollars, redrawDollars } = body;
-        const mortgageAccountId = "753061668";
-        const savingsAccountId = "753037756";
-        const redrawAccountId = "nab-redraw";
         yield Promise.all([
           insertAccountBalance({
             accountId: mortgageAccountId,
@@ -75022,7 +75094,7 @@ function createUpUpdateRoutes(app2, knex2) {
 
 // up/routes/fetch.ts
 var import_dotenv5 = __toESM(require_main());
-var import_date_fns3 = __toESM(require_date_fns());
+var import_date_fns5 = __toESM(require_date_fns());
 import_dotenv5.default.config({ path: ".env.local" });
 function createUpFetchRoutes(app2, knex2) {
   app2.get("/up/:period", limiter, (req, res, next) => __async(this, null, function* () {
@@ -75032,20 +75104,32 @@ function createUpFetchRoutes(app2, knex2) {
       let weeksLookback = Math.max(chartLookbackWeeks, 20);
       if (period === "month")
         weeksLookback = weeksLookback * 3;
-      const fromDate = (0, import_date_fns3.subWeeks)((0, import_date_fns3.startOfWeek)(new Date(), {
+      const fromDate = (0, import_date_fns5.subWeeks)((0, import_date_fns5.startOfWeek)(new Date(), {
         weekStartsOn: 1
       }), weeksLookback);
       if (hasAuth) {
-        const accounts = yield knex2.table("accounts" /* ACCOUNTS */).where({ excludeFromCalcs: false }).select();
-        const balances = yield knex2.table("account_balances" /* BALANCES */).where("createdAt", ">", fromDate).select();
-        const transactions = yield knex2.table("account_transactions" /* TRANSACTIONS */).where("createdAt", ">", fromDate).select();
+        const [
+          accounts,
+          balances,
+          transactions,
+          savers,
+          saverTransactions
+        ] = yield Promise.all([
+          knex2.table("accounts" /* ACCOUNTS */).where({ excludeFromCalcs: false }).select(),
+          knex2.table("account_balances" /* BALANCES */).where("createdAt", ">", fromDate).select(),
+          knex2.table("account_transactions" /* TRANSACTIONS */).where("createdAt", ">", fromDate).select(),
+          knex2.table("savers" /* SAVERS */).select(),
+          knex2.table("saver_transactions" /* SAVER_TRANSACTIONS */).select()
+        ]);
         let result = void 0;
         if (period === "week" || period === "month") {
           result = createPeriodicData({
             period,
             balances,
             accounts,
-            transactions
+            transactions,
+            savers,
+            saverTransactions
           });
         }
         if (result) {

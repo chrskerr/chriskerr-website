@@ -19,6 +19,7 @@ export type UpApiReturn = {
 		byParent: ChartData[];
 		byCategory: ChartData[];
 	};
+	savers: ChartData[];
 };
 
 export type Account = {
@@ -150,3 +151,5 @@ export type SaverTransaction = {
 	amountCents: Cents;
 	createdAt: Date;
 };
+
+export const redrawAccountId = 'nab-redraw';
