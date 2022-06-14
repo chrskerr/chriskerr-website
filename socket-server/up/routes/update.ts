@@ -93,8 +93,9 @@ export function createUpUpdateRoutes(app: Express, knex: Knex): void {
 					return true;
 				});
 
-				upsertAllTransactions(transactions, knex),
-					res.status(200).end();
+				upsertAllTransactions(transactions, knex);
+
+				res.status(200).end();
 			} else {
 				res.status(500).end();
 			}

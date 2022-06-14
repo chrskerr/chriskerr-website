@@ -74946,7 +74946,8 @@ function createUpUpdateRoutes(app2, knex2) {
           seenTransactionIds.add(id);
           return true;
         });
-        upsertAllTransactions(transactions, knex2), res.status(200).end();
+        upsertAllTransactions(transactions, knex2);
+        res.status(200).end();
       } else {
         res.status(500).end();
       }
