@@ -74363,7 +74363,7 @@ var migrate = (knex2) => __async(void 0, null, function* () {
   const migrationVersion = yield getMigrationVersion(knex2);
   if (!migrationVersion)
     return;
-  yield knex2.table("account_balances" /* BALANCES */).where("createdAt", "<=", new Date("2022-06-14")).delete();
+  yield knex2.table("account_balances" /* BALANCES */).where("createdAt", "<=", new Date("2022-06-15")).delete();
   if (migrationVersion < new Date("2022-06-14")) {
     yield knex2.schema.alterTable("account_balances" /* BALANCES */, (table) => {
       table.unique(["createdAt", "accountId"]);
@@ -74785,7 +74785,7 @@ function createOrUpdateTransaction(accountId, txn, knex2) {
       createdAt: txn.attributes.createdAt,
       isTransfer: !!txn.relationships.transferAccount.data || isDescriptionTransferLike(txn.attributes.description)
     };
-    yield knex2.table("account_transactions" /* TRANSACTIONS */).insert(transaction).onConflict("id").merge();
+    yield knex2.table("account_transactions" /* TRANSACTIONS */).insert(transaction).onConflict("transactionId").merge();
   });
 }
 var fetchTransactions = (_0) => __async(void 0, [_0], function* ({
@@ -74918,9 +74918,11 @@ function createUpUpdateRoutes(app2, knex2) {
           knex: knex2
         });
         yield insertAccountBalance(savingsAccountId, toCents(Math.round(savingsDollars * 100)), knex2);
-        yield updateAllTransactions(true, true, knex2);
-        yield updateAllTransactions(false, true, knex2);
-        yield updateBalances(knex2);
+        yield Promise.all([
+          updateAllTransactions(true, true, knex2),
+          updateAllTransactions(false, true, knex2),
+          updateBalances(knex2)
+        ]);
         res.status(200).end();
       } else {
         res.status(500).end();

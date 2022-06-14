@@ -40,7 +40,7 @@ async function createOrUpdateTransaction(
 	await knex
 		.table<Transaction>(TableNames.TRANSACTIONS)
 		.insert(transaction)
-		.onConflict('id')
+		.onConflict('transactionId')
 		.merge();
 }
 

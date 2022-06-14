@@ -123,7 +123,7 @@ export const migrate = async (knex: Knex): Promise<void> => {
 
 	await knex
 		.table<Balance>(TableNames.BALANCES)
-		.where('createdAt', '<=', new Date('2022-06-14'))
+		.where('createdAt', '<=', new Date('2022-06-15'))
 		.delete();
 
 	if (migrationVersion < new Date('2022-06-14')) {

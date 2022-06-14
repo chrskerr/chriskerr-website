@@ -97,9 +97,11 @@ export function createUpUpdateRoutes(app: Express, knex: Knex): void {
 					knex,
 				);
 
-				await updateAllTransactions(true, true, knex);
-				await updateAllTransactions(false, true, knex);
-				await updateBalances(knex);
+				await Promise.all([
+					updateAllTransactions(true, true, knex),
+					updateAllTransactions(false, true, knex),
+					updateBalances(knex),
+				]);
 
 				res.status(200).end();
 			} else {
