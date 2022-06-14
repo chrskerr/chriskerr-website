@@ -55,7 +55,7 @@ export const fetchTransactions = async ({
 }): Promise<UpTransaction[]> => {
 	const res = await axios.get(
 		link ||
-			urlBase + `/transactions?page[size]=${shouldFetchAll ? 500 : 20}`,
+			urlBase + `/transactions?page[size]=${shouldFetchAll ? 100 : 20}`,
 		{
 			headers: {
 				Authorization: `Bearer ${

@@ -74807,7 +74807,7 @@ var fetchTransactions = (_0) => __async(void 0, [_0], function* ({
   shouldFetchAll,
   link
 }) {
-  const res = yield import_axios2.default.get(link || urlBase + `/transactions?page[size]=${shouldFetchAll ? 500 : 20}`, {
+  const res = yield import_axios2.default.get(link || urlBase + `/transactions?page[size]=${shouldFetchAll ? 100 : 20}`, {
     headers: {
       Authorization: `Bearer ${isChris ? upApiKeyChris : upApiKeyKate}`
     }
