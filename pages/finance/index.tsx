@@ -60,8 +60,8 @@ export default function FinancesPage({ initialData }: Props): ReactElement {
 						</a>
 					</Link>
 				</div>
-				<div className="flex">
-					<label className="flex flex-col mr-4">
+				<div className="flex flex-col sm:flex-row">
+					<label className="flex flex-col sm:mr-4">
 						Period:
 						<select
 							value={period}
@@ -72,7 +72,7 @@ export default function FinancesPage({ initialData }: Props): ReactElement {
 							<option value="month">Monthly</option>
 						</select>
 					</label>
-					<label className="flex flex-col">
+					<label className="flex flex-col mt-4 sm:mt-0">
 						Chart display mode:
 						<select
 							value={displayMode}

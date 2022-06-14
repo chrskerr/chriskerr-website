@@ -74381,6 +74381,11 @@ var migrate = (knex2) => __async(void 0, null, function* () {
     });
     yield setMigrationVersion(knex2, new Date("2022-06-14"));
   }
+  if (migrationVersion < new Date("2022-06-15")) {
+    yield knex2.schema.alterTable("accounts" /* ACCOUNTS */, (table) => {
+      table.boolean("excludeFromCalcs").notNullable().defaultTo(false);
+    });
+  }
 });
 
 // node_modules/express-rate-limit/dist/index.mjs
@@ -74616,13 +74621,19 @@ function createOrUpdateAccount(_0) {
     accountName = "Unnamed",
     bankName,
     isChris,
-    knex: knex2
+    knex: knex2,
+    excludeFromCalcs
   }) {
     let name = accountName;
     if (name === "Spending" && bankName === "up") {
       name = isChris ? "Chris Spending" : "Kate Spending";
     }
-    return yield knex2.table("accounts" /* ACCOUNTS */).insert({ id, name, bankName }).onConflict("id").merge().returning("*");
+    return yield knex2.table("accounts" /* ACCOUNTS */).insert({
+      id,
+      name,
+      bankName,
+      excludeFromCalcs: excludeFromCalcs || false
+    }).onConflict("id").merge().returning("*");
   });
 }
 function insertAccountBalance(_0) {
@@ -74632,14 +74643,16 @@ function insertAccountBalance(_0) {
     bankName,
     isChris,
     balance,
-    knex: knex2
+    knex: knex2,
+    excludeFromCalcs
   }) {
     yield createOrUpdateAccount({
       id: accountId,
       accountName,
       bankName,
       isChris,
-      knex: knex2
+      knex: knex2,
+      excludeFromCalcs
     });
     const createdAt = (0, import_date_fns.startOfDay)(new Date());
     yield knex2.table("account_balances" /* BALANCES */).insert({ accountId, balance, createdAt }).onConflict(["accountId", "createdAt"]).merge();
@@ -74682,15 +74695,42 @@ var updateBalances = (knex2) => __async(void 0, null, function* () {
 
 // up/helpers/preparePeriodData.ts
 var import_date_fns2 = __toESM(require_date_fns());
+function createBalancesData({
+  accounts,
+  balances
+}) {
+  const startDates = /* @__PURE__ */ new Set();
+  const balancesWithStartDate = balances.map((txn) => {
+    const startDate = (0, import_date_fns2.format)(txn.createdAt, "dd/MM/yy");
+    startDates.add(startDate);
+    return __spreadProps(__spreadValues({}, txn), {
+      startDate
+    });
+  });
+  const sortedStartDates = [...startDates].sort((a, b) => (0, import_date_fns2.differenceInSeconds)(new Date(a), new Date(b)));
+  return sortedStartDates.map((startDate) => {
+    const balancesForStart = balancesWithStartDate.filter((curr) => curr.startDate === startDate);
+    return accounts.map((account) => {
+      var _a;
+      const balancesForAccount = balancesForStart.filter((curr) => curr.accountId === account.id).sort((a, b) => (0, import_date_fns2.differenceInSeconds)(new Date(b.createdAt), new Date(a.createdAt)));
+      return {
+        balance: ((_a = balancesForAccount == null ? void 0 : balancesForAccount[0]) == null ? void 0 : _a.balance) || 0,
+        accountName: account.name
+      };
+    }).reduce((acc, curr) => __spreadProps(__spreadValues({}, acc), {
+      [curr.accountName]: curr.balance / 100 + (Number(acc[curr.accountName]) || 0)
+    }), { startDate });
+  });
+}
 function createPeriodicData({
   period,
   balances,
   accounts,
   transactions
 }) {
-  const allStartDates = [];
-  const allCategories = [];
-  const allParentCategories = [];
+  const allStartDates = /* @__PURE__ */ new Set();
+  const categories = /* @__PURE__ */ new Set();
+  const parentCategories = /* @__PURE__ */ new Set();
   const monthlyDaysOffset = 5;
   function formattedStartOfDate(date) {
     return (0, import_date_fns2.format)(period === "week" ? (0, import_date_fns2.startOfWeek)(new Date(date), {
@@ -74699,24 +74739,15 @@ function createPeriodicData({
   }
   const transactionsWithStartDate = transactions.map((txn) => {
     const startDate = formattedStartOfDate(txn.createdAt);
-    allStartDates.push(startDate);
-    allCategories.push(txn.category || "Uncategorised");
-    allParentCategories.push(txn.parentCategory || "Uncategorised");
+    allStartDates.add(startDate);
+    categories.add(txn.category || "Uncategorised");
+    parentCategories.add(txn.parentCategory || "Uncategorised");
     return __spreadProps(__spreadValues({}, txn), {
       startDate
     });
   });
-  const balancesWithStartDate = balances.map((txn) => {
-    const startDate = formattedStartOfDate(txn.createdAt);
-    allStartDates.push(startDate);
-    return __spreadProps(__spreadValues({}, txn), {
-      startDate
-    });
-  });
-  const startDates = [...new Set(allStartDates)].sort((a, b) => (0, import_date_fns2.differenceInSeconds)(new Date(a), new Date(b)));
-  const categories = [...new Set(allCategories)];
-  const parentCategories = [...new Set(allParentCategories)];
-  const createAccStart = (startDate, set) => set.reduce((acc, curr) => __spreadProps(__spreadValues({}, acc), { [curr]: 0 }), {
+  const startDates = [...allStartDates].sort((a, b) => (0, import_date_fns2.differenceInSeconds)(new Date(a), new Date(b)));
+  const createAccStart = (startDate, set) => [...set].reduce((acc, curr) => __spreadProps(__spreadValues({}, acc), { [curr]: 0 }), {
     startDate
   });
   const expenses = startDates.reduce((acc, startDate) => {
@@ -74762,21 +74793,8 @@ function createPeriodicData({
       [cashFlowKey]: curr.amount / 100 + Number(acc[cashFlowKey])
     }), { startDate, [cashFlowKey]: 0 });
   });
-  const uniqueBalances = startDates.map((startDate) => {
-    const balancesForStart = balancesWithStartDate.filter((curr) => curr.startDate === startDate);
-    return accounts.map((account) => {
-      var _a;
-      const balancesForAccount = balancesForStart.filter((curr) => curr.accountId === account.id).sort((a, b) => (0, import_date_fns2.differenceInSeconds)(new Date(b.createdAt), new Date(a.createdAt)));
-      return {
-        balance: ((_a = balancesForAccount == null ? void 0 : balancesForAccount[0]) == null ? void 0 : _a.balance) || 0,
-        accountName: account.name
-      };
-    }).reduce((acc, curr) => __spreadProps(__spreadValues({}, acc), {
-      [curr.accountName]: curr.balance / 100 + (Number(acc[curr.accountName]) || 0)
-    }), { startDate });
-  });
   return {
-    balances: uniqueBalances,
+    balances: createBalancesData({ accounts, balances }),
     expenses,
     cashFlow
   };
@@ -74960,9 +74978,10 @@ function createUpUpdateRoutes(app2, knex2) {
       const hasAuthHeaders = getHasAuthHeaders(req);
       const body = req.body;
       if (hasAuthHeaders && typeof body === "object") {
-        const { loanDollars, savingsDollars } = body;
+        const { loanDollars, savingsDollars, redrawDollars } = body;
         const mortgageAccountId = "753061668";
         const savingsAccountId = "753037756";
+        const redrawAccountId = "nab-redraw";
         yield Promise.all([
           insertAccountBalance({
             accountId: mortgageAccountId,
@@ -74979,6 +74998,15 @@ function createUpUpdateRoutes(app2, knex2) {
             isChris: true,
             balance: toCents(Math.round(savingsDollars * 100)),
             knex: knex2
+          }),
+          insertAccountBalance({
+            accountId: redrawAccountId,
+            accountName: "NAB Redraw",
+            bankName: "nab",
+            isChris: true,
+            balance: toCents(Math.round(redrawDollars * 100)),
+            knex: knex2,
+            excludeFromCalcs: true
           })
         ]);
         yield updateBalances(knex2);
@@ -75008,7 +75036,7 @@ function createUpFetchRoutes(app2, knex2) {
         weekStartsOn: 1
       }), weeksLookback);
       if (hasAuth) {
-        const accounts = yield knex2.table("accounts" /* ACCOUNTS */).select();
+        const accounts = yield knex2.table("accounts" /* ACCOUNTS */).where({ excludeFromCalcs: false }).select();
         const balances = yield knex2.table("account_balances" /* BALANCES */).where("createdAt", ">", fromDate).select();
         const transactions = yield knex2.table("account_transactions" /* TRANSACTIONS */).where("createdAt", ">", fromDate).select();
         let result = void 0;

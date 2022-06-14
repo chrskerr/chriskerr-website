@@ -35,6 +35,7 @@ export function createUpFetchRoutes(app: Express, knex: Knex): void {
 			if (hasAuth) {
 				const accounts = await knex
 					.table<Account>(TableNames.ACCOUNTS)
+					.where({ excludeFromCalcs: false })
 					.select();
 				const balances = await knex
 					.table<Balance>(TableNames.BALANCES)

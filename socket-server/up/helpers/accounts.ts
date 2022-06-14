@@ -15,12 +15,14 @@ export async function createOrUpdateAccount({
 	bankName,
 	isChris,
 	knex,
+	excludeFromCalcs,
 }: {
 	id: string;
 	accountName?: string;
 	bankName: Account['bankName'];
 	isChris: boolean;
 	knex: Knex;
+	excludeFromCalcs?: boolean;
 }) {
 	let name = accountName;
 
@@ -30,7 +32,12 @@ export async function createOrUpdateAccount({
 
 	return await knex
 		.table<Account>(TableNames.ACCOUNTS)
-		.insert({ id, name, bankName })
+		.insert({
+			id,
+			name,
+			bankName,
+			excludeFromCalcs: excludeFromCalcs || false,
+		})
 		.onConflict('id')
 		.merge()
 		.returning('*');
@@ -43,6 +50,7 @@ export async function insertAccountBalance({
 	isChris,
 	balance,
 	knex,
+	excludeFromCalcs,
 }: {
 	accountId: string;
 	accountName: string;
@@ -50,6 +58,7 @@ export async function insertAccountBalance({
 	isChris: boolean;
 	balance: Cents;
 	knex: Knex;
+	excludeFromCalcs?: boolean;
 }): Promise<void> {
 	await createOrUpdateAccount({
 		id: accountId,
@@ -57,6 +66,7 @@ export async function insertAccountBalance({
 		bankName,
 		isChris,
 		knex,
+		excludeFromCalcs,
 	});
 
 	const createdAt = startOfDay(new Date());

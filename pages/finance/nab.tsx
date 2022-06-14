@@ -11,6 +11,7 @@ import { socketServerUrl } from 'lib/constants';
 export default function FinancesPage(): ReactElement {
 	const [savingsDollars, setSavingsDollars] = useState<string | undefined>();
 	const [loanDollars, setLoanDollars] = useState<string | undefined>();
+	const [redrawDollars, setRedrawDollars] = useState<string | undefined>();
 
 	const [error, setError] = useState<string | undefined>();
 	const [isLoading, setIsLoading] = useState(false);
@@ -26,6 +27,7 @@ export default function FinancesPage(): ReactElement {
 			const body: ReportNabBody = {
 				savingsDollars: toDollars(Math.floor(Number(savingsDollars))),
 				loanDollars: toDollars(Math.floor(Number(loanDollars))),
+				redrawDollars: toDollars(Math.floor(Number(redrawDollars))),
 			};
 			await fetch('/api/finance/nab', {
 				method: 'POST',
@@ -51,6 +53,7 @@ export default function FinancesPage(): ReactElement {
 			setError('Please complete savings balance');
 			return;
 		}
+
 		if (
 			!loanDollars ||
 			isNaN(Number(loanDollars)) ||
@@ -60,12 +63,24 @@ export default function FinancesPage(): ReactElement {
 			return;
 		}
 
+		if (
+			!redrawDollars ||
+			isNaN(Number(redrawDollars)) ||
+			Number(redrawDollars) < 0
+		) {
+			setError('Redraw balance must be more than 0');
+			return;
+		}
+
 		setError(undefined);
 	}, [savingsDollars, loanDollars]);
 
 	useEffect(() => {
 		void fetch(socketServerUrl);
 	}, []);
+
+	const inputClass =
+		'invalid:ring-red-500 invalid:border-red-500 mb-6 sm:mb-0';
 
 	return (
 		<>
@@ -78,10 +93,11 @@ export default function FinancesPage(): ReactElement {
 					</a>
 				</Link>
 			</div>
-			<div className="grid grid-cols-2 gap-4 display-width divider-before justify-items-start">
+			<div className="flex flex-col sm:gap-4 sm:grid sm:grid-cols-2 display-width divider-before justify-items-start">
 				<label>Current NAB Savings balance (whole $)</label>
 				<input
 					type="number"
+					className={inputClass}
 					placeholder="Current NAB Savings balance (whole $)"
 					value={savingsDollars}
 					onChange={e => setSavingsDollars(e.target.value)}
@@ -90,15 +106,27 @@ export default function FinancesPage(): ReactElement {
 				<label>Current Mortgage balance (whole $)</label>
 				<input
 					type="number"
-					className="invalid:ring-red-500 invalid:border-red-500"
+					className={inputClass}
 					placeholder="Current Mortgage balance (whole $)"
 					value={loanDollars}
 					max={0}
 					onChange={e => setLoanDollars(e.target.value)}
 				/>
 
+				<label>Current Mortgage redraw (whole $)</label>
+				<input
+					type="number"
+					className={inputClass}
+					placeholder="Current Mortgage balance (whole $)"
+					value={loanDollars}
+					max={0}
+					onChange={e => setRedrawDollars(e.target.value)}
+				/>
+
 				{error && (
-					<p className="col-span-2 font-bold text-red-500">{error}</p>
+					<p className="col-span-2 mb-6 font-bold text-red-500 sm:mb-0">
+						{error}
+					</p>
 				)}
 
 				<button

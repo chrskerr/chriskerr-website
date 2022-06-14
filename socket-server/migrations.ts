@@ -148,4 +148,10 @@ export const migrate = async (knex: Knex): Promise<void> => {
 
 		await setMigrationVersion(knex, new Date('2022-06-14'));
 	}
+
+	if (migrationVersion < new Date('2022-06-15')) {
+		await knex.schema.alterTable(TableNames.ACCOUNTS, table => {
+			table.boolean('excludeFromCalcs').notNullable().defaultTo(false);
+		});
+	}
 };

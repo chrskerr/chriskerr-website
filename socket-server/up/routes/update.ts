@@ -110,10 +110,11 @@ export function createUpUpdateRoutes(app: Express, knex: Knex): void {
 			const body = req.body as ReportNabBody | undefined;
 
 			if (hasAuthHeaders && typeof body === 'object') {
-				const { loanDollars, savingsDollars } = body;
+				const { loanDollars, savingsDollars, redrawDollars } = body;
 
 				const mortgageAccountId = '753061668';
 				const savingsAccountId = '753037756';
+				const redrawAccountId = 'nab-redraw';
 				await Promise.all([
 					insertAccountBalance({
 						accountId: mortgageAccountId,
@@ -131,6 +132,16 @@ export function createUpUpdateRoutes(app: Express, knex: Knex): void {
 						isChris: true,
 						balance: toCents(Math.round(savingsDollars * 100)),
 						knex,
+					}),
+
+					insertAccountBalance({
+						accountId: redrawAccountId,
+						accountName: 'NAB Redraw',
+						bankName: 'nab',
+						isChris: true,
+						balance: toCents(Math.round(redrawDollars * 100)),
+						knex,
+						excludeFromCalcs: true,
 					}),
 				]);
 

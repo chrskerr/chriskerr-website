@@ -35,11 +35,11 @@ export default function BadFactors(): ReactElement {
 		}
 	};
 
-	function formatInput(value: BigInt): string {
+	function formatInput(value: bigint): string {
 		return format(Number(value));
 	}
 
-	async function getWorkerFactors(input: BigInt): Promise<Result> {
+	async function getWorkerFactors(input: bigint): Promise<Result> {
 		const start = new Date().valueOf();
 		const result = await new Promise<number[]>(resolve => {
 			if (!webWorker.current) {
@@ -65,7 +65,7 @@ export default function BadFactors(): ReactElement {
 		return { result, durationMs: new Date().valueOf() - start };
 	}
 
-	const generate = async (input: BigInt) => {
+	const generate = async (input: bigint) => {
 		setLoading(true);
 
 		const [workerFactors] = await Promise.all([getWorkerFactors(input)]);

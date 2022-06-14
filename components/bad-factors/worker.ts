@@ -1,4 +1,4 @@
-type IWorkerInput = BigInt;
+type IWorkerInput = bigint;
 
 export type CustomWorker = Omit<Worker, 'postMessage'> & {
 	postMessage(command: IWorkerInput): void;

@@ -16,6 +16,63 @@ import {
 } from '../../../types/finance';
 import { isProbablyInvestment, isProbablyTransfer } from './misc';
 
+interface ICreateBalancesData {
+	accounts: Account[];
+	balances: Balance[];
+}
+
+function createBalancesData({
+	accounts,
+	balances,
+}: ICreateBalancesData): ChartData[] {
+	const startDates = new Set<string>();
+	const balancesWithStartDate = balances.map<Balance & { startDate: string }>(
+		txn => {
+			const startDate = format(txn.createdAt, 'dd/MM/yy');
+			startDates.add(startDate);
+			return {
+				...txn,
+				startDate,
+			};
+		},
+	);
+
+	const sortedStartDates = [...startDates].sort((a, b) =>
+		differenceInSeconds(new Date(a), new Date(b)),
+	);
+
+	return sortedStartDates.map<ChartData>(startDate => {
+		const balancesForStart = balancesWithStartDate.filter(
+			curr => curr.startDate === startDate,
+		);
+		return accounts
+			.map(account => {
+				const balancesForAccount = balancesForStart
+					.filter(curr => curr.accountId === account.id)
+					.sort((a, b) =>
+						differenceInSeconds(
+							new Date(b.createdAt),
+							new Date(a.createdAt),
+						),
+					);
+
+				return {
+					balance: balancesForAccount?.[0]?.balance || 0,
+					accountName: account.name,
+				};
+			})
+			.reduce<ChartData>(
+				(acc, curr) => ({
+					...acc,
+					[curr.accountName]:
+						curr.balance / 100 +
+						(Number(acc[curr.accountName]) || 0),
+				}),
+				{ startDate },
+			);
+	});
+}
+
 export function createPeriodicData({
 	period,
 	balances,
@@ -27,9 +84,9 @@ export function createPeriodicData({
 	accounts: Account[];
 	transactions: Transaction[];
 }): UpApiReturn {
-	const allStartDates: string[] = [];
-	const allCategories: string[] = [];
-	const allParentCategories: string[] = [];
+	const allStartDates = new Set<string>();
+	const categories = new Set<string>();
+	const parentCategories = new Set<string>();
 
 	const monthlyDaysOffset = 5;
 
@@ -53,35 +110,21 @@ export function createPeriodicData({
 		Transaction & { startDate: string }
 	>(txn => {
 		const startDate = formattedStartOfDate(txn.createdAt);
-		allStartDates.push(startDate);
-		allCategories.push(txn.category || 'Uncategorised');
-		allParentCategories.push(txn.parentCategory || 'Uncategorised');
+		allStartDates.add(startDate);
+		categories.add(txn.category || 'Uncategorised');
+		parentCategories.add(txn.parentCategory || 'Uncategorised');
 		return {
 			...txn,
 			startDate,
 		};
 	});
 
-	const balancesWithStartDate = balances.map<Balance & { startDate: string }>(
-		txn => {
-			const startDate = formattedStartOfDate(txn.createdAt);
-			allStartDates.push(startDate);
-			return {
-				...txn,
-				startDate,
-			};
-		},
-	);
-
-	const startDates = [...new Set(allStartDates)].sort((a, b) =>
+	const startDates = [...allStartDates].sort((a, b) =>
 		differenceInSeconds(new Date(a), new Date(b)),
 	);
 
-	const categories = [...new Set(allCategories)];
-	const parentCategories = [...new Set(allParentCategories)];
-
-	const createAccStart = (startDate: string, set: string[]) =>
-		set.reduce<ChartData>((acc, curr) => ({ ...acc, [curr]: 0 }), {
+	const createAccStart = (startDate: string, set: Set<string>) =>
+		[...set].reduce<ChartData>((acc, curr) => ({ ...acc, [curr]: 0 }), {
 			startDate,
 		});
 
@@ -166,39 +209,8 @@ export function createPeriodicData({
 		);
 	});
 
-	const uniqueBalances = startDates.map<ChartData>(startDate => {
-		const balancesForStart = balancesWithStartDate.filter(
-			curr => curr.startDate === startDate,
-		);
-		return accounts
-			.map(account => {
-				const balancesForAccount = balancesForStart
-					.filter(curr => curr.accountId === account.id)
-					.sort((a, b) =>
-						differenceInSeconds(
-							new Date(b.createdAt),
-							new Date(a.createdAt),
-						),
-					);
-
-				return {
-					balance: balancesForAccount?.[0]?.balance || 0,
-					accountName: account.name,
-				};
-			})
-			.reduce<ChartData>(
-				(acc, curr) => ({
-					...acc,
-					[curr.accountName]:
-						curr.balance / 100 +
-						(Number(acc[curr.accountName]) || 0),
-				}),
-				{ startDate },
-			);
-	});
-
 	return {
-		balances: uniqueBalances,
+		balances: createBalancesData({ accounts, balances }),
 		expenses,
 		cashFlow,
 	};

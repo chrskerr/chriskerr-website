@@ -25,6 +25,7 @@ export type Account = {
 	id: string;
 	name: string;
 	bankName: 'up' | 'nab';
+	excludeFromCalcs: boolean;
 };
 
 export type MigrationVersion = {
@@ -135,6 +136,7 @@ export type ChartData = {
 export type ReportNabBody = {
 	savingsDollars: Dollars;
 	loanDollars: Dollars;
+	redrawDollars: Dollars;
 };
 
 export type Saver = {
