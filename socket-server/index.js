@@ -74382,9 +74382,13 @@ var migrate = (knex2) => __async(void 0, null, function* () {
     yield setMigrationVersion(knex2, new Date("2022-06-14"));
   }
   if (migrationVersion < new Date("2022-06-15")) {
-    yield knex2.schema.alterTable("accounts" /* ACCOUNTS */, (table) => {
-      table.boolean("excludeFromCalcs").notNullable().defaultTo(false);
-    });
+    const hasColumn = yield knex2.schema.hasColumn("accounts" /* ACCOUNTS */, "excludeFromCalcs");
+    if (!hasColumn) {
+      yield knex2.schema.alterTable("accounts" /* ACCOUNTS */, (table) => {
+        table.boolean("excludeFromCalcs").notNullable().defaultTo(false);
+      });
+    }
+    yield setMigrationVersion(knex2, new Date("2022-06-15"));
   }
 });
 
