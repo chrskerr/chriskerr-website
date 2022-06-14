@@ -43,7 +43,10 @@ export default function Finance({
 				/>
 			</div>
 			<div className="w-full mt-20">
-				<SaversTable saversData={data.savers} />
+				<SaversTable
+					saversData={data.savers}
+					saverNames={data.saverNames}
+				/>
 			</div>
 		</>
 	);

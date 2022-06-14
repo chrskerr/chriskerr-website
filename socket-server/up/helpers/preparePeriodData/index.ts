@@ -51,5 +51,6 @@ export function createPeriodicData({
 		}),
 		balances: createBalancesData({ accounts, balances }),
 		savers: createSaversData({ savers, balances, saverTransactions }),
+		saverNames: savers,
 	};
 }

@@ -74148,6 +74148,24 @@ var require_date_fns = __commonJS({
   }
 });
 
+// node_modules/lodash/takeRight.js
+var require_takeRight = __commonJS({
+  "node_modules/lodash/takeRight.js"(exports2, module2) {
+    var baseSlice = require_baseSlice();
+    var toInteger = require_toInteger();
+    function takeRight2(array, n, guard) {
+      var length = array == null ? 0 : array.length;
+      if (!length) {
+        return [];
+      }
+      n = guard || n === void 0 ? 1 : toInteger(n);
+      n = length - n;
+      return baseSlice(array, n < 0 ? 0 : n, length);
+    }
+    module2.exports = takeRight2;
+  }
+});
+
 // index.ts
 var import_express = __toESM(require_express2());
 var import_http = __toESM(require("http"));
@@ -74793,6 +74811,7 @@ function createExpensesData({
 
 // up/helpers/preparePeriodData/savers.ts
 var import_date_fns3 = __toESM(require_date_fns());
+var import_takeRight = __toESM(require_takeRight());
 
 // ../types/finance.ts
 function toCents(input) {
@@ -74815,8 +74834,9 @@ function createSaversData({
     });
   });
   const sortedStartDates = [...startDates].sort((a, b) => new Date(a).valueOf() - new Date(b).valueOf());
+  const targetStartDates = (0, import_takeRight.default)(sortedStartDates, 3);
   console.log(savers, saverTransactions);
-  return sortedStartDates.map((startDate) => {
+  return targetStartDates.map((startDate) => {
     var _a;
     const redrawBalanceForStartData = balancesWithStartDate.find((balance) => balance.startDate === startDate && balance.accountId === redrawAccountId);
     return { startDate, Redraw: (_a = redrawBalanceForStartData == null ? void 0 : redrawBalanceForStartData.balance) != null ? _a : 0 };
@@ -74880,7 +74900,8 @@ function createPeriodicData({
       transactions: transactionsWithStartDate
     }),
     balances: createBalancesData({ accounts, balances }),
-    savers: createSaversData({ savers, balances, saverTransactions })
+    savers: createSaversData({ savers, balances, saverTransactions }),
+    saverNames: savers
   };
 }
 

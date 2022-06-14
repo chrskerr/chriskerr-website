@@ -1,4 +1,5 @@
 import { format } from 'date-fns';
+import takeRight from 'lodash/takeRight';
 import {
 	Balance,
 	ChartData,
@@ -34,8 +35,10 @@ export function createSaversData({
 		(a, b) => new Date(a).valueOf() - new Date(b).valueOf(),
 	);
 
+	const targetStartDates = takeRight(sortedStartDates, 3);
+
 	console.log(savers, saverTransactions);
-	return sortedStartDates.map(startDate => {
+	return targetStartDates.map(startDate => {
 		const redrawBalanceForStartData = balancesWithStartDate.find(
 			balance =>
 				balance.startDate === startDate &&

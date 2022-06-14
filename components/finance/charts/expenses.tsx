@@ -117,83 +117,95 @@ const ExpensesPerWeek = memo(function ExpensesPerWeek({
 						/>
 					</div>
 					{toggleCategoriesShown && (
-						<div
-							className="absolute flex flex-col items-end p-8 bg-white border rounded top-4 right-4"
-							onClick={e => e.stopPropagation()}
-						>
-							<span
-								className="-mt-3 text-2xl cursor-pointer font-heading"
+						<>
+							<div
+								className="fixed inset-0"
 								onClick={() => setToggleCategoriesShown(false)}
+							/>
+							<div
+								className="absolute flex flex-col items-end p-8 bg-white border rounded top-4 right-4"
+								onClick={e => e.stopPropagation()}
 							>
-								x
-							</span>
-							<div className="grid grid-cols-2">
-								<div className="flex items-center px-2">
-									<input
-										type="checkbox"
-										className="mr-4"
-										checked={
-											selectedCategories.length ===
-											categories.length
-										}
-										onChange={() => {
-											if (selectedCategories.length > 0) {
-												setSelectedCategories([]);
-											} else {
-												setSelectedCategories(
-													categories,
+								<span
+									className="-mt-3 text-2xl cursor-pointer font-heading"
+									onClick={() =>
+										setToggleCategoriesShown(false)
+									}
+								>
+									x
+								</span>
+								<div className="grid grid-cols-2">
+									<div className="flex items-center px-2">
+										<input
+											type="checkbox"
+											className="mr-4"
+											checked={
+												selectedCategories.length ===
+												categories.length
+											}
+											onChange={() => {
+												if (
+													selectedCategories.length >
+													0
+												) {
+													setSelectedCategories([]);
+												} else {
+													setSelectedCategories(
+														categories,
+													);
+												}
+											}}
+											ref={el => {
+												if (!el) return;
+												if (
+													selectedCategories.length >
+														0 &&
+													selectedCategories.length <
+														categories.length
+												) {
+													el.indeterminate = true;
+												} else {
+													el.indeterminate = false;
+												}
+											}}
+										/>
+										<label>All/None</label>
+									</div>
+									{categories &&
+										categories.map(category => {
+											const isChecked =
+												selectedCategories.includes(
+													category,
 												);
-											}
-										}}
-										ref={el => {
-											if (!el) return;
-											if (
-												selectedCategories.length > 0 &&
-												selectedCategories.length <
-													categories.length
-											) {
-												el.indeterminate = true;
-											} else {
-												el.indeterminate = false;
-											}
-										}}
-									/>
-									<label>All/None</label>
-								</div>
-								{categories &&
-									categories.map(category => {
-										const isChecked =
-											selectedCategories.includes(
-												category,
+											const handleChange = () => {
+												setSelectedCategories(c => {
+													return isChecked
+														? c.filter(
+																curr =>
+																	curr !==
+																	category,
+														  )
+														: [...c, category];
+												});
+											};
+											return (
+												<div
+													key={category}
+													className="flex items-center px-2"
+												>
+													<input
+														type="checkbox"
+														className="mr-4"
+														checked={isChecked}
+														onChange={handleChange}
+													/>
+													<label>{category}</label>
+												</div>
 											);
-										const handleChange = () => {
-											setSelectedCategories(c => {
-												return isChecked
-													? c.filter(
-															curr =>
-																curr !==
-																category,
-													  )
-													: [...c, category];
-											});
-										};
-										return (
-											<div
-												key={category}
-												className="flex items-center px-2"
-											>
-												<input
-													type="checkbox"
-													className="mr-4"
-													checked={isChecked}
-													onChange={handleChange}
-												/>
-												<label>{category}</label>
-											</div>
-										);
-									})}
+										})}
+								</div>
 							</div>
-						</div>
+						</>
 					)}
 				</>
 			) : (

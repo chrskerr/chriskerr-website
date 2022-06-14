@@ -20,6 +20,7 @@ export type UpApiReturn = {
 		byCategory: ChartData[];
 	};
 	savers: ChartData[];
+	saverNames: Saver[];
 };
 
 export type Account = {
