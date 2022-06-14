@@ -118,8 +118,8 @@ export default function FinancesPage(): ReactElement {
 					type="number"
 					className={inputClass}
 					placeholder="Current Mortgage balance (whole $)"
-					value={loanDollars}
-					max={0}
+					value={redrawDollars}
+					min={0}
 					onChange={e => setRedrawDollars(e.target.value)}
 				/>
 

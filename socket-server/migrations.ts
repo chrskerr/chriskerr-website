@@ -121,12 +121,12 @@ export const migrate = async (knex: Knex): Promise<void> => {
 	const migrationVersion = await getMigrationVersion(knex);
 	if (!migrationVersion) return;
 
-	await knex
-		.table<Balance>(TableNames.BALANCES)
-		.where('createdAt', '<=', new Date('2022-06-15'))
-		.delete();
-
 	if (migrationVersion < new Date('2022-06-14')) {
+		await knex
+			.table<Balance>(TableNames.BALANCES)
+			.where('createdAt', '<=', new Date('2022-06-15'))
+			.delete();
+
 		await knex.schema.alterTable(TableNames.BALANCES, table => {
 			table.unique(['createdAt', 'accountId']);
 		});

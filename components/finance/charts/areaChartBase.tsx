@@ -107,7 +107,9 @@ const AreaChartBase = memo(function AreaChartBase({
 							]}
 							allowDataOverflow
 						/>
-						<Tooltip content={CustomTooltip} />
+						{innerWidth > 450 && (
+							<Tooltip content={CustomTooltip} />
+						)}
 						{categories.map((category, i) => (
 							<Area
 								key={category}

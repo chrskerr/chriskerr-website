@@ -3,6 +3,7 @@ import { UpApiReturn } from 'types/finance';
 import BalancessPerWeek from './charts/balances';
 import ExpensesPerWeek from './charts/expenses';
 import CashFlow from './charts/cashFlow';
+import SaversTable from './tables/savers';
 
 export type DisplayModes = 'step' | 'monotone';
 export type Period = 'week' | 'month';
@@ -40,6 +41,9 @@ export default function Finance({
 					displayMode={displayMode}
 					period={period}
 				/>
+			</div>
+			<div className="w-full mt-20">
+				<SaversTable saversData={data.savers} />
 			</div>
 		</>
 	);

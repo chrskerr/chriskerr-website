@@ -74363,8 +74363,8 @@ var migrate = (knex2) => __async(void 0, null, function* () {
   const migrationVersion = yield getMigrationVersion(knex2);
   if (!migrationVersion)
     return;
-  yield knex2.table("account_balances" /* BALANCES */).where("createdAt", "<=", new Date("2022-06-15")).delete();
   if (migrationVersion < new Date("2022-06-14")) {
+    yield knex2.table("account_balances" /* BALANCES */).where("createdAt", "<=", new Date("2022-06-15")).delete();
     yield knex2.schema.alterTable("account_balances" /* BALANCES */, (table) => {
       table.unique(["createdAt", "accountId"]);
     });
