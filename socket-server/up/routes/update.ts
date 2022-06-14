@@ -65,6 +65,44 @@ export function createUpUpdateRoutes(app: Express, knex: Knex): void {
 		}
 	});
 
+	app.get('/up/update-transactions', limiter, async (req, res, next) => {
+		try {
+			const hasAuthHeaders = getHasAuthHeaders(req);
+
+			if (hasAuthHeaders) {
+				const [chrisTransactions, kateTransactions] = await Promise.all(
+					[
+						fetchTransactions({
+							isChris: true,
+							shouldFetchAll: true,
+						}),
+						fetchTransactions({
+							isChris: false,
+							shouldFetchAll: true,
+						}),
+					],
+				);
+
+				const seenTransactionIds = new Set<string>();
+				const transactions = [
+					...chrisTransactions,
+					...kateTransactions,
+				].filter(({ id }) => {
+					if (seenTransactionIds.has(id)) return false;
+					seenTransactionIds.add(id);
+					return true;
+				});
+
+				upsertAllTransactions(transactions, knex),
+					res.status(200).end();
+			} else {
+				res.status(500).end();
+			}
+		} catch (e) {
+			next(e);
+		}
+	});
+
 	app.post('/nab/report', limiter, async (req, res, next) => {
 		try {
 			const hasAuthHeaders = getHasAuthHeaders(req);
@@ -95,33 +133,7 @@ export function createUpUpdateRoutes(app: Express, knex: Knex): void {
 					}),
 				]);
 
-				const [chrisTransactions, kateTransactions] = await Promise.all(
-					[
-						fetchTransactions({
-							isChris: true,
-							shouldFetchAll: true,
-						}),
-						fetchTransactions({
-							isChris: false,
-							shouldFetchAll: true,
-						}),
-					],
-				);
-
-				const seenTransactionIds = new Set<string>();
-				const transactions = [
-					...chrisTransactions,
-					...kateTransactions,
-				].filter(({ id }) => {
-					if (seenTransactionIds.has(id)) return false;
-					seenTransactionIds.add(id);
-					return true;
-				});
-
-				await Promise.all([
-					upsertAllTransactions(transactions, knex),
-					updateBalances(knex),
-				]);
+				await updateBalances(knex);
 
 				res.status(200).end();
 			} else {

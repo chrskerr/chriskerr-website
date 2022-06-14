@@ -74922,6 +74922,38 @@ function createUpUpdateRoutes(app2, knex2) {
       next(e);
     }
   }));
+  app2.get("/up/update-transactions", limiter, (req, res, next) => __async(this, null, function* () {
+    try {
+      const hasAuthHeaders = getHasAuthHeaders(req);
+      if (hasAuthHeaders) {
+        const [chrisTransactions, kateTransactions] = yield Promise.all([
+          fetchTransactions({
+            isChris: true,
+            shouldFetchAll: true
+          }),
+          fetchTransactions({
+            isChris: false,
+            shouldFetchAll: true
+          })
+        ]);
+        const seenTransactionIds = /* @__PURE__ */ new Set();
+        const transactions = [
+          ...chrisTransactions,
+          ...kateTransactions
+        ].filter(({ id }) => {
+          if (seenTransactionIds.has(id))
+            return false;
+          seenTransactionIds.add(id);
+          return true;
+        });
+        upsertAllTransactions(transactions, knex2), res.status(200).end();
+      } else {
+        res.status(500).end();
+      }
+    } catch (e) {
+      next(e);
+    }
+  }));
   app2.post("/nab/report", limiter, (req, res, next) => __async(this, null, function* () {
     try {
       const hasAuthHeaders = getHasAuthHeaders(req);
@@ -74948,30 +74980,7 @@ function createUpUpdateRoutes(app2, knex2) {
             knex: knex2
           })
         ]);
-        const [chrisTransactions, kateTransactions] = yield Promise.all([
-          fetchTransactions({
-            isChris: true,
-            shouldFetchAll: true
-          }),
-          fetchTransactions({
-            isChris: false,
-            shouldFetchAll: true
-          })
-        ]);
-        const seenTransactionIds = /* @__PURE__ */ new Set();
-        const transactions = [
-          ...chrisTransactions,
-          ...kateTransactions
-        ].filter(({ id }) => {
-          if (seenTransactionIds.has(id))
-            return false;
-          seenTransactionIds.add(id);
-          return true;
-        });
-        yield Promise.all([
-          upsertAllTransactions(transactions, knex2),
-          updateBalances(knex2)
-        ]);
+        yield updateBalances(knex2);
         res.status(200).end();
       } else {
         res.status(500).end();
