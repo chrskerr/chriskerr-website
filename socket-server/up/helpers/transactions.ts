@@ -55,7 +55,7 @@ export const fetchTransactions = async ({
 }): Promise<UpTransaction[]> => {
 	const res = await axios.get(
 		link ||
-			urlBase + `/transactions?page[size]=${shouldFetchAll ? 100 : 20}`,
+			urlBase + `/transactions?page[size]=${shouldFetchAll ? 500 : 20}`,
 		{
 			headers: {
 				Authorization: `Bearer ${
@@ -79,20 +79,12 @@ export const fetchTransactions = async ({
 	];
 };
 
-export const updateAllTransactions = async (
-	isChris: boolean,
-	shouldFetchAll: boolean,
+export const upsertAllTransactions = async (
+	transactions: UpTransaction[],
 	knex: Knex,
 ): Promise<void> => {
-	const allTransactions = await fetchTransactions({
-		isChris,
-		shouldFetchAll,
-	});
-
 	const accountsIds = [
-		...new Set(
-			allTransactions.map(txn => txn.relationships.account.data.id),
-		),
+		...new Set(transactions.map(txn => txn.relationships.account.data.id)),
 	];
 
 	const failedAccounts: string[] = [];
@@ -100,37 +92,57 @@ export const updateAllTransactions = async (
 	await Promise.all(
 		accountsIds.map(async accountId => {
 			try {
-				const accountRes = await axios.get(
+				const chrisAccountRes = await axios.get(
 					urlBase + '/accounts/' + accountId,
 					{
 						headers: {
-							Authorization: `Bearer ${
-								isChris ? upApiKeyChris : upApiKeyKate
-							}`,
+							Authorization: `Bearer ${upApiKeyChris}`,
 						},
 					},
 				);
-				const account = accountRes.data.data as UpAccount | undefined;
+				let account = chrisAccountRes.data.data as
+					| UpAccount
+					| undefined;
+				const isChris = !!account;
 
-				await createOrUpdateAccount({
-					id: accountId,
-					accountName: account?.attributes.displayName,
-					bankName: 'up',
-					isChris,
-					knex,
-				});
+				if (!account) {
+					const kateAccountRes = await axios.get(
+						urlBase + '/accounts/' + accountId,
+						{
+							headers: {
+								Authorization: `Bearer ${upApiKeyKate}`,
+							},
+						},
+					);
+					account = kateAccountRes.data.data as UpAccount | undefined;
+				}
+
+				if (account) {
+					await createOrUpdateAccount({
+						id: accountId,
+						accountName: account?.attributes.displayName,
+						bankName: 'up',
+						isChris,
+						knex,
+					});
+				} else {
+					failedAccounts.push(accountId);
+				}
 			} catch (e) {
 				failedAccounts.push(accountId);
 			}
 		}),
 	);
 
-	allTransactions.forEach(async txn => {
+	transactions.forEach(async txn => {
 		try {
-			if (!failedAccounts.includes(txn.relationships.account.data.id)) {
-				const accountId = txn.relationships.account.data.id;
-				await createOrUpdateTransaction(accountId, txn, knex);
+			const accountId = txn.relationships.account.data.id;
+
+			if (failedAccounts.includes(accountId)) {
+				return;
 			}
+
+			await createOrUpdateTransaction(accountId, txn, knex);
 		} catch (e) {
 			console.error(e);
 		}

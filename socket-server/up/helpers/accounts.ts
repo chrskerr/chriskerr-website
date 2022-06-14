@@ -36,11 +36,29 @@ export async function createOrUpdateAccount({
 		.returning('*');
 }
 
-export async function insertAccountBalance(
-	accountId: string,
-	balance: Cents,
-	knex: Knex,
-): Promise<void> {
+export async function insertAccountBalance({
+	accountId,
+	accountName,
+	bankName,
+	isChris,
+	balance,
+	knex,
+}: {
+	accountId: string;
+	accountName: string;
+	bankName: Account['bankName'];
+	isChris: boolean;
+	balance: Cents;
+	knex: Knex;
+}): Promise<void> {
+	await createOrUpdateAccount({
+		id: accountId,
+		accountName,
+		bankName,
+		isChris,
+		knex,
+	});
+
 	const createdAt = startOfDay(new Date());
 	await knex
 		.table<Balance>(TableNames.BALANCES)
@@ -58,18 +76,14 @@ export const updateBalances = async (knex: Knex): Promise<void> => {
 
 		await Promise.all(
 			accounts.data.map(async account => {
-				await createOrUpdateAccount({
-					id: account.id,
+				await insertAccountBalance({
+					accountId: account.id,
 					accountName: account?.attributes.displayName,
 					bankName: 'up',
 					isChris: true,
+					balance: account.attributes.balance.valueInBaseUnits,
 					knex,
 				});
-				await insertAccountBalance(
-					account.id,
-					account.attributes.balance.valueInBaseUnits,
-					knex,
-				);
 			}),
 		);
 	}
@@ -82,18 +96,14 @@ export const updateBalances = async (knex: Knex): Promise<void> => {
 
 		await Promise.all(
 			accounts.data.map(async account => {
-				await createOrUpdateAccount({
-					id: account.id,
+				await insertAccountBalance({
+					accountId: account.id,
 					accountName: account?.attributes.displayName,
 					bankName: 'up',
 					isChris: false,
+					balance: account.attributes.balance.valueInBaseUnits,
 					knex,
 				});
-				await insertAccountBalance(
-					account.id,
-					account.attributes.balance.valueInBaseUnits,
-					knex,
-				);
 			}),
 		);
 	}

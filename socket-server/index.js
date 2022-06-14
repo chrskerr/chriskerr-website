@@ -74625,8 +74625,22 @@ function createOrUpdateAccount(_0) {
     return yield knex2.table("accounts" /* ACCOUNTS */).insert({ id, name, bankName }).onConflict("id").merge().returning("*");
   });
 }
-function insertAccountBalance(accountId, balance, knex2) {
-  return __async(this, null, function* () {
+function insertAccountBalance(_0) {
+  return __async(this, arguments, function* ({
+    accountId,
+    accountName,
+    bankName,
+    isChris,
+    balance,
+    knex: knex2
+  }) {
+    yield createOrUpdateAccount({
+      id: accountId,
+      accountName,
+      bankName,
+      isChris,
+      knex: knex2
+    });
     const createdAt = (0, import_date_fns.startOfDay)(new Date());
     yield knex2.table("account_balances" /* BALANCES */).insert({ accountId, balance, createdAt }).onConflict(["accountId", "createdAt"]).merge();
   });
@@ -74638,14 +74652,14 @@ var updateBalances = (knex2) => __async(void 0, null, function* () {
     });
     const accounts = fetchRes.data;
     yield Promise.all(accounts.data.map((account) => __async(void 0, null, function* () {
-      yield createOrUpdateAccount({
-        id: account.id,
+      yield insertAccountBalance({
+        accountId: account.id,
         accountName: account == null ? void 0 : account.attributes.displayName,
         bankName: "up",
         isChris: true,
+        balance: account.attributes.balance.valueInBaseUnits,
         knex: knex2
       });
-      yield insertAccountBalance(account.id, account.attributes.balance.valueInBaseUnits, knex2);
     })));
   }
   if (upApiKeyKate) {
@@ -74654,14 +74668,14 @@ var updateBalances = (knex2) => __async(void 0, null, function* () {
     });
     const accounts = fetchRes.data;
     yield Promise.all(accounts.data.map((account) => __async(void 0, null, function* () {
-      yield createOrUpdateAccount({
-        id: account.id,
+      yield insertAccountBalance({
+        accountId: account.id,
         accountName: account == null ? void 0 : account.attributes.displayName,
         bankName: "up",
         isChris: false,
+        balance: account.attributes.balance.valueInBaseUnits,
         knex: knex2
       });
-      yield insertAccountBalance(account.id, account.attributes.balance.valueInBaseUnits, knex2);
     })));
   }
 });
@@ -74793,7 +74807,7 @@ var fetchTransactions = (_0) => __async(void 0, [_0], function* ({
   shouldFetchAll,
   link
 }) {
-  const res = yield import_axios2.default.get(link || urlBase + `/transactions?page[size]=${shouldFetchAll ? 100 : 20}`, {
+  const res = yield import_axios2.default.get(link || urlBase + `/transactions?page[size]=${shouldFetchAll ? 500 : 20}`, {
     headers: {
       Authorization: `Bearer ${isChris ? upApiKeyChris : upApiKeyKate}`
     }
@@ -74809,40 +74823,50 @@ var fetchTransactions = (_0) => __async(void 0, [_0], function* ({
     }) : []
   ];
 });
-var updateAllTransactions = (isChris, shouldFetchAll, knex2) => __async(void 0, null, function* () {
-  const allTransactions = yield fetchTransactions({
-    isChris,
-    shouldFetchAll
-  });
+var upsertAllTransactions = (transactions, knex2) => __async(void 0, null, function* () {
   const accountsIds = [
-    ...new Set(allTransactions.map((txn) => txn.relationships.account.data.id))
+    ...new Set(transactions.map((txn) => txn.relationships.account.data.id))
   ];
   const failedAccounts = [];
   yield Promise.all(accountsIds.map((accountId) => __async(void 0, null, function* () {
     try {
-      const accountRes = yield import_axios2.default.get(urlBase + "/accounts/" + accountId, {
+      const chrisAccountRes = yield import_axios2.default.get(urlBase + "/accounts/" + accountId, {
         headers: {
-          Authorization: `Bearer ${isChris ? upApiKeyChris : upApiKeyKate}`
+          Authorization: `Bearer ${upApiKeyChris}`
         }
       });
-      const account = accountRes.data.data;
-      yield createOrUpdateAccount({
-        id: accountId,
-        accountName: account == null ? void 0 : account.attributes.displayName,
-        bankName: "up",
-        isChris,
-        knex: knex2
-      });
+      let account = chrisAccountRes.data.data;
+      const isChris = !!account;
+      if (!account) {
+        const kateAccountRes = yield import_axios2.default.get(urlBase + "/accounts/" + accountId, {
+          headers: {
+            Authorization: `Bearer ${upApiKeyKate}`
+          }
+        });
+        account = kateAccountRes.data.data;
+      }
+      if (account) {
+        yield createOrUpdateAccount({
+          id: accountId,
+          accountName: account == null ? void 0 : account.attributes.displayName,
+          bankName: "up",
+          isChris,
+          knex: knex2
+        });
+      } else {
+        failedAccounts.push(accountId);
+      }
     } catch (e) {
       failedAccounts.push(accountId);
     }
   })));
-  allTransactions.forEach((txn) => __async(void 0, null, function* () {
+  transactions.forEach((txn) => __async(void 0, null, function* () {
     try {
-      if (!failedAccounts.includes(txn.relationships.account.data.id)) {
-        const accountId = txn.relationships.account.data.id;
-        yield createOrUpdateTransaction(accountId, txn, knex2);
+      const accountId = txn.relationships.account.data.id;
+      if (failedAccounts.includes(accountId)) {
+        return;
       }
+      yield createOrUpdateTransaction(accountId, txn, knex2);
     } catch (e) {
       console.error(e);
     }
@@ -74885,7 +74909,11 @@ function createUpUpdateRoutes(app2, knex2) {
       const isKate = hashKate === upSignature;
       const eventType = isEventType(body.attributes.eventType) ? body.attributes.eventType : void 0;
       if (eventType && txnId && (isChris || isKate)) {
-        yield updateAllTransactions(isChris, false, knex2);
+        const transactions = yield fetchTransactions({
+          isChris,
+          shouldFetchAll: false
+        });
+        yield upsertAllTransactions(transactions, knex2);
       } else {
         console.log("hmac not matched", body);
       }
@@ -74901,26 +74929,47 @@ function createUpUpdateRoutes(app2, knex2) {
       if (hasAuthHeaders && typeof body === "object") {
         const { loanDollars, savingsDollars } = body;
         const mortgageAccountId = "753061668";
-        yield createOrUpdateAccount({
-          id: mortgageAccountId,
-          accountName: "Mortgage",
-          bankName: "nab",
-          isChris: true,
-          knex: knex2
-        });
-        yield insertAccountBalance(mortgageAccountId, toCents(Math.round(loanDollars * 100)), knex2);
         const savingsAccountId = "753037756";
-        yield createOrUpdateAccount({
-          id: savingsAccountId,
-          accountName: "NAB Savings",
-          bankName: "nab",
-          isChris: true,
-          knex: knex2
-        });
-        yield insertAccountBalance(savingsAccountId, toCents(Math.round(savingsDollars * 100)), knex2);
         yield Promise.all([
-          updateAllTransactions(true, true, knex2),
-          updateAllTransactions(false, true, knex2),
+          insertAccountBalance({
+            accountId: mortgageAccountId,
+            accountName: "Mortgage",
+            bankName: "nab",
+            isChris: true,
+            balance: toCents(Math.round(loanDollars * 100)),
+            knex: knex2
+          }),
+          insertAccountBalance({
+            accountId: savingsAccountId,
+            accountName: "NAB Savings",
+            bankName: "nab",
+            isChris: true,
+            balance: toCents(Math.round(savingsDollars * 100)),
+            knex: knex2
+          })
+        ]);
+        const [chrisTransactions, kateTransactions] = yield Promise.all([
+          fetchTransactions({
+            isChris: true,
+            shouldFetchAll: true
+          }),
+          fetchTransactions({
+            isChris: false,
+            shouldFetchAll: true
+          })
+        ]);
+        const seenTransactionIds = /* @__PURE__ */ new Set();
+        const transactions = [
+          ...chrisTransactions,
+          ...kateTransactions
+        ].filter(({ id }) => {
+          if (seenTransactionIds.has(id))
+            return false;
+          seenTransactionIds.add(id);
+          return true;
+        });
+        yield Promise.all([
+          upsertAllTransactions(transactions, knex2),
           updateBalances(knex2)
         ]);
         res.status(200).end();

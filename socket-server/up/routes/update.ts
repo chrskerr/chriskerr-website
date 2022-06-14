@@ -8,13 +8,13 @@ dotenv.config({ path: '.env.local' });
 
 import { UpWebhook, ReportNabBody, toCents } from '../../../types/finance';
 import {
-	createOrUpdateAccount,
 	getHasAuthHeaders,
 	insertAccountBalance,
 	isEventType,
 	limiter,
-	updateAllTransactions,
+	upsertAllTransactions,
 	updateBalances,
+	fetchTransactions,
 } from '../helpers';
 
 export function createUpUpdateRoutes(app: Express, knex: Knex): void {
@@ -50,7 +50,11 @@ export function createUpUpdateRoutes(app: Express, knex: Knex): void {
 				: undefined;
 
 			if (eventType && txnId && (isChris || isKate)) {
-				await updateAllTransactions(isChris, false, knex);
+				const transactions = await fetchTransactions({
+					isChris,
+					shouldFetchAll: false,
+				});
+				await upsertAllTransactions(transactions, knex);
 			} else {
 				console.log('hmac not matched', body);
 			}
@@ -70,36 +74,52 @@ export function createUpUpdateRoutes(app: Express, knex: Knex): void {
 				const { loanDollars, savingsDollars } = body;
 
 				const mortgageAccountId = '753061668';
-				await createOrUpdateAccount({
-					id: mortgageAccountId,
-					accountName: 'Mortgage',
-					bankName: 'nab',
-					isChris: true,
-					knex,
-				});
-				await insertAccountBalance(
-					mortgageAccountId,
-					toCents(Math.round(loanDollars * 100)),
-					knex,
+				const savingsAccountId = '753037756';
+				await Promise.all([
+					insertAccountBalance({
+						accountId: mortgageAccountId,
+						accountName: 'Mortgage',
+						bankName: 'nab',
+						isChris: true,
+						balance: toCents(Math.round(loanDollars * 100)),
+						knex,
+					}),
+
+					insertAccountBalance({
+						accountId: savingsAccountId,
+						accountName: 'NAB Savings',
+						bankName: 'nab',
+						isChris: true,
+						balance: toCents(Math.round(savingsDollars * 100)),
+						knex,
+					}),
+				]);
+
+				const [chrisTransactions, kateTransactions] = await Promise.all(
+					[
+						fetchTransactions({
+							isChris: true,
+							shouldFetchAll: true,
+						}),
+						fetchTransactions({
+							isChris: false,
+							shouldFetchAll: true,
+						}),
+					],
 				);
 
-				const savingsAccountId = '753037756';
-				await createOrUpdateAccount({
-					id: savingsAccountId,
-					accountName: 'NAB Savings',
-					bankName: 'nab',
-					isChris: true,
-					knex,
+				const seenTransactionIds = new Set<string>();
+				const transactions = [
+					...chrisTransactions,
+					...kateTransactions,
+				].filter(({ id }) => {
+					if (seenTransactionIds.has(id)) return false;
+					seenTransactionIds.add(id);
+					return true;
 				});
-				await insertAccountBalance(
-					savingsAccountId,
-					toCents(Math.round(savingsDollars * 100)),
-					knex,
-				);
 
 				await Promise.all([
-					updateAllTransactions(true, true, knex),
-					updateAllTransactions(false, true, knex),
+					upsertAllTransactions(transactions, knex),
 					updateBalances(knex),
 				]);
 
