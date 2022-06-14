@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { startOfDay } from 'date-fns';
 
 import dotenv from 'dotenv';
 import { Knex } from 'knex';
@@ -40,9 +41,12 @@ export async function insertAccountBalance(
 	balance: Cents,
 	knex: Knex,
 ): Promise<void> {
+	const createdAt = startOfDay(new Date());
 	await knex
 		.table<Balance>(TableNames.BALANCES)
-		.insert({ accountId, balance });
+		.insert({ accountId, balance, createdAt })
+		.onConflict(['accountId', 'createdAt'])
+		.merge();
 }
 
 export const updateBalances = async (knex: Knex): Promise<void> => {

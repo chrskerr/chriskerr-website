@@ -62587,13 +62587,13 @@ var require_startOfDay = __commonJS({
     Object.defineProperty(exports2, "__esModule", {
       value: true
     });
-    exports2.default = startOfDay;
+    exports2.default = startOfDay2;
     var _index = _interopRequireDefault(require_toDate());
     var _index2 = _interopRequireDefault(require_requiredArgs());
     function _interopRequireDefault(obj) {
       return obj && obj.__esModule ? obj : { default: obj };
     }
-    function startOfDay(dirtyDate) {
+    function startOfDay2(dirtyDate) {
       (0, _index2.default)(1, arguments);
       var date = (0, _index.default)(dirtyDate);
       date.setHours(0, 0, 0, 0);
@@ -74280,6 +74280,7 @@ var import_dotenv3 = __toESM(require_main());
 
 // up/helpers/accounts.ts
 var import_axios = __toESM(require_axios2());
+var import_date_fns = __toESM(require_date_fns());
 var import_dotenv = __toESM(require_main());
 
 // migrations.ts
@@ -74626,7 +74627,8 @@ function createOrUpdateAccount(_0) {
 }
 function insertAccountBalance(accountId, balance, knex2) {
   return __async(this, null, function* () {
-    yield knex2.table("account_balances" /* BALANCES */).insert({ accountId, balance });
+    const createdAt = (0, import_date_fns.startOfDay)(new Date());
+    yield knex2.table("account_balances" /* BALANCES */).insert({ accountId, balance, createdAt }).onConflict(["accountId", "createdAt"]).merge();
   });
 }
 var updateBalances = (knex2) => __async(void 0, null, function* () {
@@ -74665,7 +74667,7 @@ var updateBalances = (knex2) => __async(void 0, null, function* () {
 });
 
 // up/helpers/preparePeriodData.ts
-var import_date_fns = __toESM(require_date_fns());
+var import_date_fns2 = __toESM(require_date_fns());
 function createPeriodicData({
   period,
   balances,
@@ -74677,9 +74679,9 @@ function createPeriodicData({
   const allParentCategories = [];
   const monthlyDaysOffset = 5;
   function formattedStartOfDate(date) {
-    return (0, import_date_fns.format)(period === "week" ? (0, import_date_fns.startOfWeek)(new Date(date), {
+    return (0, import_date_fns2.format)(period === "week" ? (0, import_date_fns2.startOfWeek)(new Date(date), {
       weekStartsOn: 1
-    }) : (0, import_date_fns.subDays)((0, import_date_fns.startOfMonth)((0, import_date_fns.addDays)(new Date(date), monthlyDaysOffset)), monthlyDaysOffset), "dd/MM/yy");
+    }) : (0, import_date_fns2.subDays)((0, import_date_fns2.startOfMonth)((0, import_date_fns2.addDays)(new Date(date), monthlyDaysOffset)), monthlyDaysOffset), "dd/MM/yy");
   }
   const transactionsWithStartDate = transactions.map((txn) => {
     const startDate = formattedStartOfDate(txn.createdAt);
@@ -74697,7 +74699,7 @@ function createPeriodicData({
       startDate
     });
   });
-  const startDates = [...new Set(allStartDates)].sort((a, b) => (0, import_date_fns.differenceInSeconds)(new Date(a), new Date(b)));
+  const startDates = [...new Set(allStartDates)].sort((a, b) => (0, import_date_fns2.differenceInSeconds)(new Date(a), new Date(b)));
   const categories = [...new Set(allCategories)];
   const parentCategories = [...new Set(allParentCategories)];
   const createAccStart = (startDate, set) => set.reduce((acc, curr) => __spreadProps(__spreadValues({}, acc), { [curr]: 0 }), {
@@ -74750,7 +74752,7 @@ function createPeriodicData({
     const balancesForStart = balancesWithStartDate.filter((curr) => curr.startDate === startDate);
     return accounts.map((account) => {
       var _a;
-      const balancesForAccount = balancesForStart.filter((curr) => curr.accountId === account.id).sort((a, b) => (0, import_date_fns.differenceInSeconds)(new Date(b.createdAt), new Date(a.createdAt)));
+      const balancesForAccount = balancesForStart.filter((curr) => curr.accountId === account.id).sort((a, b) => (0, import_date_fns2.differenceInSeconds)(new Date(b.createdAt), new Date(a.createdAt)));
       return {
         balance: ((_a = balancesForAccount == null ? void 0 : balancesForAccount[0]) == null ? void 0 : _a.balance) || 0,
         accountName: account.name
@@ -74931,7 +74933,7 @@ function createUpUpdateRoutes(app2, knex2) {
 
 // up/routes/fetch.ts
 var import_dotenv5 = __toESM(require_main());
-var import_date_fns2 = __toESM(require_date_fns());
+var import_date_fns3 = __toESM(require_date_fns());
 import_dotenv5.default.config({ path: ".env.local" });
 function createUpFetchRoutes(app2, knex2) {
   app2.get("/up/:period", limiter, (req, res, next) => __async(this, null, function* () {
@@ -74941,7 +74943,7 @@ function createUpFetchRoutes(app2, knex2) {
       let weeksLookback = Math.max(chartLookbackWeeks, 20);
       if (period === "month")
         weeksLookback = weeksLookback * 3;
-      const fromDate = (0, import_date_fns2.subWeeks)((0, import_date_fns2.startOfWeek)(new Date(), {
+      const fromDate = (0, import_date_fns3.subWeeks)((0, import_date_fns3.startOfWeek)(new Date(), {
         weekStartsOn: 1
       }), weeksLookback);
       if (hasAuth) {
