@@ -30,8 +30,9 @@ export const isDescriptionTransferLike = (description: string): boolean =>
 export const isProbablyInvestment = (transaction: Transaction): boolean =>
 	!!transaction.category?.includes('investment');
 
-export const getHasAuthHeaders = (req: Request): boolean =>
-	req.headers['api_key'] === apiKey;
+export const getHasAuthHeaders = (req: Request): boolean => {
+	return req.headers['api_key'] === (apiKey || process.env.API_KEY);
+};
 
 export const limiter = rateLimit({
 	windowMs: 1000,

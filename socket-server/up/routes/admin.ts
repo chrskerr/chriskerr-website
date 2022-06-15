@@ -2,9 +2,7 @@ import { Express } from 'express';
 
 import axios from 'axios';
 
-import dotenv from 'dotenv';
-import { limiter, apiKey } from '../helpers';
-dotenv.config({ path: '.env.local' });
+import { limiter } from '../helpers';
 
 const upApiKeyChris = process.env.UP_API_KEY;
 const upApiKeyKate = process.env.UP_API_KEY_KATE;

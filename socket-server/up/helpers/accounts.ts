@@ -1,9 +1,7 @@
 import axios from 'axios';
 import { startOfDay } from 'date-fns';
 
-import dotenv from 'dotenv';
 import { Knex } from 'knex';
-dotenv.config({ path: '.env.local' });
 
 import { Account, Balance, UpAccounts } from '../../types';
 import { Cents } from '../../../types/finance';

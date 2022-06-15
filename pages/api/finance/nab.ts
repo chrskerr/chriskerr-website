@@ -36,9 +36,9 @@ const handler: NextApiHandler = async (req, res) => {
 	if (result.ok) {
 		res.status(200).end();
 	} else {
-		console.log('error', result);
-
 		const error = await result.json();
+
+		console.log('error', error);
 		res.status(500).send(error);
 	}
 };

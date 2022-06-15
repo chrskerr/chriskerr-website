@@ -1,8 +1,6 @@
 import axios from 'axios';
 
-import dotenv from 'dotenv';
 import { Knex } from 'knex';
-dotenv.config({ path: '.env.local' });
 
 import {
 	Transaction,

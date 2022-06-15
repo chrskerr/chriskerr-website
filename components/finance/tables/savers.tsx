@@ -36,7 +36,7 @@ export default memo(function SaversTable({
 
 	const [isMoveMoneyModalOpen, setIsMoveMoneyModalOpen] = useState(false);
 	const [chosenSaver, setChosenSaver] = useState<string>(
-		saverNames?.[0]?.name ?? CREATE_SAVER_ID,
+		saverNames?.[0]?.id.toString() ?? CREATE_SAVER_ID,
 	);
 	const [newSaverName, setNewSaverName] = useState<string>('');
 	const [transferAmount, setTransferAmount] = useState('0');
@@ -50,7 +50,11 @@ export default memo(function SaversTable({
 	const startDates = [...saversMap.keys()];
 
 	useEffect(() => {
-		if (!chosenSaver) {
+		const isExistingSaver =
+			chosenSaver === CREATE_SAVER_ID ||
+			!!saverNames.find(({ id }) => String(id) === chosenSaver);
+
+		if (!chosenSaver || !isExistingSaver) {
 			setError('Please choose a saver to transfer to or from');
 			return;
 		}

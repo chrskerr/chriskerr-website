@@ -25,7 +25,7 @@ export function createSaversData({
 
 	const targetStartDates = takeRight(sortedStartDates, 3);
 
-	return targetStartDates.map(startDate => {
+	return targetStartDates.map((startDate, i) => {
 		const formattedString = startDate.toLocaleDateString();
 
 		let redrawBalanceForStartData =
@@ -36,12 +36,14 @@ export function createSaversData({
 					balance.accountId === redrawAccountId,
 			)?.balance ?? 0;
 
+		const calculationDate = targetStartDates[i + 1] ?? null;
+
 		const saversForDate = savers.reduce<Record<string, Cents>>(
 			(acc, curr) => {
 				const balanceAtDate = calculateSaverBalanceAtDate(
 					curr.id,
 					saverTransactions,
-					startDate,
+					calculationDate,
 				);
 
 				redrawBalanceForStartData -= balanceAtDate;

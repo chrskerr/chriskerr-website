@@ -1,8 +1,6 @@
 import { Express } from 'express';
 
-import dotenv from 'dotenv';
 import { Knex } from 'knex';
-dotenv.config({ path: '.env.local' });
 
 import { startOfWeek, subWeeks } from 'date-fns';
 
@@ -68,7 +66,7 @@ export function createUpFetchRoutes(app: Express, knex: Knex): void {
 						balances,
 						accounts,
 						transactions,
-						savers,
+						savers: savers.filter(({ archivedAt }) => !archivedAt),
 						saverTransactions,
 					});
 				}

@@ -2,9 +2,7 @@ import { Express } from 'express';
 
 import crypto from 'crypto';
 
-import dotenv from 'dotenv';
 import { Knex } from 'knex';
-dotenv.config({ path: '.env.local' });
 
 import {
 	ReportNabBody,
@@ -136,7 +134,7 @@ export function createUpUpdateRoutes(app: Express, knex: Knex): void {
 						accountName: 'Mortgage',
 						bankName: 'nab',
 						isChris: true,
-						balance: toCents(Math.round(loanDollars * 100)),
+						balance: convertDollarsToCents(loanDollars),
 						knex,
 					}),
 
@@ -145,7 +143,7 @@ export function createUpUpdateRoutes(app: Express, knex: Knex): void {
 						accountName: 'NAB Savings',
 						bankName: 'nab',
 						isChris: true,
-						balance: toCents(Math.round(savingsDollars * 100)),
+						balance: convertDollarsToCents(savingsDollars),
 						knex,
 					}),
 
@@ -154,7 +152,7 @@ export function createUpUpdateRoutes(app: Express, knex: Knex): void {
 						accountName: 'NAB Redraw',
 						bankName: 'nab',
 						isChris: true,
-						balance: toCents(Math.round(redrawDollars * 100)),
+						balance: convertDollarsToCents(redrawDollars),
 						knex,
 						excludeFromCalcs: true,
 					}),

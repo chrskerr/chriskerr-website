@@ -54,6 +54,87 @@ var __async = (__this, __arguments, generator) => {
   });
 };
 
+// node_modules/dotenv/lib/main.js
+var require_main = __commonJS({
+  "node_modules/dotenv/lib/main.js"(exports2, module2) {
+    var fs = require("fs");
+    var path = require("path");
+    var os = require("os");
+    var LINE = /(?:^|^)\s*(?:export\s+)?([\w.-]+)(?:\s*=\s*?|:\s+?)(\s*'(?:\\'|[^'])*'|\s*"(?:\\"|[^"])*"|\s*`(?:\\`|[^`])*`|[^#\r\n]+)?\s*(?:#.*)?(?:$|$)/mg;
+    function parse(src) {
+      const obj = {};
+      let lines = src.toString();
+      lines = lines.replace(/\r\n?/mg, "\n");
+      let match;
+      while ((match = LINE.exec(lines)) != null) {
+        const key = match[1];
+        let value = match[2] || "";
+        value = value.trim();
+        const maybeQuote = value[0];
+        value = value.replace(/^(['"`])([\s\S]*)\1$/mg, "$2");
+        if (maybeQuote === '"') {
+          value = value.replace(/\\n/g, "\n");
+          value = value.replace(/\\r/g, "\r");
+        }
+        obj[key] = value;
+      }
+      return obj;
+    }
+    function _log(message) {
+      console.log(`[dotenv][DEBUG] ${message}`);
+    }
+    function _resolveHome(envPath) {
+      return envPath[0] === "~" ? path.join(os.homedir(), envPath.slice(1)) : envPath;
+    }
+    function config(options) {
+      let dotenvPath = path.resolve(process.cwd(), ".env");
+      let encoding = "utf8";
+      const debug = Boolean(options && options.debug);
+      const override = Boolean(options && options.override);
+      if (options) {
+        if (options.path != null) {
+          dotenvPath = _resolveHome(options.path);
+        }
+        if (options.encoding != null) {
+          encoding = options.encoding;
+        }
+      }
+      try {
+        const parsed = DotenvModule.parse(fs.readFileSync(dotenvPath, { encoding }));
+        Object.keys(parsed).forEach(function(key) {
+          if (!Object.prototype.hasOwnProperty.call(process.env, key)) {
+            process.env[key] = parsed[key];
+          } else {
+            if (override === true) {
+              process.env[key] = parsed[key];
+            }
+            if (debug) {
+              if (override === true) {
+                _log(`"${key}" is already defined in \`process.env\` and WAS overwritten`);
+              } else {
+                _log(`"${key}" is already defined in \`process.env\` and was NOT overwritten`);
+              }
+            }
+          }
+        });
+        return { parsed };
+      } catch (e) {
+        if (debug) {
+          _log(`Failed to load ${dotenvPath} ${e.message}`);
+        }
+        return { error: e };
+      }
+    }
+    var DotenvModule = {
+      config,
+      parse
+    };
+    module2.exports.config = DotenvModule.config;
+    module2.exports.parse = DotenvModule.parse;
+    module2.exports = DotenvModule;
+  }
+});
+
 // node_modules/depd/index.js
 var require_depd = __commonJS({
   "node_modules/depd/index.js"(exports2, module2) {
@@ -62019,87 +62100,6 @@ var require_axios2 = __commonJS({
   }
 });
 
-// node_modules/dotenv/lib/main.js
-var require_main = __commonJS({
-  "node_modules/dotenv/lib/main.js"(exports2, module2) {
-    var fs = require("fs");
-    var path = require("path");
-    var os = require("os");
-    var LINE = /(?:^|^)\s*(?:export\s+)?([\w.-]+)(?:\s*=\s*?|:\s+?)(\s*'(?:\\'|[^'])*'|\s*"(?:\\"|[^"])*"|\s*`(?:\\`|[^`])*`|[^#\r\n]+)?\s*(?:#.*)?(?:$|$)/mg;
-    function parse(src) {
-      const obj = {};
-      let lines = src.toString();
-      lines = lines.replace(/\r\n?/mg, "\n");
-      let match;
-      while ((match = LINE.exec(lines)) != null) {
-        const key = match[1];
-        let value = match[2] || "";
-        value = value.trim();
-        const maybeQuote = value[0];
-        value = value.replace(/^(['"`])([\s\S]*)\1$/mg, "$2");
-        if (maybeQuote === '"') {
-          value = value.replace(/\\n/g, "\n");
-          value = value.replace(/\\r/g, "\r");
-        }
-        obj[key] = value;
-      }
-      return obj;
-    }
-    function _log(message) {
-      console.log(`[dotenv][DEBUG] ${message}`);
-    }
-    function _resolveHome(envPath) {
-      return envPath[0] === "~" ? path.join(os.homedir(), envPath.slice(1)) : envPath;
-    }
-    function config(options) {
-      let dotenvPath = path.resolve(process.cwd(), ".env");
-      let encoding = "utf8";
-      const debug = Boolean(options && options.debug);
-      const override = Boolean(options && options.override);
-      if (options) {
-        if (options.path != null) {
-          dotenvPath = _resolveHome(options.path);
-        }
-        if (options.encoding != null) {
-          encoding = options.encoding;
-        }
-      }
-      try {
-        const parsed = DotenvModule.parse(fs.readFileSync(dotenvPath, { encoding }));
-        Object.keys(parsed).forEach(function(key) {
-          if (!Object.prototype.hasOwnProperty.call(process.env, key)) {
-            process.env[key] = parsed[key];
-          } else {
-            if (override === true) {
-              process.env[key] = parsed[key];
-            }
-            if (debug) {
-              if (override === true) {
-                _log(`"${key}" is already defined in \`process.env\` and WAS overwritten`);
-              } else {
-                _log(`"${key}" is already defined in \`process.env\` and was NOT overwritten`);
-              }
-            }
-          }
-        });
-        return { parsed };
-      } catch (e) {
-        if (debug) {
-          _log(`Failed to load ${dotenvPath} ${e.message}`);
-        }
-        return { error: e };
-      }
-    }
-    var DotenvModule = {
-      config,
-      parse
-    };
-    module2.exports.config = DotenvModule.config;
-    module2.exports.parse = DotenvModule.parse;
-    module2.exports = DotenvModule;
-  }
-});
-
 // node_modules/date-fns/_lib/toInteger/index.js
 var require_toInteger2 = __commonJS({
   "node_modules/date-fns/_lib/toInteger/index.js"(exports2, module2) {
@@ -74167,6 +74167,7 @@ var require_takeRight = __commonJS({
 });
 
 // index.ts
+var import_dotenv = __toESM(require_main());
 var import_express = __toESM(require_express2());
 var import_http = __toESM(require("http"));
 
@@ -74294,12 +74295,10 @@ var chartLookbackWeeks = 6;
 
 // up/routes/admin.ts
 var import_axios3 = __toESM(require_axios2());
-var import_dotenv3 = __toESM(require_main());
 
 // up/helpers/accounts.ts
 var import_axios = __toESM(require_axios2());
 var import_date_fns = __toESM(require_date_fns());
-var import_dotenv = __toESM(require_main());
 
 // migrations.ts
 function setMigrationVersion(knex2, version) {
@@ -74626,7 +74625,7 @@ var omitUndefinedOptions = (passedOptions) => {
 var lib_default = rateLimit;
 
 // up/helpers/misc.ts
-var apiKey = process.env.API_KEY || "";
+var apiKey2 = process.env.API_KEY || "";
 var upApiKeyChris = process.env.UP_API_KEY;
 var upApiKeyKate = process.env.UP_API_KEY_KATE;
 var urlBase = "https://api.up.com.au/api/v1";
@@ -74639,7 +74638,9 @@ var isProbablyInvestment = (transaction) => {
   var _a;
   return !!((_a = transaction.category) == null ? void 0 : _a.includes("investment"));
 };
-var getHasAuthHeaders = (req) => req.headers["api_key"] === apiKey;
+var getHasAuthHeaders = (req) => {
+  return req.headers["api_key"] === (apiKey2 || process.env.API_KEY);
+};
 var limiter = lib_default({
   windowMs: 1e3,
   max: 5,
@@ -74648,7 +74649,6 @@ var limiter = lib_default({
 });
 
 // up/helpers/accounts.ts
-import_dotenv.default.config({ path: ".env.local" });
 function createOrUpdateAccount(_0) {
   return __async(this, arguments, function* ({
     id,
@@ -74882,12 +74882,13 @@ function createSaversData({
   });
   const sortedStartDates = [...createdAtDates].sort((a, b) => a.valueOf() - b.valueOf());
   const targetStartDates = (0, import_takeRight.default)(sortedStartDates, 3);
-  return targetStartDates.map((startDate) => {
-    var _a, _b;
+  return targetStartDates.map((startDate, i) => {
+    var _a, _b, _c;
     const formattedString = startDate.toLocaleDateString();
     let redrawBalanceForStartData = (_b = (_a = balances.find((balance) => balance.createdAt.toLocaleDateString() === formattedString && balance.accountId === redrawAccountId)) == null ? void 0 : _a.balance) != null ? _b : 0;
+    const calculationDate = (_c = targetStartDates[i + 1]) != null ? _c : null;
     const saversForDate = savers.reduce((acc, curr) => {
-      const balanceAtDate = calculateSaverBalanceAtDate(curr.id, saverTransactions, startDate);
+      const balanceAtDate = calculateSaverBalanceAtDate(curr.id, saverTransactions, calculationDate);
       redrawBalanceForStartData -= balanceAtDate;
       return __spreadProps(__spreadValues({}, acc), {
         [curr.name]: balanceAtDate
@@ -74964,8 +74965,6 @@ function createPeriodicData({
 
 // up/helpers/transactions.ts
 var import_axios2 = __toESM(require_axios2());
-var import_dotenv2 = __toESM(require_main());
-import_dotenv2.default.config({ path: ".env.local" });
 function createOrUpdateTransaction(accountId, txn, knex2) {
   return __async(this, null, function* () {
     var _a, _b, _c, _d;
@@ -75054,15 +75053,12 @@ var upsertAllTransactions = (transactions, knex2) => __async(void 0, null, funct
 });
 
 // up/routes/admin.ts
-import_dotenv3.default.config({ path: ".env.local" });
 var upApiKeyChris2 = process.env.UP_API_KEY;
 var upApiKeyKate2 = process.env.UP_API_KEY_KATE;
 var upApiKey = upApiKeyChris2 != null ? upApiKeyChris2 : upApiKeyKate2;
 
 // up/routes/update.ts
 var import_crypto2 = __toESM(require("crypto"));
-var import_dotenv4 = __toESM(require_main());
-import_dotenv4.default.config({ path: ".env.local" });
 var mortgageAccountId = "753061668";
 var savingsAccountId = "753037756";
 function createUpUpdateRoutes(app2, knex2) {
@@ -75142,7 +75138,7 @@ function createUpUpdateRoutes(app2, knex2) {
             accountName: "Mortgage",
             bankName: "nab",
             isChris: true,
-            balance: toCents(Math.round(loanDollars * 100)),
+            balance: convertDollarsToCents(loanDollars),
             knex: knex2
           }),
           insertAccountBalance({
@@ -75150,7 +75146,7 @@ function createUpUpdateRoutes(app2, knex2) {
             accountName: "NAB Savings",
             bankName: "nab",
             isChris: true,
-            balance: toCents(Math.round(savingsDollars * 100)),
+            balance: convertDollarsToCents(savingsDollars),
             knex: knex2
           }),
           insertAccountBalance({
@@ -75158,7 +75154,7 @@ function createUpUpdateRoutes(app2, knex2) {
             accountName: "NAB Redraw",
             bankName: "nab",
             isChris: true,
-            balance: toCents(Math.round(redrawDollars * 100)),
+            balance: convertDollarsToCents(redrawDollars),
             knex: knex2,
             excludeFromCalcs: true
           })
@@ -75221,9 +75217,7 @@ function createUpUpdateRoutes(app2, knex2) {
 }
 
 // up/routes/fetch.ts
-var import_dotenv5 = __toESM(require_main());
 var import_date_fns4 = __toESM(require_date_fns());
-import_dotenv5.default.config({ path: ".env.local" });
 function createUpFetchRoutes(app2, knex2) {
   app2.get("/up/:period", limiter, (req, res, next) => __async(this, null, function* () {
     try {
@@ -75256,7 +75250,7 @@ function createUpFetchRoutes(app2, knex2) {
             balances,
             accounts,
             transactions,
-            savers,
+            savers: savers.filter(({ archivedAt }) => !archivedAt),
             saverTransactions
           });
         }
@@ -75272,6 +75266,7 @@ function createUpFetchRoutes(app2, knex2) {
 }
 
 // index.ts
+import_dotenv.default.config({ path: ".env.local" });
 var corsSettings = {
   origin: [
     "http://localhost:3000",
