@@ -46,3 +46,21 @@ export function calculateSaverBalanceAtDate(
 		}, 0),
 	);
 }
+
+export async function fetchTransactionsForSaver(
+	knex: Knex,
+	id: number,
+): Promise<SaverTransaction[]> {
+	return await knex
+		.table<SaverTransaction>(TableNames.SAVER_TRANSACTIONS)
+		.where({ id })
+		.select('*');
+}
+
+export async function closeSaver(knex: Knex, id: number): Promise<boolean> {
+	const r = await knex
+		.table<Saver>(TableNames.SAVERS)
+		.where({ id })
+		.update({ archivedAt: new Date() }, '*');
+	return r.length > 0;
+}

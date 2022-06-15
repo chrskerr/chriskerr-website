@@ -12,6 +12,7 @@ import {
 	redrawAccountId,
 	ISaversTransactBody,
 	convertDollarsToCents,
+	ISaversCloseBody,
 } from '../../../types/finance';
 import { UpWebhook } from '../../types';
 import {
@@ -23,7 +24,13 @@ import {
 	updateBalances,
 	fetchTransactions,
 } from '../helpers';
-import { createOrUpdateSaver, createSaverTransaction } from '../helpers/savers';
+import {
+	calculateSaverBalanceAtDate,
+	closeSaver,
+	createOrUpdateSaver,
+	createSaverTransaction,
+	fetchTransactionsForSaver,
+} from '../helpers/savers';
 
 const mortgageAccountId = '753061668';
 const savingsAccountId = '753037756';
@@ -191,6 +198,44 @@ export function createUpUpdateRoutes(app: Express, knex: Knex): void {
 				saverId,
 				convertDollarsToCents(body.amount),
 			);
+
+			res.status(200).end();
+		} catch (e) {
+			next(e);
+		}
+	});
+
+	app.post('/savers/close', limiter, async (req, res, next) => {
+		try {
+			const hasAuthHeaders = getHasAuthHeaders(req);
+			if (!hasAuthHeaders) {
+				throw new Error('Not authroised');
+			}
+
+			const body = req.body as ISaversCloseBody;
+			const saverId = body.id;
+
+			if (!saverId) {
+				throw new Error('At least one of name or ID must be specified');
+			}
+
+			const transactions = await fetchTransactionsForSaver(knex, saverId);
+			const saverBalance = calculateSaverBalanceAtDate(
+				saverId,
+				transactions,
+				null,
+			);
+
+			if (saverBalance !== 0) {
+				throw new Error('Saver balance must be equal to zero');
+			}
+
+			const didClose = await closeSaver(knex, saverId);
+			if (!didClose) {
+				throw new Error('Something went wrong closing saver');
+			}
+
+			res.status(200).end();
 		} catch (e) {
 			next(e);
 		}

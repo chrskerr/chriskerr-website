@@ -45,19 +45,22 @@ export function createUpFetchRoutes(app: Express, knex: Knex): void {
 					knex
 						.table<Account>(TableNames.ACCOUNTS)
 						.where({ excludeFromCalcs: false })
-						.select(),
+						.select('*'),
 					knex
 						.table<Balance>(TableNames.BALANCES)
 						.where('createdAt', '>', fromDate)
-						.select(),
+						.select('*'),
 					knex
 						.table<Transaction>(TableNames.TRANSACTIONS)
 						.where('createdAt', '>', fromDate)
-						.select(),
-					knex.table<Saver>(TableNames.SAVERS).select(),
+						.select('*'),
+					knex
+						.table<Saver>(TableNames.SAVERS)
+						.where('archivedAt', '==', null)
+						.select('*'),
 					knex
 						.table<SaverTransaction>(TableNames.SAVER_TRANSACTIONS)
-						.select(),
+						.select('*'),
 				]);
 
 				let result: UpApiReturn | undefined = undefined;

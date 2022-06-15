@@ -74855,6 +74855,17 @@ function calculateSaverBalanceAtDate(saverId, transactions, cutoffDate) {
     return acc;
   }, 0));
 }
+function fetchTransactionsForSaver(knex2, id) {
+  return __async(this, null, function* () {
+    return yield knex2.table("saver_transactions" /* SAVER_TRANSACTIONS */).where({ id }).select("*");
+  });
+}
+function closeSaver(knex2, id) {
+  return __async(this, null, function* () {
+    const r = yield knex2.table("savers" /* SAVERS */).where({ id }).update({ archivedAt: new Date() }, "*");
+    return r.length > 0;
+  });
+}
 
 // up/helpers/preparePeriodData/savers.ts
 function createSaversData({
@@ -75173,6 +75184,32 @@ function createUpUpdateRoutes(app2, knex2) {
         throw new Error("Unable to find or create saver");
       }
       yield createSaverTransaction(knex2, saverId, convertDollarsToCents(body.amount));
+      res.status(200).end();
+    } catch (e) {
+      next(e);
+    }
+  }));
+  app2.post("/savers/close", limiter, (req, res, next) => __async(this, null, function* () {
+    try {
+      const hasAuthHeaders = getHasAuthHeaders(req);
+      if (!hasAuthHeaders) {
+        throw new Error("Not authroised");
+      }
+      const body = req.body;
+      const saverId = body.id;
+      if (!saverId) {
+        throw new Error("At least one of name or ID must be specified");
+      }
+      const transactions = yield fetchTransactionsForSaver(knex2, saverId);
+      const saverBalance = calculateSaverBalanceAtDate(saverId, transactions, null);
+      if (saverBalance !== 0) {
+        throw new Error("Saver balance must be equal to zero");
+      }
+      const didClose = yield closeSaver(knex2, saverId);
+      if (!didClose) {
+        throw new Error("Something went wrong closing saver");
+      }
+      res.status(200).end();
     } catch (e) {
       next(e);
     }
@@ -75202,11 +75239,11 @@ function createUpFetchRoutes(app2, knex2) {
           savers,
           saverTransactions
         ] = yield Promise.all([
-          knex2.table("accounts" /* ACCOUNTS */).where({ excludeFromCalcs: false }).select(),
-          knex2.table("account_balances" /* BALANCES */).where("createdAt", ">", fromDate).select(),
-          knex2.table("account_transactions" /* TRANSACTIONS */).where("createdAt", ">", fromDate).select(),
-          knex2.table("savers" /* SAVERS */).select(),
-          knex2.table("saver_transactions" /* SAVER_TRANSACTIONS */).select()
+          knex2.table("accounts" /* ACCOUNTS */).where({ excludeFromCalcs: false }).select("*"),
+          knex2.table("account_balances" /* BALANCES */).where("createdAt", ">", fromDate).select("*"),
+          knex2.table("account_transactions" /* TRANSACTIONS */).where("createdAt", ">", fromDate).select("*"),
+          knex2.table("savers" /* SAVERS */).where("archivedAt", "==", null).select("*"),
+          knex2.table("saver_transactions" /* SAVER_TRANSACTIONS */).select("*")
         ]);
         let result = void 0;
         if (period === "week" || period === "month") {

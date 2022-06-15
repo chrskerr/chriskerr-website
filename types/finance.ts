@@ -48,4 +48,8 @@ export interface ISaversTransactBody {
 	amount: Dollars;
 }
 
+export interface ISaversCloseBody {
+	id: number | null;
+}
+
 export const redrawAccountId = 'nab-redraw';

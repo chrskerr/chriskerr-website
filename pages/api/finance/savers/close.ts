@@ -2,10 +2,9 @@ import { NextApiHandler } from 'next';
 import NextCors from 'nextjs-cors';
 
 import { confirmCookieAuth } from 'components/finance/helpers';
+import { ISaversCloseBody } from 'types/finance';
 import { socketServerUrl } from 'lib/constants';
-import { ReportNabBody } from 'types/finance';
-
-const apiKey = process.env.API_KEY;
+import { apiKey } from 'socket-server/up/helpers';
 
 const handler: NextApiHandler = async (req, res) => {
 	await NextCors(req, res, {
@@ -20,9 +19,9 @@ const handler: NextApiHandler = async (req, res) => {
 		return res.status(500).end();
 	}
 
-	const body: ReportNabBody = req.body;
+	const body: ISaversCloseBody = req.body;
 
-	const result = await fetch(socketServerUrl + '/nab/report', {
+	const result = await fetch(socketServerUrl + '/savers/close', {
 		headers: apiKey
 			? new Headers({
 					api_key: apiKey,
