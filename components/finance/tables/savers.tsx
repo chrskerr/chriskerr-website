@@ -35,8 +35,10 @@ export default memo(function SaversTable({
 	const router = useRouter();
 
 	const [isMoveMoneyModalOpen, setIsMoveMoneyModalOpen] = useState(false);
-	const [chosenSaver, setChosenSaver] = useState<string | undefined>();
-	const [newSaverName, setNewSaverName] = useState<string | undefined>();
+	const [chosenSaver, setChosenSaver] = useState<string>(
+		saverNames?.[0]?.name ?? CREATE_SAVER_ID,
+	);
+	const [newSaverName, setNewSaverName] = useState<string>('');
 	const [transferAmount, setTransferAmount] = useState('0');
 	const [error, setError] = useState<string | undefined>();
 	const [isLoading, setIsLoading] = useState(false);
@@ -60,7 +62,6 @@ export default memo(function SaversTable({
 
 		if (transferAmount === '0' || isNaN(parseInt(transferAmount))) {
 			setError('Invalid transfer amount');
-			setTransferAmount('0');
 			return;
 		}
 
@@ -83,22 +84,25 @@ export default memo(function SaversTable({
 
 		const body: ISaversTransactBody = {
 			id: isExistingSaver ? Number(chosenSaver) : null,
-			name: isExistingSaver ? null : newSaverName ?? null,
+			name: isExistingSaver ? null : newSaverName || null,
 			amount: toDollars(parseInt(transferAmount)),
 		};
 
-		await fetch(`/api/finances/savers/transact`, {
+		const saveRes = await fetch(`/api/finance/savers/transact`, {
 			method: 'POST',
 			body: JSON.stringify(body),
 			headers: { 'Content-Type': 'Application/json' },
 			credentials: 'include',
 		});
 
-		setNewSaverName(undefined);
+		setNewSaverName('');
 		setTransferAmount('0');
 		setIsLoading(false);
 		setIsMoveMoneyModalOpen(false);
-		router.replace(router.asPath);
+
+		if (saveRes.ok) {
+			router.replace(router.asPath);
+		}
 	}
 
 	return (
@@ -169,7 +173,7 @@ export default memo(function SaversTable({
 						onClick={() => setIsMoveMoneyModalOpen(false)}
 					/>
 					<div
-						className="absolute flex flex-col items-end p-8 bg-white border rounded top-4 right-4"
+						className="absolute z-10 flex flex-col items-end p-8 bg-white border rounded top-4 right-4"
 						onClick={e => e.stopPropagation()}
 					>
 						<span
@@ -178,7 +182,7 @@ export default memo(function SaversTable({
 						>
 							x
 						</span>
-						<div className="grid col-span-2 gap-4">
+						<div className="grid col-span-2 gap-4 w-[400px]">
 							<label>Saver:</label>
 							<select
 								value={chosenSaver}
@@ -219,11 +223,6 @@ export default memo(function SaversTable({
 									setTransferAmount(e.target.value)
 								}
 							/>
-							{error && (
-								<p className="col-span-2 mb-6 font-bold text-red-500 sm:mb-0">
-									{error}
-								</p>
-							)}
 
 							<button
 								className="button"
@@ -233,6 +232,9 @@ export default memo(function SaversTable({
 								Save
 							</button>
 						</div>
+						<p className="col-span-2 mb-6 font-bold text-red-500 sm:mb-0">
+							{error}
+						</p>
 					</div>
 				</>
 			)}

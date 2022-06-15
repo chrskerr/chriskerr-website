@@ -74836,7 +74836,10 @@ var redrawAccountId = "nab-redraw";
 // up/helpers/savers.ts
 function createOrUpdateSaver(knex2, name, id) {
   return __async(this, null, function* () {
-    const [r] = yield knex2.table("savers" /* SAVERS */).insert(__spreadValues({ name }, id ? { id } : {}), "*").onConflict("id").merge();
+    const [r] = yield knex2.table("savers" /* SAVERS */).insert(__spreadValues({
+      name,
+      archivedAt: null
+    }, id ? { id } : {})).onConflict("id").merge().returning("*");
     return r;
   });
 }
@@ -74880,18 +74883,19 @@ function createSaversData({
   const sortedStartDates = [...createdAtDates].sort((a, b) => a.valueOf() - b.valueOf());
   const targetStartDates = (0, import_takeRight.default)(sortedStartDates, 3);
   return targetStartDates.map((startDate) => {
-    var _a;
+    var _a, _b;
     const formattedString = startDate.toLocaleDateString();
-    const redrawBalanceForStartData = balances.find((balance) => balance.createdAt.toLocaleDateString() === formattedString && balance.accountId === redrawAccountId);
+    let redrawBalanceForStartData = (_b = (_a = balances.find((balance) => balance.createdAt.toLocaleDateString() === formattedString && balance.accountId === redrawAccountId)) == null ? void 0 : _a.balance) != null ? _b : 0;
     const saversForDate = savers.reduce((acc, curr) => {
       const balanceAtDate = calculateSaverBalanceAtDate(curr.id, saverTransactions, startDate);
+      redrawBalanceForStartData -= balanceAtDate;
       return __spreadProps(__spreadValues({}, acc), {
         [curr.name]: balanceAtDate
       });
     }, {});
     return __spreadValues({
       startDate: formattedString,
-      Redraw: (_a = redrawBalanceForStartData == null ? void 0 : redrawBalanceForStartData.balance) != null ? _a : 0
+      Redraw: redrawBalanceForStartData
     }, saversForDate);
   });
 }
@@ -75242,7 +75246,7 @@ function createUpFetchRoutes(app2, knex2) {
           knex2.table("accounts" /* ACCOUNTS */).where({ excludeFromCalcs: false }).select("*"),
           knex2.table("account_balances" /* BALANCES */).where("createdAt", ">", fromDate).select("*"),
           knex2.table("account_transactions" /* TRANSACTIONS */).where("createdAt", ">", fromDate).select("*"),
-          knex2.table("savers" /* SAVERS */).where("archivedAt", "=", null).select("*"),
+          knex2.table("savers" /* SAVERS */).select("*"),
           knex2.table("saver_transactions" /* SAVER_TRANSACTIONS */).select("*")
         ]);
         let result = void 0;

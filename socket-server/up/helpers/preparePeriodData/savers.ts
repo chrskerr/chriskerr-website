@@ -28,11 +28,13 @@ export function createSaversData({
 	return targetStartDates.map(startDate => {
 		const formattedString = startDate.toLocaleDateString();
 
-		const redrawBalanceForStartData = balances.find(
-			balance =>
-				balance.createdAt.toLocaleDateString() === formattedString &&
-				balance.accountId === redrawAccountId,
-		);
+		let redrawBalanceForStartData =
+			balances.find(
+				balance =>
+					balance.createdAt.toLocaleDateString() ===
+						formattedString &&
+					balance.accountId === redrawAccountId,
+			)?.balance ?? 0;
 
 		const saversForDate = savers.reduce<Record<string, Cents>>(
 			(acc, curr) => {
@@ -41,6 +43,9 @@ export function createSaversData({
 					saverTransactions,
 					startDate,
 				);
+
+				redrawBalanceForStartData -= balanceAtDate;
+
 				return {
 					...acc,
 					[curr.name]: balanceAtDate,
@@ -51,7 +56,7 @@ export function createSaversData({
 
 		return {
 			startDate: formattedString,
-			Redraw: redrawBalanceForStartData?.balance ?? 0,
+			Redraw: redrawBalanceForStartData,
 			...saversForDate,
 		};
 	});

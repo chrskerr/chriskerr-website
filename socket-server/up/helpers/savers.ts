@@ -10,9 +10,14 @@ export async function createOrUpdateSaver(
 ): Promise<Saver> {
 	const [r] = await knex
 		.table<Saver>(TableNames.SAVERS)
-		.insert({ name, ...(id ? { id } : {}) }, '*')
+		.insert({
+			name,
+			archivedAt: null,
+			...(id ? { id } : {}),
+		})
 		.onConflict('id')
-		.merge();
+		.merge()
+		.returning('*');
 	return r;
 }
 

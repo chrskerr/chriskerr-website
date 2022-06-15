@@ -22,6 +22,8 @@ const handler: NextApiHandler = async (req, res) => {
 
 	const body: ISaversTransactBody = req.body;
 
+	console.log(body);
+
 	const result = await fetch(socketServerUrl + '/savers/transact', {
 		headers: apiKey
 			? new Headers({
@@ -32,6 +34,8 @@ const handler: NextApiHandler = async (req, res) => {
 		method: 'POST',
 		body: JSON.stringify(body),
 	});
+
+	console.log(result);
 
 	if (result.ok) {
 		res.status(200).end();
