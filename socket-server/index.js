@@ -74419,6 +74419,13 @@ var migrate = (knex2) => __async(void 0, null, function* () {
     });
     yield setMigrationVersion(knex2, new Date("2022-06-17"));
   }
+  const june18 = new Date("2022-06-18");
+  if (migrationVersion < june18) {
+    yield knex2.schema.alterTable("savers" /* SAVERS */, (table) => {
+      table.dropUnique(["name"]);
+    });
+    yield setMigrationVersion(knex2, june18);
+  }
 });
 
 // node_modules/express-rate-limit/dist/index.mjs

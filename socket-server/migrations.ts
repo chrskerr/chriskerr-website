@@ -179,4 +179,12 @@ export const migrate = async (knex: Knex): Promise<void> => {
 		});
 		await setMigrationVersion(knex, new Date('2022-06-17'));
 	}
+
+	const june18 = new Date('2022-06-18');
+	if (migrationVersion < june18) {
+		await knex.schema.alterTable(TableNames.SAVERS, table => {
+			table.dropUnique(['name']);
+		});
+		await setMigrationVersion(knex, june18);
+	}
 };
