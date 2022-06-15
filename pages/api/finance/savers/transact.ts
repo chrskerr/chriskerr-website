@@ -4,7 +4,8 @@ import NextCors from 'nextjs-cors';
 import { confirmCookieAuth } from 'components/finance/helpers';
 import { ISaversTransactBody } from 'types/finance';
 import { socketServerUrl } from 'lib/constants';
-import { apiKey } from 'socket-server/up/helpers';
+
+const apiKey = process.env.API_KEY;
 
 const handler: NextApiHandler = async (req, res) => {
 	await NextCors(req, res, {
