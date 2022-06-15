@@ -1,6 +1,6 @@
-import { addDays, format, startOfMonth, startOfWeek, subDays } from 'date-fns';
+import { toDate, addDays, startOfMonth, startOfWeek, subDays } from 'date-fns';
 import { TransactionWithStart } from '.';
-import { Transaction } from '../../../../types/finance';
+import { Transaction } from '../../../types';
 
 interface ICreateFormattedTransactionDataReturn {
 	transactionsWithStartDate: TransactionWithStart[];
@@ -20,7 +20,7 @@ export function createFormattedTransactionData(
 	const monthlyDaysOffset = 5;
 
 	function formattedStartOfDate(date: string | Date): string {
-		return format(
+		return toDate(
 			period === 'week'
 				? startOfWeek(new Date(date), {
 						weekStartsOn: 1,
@@ -31,8 +31,7 @@ export function createFormattedTransactionData(
 						),
 						monthlyDaysOffset,
 				  ),
-			'dd/MM/yy',
-		);
+		).toLocaleDateString();
 	}
 
 	const transactionsWithStartDate = transactions.map<TransactionWithStart>(

@@ -1,5 +1,6 @@
 import { Knex } from 'knex';
-import { Cents, Saver, SaverTransaction } from '../../../types/finance';
+import { Cents, toCents } from '../../../types/finance';
+import { Saver, SaverTransaction } from '../../types/postgres';
 import { TableNames } from '../../migrations';
 
 export async function createOrUpdateSaver(
@@ -9,7 +10,9 @@ export async function createOrUpdateSaver(
 ): Promise<Saver> {
 	const [r] = await knex
 		.table<Saver>(TableNames.SAVERS)
-		.insert({ name, ...(id ? { id } : {}) }, '*');
+		.insert({ name, ...(id ? { id } : {}) }, '*')
+		.onConflict('id')
+		.merge();
 	return r;
 }
 
@@ -21,4 +24,25 @@ export async function createSaverTransaction(
 	await knex
 		.table<SaverTransaction>(TableNames.SAVER_TRANSACTIONS)
 		.insert({ saverId, amountCents: amount });
+}
+
+export function calculateSaverBalanceAtDate(
+	saverId: number,
+	transactions: SaverTransaction[],
+	cutoffDate: Date | null,
+): Cents {
+	const cutoffTimestamp = cutoffDate?.valueOf() ?? Infinity;
+
+	return toCents(
+		transactions.reduce<number>((acc, curr) => {
+			if (
+				curr.saverId === saverId &&
+				cutoffTimestamp > curr.createdAt.valueOf()
+			) {
+				return acc + curr.amountCents;
+			}
+
+			return acc;
+		}, 0),
+	);
 }

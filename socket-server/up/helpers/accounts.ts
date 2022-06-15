@@ -5,7 +5,8 @@ import dotenv from 'dotenv';
 import { Knex } from 'knex';
 dotenv.config({ path: '.env.local' });
 
-import { Account, Balance, Cents, UpAccounts } from '../../../types/finance';
+import { Account, Balance, UpAccounts } from '../../types';
+import { Cents } from '../../../types/finance';
 import { TableNames } from '../../migrations';
 import { urlBase, upApiKeyChris, upApiKeyKate } from './misc';
 

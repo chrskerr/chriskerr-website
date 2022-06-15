@@ -1,4 +1,4 @@
-import { Transaction } from '../../../types/finance';
+import { Transaction } from '../../types';
 import { Request } from 'express';
 import rateLimit from 'express-rate-limit';
 

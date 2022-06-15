@@ -1,5 +1,5 @@
 import { Knex } from 'knex';
-import { Balance, MigrationVersion } from '../types/finance';
+import { Balance, MigrationVersion } from './types/postgres';
 
 export enum TableNames {
 	NOTES = 'notes',
@@ -164,5 +164,19 @@ export const migrate = async (knex: Knex): Promise<void> => {
 			});
 		}
 		await setMigrationVersion(knex, new Date('2022-06-15'));
+	}
+
+	if (migrationVersion < new Date('2022-06-16')) {
+		await knex.schema.alterTable(TableNames.SAVERS, table => {
+			table.unique(['name']);
+		});
+		await setMigrationVersion(knex, new Date('2022-06-16'));
+	}
+
+	if (migrationVersion < new Date('2022-06-17')) {
+		await knex.schema.alterTable(TableNames.SAVERS, table => {
+			table.datetime('archivedAt').nullable();
+		});
+		await setMigrationVersion(knex, new Date('2022-06-17'));
 	}
 };

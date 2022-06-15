@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import { memo, ReactElement, useEffect, useState } from 'react';
-import { UpApiReturn } from 'types/finance';
+import { ISaversTransactBody, toDollars, UpApiReturn } from 'types/finance';
 
 interface Props {
 	saversData: UpApiReturn['savers'];
@@ -8,6 +8,25 @@ interface Props {
 }
 
 const CREATE_SAVER_ID = 'create-new';
+
+interface IGetIsValid {
+	chosenSaver: string | undefined;
+	newSaverName: string | undefined;
+	transferAmount: string;
+}
+
+function getIsValid({
+	chosenSaver,
+	newSaverName,
+	transferAmount,
+}: IGetIsValid): boolean {
+	return (
+		!!chosenSaver &&
+		(chosenSaver !== CREATE_SAVER_ID || !!newSaverName) &&
+		transferAmount !== '0' &&
+		!isNaN(parseInt(transferAmount))
+	);
+}
 
 export default memo(function SaversTable({
 	saversData,
@@ -22,12 +41,7 @@ export default memo(function SaversTable({
 	const [error, setError] = useState<string | undefined>();
 	const [isLoading, setIsLoading] = useState(false);
 
-	const isValid =
-		chosenSaver &&
-		(chosenSaver !== CREATE_SAVER_ID || newSaverName) &&
-		transferAmount !== '0' &&
-		!isNaN(parseInt(transferAmount));
-
+	const isValid = getIsValid({ chosenSaver, newSaverName, transferAmount });
 	const saversMap = new Map(
 		saversData.map(saver => [saver.startDate, saver]),
 	);
@@ -54,16 +68,34 @@ export default memo(function SaversTable({
 	}, [chosenSaver, newSaverName, transferAmount]);
 
 	async function handleClick() {
+		const isValid = getIsValid({
+			chosenSaver,
+			newSaverName,
+			transferAmount,
+		});
+
 		if (isLoading || !isValid) return;
 		setIsLoading(true);
 
-		const body = {
-			name: chosenSaver === CREATE_SAVER_ID ? newSaverName : chosenSaver,
-			amount: parseInt(transferAmount),
+		const isExistingSaver = !!saverNames.find(
+			({ id }) => String(id) === chosenSaver,
+		);
+
+		const body: ISaversTransactBody = {
+			id: isExistingSaver ? Number(chosenSaver) : null,
+			name: isExistingSaver ? null : newSaverName ?? null,
+			amount: toDollars(parseInt(transferAmount)),
 		};
 
-		console.log(body);
+		await fetch(`/api/finances/savers/transact`, {
+			method: 'POST',
+			body: JSON.stringify(body),
+			headers: { 'Content-Type': 'Application/json' },
+			credentials: 'include',
+		});
 
+		setNewSaverName(undefined);
+		setTransferAmount('0');
 		setIsLoading(false);
 		setIsMoveMoneyModalOpen(false);
 		router.replace(router.asPath);
@@ -93,9 +125,24 @@ export default memo(function SaversTable({
 					</tr>
 				</thead>
 				<tbody>
-					{saverNames.map(({ name }) => {
+					<tr>
+						<td>Redraw</td>
+						{startDates.map(startDate => {
+							const value = saversMap.get(startDate)?.Redraw ?? 0;
+							return (
+								<td key={startDate}>
+									{format(
+										typeof value === 'number'
+											? value / 100
+											: 0,
+									)}
+								</td>
+							);
+						})}
+					</tr>
+					{saverNames.map(({ name, id }) => {
 						return (
-							<tr key={name}>
+							<tr key={id}>
 								<td>{name}</td>
 								{startDates.map(startDate => {
 									const value =
@@ -137,11 +184,11 @@ export default memo(function SaversTable({
 								value={chosenSaver}
 								onChange={e => setChosenSaver(e.target.value)}
 							>
-								{saverNames.map(({ name }) =>
+								{saverNames.map(({ name, id }) =>
 									name === 'Redraw' ? (
 										false
 									) : (
-										<option key={name} value={name}>
+										<option key={name} value={String(id)}>
 											{name}
 										</option>
 									),

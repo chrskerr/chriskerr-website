@@ -6,10 +6,10 @@ dotenv.config({ path: '.env.local' });
 
 import {
 	Transaction,
-	UpTransaction,
 	UpAccount,
+	UpTransaction,
 	UpTransactions,
-} from '../../../types/finance';
+} from '../../types';
 import { TableNames } from '../../migrations';
 import { createOrUpdateAccount } from './accounts';
 import {
@@ -28,8 +28,8 @@ async function createOrUpdateTransaction(
 		accountId,
 		transactionId: txn.id,
 		amount: txn.attributes.amount.valueInBaseUnits,
-		category: txn.relationships.category.data?.id,
-		parentCategory: txn.relationships.parentCategory.data?.id,
+		category: txn.relationships.category.data?.id ?? null,
+		parentCategory: txn.relationships.parentCategory.data?.id ?? null,
 		description: txn.attributes.description,
 		createdAt: txn.attributes.createdAt,
 		isTransfer:

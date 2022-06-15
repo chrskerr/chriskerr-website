@@ -1,12 +1,7 @@
-import { format } from 'date-fns';
 import takeRight from 'lodash/takeRight';
-import {
-	Balance,
-	ChartData,
-	redrawAccountId,
-	Saver,
-	SaverTransaction,
-} from '../../../../types/finance';
+import { Cents, ChartData, redrawAccountId } from '../../../../types/finance';
+import { Balance, Saver, SaverTransaction } from '../../../types';
+import { calculateSaverBalanceAtDate } from '../savers';
 
 interface ICreateSaverData {
 	savers: Saver[];
@@ -19,32 +14,45 @@ export function createSaversData({
 	saverTransactions,
 	balances,
 }: ICreateSaverData): ChartData[] {
-	const startDates = new Set<string>();
-	const balancesWithStartDate = balances.map<Balance & { startDate: string }>(
-		txn => {
-			const startDate = format(txn.createdAt, 'dd/MM/yy');
-			startDates.add(startDate);
-			return {
-				...txn,
-				startDate,
-			};
-		},
-	);
+	const createdAtDates = new Set<Date>();
+	balances.forEach(({ createdAt }) => {
+		createdAtDates.add(createdAt);
+	});
 
-	const sortedStartDates = [...startDates].sort(
-		(a, b) => new Date(a).valueOf() - new Date(b).valueOf(),
+	const sortedStartDates = [...createdAtDates].sort(
+		(a, b) => a.valueOf() - b.valueOf(),
 	);
 
 	const targetStartDates = takeRight(sortedStartDates, 3);
 
-	console.log(savers, saverTransactions);
 	return targetStartDates.map(startDate => {
-		const redrawBalanceForStartData = balancesWithStartDate.find(
+		const formattedString = startDate.toLocaleDateString();
+
+		const redrawBalanceForStartData = balances.find(
 			balance =>
-				balance.startDate === startDate &&
+				balance.createdAt.toLocaleDateString() === formattedString &&
 				balance.accountId === redrawAccountId,
 		);
 
-		return { startDate, Redraw: redrawBalanceForStartData?.balance ?? 0 };
+		const saversForDate = savers.reduce<Record<string, Cents>>(
+			(acc, curr) => {
+				const balanceAtDate = calculateSaverBalanceAtDate(
+					curr.id,
+					saverTransactions,
+					startDate,
+				);
+				return {
+					...acc,
+					[curr.name]: balanceAtDate,
+				};
+			},
+			{},
+		);
+
+		return {
+			startDate: formattedString,
+			Redraw: redrawBalanceForStartData?.balance ?? 0,
+			...saversForDate,
+		};
 	});
 }

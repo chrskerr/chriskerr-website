@@ -3,20 +3,20 @@ import NextCors from 'nextjs-cors';
 
 import { fetchTransactionsHelper } from 'components/finance/helpers';
 
+export interface IFinanceFetchApiBody {
+	period: 'week' | 'month';
+}
+
 const handler: NextApiHandler = async (req, res) => {
 	await NextCors(req, res, {
 		origin: process.env.NEXT_PUBLIC_URL_BASE,
-		methods: ['GET'],
+		methods: ['POST'],
 		credentials: true,
 	});
 
-	const period = req.query.period;
+	const body: IFinanceFetchApiBody = req.body;
 
-	const result = await fetchTransactionsHelper(
-		req,
-		res,
-		Array.isArray(period) ? period[0] : period,
-	);
+	const result = await fetchTransactionsHelper(req, res, body.period);
 
 	if (result) {
 		res.status(200).json(result);

@@ -6,6 +6,7 @@ import Finance, { DisplayModes, Period } from 'components/finance';
 import { GetServerSideProps } from 'next';
 import { fetchTransactionsHelper } from 'components/finance/helpers';
 import Link from 'next/link';
+import { IFinanceFetchApiBody } from 'pages/api/finance/fetch';
 
 interface Props {
 	initialData: UpApiReturn | null;
@@ -24,9 +25,15 @@ export default function FinancesPage({ initialData }: Props): ReactElement {
 	async function fetchAndSetData(period: Period) {
 		setLoading(true);
 		try {
-			const res = await fetch(`/api/finance/${period}`, {
-				headers: new Headers({ api_key: password }),
+			const body: IFinanceFetchApiBody = { period };
+			const res = await fetch('/api/finance/fetch', {
+				headers: new Headers({
+					api_key: password,
+					'content-type': 'application/json',
+				}),
 				credentials: 'include',
+				method: 'POST',
+				body: JSON.stringify(body),
 			});
 			if (res.ok) {
 				setData(await res.json());

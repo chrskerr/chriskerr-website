@@ -1,6 +1,7 @@
-import { differenceInSeconds, format } from 'date-fns';
+import { differenceInSeconds } from 'date-fns';
 
-import { Balance, Account, ChartData } from '../../../../types/finance';
+import { ChartData } from '../../../../types/finance';
+import { Balance, Account } from '../../../types';
 
 interface ICreateBalancesData {
 	accounts: Account[];
@@ -14,7 +15,7 @@ export function createBalancesData({
 	const startDates = new Set<string>();
 	const balancesWithStartDate = balances.map<Balance & { startDate: string }>(
 		txn => {
-			const startDate = format(txn.createdAt, 'dd/MM/yy');
+			const startDate = txn.createdAt.toLocaleDateString();
 			startDates.add(startDate);
 			return {
 				...txn,

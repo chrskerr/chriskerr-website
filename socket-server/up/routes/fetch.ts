@@ -6,14 +6,14 @@ dotenv.config({ path: '.env.local' });
 
 import { startOfWeek, subWeeks } from 'date-fns';
 
+import { UpApiReturn } from '../../../types/finance';
 import {
 	Balance,
 	Transaction,
 	Account,
-	UpApiReturn,
 	Saver,
 	SaverTransaction,
-} from '../../../types/finance';
+} from '../../types/postgres';
 import { chartLookbackWeeks } from '../../../lib/constants';
 import { createPeriodicData, getHasAuthHeaders, limiter } from '../helpers';
 import { TableNames } from '../../migrations';

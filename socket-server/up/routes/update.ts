@@ -7,11 +7,13 @@ import { Knex } from 'knex';
 dotenv.config({ path: '.env.local' });
 
 import {
-	UpWebhook,
 	ReportNabBody,
 	toCents,
 	redrawAccountId,
+	ISaversTransactBody,
+	convertDollarsToCents,
 } from '../../../types/finance';
+import { UpWebhook } from '../../types';
 import {
 	getHasAuthHeaders,
 	insertAccountBalance,
@@ -21,6 +23,7 @@ import {
 	updateBalances,
 	fetchTransactions,
 } from '../helpers';
+import { createOrUpdateSaver, createSaverTransaction } from '../helpers/savers';
 
 const mortgageAccountId = '753061668';
 const savingsAccountId = '753037756';
@@ -156,6 +159,38 @@ export function createUpUpdateRoutes(app: Express, knex: Knex): void {
 			} else {
 				res.status(500).end();
 			}
+		} catch (e) {
+			next(e);
+		}
+	});
+
+	app.post('/savers/transact', limiter, async (req, res, next) => {
+		try {
+			const hasAuthHeaders = getHasAuthHeaders(req);
+			if (!hasAuthHeaders) {
+				throw new Error('Not authroised');
+			}
+
+			const body = req.body as ISaversTransactBody;
+
+			if (!body.name && !body.id) {
+				throw new Error('At least one of name or ID must be specified');
+			}
+
+			const saverId =
+				body.id ??
+				(body.name
+					? (await createOrUpdateSaver(knex, body.name))?.id
+					: undefined);
+			if (!saverId) {
+				throw new Error('Unable to find or create saver');
+			}
+
+			await createSaverTransaction(
+				knex,
+				saverId,
+				convertDollarsToCents(body.amount),
+			);
 		} catch (e) {
 			next(e);
 		}

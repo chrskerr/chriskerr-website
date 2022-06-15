@@ -1,11 +1,11 @@
+import { UpApiReturn } from '../../../../types/finance';
 import {
-	Balance,
-	Transaction,
 	Account,
-	UpApiReturn,
+	Balance,
 	Saver,
 	SaverTransaction,
-} from '../../../../types/finance';
+	Transaction,
+} from '../../../types';
 import { createBalancesData } from './balances';
 import { createCashFlowData } from './cashflow';
 import { createExpensesData } from './expenses';
