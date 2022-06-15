@@ -75242,7 +75242,7 @@ function createUpFetchRoutes(app2, knex2) {
           knex2.table("accounts" /* ACCOUNTS */).where({ excludeFromCalcs: false }).select("*"),
           knex2.table("account_balances" /* BALANCES */).where("createdAt", ">", fromDate).select("*"),
           knex2.table("account_transactions" /* TRANSACTIONS */).where("createdAt", ">", fromDate).select("*"),
-          knex2.table("savers" /* SAVERS */).where("archivedAt", "==", null).select("*"),
+          knex2.table("savers" /* SAVERS */).where("archivedAt", "=", null).select("*"),
           knex2.table("saver_transactions" /* SAVER_TRANSACTIONS */).select("*")
         ]);
         let result = void 0;

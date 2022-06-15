@@ -56,7 +56,7 @@ export function createUpFetchRoutes(app: Express, knex: Knex): void {
 						.select('*'),
 					knex
 						.table<Saver>(TableNames.SAVERS)
-						.where('archivedAt', '==', null)
+						.where('archivedAt', '=', null)
 						.select('*'),
 					knex
 						.table<SaverTransaction>(TableNames.SAVER_TRANSACTIONS)
