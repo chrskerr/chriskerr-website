@@ -6,7 +6,6 @@ import { Knex } from 'knex';
 
 import {
 	ReportNabBody,
-	toCents,
 	redrawAccountId,
 	ISaversTransactBody,
 	convertDollarsToCents,

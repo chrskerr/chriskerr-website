@@ -1,86 +1,107 @@
-import { TransactionWithStart } from '.';
+import { toDate, addDays, startOfMonth, startOfWeek, subDays } from 'date-fns';
 
 import { UpApiReturn, ChartData } from '../../../../types/finance';
 import { isProbablyInvestment, isProbablyTransfer } from '../misc';
+import { Transaction } from '../../../types';
 
-const createAccStart = (startDate: string, set: Set<string>) => {
-	return [...set].reduce<ChartData>((acc, curr) => ({ ...acc, [curr]: 0 }), {
-		startDate,
-	});
-};
+const monthlyDaysOffset = 5;
 
-interface ICreateExpensesData {
-	startDates: string[];
-	transactions: TransactionWithStart[];
-	categories: Set<string>;
-	parentCategories: Set<string>;
+function formattedStartOfDate(
+	period: 'month' | 'week',
+	date: string | Date,
+): string {
+	return toDate(
+		period === 'week'
+			? startOfWeek(new Date(date), {
+					weekStartsOn: 1,
+			  })
+			: subDays(
+					startOfMonth(addDays(new Date(date), monthlyDaysOffset)),
+					monthlyDaysOffset,
+			  ),
+	).toLocaleDateString();
 }
 
-export function createExpensesData({
-	startDates,
-	transactions,
-	categories,
-	parentCategories,
-}: ICreateExpensesData): UpApiReturn['expenses'] {
-	return startDates.reduce<{
-		all: ChartData[];
-		byParent: ChartData[];
-		byCategory: ChartData[];
-	}>(
-		(acc, startDate) => {
-			const transactionsForStart = transactions.filter(
-				txn =>
-					txn.amount < 0 &&
-					txn.startDate === startDate &&
-					!isProbablyInvestment(txn) &&
-					!isProbablyTransfer(txn),
-			);
+function sortChartData(a: ChartData, b: ChartData): number {
+	return new Date(a.startDate).valueOf() - new Date(b.startDate).valueOf();
+}
 
-			const all: ChartData[] = [
-				...acc.all,
-				transactionsForStart.reduce<ChartData>(
-					(acc_2, curr) => ({
-						...acc_2,
-						All: curr.amount / 100 + Number(acc_2['All']),
-					}),
-					{ startDate, All: 0 },
-				),
-			];
+export function createExpensesData(
+	transactions: Transaction[],
+	period: 'week' | 'month',
+): { expenses: UpApiReturn['expenses']; cashFlow: UpApiReturn['cashFlow'] } {
+	const allExpenses = new Map<string, ChartData>();
+	const categoryExpenses = new Map<string, ChartData>();
+	const parentCategoryExpenses = new Map<string, ChartData>();
 
-			const byParent: ChartData[] = [
-				...acc.byParent,
-				transactionsForStart.reduce<ChartData>((acc_2, curr) => {
-					const parentCategory =
-						curr.parentCategory || 'Uncategorised';
-					return {
-						...acc_2,
-						[parentCategory]:
-							curr.amount / 100 + Number(acc_2[parentCategory]),
-					};
-				}, createAccStart(startDate, parentCategories)),
-			];
+	const allCategories = new Set<string>();
+	const allParentCategories = new Set<string>();
 
-			const byCategory: ChartData[] = [
-				...acc.byCategory,
-				transactionsForStart.reduce<ChartData>((acc_2, curr) => {
-					const category = curr.category || 'Uncategorised';
-					return {
-						...acc_2,
-						[category]: curr.amount / 100 + Number(acc_2[category]),
-					};
-				}, createAccStart(startDate, categories)),
-			];
+	const cashflow = new Map<string, ChartData>();
+	const cashFlowKey = 'In/Out';
 
-			return {
-				all,
-				byParent,
-				byCategory,
+	for (const txn of transactions) {
+		if (!isProbablyInvestment(txn) && !isProbablyTransfer(txn)) {
+			const startDate = formattedStartOfDate(period, txn.createdAt);
+
+			const current = cashflow.get(startDate) ?? {
+				startDate: startDate,
+				[cashFlowKey]: 0,
 			};
-		},
-		{
-			all: [],
-			byParent: [],
-			byCategory: [],
-		},
+			current[cashFlowKey] =
+				txn.amount / 100 + Number(current[cashFlowKey]);
+			cashflow.set(startDate, current);
+
+			if (txn.amount < 0) {
+				const allCurrent = allExpenses.get(startDate) ?? {
+					startDate,
+					All: 0,
+				};
+				allCurrent['All'] =
+					txn.amount / 100 + Number(allCurrent['All']);
+				allExpenses.set(startDate, allCurrent);
+
+				const category = txn.category ?? 'Uncategorised';
+				const categoryCurrent = categoryExpenses.get(startDate) ?? {
+					startDate,
+				};
+				categoryCurrent[category] =
+					txn.amount / 100 + Number(categoryCurrent[category] ?? 0);
+				categoryExpenses.set(startDate, categoryCurrent);
+				allCategories.add(category);
+
+				const parentCategory = txn.parentCategory ?? 'Uncategorised';
+				const parentCategoryCurrent = parentCategoryExpenses.get(
+					startDate,
+				) ?? { startDate };
+				parentCategoryCurrent[parentCategory] =
+					txn.amount / 100 +
+					Number(parentCategoryCurrent[parentCategory] ?? 0);
+				parentCategoryExpenses.set(startDate, parentCategoryCurrent);
+				allParentCategories.add(category);
+			}
+		}
+	}
+
+	const emptyCategories = [...allCategories].reduce<Record<string, 0>>(
+		(acc, curr) => ({ ...acc, [curr]: 0 }),
+		{},
 	);
+	const emptyParentCategories = [...allParentCategories].reduce<
+		Record<string, 0>
+	>((acc, curr) => ({ ...acc, [curr]: 0 }), {});
+
+	return {
+		expenses: {
+			all: [...allExpenses.values()].sort(sortChartData),
+			byCategory: [...categoryExpenses.values()]
+				.map(data => ({ ...emptyCategories, ...data }))
+				.sort(sortChartData),
+			byParent: [...parentCategoryExpenses.values()]
+				.map(data => ({ ...emptyParentCategories, ...data }))
+				.sort(sortChartData),
+		},
+
+		cashFlow: [...cashflow.values()].sort(sortChartData),
+	};
 }

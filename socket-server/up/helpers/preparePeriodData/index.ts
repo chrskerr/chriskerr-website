@@ -7,10 +7,8 @@ import {
 	Transaction,
 } from '../../../types';
 import { createBalancesData } from './balances';
-import { createCashFlowData } from './cashflow';
 import { createExpensesData } from './expenses';
 import { createSaversData } from './savers';
-import { createFormattedTransactionData } from './transactions';
 
 export type TransactionWithStart = Transaction & { startDate: string };
 
@@ -31,24 +29,8 @@ export function createPeriodicData({
 	savers,
 	saverTransactions,
 }: ICreatePeriodicData): UpApiReturn {
-	const {
-		startDates,
-		transactionsWithStartDate,
-		categories,
-		parentCategories,
-	} = createFormattedTransactionData(transactions, period);
-
 	return {
-		expenses: createExpensesData({
-			startDates,
-			transactions: transactionsWithStartDate,
-			categories,
-			parentCategories,
-		}),
-		cashFlow: createCashFlowData({
-			startDates,
-			transactions: transactionsWithStartDate,
-		}),
+		...createExpensesData(transactions, period),
 		balances: createBalancesData({ accounts, balances }),
 		savers: createSaversData({ savers, balances, saverTransactions }),
 		saverNames: savers,

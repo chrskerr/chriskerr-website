@@ -74764,68 +74764,67 @@ function createBalancesData({
   });
 }
 
-// up/helpers/preparePeriodData/cashflow.ts
-function createCashFlowData({
-  startDates,
-  transactions
-}) {
-  return startDates.map((startDate) => {
-    const transactionsForStart = transactions.filter((txn) => txn.startDate === startDate && !isProbablyInvestment(txn) && !isProbablyTransfer(txn));
-    const cashFlowKey = "In/Out";
-    return transactionsForStart.reduce((acc, curr) => __spreadProps(__spreadValues({}, acc), {
-      [cashFlowKey]: curr.amount / 100 + Number(acc[cashFlowKey])
-    }), { startDate, [cashFlowKey]: 0 });
-  });
-}
-
 // up/helpers/preparePeriodData/expenses.ts
-var createAccStart = (startDate, set) => {
-  return [...set].reduce((acc, curr) => __spreadProps(__spreadValues({}, acc), { [curr]: 0 }), {
-    startDate
-  });
-};
-function createExpensesData({
-  startDates,
-  transactions,
-  categories,
-  parentCategories
-}) {
-  return startDates.reduce((acc, startDate) => {
-    const transactionsForStart = transactions.filter((txn) => txn.amount < 0 && txn.startDate === startDate && !isProbablyInvestment(txn) && !isProbablyTransfer(txn));
-    const all = [
-      ...acc.all,
-      transactionsForStart.reduce((acc_2, curr) => __spreadProps(__spreadValues({}, acc_2), {
-        All: curr.amount / 100 + Number(acc_2["All"])
-      }), { startDate, All: 0 })
-    ];
-    const byParent = [
-      ...acc.byParent,
-      transactionsForStart.reduce((acc_2, curr) => {
-        const parentCategory = curr.parentCategory || "Uncategorised";
-        return __spreadProps(__spreadValues({}, acc_2), {
-          [parentCategory]: curr.amount / 100 + Number(acc_2[parentCategory])
-        });
-      }, createAccStart(startDate, parentCategories))
-    ];
-    const byCategory = [
-      ...acc.byCategory,
-      transactionsForStart.reduce((acc_2, curr) => {
-        const category = curr.category || "Uncategorised";
-        return __spreadProps(__spreadValues({}, acc_2), {
-          [category]: curr.amount / 100 + Number(acc_2[category])
-        });
-      }, createAccStart(startDate, categories))
-    ];
-    return {
-      all,
-      byParent,
-      byCategory
-    };
-  }, {
-    all: [],
-    byParent: [],
-    byCategory: []
-  });
+var import_date_fns3 = __toESM(require_date_fns());
+var monthlyDaysOffset = 5;
+function formattedStartOfDate(period, date) {
+  return (0, import_date_fns3.toDate)(period === "week" ? (0, import_date_fns3.startOfWeek)(new Date(date), {
+    weekStartsOn: 1
+  }) : (0, import_date_fns3.subDays)((0, import_date_fns3.startOfMonth)((0, import_date_fns3.addDays)(new Date(date), monthlyDaysOffset)), monthlyDaysOffset)).toLocaleDateString();
+}
+function sortChartData(a, b) {
+  return new Date(a.startDate).valueOf() - new Date(b.startDate).valueOf();
+}
+function createExpensesData(transactions, period) {
+  var _a, _b, _c, _d, _e, _f, _g, _h;
+  const allExpenses = /* @__PURE__ */ new Map();
+  const categoryExpenses = /* @__PURE__ */ new Map();
+  const parentCategoryExpenses = /* @__PURE__ */ new Map();
+  const allCategories = /* @__PURE__ */ new Set();
+  const allParentCategories = /* @__PURE__ */ new Set();
+  const cashflow = /* @__PURE__ */ new Map();
+  const cashFlowKey = "In/Out";
+  for (const txn of transactions) {
+    if (!isProbablyInvestment(txn) && !isProbablyTransfer(txn)) {
+      const startDate = formattedStartOfDate(period, txn.createdAt);
+      const current = (_a = cashflow.get(startDate)) != null ? _a : {
+        startDate,
+        [cashFlowKey]: 0
+      };
+      current[cashFlowKey] = txn.amount / 100 + Number(current[cashFlowKey]);
+      cashflow.set(startDate, current);
+      if (txn.amount < 0) {
+        const allCurrent = (_b = allExpenses.get(startDate)) != null ? _b : {
+          startDate,
+          All: 0
+        };
+        allCurrent["All"] = txn.amount / 100 + Number(allCurrent["All"]);
+        allExpenses.set(startDate, allCurrent);
+        const category = (_c = txn.category) != null ? _c : "Uncategorised";
+        const categoryCurrent = (_d = categoryExpenses.get(startDate)) != null ? _d : {
+          startDate
+        };
+        categoryCurrent[category] = txn.amount / 100 + Number((_e = categoryCurrent[category]) != null ? _e : 0);
+        categoryExpenses.set(startDate, categoryCurrent);
+        allCategories.add(category);
+        const parentCategory = (_f = txn.parentCategory) != null ? _f : "Uncategorised";
+        const parentCategoryCurrent = (_g = parentCategoryExpenses.get(startDate)) != null ? _g : { startDate };
+        parentCategoryCurrent[parentCategory] = txn.amount / 100 + Number((_h = parentCategoryCurrent[parentCategory]) != null ? _h : 0);
+        parentCategoryExpenses.set(startDate, parentCategoryCurrent);
+        allParentCategories.add(category);
+      }
+    }
+  }
+  const emptyCategories = [...allCategories].reduce((acc, curr) => __spreadProps(__spreadValues({}, acc), { [curr]: 0 }), {});
+  const emptyParentCategories = [...allParentCategories].reduce((acc, curr) => __spreadProps(__spreadValues({}, acc), { [curr]: 0 }), {});
+  return {
+    expenses: {
+      all: [...allExpenses.values()].sort(sortChartData),
+      byCategory: [...categoryExpenses.values()].map((data) => __spreadValues(__spreadValues({}, emptyCategories), data)).sort(sortChartData),
+      byParent: [...parentCategoryExpenses.values()].map((data) => __spreadValues(__spreadValues({}, emptyParentCategories), data)).sort(sortChartData)
+    },
+    cashFlow: [...cashflow.values()].sort(sortChartData)
+  };
 }
 
 // up/helpers/preparePeriodData/savers.ts
@@ -74908,36 +74907,6 @@ function createSaversData({
   });
 }
 
-// up/helpers/preparePeriodData/transactions.ts
-var import_date_fns3 = __toESM(require_date_fns());
-function createFormattedTransactionData(transactions, period) {
-  const allStartDates = /* @__PURE__ */ new Set();
-  const categories = /* @__PURE__ */ new Set();
-  const parentCategories = /* @__PURE__ */ new Set();
-  const monthlyDaysOffset = 5;
-  function formattedStartOfDate(date) {
-    return (0, import_date_fns3.toDate)(period === "week" ? (0, import_date_fns3.startOfWeek)(new Date(date), {
-      weekStartsOn: 1
-    }) : (0, import_date_fns3.subDays)((0, import_date_fns3.startOfMonth)((0, import_date_fns3.addDays)(new Date(date), monthlyDaysOffset)), monthlyDaysOffset)).toLocaleDateString();
-  }
-  const transactionsWithStartDate = transactions.map((txn) => {
-    const startDate = formattedStartOfDate(txn.createdAt);
-    allStartDates.add(startDate);
-    categories.add(txn.category || "Uncategorised");
-    parentCategories.add(txn.parentCategory || "Uncategorised");
-    return __spreadProps(__spreadValues({}, txn), {
-      startDate
-    });
-  });
-  const startDates = [...allStartDates].sort((a, b) => new Date(a).valueOf() - new Date(b).valueOf());
-  return {
-    categories,
-    parentCategories,
-    startDates,
-    transactionsWithStartDate
-  };
-}
-
 // up/helpers/preparePeriodData/index.ts
 function createPeriodicData({
   period,
@@ -74947,27 +74916,11 @@ function createPeriodicData({
   savers,
   saverTransactions
 }) {
-  const {
-    startDates,
-    transactionsWithStartDate,
-    categories,
-    parentCategories
-  } = createFormattedTransactionData(transactions, period);
-  return {
-    expenses: createExpensesData({
-      startDates,
-      transactions: transactionsWithStartDate,
-      categories,
-      parentCategories
-    }),
-    cashFlow: createCashFlowData({
-      startDates,
-      transactions: transactionsWithStartDate
-    }),
+  return __spreadProps(__spreadValues({}, createExpensesData(transactions, period)), {
     balances: createBalancesData({ accounts, balances }),
     savers: createSaversData({ savers, balances, saverTransactions }),
     saverNames: savers
-  };
+  });
 }
 
 // up/helpers/transactions.ts
