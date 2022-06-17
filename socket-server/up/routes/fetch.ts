@@ -69,9 +69,7 @@ export function createUpFetchRoutes(app: Express, knex: Knex): void {
 						savers: savers.filter(({ archivedAt }) => !archivedAt),
 						saverTransactions,
 					});
-				}
 
-				if (result) {
 					res.status(200).json(result);
 				}
 			}

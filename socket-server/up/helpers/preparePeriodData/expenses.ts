@@ -22,8 +22,35 @@ function formattedStartOfDate(
 	).toLocaleDateString();
 }
 
-function sortChartData(a: ChartData, b: ChartData): number {
-	return new Date(a.startDate).valueOf() - new Date(b.startDate).valueOf();
+function toSortedFilledArray(
+	map: Map<string, ChartData>,
+	filler?: Record<string, 0>,
+): ChartData[] {
+	const sortedData = [...map.values()].sort(
+		(a, b) =>
+			new Date(a.startDate).valueOf() - new Date(b.startDate).valueOf(),
+	);
+	return filler
+		? sortedData.map(data => ({ ...filler, ...data }))
+		: sortedData;
+}
+
+interface IUpdateStore {
+	key: string;
+	set?: Set<string>;
+	store: Map<string, ChartData>;
+}
+
+function createUpdateFromTxn(
+	startDate: string,
+	amount: number,
+): (data: IUpdateStore) => void {
+	return ({ key, set, store }: IUpdateStore): void => {
+		const current = store.get(startDate) ?? { startDate };
+		current[key] = amount + Number(current[key] ?? 0);
+		store.set(startDate, current);
+		set?.add(key);
+	};
 }
 
 export function createExpensesData(
@@ -38,47 +65,28 @@ export function createExpensesData(
 	const allParentCategories = new Set<string>();
 
 	const cashflow = new Map<string, ChartData>();
-	const cashFlowKey = 'In/Out';
 
 	for (const txn of transactions) {
 		if (!isProbablyInvestment(txn) && !isProbablyTransfer(txn)) {
-			const startDate = formattedStartOfDate(period, txn.createdAt);
+			const updateFromTxn = createUpdateFromTxn(
+				formattedStartOfDate(period, txn.createdAt),
+				txn.amount / 100,
+			);
 
-			const current = cashflow.get(startDate) ?? {
-				startDate: startDate,
-				[cashFlowKey]: 0,
-			};
-			current[cashFlowKey] =
-				txn.amount / 100 + Number(current[cashFlowKey]);
-			cashflow.set(startDate, current);
+			updateFromTxn({ store: cashflow, key: 'In/Out' });
 
 			if (txn.amount < 0) {
-				const allCurrent = allExpenses.get(startDate) ?? {
-					startDate,
-					All: 0,
-				};
-				allCurrent['All'] =
-					txn.amount / 100 + Number(allCurrent['All']);
-				allExpenses.set(startDate, allCurrent);
-
-				const category = txn.category ?? 'Uncategorised';
-				const categoryCurrent = categoryExpenses.get(startDate) ?? {
-					startDate,
-				};
-				categoryCurrent[category] =
-					txn.amount / 100 + Number(categoryCurrent[category] ?? 0);
-				categoryExpenses.set(startDate, categoryCurrent);
-				allCategories.add(category);
-
-				const parentCategory = txn.parentCategory ?? 'Uncategorised';
-				const parentCategoryCurrent = parentCategoryExpenses.get(
-					startDate,
-				) ?? { startDate };
-				parentCategoryCurrent[parentCategory] =
-					txn.amount / 100 +
-					Number(parentCategoryCurrent[parentCategory] ?? 0);
-				parentCategoryExpenses.set(startDate, parentCategoryCurrent);
-				allParentCategories.add(category);
+				updateFromTxn({ store: allExpenses, key: 'All' });
+				updateFromTxn({
+					store: categoryExpenses,
+					key: txn.category ?? 'Uncategorised',
+					set: allCategories,
+				});
+				updateFromTxn({
+					store: parentCategoryExpenses,
+					key: txn.parentCategory ?? 'Uncategorised',
+					set: allParentCategories,
+				});
 			}
 		}
 	}
@@ -93,15 +101,14 @@ export function createExpensesData(
 
 	return {
 		expenses: {
-			all: [...allExpenses.values()].sort(sortChartData),
-			byCategory: [...categoryExpenses.values()]
-				.map(data => ({ ...emptyCategories, ...data }))
-				.sort(sortChartData),
-			byParent: [...parentCategoryExpenses.values()]
-				.map(data => ({ ...emptyParentCategories, ...data }))
-				.sort(sortChartData),
+			all: toSortedFilledArray(allExpenses),
+			byCategory: toSortedFilledArray(categoryExpenses, emptyCategories),
+			byParent: toSortedFilledArray(
+				parentCategoryExpenses,
+				emptyParentCategories,
+			),
 		},
 
-		cashFlow: [...cashflow.values()].sort(sortChartData),
+		cashFlow: toSortedFilledArray(cashflow),
 	};
 }

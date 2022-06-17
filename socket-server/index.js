@@ -74772,46 +74772,43 @@ function formattedStartOfDate(period, date) {
     weekStartsOn: 1
   }) : (0, import_date_fns3.subDays)((0, import_date_fns3.startOfMonth)((0, import_date_fns3.addDays)(new Date(date), monthlyDaysOffset)), monthlyDaysOffset)).toLocaleDateString();
 }
-function sortChartData(a, b) {
-  return new Date(a.startDate).valueOf() - new Date(b.startDate).valueOf();
+function toSortedFilledArray(map, filler) {
+  const sortedData = [...map.values()].sort((a, b) => new Date(a.startDate).valueOf() - new Date(b.startDate).valueOf());
+  return filler ? sortedData.map((data) => __spreadValues(__spreadValues({}, filler), data)) : sortedData;
+}
+function createUpdateFromTxn(startDate, amount) {
+  return ({ key, set, store }) => {
+    var _a, _b;
+    const current = (_a = store.get(startDate)) != null ? _a : { startDate };
+    current[key] = amount + Number((_b = current[key]) != null ? _b : 0);
+    store.set(startDate, current);
+    set == null ? void 0 : set.add(key);
+  };
 }
 function createExpensesData(transactions, period) {
-  var _a, _b, _c, _d, _e, _f, _g, _h;
+  var _a, _b;
   const allExpenses = /* @__PURE__ */ new Map();
   const categoryExpenses = /* @__PURE__ */ new Map();
   const parentCategoryExpenses = /* @__PURE__ */ new Map();
   const allCategories = /* @__PURE__ */ new Set();
   const allParentCategories = /* @__PURE__ */ new Set();
   const cashflow = /* @__PURE__ */ new Map();
-  const cashFlowKey = "In/Out";
   for (const txn of transactions) {
     if (!isProbablyInvestment(txn) && !isProbablyTransfer(txn)) {
-      const startDate = formattedStartOfDate(period, txn.createdAt);
-      const current = (_a = cashflow.get(startDate)) != null ? _a : {
-        startDate,
-        [cashFlowKey]: 0
-      };
-      current[cashFlowKey] = txn.amount / 100 + Number(current[cashFlowKey]);
-      cashflow.set(startDate, current);
+      const updateFromTxn = createUpdateFromTxn(formattedStartOfDate(period, txn.createdAt), txn.amount / 100);
+      updateFromTxn({ store: cashflow, key: "In/Out" });
       if (txn.amount < 0) {
-        const allCurrent = (_b = allExpenses.get(startDate)) != null ? _b : {
-          startDate,
-          All: 0
-        };
-        allCurrent["All"] = txn.amount / 100 + Number(allCurrent["All"]);
-        allExpenses.set(startDate, allCurrent);
-        const category = (_c = txn.category) != null ? _c : "Uncategorised";
-        const categoryCurrent = (_d = categoryExpenses.get(startDate)) != null ? _d : {
-          startDate
-        };
-        categoryCurrent[category] = txn.amount / 100 + Number((_e = categoryCurrent[category]) != null ? _e : 0);
-        categoryExpenses.set(startDate, categoryCurrent);
-        allCategories.add(category);
-        const parentCategory = (_f = txn.parentCategory) != null ? _f : "Uncategorised";
-        const parentCategoryCurrent = (_g = parentCategoryExpenses.get(startDate)) != null ? _g : { startDate };
-        parentCategoryCurrent[parentCategory] = txn.amount / 100 + Number((_h = parentCategoryCurrent[parentCategory]) != null ? _h : 0);
-        parentCategoryExpenses.set(startDate, parentCategoryCurrent);
-        allParentCategories.add(category);
+        updateFromTxn({ store: allExpenses, key: "All" });
+        updateFromTxn({
+          store: categoryExpenses,
+          key: (_a = txn.category) != null ? _a : "Uncategorised",
+          set: allCategories
+        });
+        updateFromTxn({
+          store: parentCategoryExpenses,
+          key: (_b = txn.parentCategory) != null ? _b : "Uncategorised",
+          set: allParentCategories
+        });
       }
     }
   }
@@ -74819,11 +74816,11 @@ function createExpensesData(transactions, period) {
   const emptyParentCategories = [...allParentCategories].reduce((acc, curr) => __spreadProps(__spreadValues({}, acc), { [curr]: 0 }), {});
   return {
     expenses: {
-      all: [...allExpenses.values()].sort(sortChartData),
-      byCategory: [...categoryExpenses.values()].map((data) => __spreadValues(__spreadValues({}, emptyCategories), data)).sort(sortChartData),
-      byParent: [...parentCategoryExpenses.values()].map((data) => __spreadValues(__spreadValues({}, emptyParentCategories), data)).sort(sortChartData)
+      all: toSortedFilledArray(allExpenses),
+      byCategory: toSortedFilledArray(categoryExpenses, emptyCategories),
+      byParent: toSortedFilledArray(parentCategoryExpenses, emptyParentCategories)
     },
-    cashFlow: [...cashflow.values()].sort(sortChartData)
+    cashFlow: toSortedFilledArray(cashflow)
   };
 }
 
@@ -75213,8 +75210,6 @@ function createUpFetchRoutes(app2, knex2) {
             savers: savers.filter(({ archivedAt }) => !archivedAt),
             saverTransactions
           });
-        }
-        if (result) {
           res.status(200).json(result);
         }
       }
