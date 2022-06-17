@@ -74632,7 +74632,7 @@ var omitUndefinedOptions = (passedOptions) => {
 var lib_default = rateLimit;
 
 // up/helpers/misc.ts
-var apiKey2 = process.env.API_KEY || "";
+var apiKey = process.env.API_KEY || "";
 var upApiKeyChris = process.env.UP_API_KEY;
 var upApiKeyKate = process.env.UP_API_KEY_KATE;
 var urlBase = "https://api.up.com.au/api/v1";
@@ -74646,7 +74646,7 @@ var isProbablyInvestment = (transaction) => {
   return !!((_a = transaction.category) == null ? void 0 : _a.includes("investment"));
 };
 var getHasAuthHeaders = (req) => {
-  return req.headers["api_key"] === (apiKey2 || process.env.API_KEY);
+  return req.headers["api_key"] === (apiKey || process.env.API_KEY);
 };
 var limiter = lib_default({
   windowMs: 1e3,

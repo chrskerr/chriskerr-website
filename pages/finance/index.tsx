@@ -1,13 +1,13 @@
 import { ReactElement, useEffect, useState } from 'react';
 import { NextSeo } from 'next-seo';
+import { GetServerSideProps } from 'next';
+import useSWR, { useSWRConfig } from 'swr';
+import Link from 'next/link';
 
 import { UpApiReturn } from 'types/finance';
 import Finance, { DisplayModes, Period } from 'components/finance';
-import { GetServerSideProps } from 'next';
 import { fetchTransactionsHelper } from 'components/finance/helpers';
-import Link from 'next/link';
 import { IFinanceFetchApiBody } from 'pages/api/finance/fetch';
-import useSWR, { useSWRConfig } from 'swr';
 
 interface Props {
 	initialData: UpApiReturn | null;
@@ -40,6 +40,7 @@ export default function FinancesPage({ initialData }: Props): ReactElement {
 	const { data, error } = useSWR<UpApiReturn>(
 		shouldFetch ? swrKey : null,
 		fetcher,
+		{ fallbackData: initialData ?? undefined },
 	);
 	const { mutate } = useSWRConfig();
 	const refetchData = () => mutate(swrKey);
@@ -52,7 +53,9 @@ export default function FinancesPage({ initialData }: Props): ReactElement {
 	};
 
 	useEffect(() => {
-		setShouldFetch(false);
+		if (!initialData) {
+			setShouldFetch(false);
+		}
 	}, [password]);
 
 	return (

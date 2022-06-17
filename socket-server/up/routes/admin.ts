@@ -14,7 +14,7 @@ const urlBase = 'https://api.up.com.au/api/v1';
 export function createUpAdminRoutes(app: Express): void {
 	app.get('/up/ping/:id', limiter, async (req, res, next) => {
 		try {
-			if (apiKey) {
+			if (upApiKey) {
 				const id = req.params.id;
 				await axios.post(urlBase + `/webhooks/${id}/ping`, {
 					headers: { Authorization: `Bearer ${upApiKey}` },
@@ -28,7 +28,7 @@ export function createUpAdminRoutes(app: Express): void {
 
 	app.get('/up/list', limiter, async (req, res, next) => {
 		try {
-			if (apiKey) {
+			if (upApiKey) {
 				const fetchRes = await axios.get(urlBase + '/webhooks', {
 					headers: { Authorization: `Bearer ${upApiKey}` },
 				});
@@ -49,7 +49,7 @@ export function createUpAdminRoutes(app: Express): void {
 		const url = req.params.url;
 		console.log(url);
 		try {
-			if (apiKey) {
+			if (upApiKey) {
 				const fetchRes = await axios.post(urlBase + '/webhooks', {
 					data: {
 						attributes: {
@@ -70,7 +70,7 @@ export function createUpAdminRoutes(app: Express): void {
 	app.get('/up/delete/:id', limiter, async (req, res, next) => {
 		const id = req.params.id;
 		try {
-			if (apiKey) {
+			if (upApiKey) {
 				const fetchRes = await axios.delete(
 					urlBase + '/webhooks/' + id,
 					{ headers: { Authorization: `Bearer ${upApiKey}` } },
@@ -86,7 +86,7 @@ export function createUpAdminRoutes(app: Express): void {
 
 	app.get('/up/txns', limiter, async (req, res, next) => {
 		try {
-			if (apiKey) {
+			if (upApiKey) {
 				const fetchRes = await axios.get(urlBase + '/transactions', {
 					headers: { Authorization: `Bearer ${upApiKey}` },
 				});

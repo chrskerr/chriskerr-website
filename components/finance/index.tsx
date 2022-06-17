@@ -1,9 +1,19 @@
 import { ReactElement } from 'react';
 import { UpApiReturn } from 'types/finance';
-import BalancessPerWeek from './charts/balances';
-import ExpensesPerWeek from './charts/expenses';
-import CashFlow from './charts/cashFlow';
-import SaversTable from './tables/savers';
+import dynamic from 'next/dynamic';
+
+const BalancessPerWeek = dynamic(
+	() => import(/* webpackPrefetch: true */ './charts/balances'),
+);
+const ExpensesPerWeek = dynamic(
+	() => import(/* webpackPrefetch: true */ './charts/expenses'),
+);
+const CashFlow = dynamic(
+	() => import(/* webpackPrefetch: true */ './charts/cashFlow'),
+);
+const SaversTable = dynamic(
+	() => import(/* webpackPrefetch: true */ './tables/savers'),
+);
 
 export type DisplayModes = 'step' | 'monotone';
 export type Period = 'week' | 'month';
