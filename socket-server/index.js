@@ -74742,7 +74742,7 @@ function createBalancesData({
 }) {
   const startDates = /* @__PURE__ */ new Set();
   const balancesWithStartDate = balances.map((txn) => {
-    const startDate = txn.createdAt.toLocaleDateString();
+    const startDate = txn.createdAt.toLocaleDateString("en-AU");
     startDates.add(startDate);
     return __spreadProps(__spreadValues({}, txn), {
       startDate
@@ -74770,7 +74770,7 @@ var monthlyDaysOffset = 5;
 function formattedStartOfDate(period, date) {
   return (0, import_date_fns3.toDate)(period === "week" ? (0, import_date_fns3.startOfWeek)(new Date(date), {
     weekStartsOn: 1
-  }) : (0, import_date_fns3.subDays)((0, import_date_fns3.startOfMonth)((0, import_date_fns3.addDays)(new Date(date), monthlyDaysOffset)), monthlyDaysOffset)).toLocaleDateString();
+  }) : (0, import_date_fns3.subDays)((0, import_date_fns3.startOfMonth)((0, import_date_fns3.addDays)(new Date(date), monthlyDaysOffset)), monthlyDaysOffset)).toLocaleDateString("en-AU");
 }
 function toSortedFilledArray(map, filler) {
   const sortedData = [...map.values()].sort((a, b) => new Date(a.startDate).valueOf() - new Date(b.startDate).valueOf());
@@ -74887,8 +74887,8 @@ function createSaversData({
   const targetStartDates = (0, import_takeRight.default)(sortedStartDates, 3);
   return targetStartDates.map((startDate, i) => {
     var _a, _b, _c;
-    const formattedString = startDate.toLocaleDateString();
-    let redrawBalanceForStartData = (_b = (_a = balances.find((balance) => balance.createdAt.toLocaleDateString() === formattedString && balance.accountId === redrawAccountId)) == null ? void 0 : _a.balance) != null ? _b : 0;
+    const formattedString = startDate.toLocaleDateString("en-AU");
+    let redrawBalanceForStartData = (_b = (_a = balances.find((balance) => balance.createdAt.toLocaleDateString("en-AU") === formattedString && balance.accountId === redrawAccountId)) == null ? void 0 : _a.balance) != null ? _b : 0;
     const calculationDate = (_c = targetStartDates[i + 1]) != null ? _c : null;
     const saversForDate = savers.reduce((acc, curr) => {
       const balanceAtDate = calculateSaverBalanceAtDate(curr.id, saverTransactions, calculationDate);

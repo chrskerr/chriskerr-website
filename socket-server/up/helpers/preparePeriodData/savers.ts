@@ -26,12 +26,12 @@ export function createSaversData({
 	const targetStartDates = takeRight(sortedStartDates, 3);
 
 	return targetStartDates.map((startDate, i) => {
-		const formattedString = startDate.toLocaleDateString();
+		const formattedString = startDate.toLocaleDateString('en-AU');
 
 		let redrawBalanceForStartData =
 			balances.find(
 				balance =>
-					balance.createdAt.toLocaleDateString() ===
+					balance.createdAt.toLocaleDateString('en-AU') ===
 						formattedString &&
 					balance.accountId === redrawAccountId,
 			)?.balance ?? 0;

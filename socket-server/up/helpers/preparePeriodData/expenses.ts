@@ -19,7 +19,7 @@ function formattedStartOfDate(
 					startOfMonth(addDays(new Date(date), monthlyDaysOffset)),
 					monthlyDaysOffset,
 			  ),
-	).toLocaleDateString();
+	).toLocaleDateString('en-AU');
 }
 
 function toSortedFilledArray(

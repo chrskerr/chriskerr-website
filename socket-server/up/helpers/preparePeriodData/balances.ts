@@ -15,7 +15,7 @@ export function createBalancesData({
 	const startDates = new Set<string>();
 	const balancesWithStartDate = balances.map<Balance & { startDate: string }>(
 		txn => {
-			const startDate = txn.createdAt.toLocaleDateString();
+			const startDate = txn.createdAt.toLocaleDateString('en-AU');
 			startDates.add(startDate);
 			return {
 				...txn,
