@@ -1,10 +1,10 @@
-import { useRouter } from 'next/router';
 import { memo, ReactElement, useEffect, useState } from 'react';
 import { ISaversTransactBody, toDollars, UpApiReturn } from 'types/finance';
 
 interface Props {
 	saversData: UpApiReturn['savers'];
 	saverNames: UpApiReturn['saverNames'];
+	refetchdata: () => Promise<void>;
 }
 
 const CREATE_SAVER_ID = 'create-new';
@@ -31,9 +31,8 @@ function getIsValid({
 export default memo(function SaversTable({
 	saversData,
 	saverNames,
+	refetchdata,
 }: Props): ReactElement {
-	const router = useRouter();
-
 	const [isMoveMoneyModalOpen, setIsMoveMoneyModalOpen] = useState(false);
 	const [chosenSaver, setChosenSaver] = useState<string>(
 		saverNames?.[0]?.id.toString() ?? CREATE_SAVER_ID,
@@ -105,7 +104,7 @@ export default memo(function SaversTable({
 		setIsMoveMoneyModalOpen(false);
 
 		if (saveRes.ok) {
-			router.replace(router.asPath);
+			await refetchdata();
 		}
 	}
 

@@ -7,53 +7,53 @@ import { GetServerSideProps } from 'next';
 import { fetchTransactionsHelper } from 'components/finance/helpers';
 import Link from 'next/link';
 import { IFinanceFetchApiBody } from 'pages/api/finance/fetch';
+import useSWR, { useSWRConfig } from 'swr';
 
 interface Props {
 	initialData: UpApiReturn | null;
 }
 
-const defaultPeriod = 'month';
+const defaultPeriod: Period = 'month';
+
+function fetcher(url: string, period: Period, password: string) {
+	const body: IFinanceFetchApiBody = { period };
+
+	return fetch(url, {
+		headers: new Headers({
+			api_key: password,
+			'content-type': 'application/json',
+		}),
+		credentials: 'include',
+		method: 'POST',
+		body: JSON.stringify(body),
+	}).then(r => r.json() as Promise<UpApiReturn>);
+}
 
 export default function FinancesPage({ initialData }: Props): ReactElement {
+	const [shouldFetch, setShouldFetch] = useState(!!initialData);
 	const [password, setPassword] = useState('');
-	const [data, setData] = useState<UpApiReturn | null>(initialData);
-	const [loading, setLoading] = useState(false);
 
 	const [displayMode, setDisplayMode] = useState<DisplayModes>('monotone');
 	const [period, setPeriod] = useState<Period>(defaultPeriod);
 
-	async function fetchAndSetData(period: Period) {
-		setLoading(true);
-		try {
-			const body: IFinanceFetchApiBody = { period };
-			const res = await fetch('/api/finance/fetch', {
-				headers: new Headers({
-					api_key: password,
-					'content-type': 'application/json',
-				}),
-				credentials: 'include',
-				method: 'POST',
-				body: JSON.stringify(body),
-			});
-			if (res.ok) {
-				setData(await res.json());
-			}
-		} catch (e) {
-			console.error(e);
-		}
-		setLoading(false);
-	}
+	const swrKey = ['/api/finance/fetch', period, password];
+	const { data, error } = useSWR<UpApiReturn>(
+		shouldFetch ? swrKey : null,
+		fetcher,
+	);
+	const { mutate } = useSWRConfig();
+	const refetchData = () => mutate(swrKey);
+
+	const loading = shouldFetch && !error && !data;
 
 	const handleLogin = async () => {
 		if (!password) return;
-		fetchAndSetData(period);
+		setShouldFetch(true);
 	};
 
 	useEffect(() => {
-		if (data) {
-			fetchAndSetData(period);
-		}
-	}, [period]);
+		setShouldFetch(false);
+	}, [password]);
 
 	return (
 		<>
@@ -102,6 +102,7 @@ export default function FinancesPage({ initialData }: Props): ReactElement {
 						data={data}
 						displayMode={displayMode}
 						period={period}
+						refetchData={refetchData}
 					/>
 				) : (
 					<>

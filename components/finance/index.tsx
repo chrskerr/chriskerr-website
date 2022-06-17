@@ -12,12 +12,14 @@ interface Props {
 	data: UpApiReturn;
 	displayMode: DisplayModes;
 	period: Period;
+	refetchData: () => Promise<void>;
 }
 
 export default function Finance({
 	data,
 	displayMode,
 	period,
+	refetchData,
 }: Props): ReactElement {
 	return (
 		<>
@@ -46,6 +48,7 @@ export default function Finance({
 				<SaversTable
 					saversData={data.savers}
 					saverNames={data.saverNames}
+					refetchdata={refetchData}
 				/>
 			</div>
 		</>
