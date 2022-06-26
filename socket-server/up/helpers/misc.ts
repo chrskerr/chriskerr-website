@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config({ path: '.env.local' });
+
 import { Transaction } from '../../types';
 import { Request } from 'express';
 import rateLimit from 'express-rate-limit';

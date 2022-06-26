@@ -17,13 +17,9 @@ import {
 	upApiKeyKate,
 } from './misc';
 
-async function createOrUpdateTransaction(
-	accountId: string,
-	txn: UpTransaction,
-	knex: Knex,
-) {
-	const transaction: Omit<Transaction, 'id'> = {
-		accountId,
+async function createOrUpdateTransaction(txns: UpTransaction[], knex: Knex) {
+	const transactions = txns.map<Omit<Transaction, 'id'>>(txn => ({
+		accountId: txn.relationships.account.data.id,
 		transactionId: txn.id,
 		amount: txn.attributes.amount.valueInBaseUnits,
 		category: txn.relationships.category.data?.id ?? null,
@@ -33,27 +29,30 @@ async function createOrUpdateTransaction(
 		isTransfer:
 			!!txn.relationships.transferAccount.data ||
 			isDescriptionTransferLike(txn.attributes.description),
-	};
+	}));
 
 	await knex
 		.table<Transaction>(TableNames.TRANSACTIONS)
-		.insert(transaction)
+		.insert(transactions)
 		.onConflict('transactionId')
 		.merge();
 }
 
 export const fetchTransactions = async ({
 	isChris,
-	shouldFetchAll,
+	lookBack = 20,
 	link,
 }: {
 	isChris: boolean;
-	shouldFetchAll: boolean;
+	lookBack: number;
 	link?: string;
 }): Promise<UpTransaction[]> => {
+	if (lookBack <= 0) {
+		return [];
+	}
+
 	const res = await axios.get(
-		link ||
-			urlBase + `/transactions?page[size]=${shouldFetchAll ? 100 : 20}`,
+		link || urlBase + `/transactions?page[size]=${Math.min(lookBack, 100)}`,
 		{
 			headers: {
 				Authorization: `Bearer ${
@@ -62,15 +61,18 @@ export const fetchTransactions = async ({
 			},
 		},
 	);
+
 	const txnData = res.data as UpTransactions;
 	const next = txnData.links.next;
 
+	const remainingLookback = Math.max(lookBack - 100, 0);
+
 	return [
 		...txnData.data,
-		...(next && shouldFetchAll
+		...(next && remainingLookback > 0
 			? await fetchTransactions({
 					isChris,
-					shouldFetchAll,
+					lookBack: remainingLookback,
 					link: next,
 			  })
 			: []),
@@ -132,17 +134,10 @@ export const upsertAllTransactions = async (
 		}),
 	);
 
-	transactions.forEach(async txn => {
-		try {
-			const accountId = txn.relationships.account.data.id;
-
-			if (failedAccounts.includes(accountId)) {
-				return;
-			}
-
-			await createOrUpdateTransaction(accountId, txn, knex);
-		} catch (e) {
-			console.error(e);
-		}
+	const filteredTransactions = transactions.filter(txn => {
+		const accountId = txn.relationships.account.data.id;
+		return !failedAccounts.includes(accountId);
 	});
+
+	await createOrUpdateTransaction(filteredTransactions, knex);
 };

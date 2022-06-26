@@ -66,7 +66,7 @@ export const fetchTransactionsHelper = async (
 	period: string,
 ): Promise<UpApiReturn | null> => {
 	return withAuth(req, res, async () => {
-		const response = await fetch(`${socketServerUrl}/up/${period}`, {
+		const response = await fetch(`${socketServerUrl}/up/fetch/${period}`, {
 			headers: apiKey ? new Headers({ api_key: apiKey }) : {},
 		});
 

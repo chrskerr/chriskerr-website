@@ -17,7 +17,7 @@ import { createPeriodicData, getHasAuthHeaders, limiter } from '../helpers';
 import { TableNames } from '../../migrations';
 
 export function createUpFetchRoutes(app: Express, knex: Knex): void {
-	app.get('/up/:period', limiter, async (req, res, next) => {
+	app.get('/up/fetch/:period', limiter, async (req, res, next) => {
 		try {
 			const hasAuth = getHasAuthHeaders(req);
 			const period = req.params.period;

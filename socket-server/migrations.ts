@@ -187,4 +187,18 @@ export const migrate = async (knex: Knex): Promise<void> => {
 		});
 		await setMigrationVersion(knex, june18);
 	}
+
+	const june26 = new Date('2022-06-26');
+	if (migrationVersion < june26) {
+		await knex.schema.alterTable(TableNames.BALANCES, table => {
+			table.index('createdAt');
+		});
+		await knex.schema.alterTable(TableNames.TRANSACTIONS, table => {
+			table.index('createdAt');
+		});
+		await knex.schema.alterTable(TableNames.ACCOUNTS, table => {
+			table.index('excludeFromCalcs');
+		});
+		await setMigrationVersion(knex, june26);
+	}
 };

@@ -176,9 +176,9 @@ io.on('connection', socket => {
 });
 
 app.set('trust proxy', 1);
-createUpFetchRoutes(app, knex);
 createUpUpdateRoutes(app, knex);
 // createUpAdminRoutes(app);
+createUpFetchRoutes(app, knex);
 
 const port = process.env.PORT || 8080;
 server.listen(port, () => {

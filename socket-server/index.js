@@ -74167,7 +74167,7 @@ var require_takeRight = __commonJS({
 });
 
 // index.ts
-var import_dotenv = __toESM(require_main());
+var import_dotenv2 = __toESM(require_main());
 var import_express = __toESM(require_express2());
 var import_http = __toESM(require("http"));
 
@@ -74426,7 +74426,23 @@ var migrate = (knex2) => __async(void 0, null, function* () {
     });
     yield setMigrationVersion(knex2, june18);
   }
+  const june26 = new Date("2022-06-26");
+  if (migrationVersion < june26) {
+    yield knex2.schema.alterTable("account_balances" /* BALANCES */, (table) => {
+      table.index("createdAt");
+    });
+    yield knex2.schema.alterTable("account_transactions" /* TRANSACTIONS */, (table) => {
+      table.index("createdAt");
+    });
+    yield knex2.schema.alterTable("accounts" /* ACCOUNTS */, (table) => {
+      table.index("excludeFromCalcs");
+    });
+    yield setMigrationVersion(knex2, june26);
+  }
 });
+
+// up/helpers/misc.ts
+var import_dotenv = __toESM(require_main());
 
 // node_modules/express-rate-limit/dist/index.mjs
 var calculateNextResetTime = (windowMs) => {
@@ -74632,6 +74648,7 @@ var omitUndefinedOptions = (passedOptions) => {
 var lib_default = rateLimit;
 
 // up/helpers/misc.ts
+import_dotenv.default.config({ path: ".env.local" });
 var apiKey = process.env.API_KEY || "";
 var upApiKeyChris = process.env.UP_API_KEY;
 var upApiKeyKate = process.env.UP_API_KEY_KATE;
@@ -74922,39 +74939,45 @@ function createPeriodicData({
 
 // up/helpers/transactions.ts
 var import_axios2 = __toESM(require_axios2());
-function createOrUpdateTransaction(accountId, txn, knex2) {
+function createOrUpdateTransaction(txns, knex2) {
   return __async(this, null, function* () {
-    var _a, _b, _c, _d;
-    const transaction = {
-      accountId,
-      transactionId: txn.id,
-      amount: txn.attributes.amount.valueInBaseUnits,
-      category: (_b = (_a = txn.relationships.category.data) == null ? void 0 : _a.id) != null ? _b : null,
-      parentCategory: (_d = (_c = txn.relationships.parentCategory.data) == null ? void 0 : _c.id) != null ? _d : null,
-      description: txn.attributes.description,
-      createdAt: txn.attributes.createdAt,
-      isTransfer: !!txn.relationships.transferAccount.data || isDescriptionTransferLike(txn.attributes.description)
-    };
-    yield knex2.table("account_transactions" /* TRANSACTIONS */).insert(transaction).onConflict("transactionId").merge();
+    const transactions = txns.map((txn) => {
+      var _a, _b, _c, _d;
+      return {
+        accountId: txn.relationships.account.data.id,
+        transactionId: txn.id,
+        amount: txn.attributes.amount.valueInBaseUnits,
+        category: (_b = (_a = txn.relationships.category.data) == null ? void 0 : _a.id) != null ? _b : null,
+        parentCategory: (_d = (_c = txn.relationships.parentCategory.data) == null ? void 0 : _c.id) != null ? _d : null,
+        description: txn.attributes.description,
+        createdAt: txn.attributes.createdAt,
+        isTransfer: !!txn.relationships.transferAccount.data || isDescriptionTransferLike(txn.attributes.description)
+      };
+    });
+    yield knex2.table("account_transactions" /* TRANSACTIONS */).insert(transactions).onConflict("transactionId").merge();
   });
 }
 var fetchTransactions = (_0) => __async(void 0, [_0], function* ({
   isChris,
-  shouldFetchAll,
+  lookBack = 20,
   link
 }) {
-  const res = yield import_axios2.default.get(link || urlBase + `/transactions?page[size]=${shouldFetchAll ? 100 : 20}`, {
+  if (lookBack <= 0) {
+    return [];
+  }
+  const res = yield import_axios2.default.get(link || urlBase + `/transactions?page[size]=${Math.min(lookBack, 100)}`, {
     headers: {
       Authorization: `Bearer ${isChris ? upApiKeyChris : upApiKeyKate}`
     }
   });
   const txnData = res.data;
   const next = txnData.links.next;
+  const remainingLookback = Math.max(lookBack - 100, 0);
   return [
     ...txnData.data,
-    ...next && shouldFetchAll ? yield fetchTransactions({
+    ...next && remainingLookback > 0 ? yield fetchTransactions({
       isChris,
-      shouldFetchAll,
+      lookBack: remainingLookback,
       link: next
     }) : []
   ];
@@ -74996,17 +75019,11 @@ var upsertAllTransactions = (transactions, knex2) => __async(void 0, null, funct
       failedAccounts.push(accountId);
     }
   })));
-  transactions.forEach((txn) => __async(void 0, null, function* () {
-    try {
-      const accountId = txn.relationships.account.data.id;
-      if (failedAccounts.includes(accountId)) {
-        return;
-      }
-      yield createOrUpdateTransaction(accountId, txn, knex2);
-    } catch (e) {
-      console.error(e);
-    }
-  }));
+  const filteredTransactions = transactions.filter((txn) => {
+    const accountId = txn.relationships.account.data.id;
+    return !failedAccounts.includes(accountId);
+  });
+  yield createOrUpdateTransaction(filteredTransactions, knex2);
 });
 
 // up/routes/admin.ts
@@ -75039,7 +75056,7 @@ function createUpUpdateRoutes(app2, knex2) {
       if (eventType && txnId && (isChris || isKate)) {
         const transactions = yield fetchTransactions({
           isChris,
-          shouldFetchAll: false
+          lookBack: 20
         });
         yield upsertAllTransactions(transactions, knex2);
       } else {
@@ -75057,11 +75074,11 @@ function createUpUpdateRoutes(app2, knex2) {
         const [chrisTransactions, kateTransactions] = yield Promise.all([
           fetchTransactions({
             isChris: true,
-            shouldFetchAll: true
+            lookBack: 1e3
           }),
           fetchTransactions({
             isChris: false,
-            shouldFetchAll: true
+            lookBack: 1e3
           })
         ]);
         const seenTransactionIds = /* @__PURE__ */ new Set();
@@ -75176,7 +75193,7 @@ function createUpUpdateRoutes(app2, knex2) {
 // up/routes/fetch.ts
 var import_date_fns4 = __toESM(require_date_fns());
 function createUpFetchRoutes(app2, knex2) {
-  app2.get("/up/:period", limiter, (req, res, next) => __async(this, null, function* () {
+  app2.get("/up/fetch/:period", limiter, (req, res, next) => __async(this, null, function* () {
     try {
       const hasAuth = getHasAuthHeaders(req);
       const period = req.params.period;
@@ -75221,7 +75238,7 @@ function createUpFetchRoutes(app2, knex2) {
 }
 
 // index.ts
-import_dotenv.default.config({ path: ".env.local" });
+import_dotenv2.default.config({ path: ".env.local" });
 var corsSettings = {
   origin: [
     "http://localhost:3000",
@@ -75319,8 +75336,8 @@ io2.on("connection", (socket) => {
   });
 });
 app.set("trust proxy", 1);
-createUpFetchRoutes(app, knex);
 createUpUpdateRoutes(app, knex);
+createUpFetchRoutes(app, knex);
 var port = process.env.PORT || 8080;
 server.listen(port, () => {
   console.log(`listening on *:${port}`);

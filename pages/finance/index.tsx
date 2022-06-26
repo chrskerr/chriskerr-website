@@ -40,7 +40,7 @@ export default function FinancesPage({ initialData }: Props): ReactElement {
 	const { data, error } = useSWR<UpApiReturn>(
 		shouldFetch ? swrKey : null,
 		fetcher,
-		{ fallbackData: initialData ?? undefined },
+		{ fallbackData: initialData ?? undefined, refreshInterval: 10_000 },
 	);
 	const { mutate } = useSWRConfig();
 	const refetchData = () => mutate(swrKey);

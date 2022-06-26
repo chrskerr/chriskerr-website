@@ -67,7 +67,7 @@ export function createUpUpdateRoutes(app: Express, knex: Knex): void {
 			if (eventType && txnId && (isChris || isKate)) {
 				const transactions = await fetchTransactions({
 					isChris,
-					shouldFetchAll: false,
+					lookBack: 20,
 				});
 				await upsertAllTransactions(transactions, knex);
 			} else {
@@ -89,11 +89,11 @@ export function createUpUpdateRoutes(app: Express, knex: Knex): void {
 					[
 						fetchTransactions({
 							isChris: true,
-							shouldFetchAll: true,
+							lookBack: 1_000,
 						}),
 						fetchTransactions({
 							isChris: false,
-							shouldFetchAll: true,
+							lookBack: 1_000,
 						}),
 					],
 				);
