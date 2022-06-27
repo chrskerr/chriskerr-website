@@ -14,7 +14,7 @@ export function findUncategorisedTransactions(
 		.map(({ id, amount, createdAt, description }) => ({
 			id,
 			amount,
-			createdAt: createdAt.toISOString(),
+			createdAt: createdAt.toLocaleDateString(),
 			description,
 		}));
 }

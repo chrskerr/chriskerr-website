@@ -2,7 +2,7 @@ import { Express } from 'express';
 
 import { Knex } from 'knex';
 
-import { startOfWeek, subWeeks } from 'date-fns';
+import { startOfMonth, startOfWeek, subMonths, subWeeks } from 'date-fns';
 
 import { UpApiReturn } from '../../../types/finance';
 import {
@@ -22,15 +22,15 @@ export function createUpFetchRoutes(app: Express, knex: Knex): void {
 			const hasAuth = getHasAuthHeaders(req);
 			const period = req.params.period;
 
-			let weeksLookback = Math.max(chartLookbackWeeks, 20);
-			if (period === 'month') weeksLookback = weeksLookback * 3;
-
-			const fromDate = subWeeks(
-				startOfWeek(new Date(), {
-					weekStartsOn: 1,
-				}),
-				weeksLookback,
-			);
+			const fromDate =
+				period === 'month'
+					? subMonths(startOfMonth(new Date()), 8)
+					: subWeeks(
+							startOfWeek(new Date(), {
+								weekStartsOn: 1,
+							}),
+							Math.max(chartLookbackWeeks, 20),
+					  );
 
 			if (hasAuth) {
 				const [

@@ -64154,13 +64154,13 @@ var require_startOfMonth = __commonJS({
     Object.defineProperty(exports2, "__esModule", {
       value: true
     });
-    exports2.default = startOfMonth2;
+    exports2.default = startOfMonth3;
     var _index = _interopRequireDefault(require_toDate());
     var _index2 = _interopRequireDefault(require_requiredArgs());
     function _interopRequireDefault(obj) {
       return obj && obj.__esModule ? obj : { default: obj };
     }
-    function startOfMonth2(dirtyDate) {
+    function startOfMonth3(dirtyDate) {
       (0, _index2.default)(1, arguments);
       var date = (0, _index.default)(dirtyDate);
       date.setDate(1);
@@ -67830,14 +67830,14 @@ var require_subMonths = __commonJS({
     Object.defineProperty(exports2, "__esModule", {
       value: true
     });
-    exports2.default = subMonths;
+    exports2.default = subMonths2;
     var _index = _interopRequireDefault(require_toInteger2());
     var _index2 = _interopRequireDefault(require_addMonths());
     var _index3 = _interopRequireDefault(require_requiredArgs());
     function _interopRequireDefault(obj) {
       return obj && obj.__esModule ? obj : { default: obj };
     }
-    function subMonths(dirtyDate, dirtyAmount) {
+    function subMonths2(dirtyDate, dirtyAmount) {
       (0, _index3.default)(2, arguments);
       var amount = (0, _index.default)(dirtyAmount);
       return (0, _index2.default)(dirtyDate, -amount);
@@ -74932,7 +74932,7 @@ function findUncategorisedTransactions(transactions) {
   }).sort((a, b) => b.createdAt.valueOf() - a.createdAt.valueOf()).map(({ id, amount, createdAt, description }) => ({
     id,
     amount,
-    createdAt: createdAt.toISOString(),
+    createdAt: createdAt.toLocaleDateString(),
     description
   }));
 }
@@ -75219,12 +75219,9 @@ function createUpFetchRoutes(app2, knex2) {
     try {
       const hasAuth = getHasAuthHeaders(req);
       const period = req.params.period;
-      let weeksLookback = Math.max(chartLookbackWeeks, 20);
-      if (period === "month")
-        weeksLookback = weeksLookback * 3;
-      const fromDate = (0, import_date_fns4.subWeeks)((0, import_date_fns4.startOfWeek)(new Date(), {
+      const fromDate = period === "month" ? (0, import_date_fns4.subMonths)((0, import_date_fns4.startOfMonth)(new Date()), 8) : (0, import_date_fns4.subWeeks)((0, import_date_fns4.startOfWeek)(new Date(), {
         weekStartsOn: 1
-      }), weeksLookback);
+      }), Math.max(chartLookbackWeeks, 20));
       if (hasAuth) {
         const [
           accounts,

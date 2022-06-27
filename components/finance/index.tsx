@@ -76,11 +76,7 @@ export default function Finance({
 						>
 							<p>{transaction.description}</p>
 							<p>{formatDollars(transaction.amount / 100)}</p>
-							<p>
-								{new Date(
-									transaction.createdAt,
-								).toLocaleDateString()}
-							</p>
+							<p>{transaction.createdAt}</p>
 						</div>
 					))}
 				</div>
