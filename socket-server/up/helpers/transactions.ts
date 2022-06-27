@@ -25,7 +25,7 @@ async function createOrUpdateTransaction(txns: UpTransaction[], knex: Knex) {
 		category: txn.relationships.category.data?.id ?? null,
 		parentCategory: txn.relationships.parentCategory.data?.id ?? null,
 		description: txn.attributes.description,
-		createdAt: txn.attributes.createdAt,
+		createdAt: new Date(txn.attributes.createdAt),
 		isTransfer:
 			!!txn.relationships.transferAccount.data ||
 			isDescriptionTransferLike(txn.attributes.description),

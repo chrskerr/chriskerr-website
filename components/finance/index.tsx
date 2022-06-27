@@ -61,6 +61,35 @@ export default function Finance({
 					refetchdata={refetchData}
 				/>
 			</div>
+			{data.uncategorisedTransactions.length && (
+				<div className="w-full mt-20">
+					<h2 className="pb-6 text-xl">Uncategorised Transactions</h2>
+					<div className="grid grid-cols-3 font-bold">
+						<p>Description</p>
+						<p>Value</p>
+						<p>Date</p>
+					</div>
+					{data.uncategorisedTransactions.map(transaction => (
+						<div
+							key={transaction.id}
+							className="grid grid-cols-3 pt-3 mt-3 border-t"
+						>
+							<p>{transaction.description}</p>
+							<p>{formatDollars(transaction.amount / 100)}</p>
+							<p>
+								{new Date(
+									transaction.createdAt,
+								).toLocaleDateString()}
+							</p>
+						</div>
+					))}
+				</div>
+			)}
 		</>
 	);
 }
+
+const { format: formatDollars } = new Intl.NumberFormat('en-AU', {
+	style: 'currency',
+	currency: 'AUD',
+});

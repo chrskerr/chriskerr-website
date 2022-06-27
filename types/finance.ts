@@ -27,7 +27,13 @@ export type UpApiReturn = {
 	saverNames: {
 		id: number;
 		name: string;
-		archivedAt: Date | null;
+		archivedAt: string | null;
+	}[];
+	uncategorisedTransactions: {
+		id: number;
+		amount: Cents;
+		description: string;
+		createdAt: string;
 	}[];
 };
 

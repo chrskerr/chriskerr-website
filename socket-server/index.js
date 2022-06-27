@@ -59008,7 +59008,7 @@ var require_words = __commonJS({
       ]
     };
     function getWordsByCategory(partOfSpeech, categories) {
-      var e_1, _a;
+      var e_1, _a2;
       if (categories === void 0) {
         categories = [];
       }
@@ -59027,8 +59027,8 @@ var require_words = __commonJS({
         e_1 = { error: e_1_1 };
       } finally {
         try {
-          if (_c && !_c.done && (_a = _b.return))
-            _a.call(_b);
+          if (_c && !_c.done && (_a2 = _b.return))
+            _a2.call(_b);
         } finally {
           if (e_1)
             throw e_1.error;
@@ -59113,8 +59113,8 @@ var require_dist6 = __commonJS({
       }).join(" ");
     }
     function totalUniqueSlugs(numberOfWords, options) {
-      var _a, _b;
-      var numAdjectives = words_1.getWordsByCategory("adjective", (_a = options === null || options === void 0 ? void 0 : options.categories) === null || _a === void 0 ? void 0 : _a.adjective).length;
+      var _a2, _b;
+      var numAdjectives = words_1.getWordsByCategory("adjective", (_a2 = options === null || options === void 0 ? void 0 : options.categories) === null || _a2 === void 0 ? void 0 : _a2.adjective).length;
       var numNouns = words_1.getWordsByCategory("noun", (_b = options === null || options === void 0 ? void 0 : options.categories) === null || _b === void 0 ? void 0 : _b.noun).length;
       var nums = {
         adjective: numAdjectives,
@@ -74265,8 +74265,8 @@ function processDelete({
   }
 }
 var processChangeEvent = (data, event) => {
-  var _a;
-  const action = (_a = event == null ? void 0 : event.change) == null ? void 0 : _a.up;
+  var _a2;
+  const action = (_a2 = event == null ? void 0 : event.change) == null ? void 0 : _a2.up;
   if (action.type === "insert") {
     return processInsert({
       data,
@@ -74290,6 +74290,8 @@ var processAllChanges = (sortedChanges, initial) => {
 var import_random_word_slugs = __toESM(require_dist6());
 
 // ../lib/constants.ts
+var _a;
+var socketServerUrl = (_a = process.env.NEXT_PUBLIC_SERVER_URL) != null ? _a : "https://chrskerr-sockets.herokuapp.com";
 var unsavedNoteId = "n";
 var chartLookbackWeeks = 6;
 
@@ -74308,9 +74310,9 @@ function setMigrationVersion(knex2, version) {
 }
 function getMigrationVersion(knex2) {
   return __async(this, null, function* () {
-    var _a;
+    var _a2;
     const migrationVersion = yield knex2.table("migration_version" /* MIGRATION_VERSION */).where({ id: 1 }).select("*").first();
-    return (_a = migrationVersion == null ? void 0 : migrationVersion.version) != null ? _a : null;
+    return (_a2 = migrationVersion == null ? void 0 : migrationVersion.version) != null ? _a2 : null;
   });
 }
 var migrate = (knex2) => __async(void 0, null, function* () {
@@ -74463,8 +74465,8 @@ var MemoryStore = class {
     }
   }
   async increment(key) {
-    var _a;
-    const totalHits = ((_a = this.hits[key]) != null ? _a : 0) + 1;
+    var _a2;
+    const totalHits = ((_a2 = this.hits[key]) != null ? _a2 : 0) + 1;
     this.hits[key] = totalHits;
     return {
       totalHits,
@@ -74515,14 +74517,14 @@ var promisifyStore = (passedStore) => {
   return new PromisifiedStore();
 };
 var parseOptions = (passedOptions) => {
-  var _a, _b, _c;
+  var _a2, _b, _c;
   const notUndefinedOptions = omitUndefinedOptions(passedOptions);
   const config = {
     windowMs: 60 * 1e3,
     max: 5,
     message: "Too many requests, please try again later.",
     statusCode: 429,
-    legacyHeaders: (_a = passedOptions.headers) != null ? _a : true,
+    legacyHeaders: (_a2 = passedOptions.headers) != null ? _a2 : true,
     standardHeaders: (_b = passedOptions.draft_polli_ratelimit_headers) != null ? _b : false,
     requestPropertyName: "rateLimit",
     skipFailedRequests: false,
@@ -74659,8 +74661,8 @@ var isEventType = (string) => {
 var isProbablyTransfer = (transaction) => transaction.isTransfer || isDescriptionTransferLike(transaction.description);
 var isDescriptionTransferLike = (description) => description.startsWith("Transfer from ") || description.startsWith("Transfer to ") || description.startsWith("Forward from ") || description.startsWith("Forward to ") || description === "Chris Kerr" || description.startsWith("Auto Transfer to ") || description === "Round Up";
 var isProbablyInvestment = (transaction) => {
-  var _a;
-  return !!((_a = transaction.category) == null ? void 0 : _a.includes("investment"));
+  var _a2;
+  return !!((_a2 = transaction.category) == null ? void 0 : _a2.includes("investment"));
 };
 var getHasAuthHeaders = (req) => {
   return req.headers["api_key"] === (apiKey || process.env.API_KEY);
@@ -74769,10 +74771,10 @@ function createBalancesData({
   return sortedStartDates.map((startDate) => {
     const balancesForStart = balancesWithStartDate.filter((curr) => curr.startDate === startDate);
     return accounts.map((account) => {
-      var _a;
+      var _a2;
       const balancesForAccount = balancesForStart.filter((curr) => curr.accountId === account.id).sort((a, b) => (0, import_date_fns2.differenceInSeconds)(new Date(b.createdAt), new Date(a.createdAt)));
       return {
-        balance: ((_a = balancesForAccount == null ? void 0 : balancesForAccount[0]) == null ? void 0 : _a.balance) || 0,
+        balance: ((_a2 = balancesForAccount == null ? void 0 : balancesForAccount[0]) == null ? void 0 : _a2.balance) || 0,
         accountName: account.name
       };
     }).reduce((acc, curr) => __spreadProps(__spreadValues({}, acc), {
@@ -74795,15 +74797,15 @@ function toSortedFilledArray(map, filler) {
 }
 function createUpdateFromTxn(startDate, amount) {
   return ({ key, set, store }) => {
-    var _a, _b;
-    const current = (_a = store.get(startDate)) != null ? _a : { startDate };
+    var _a2, _b;
+    const current = (_a2 = store.get(startDate)) != null ? _a2 : { startDate };
     current[key] = amount + Number((_b = current[key]) != null ? _b : 0);
     store.set(startDate, current);
     set == null ? void 0 : set.add(key);
   };
 }
 function createExpensesData(transactions, period) {
-  var _a, _b;
+  var _a2, _b;
   const allExpenses = /* @__PURE__ */ new Map();
   const categoryExpenses = /* @__PURE__ */ new Map();
   const parentCategoryExpenses = /* @__PURE__ */ new Map();
@@ -74818,7 +74820,7 @@ function createExpensesData(transactions, period) {
         updateFromTxn({ store: allExpenses, key: "All" });
         updateFromTxn({
           store: categoryExpenses,
-          key: (_a = txn.category) != null ? _a : "Uncategorised",
+          key: (_a2 = txn.category) != null ? _a2 : "Uncategorised",
           set: allCategories
         });
         updateFromTxn({
@@ -74869,8 +74871,8 @@ function createSaverTransaction(knex2, saverId, amount) {
   });
 }
 function calculateSaverBalanceAtDate(saverId, transactions, cutoffDate) {
-  var _a;
-  const cutoffTimestamp = (_a = cutoffDate == null ? void 0 : cutoffDate.valueOf()) != null ? _a : Infinity;
+  var _a2;
+  const cutoffTimestamp = (_a2 = cutoffDate == null ? void 0 : cutoffDate.valueOf()) != null ? _a2 : Infinity;
   return toCents(transactions.reduce((acc, curr) => {
     if (curr.saverId === saverId && cutoffTimestamp > curr.createdAt.valueOf()) {
       return acc + curr.amountCents;
@@ -74903,9 +74905,9 @@ function createSaversData({
   const sortedStartDates = [...createdAtDates].sort((a, b) => a.valueOf() - b.valueOf());
   const targetStartDates = (0, import_takeRight.default)(sortedStartDates, 3);
   return targetStartDates.map((startDate, i) => {
-    var _a, _b, _c;
+    var _a2, _b, _c;
     const formattedString = startDate.toLocaleDateString("en-AU");
-    let redrawBalanceForStartData = (_b = (_a = balances.find((balance) => balance.createdAt.toLocaleDateString("en-AU") === formattedString && balance.accountId === redrawAccountId)) == null ? void 0 : _a.balance) != null ? _b : 0;
+    let redrawBalanceForStartData = (_b = (_a2 = balances.find((balance) => balance.createdAt.toLocaleDateString("en-AU") === formattedString && balance.accountId === redrawAccountId)) == null ? void 0 : _a2.balance) != null ? _b : 0;
     const calculationDate = (_c = targetStartDates[i + 1]) != null ? _c : null;
     const saversForDate = savers.reduce((acc, curr) => {
       const balanceAtDate = calculateSaverBalanceAtDate(curr.id, saverTransactions, calculationDate);
@@ -74921,6 +74923,20 @@ function createSaversData({
   });
 }
 
+// up/helpers/preparePeriodData/transactions.ts
+function findUncategorisedTransactions(transactions) {
+  return transactions.filter((transaction) => {
+    if (transaction.category || transaction.amount > 0)
+      return false;
+    return !isProbablyTransfer(transaction);
+  }).sort((a, b) => b.createdAt.valueOf() - a.createdAt.valueOf()).map(({ id, amount, createdAt, description }) => ({
+    id,
+    amount,
+    createdAt: createdAt.toISOString(),
+    description
+  }));
+}
+
 // up/helpers/preparePeriodData/index.ts
 function createPeriodicData({
   period,
@@ -74933,7 +74949,13 @@ function createPeriodicData({
   return __spreadProps(__spreadValues({}, createExpensesData(transactions, period)), {
     balances: createBalancesData({ accounts, balances }),
     savers: createSaversData({ savers, balances, saverTransactions }),
-    saverNames: savers
+    saverNames: savers.map((saver) => {
+      var _a2;
+      return __spreadProps(__spreadValues({}, saver), {
+        archivedAt: ((_a2 = saver.archivedAt) == null ? void 0 : _a2.toISOString()) || null
+      });
+    }),
+    uncategorisedTransactions: findUncategorisedTransactions(transactions)
   });
 }
 
@@ -74942,15 +74964,15 @@ var import_axios2 = __toESM(require_axios2());
 function createOrUpdateTransaction(txns, knex2) {
   return __async(this, null, function* () {
     const transactions = txns.map((txn) => {
-      var _a, _b, _c, _d;
+      var _a2, _b, _c, _d;
       return {
         accountId: txn.relationships.account.data.id,
         transactionId: txn.id,
         amount: txn.attributes.amount.valueInBaseUnits,
-        category: (_b = (_a = txn.relationships.category.data) == null ? void 0 : _a.id) != null ? _b : null,
+        category: (_b = (_a2 = txn.relationships.category.data) == null ? void 0 : _a2.id) != null ? _b : null,
         parentCategory: (_d = (_c = txn.relationships.parentCategory.data) == null ? void 0 : _c.id) != null ? _d : null,
         description: txn.attributes.description,
-        createdAt: txn.attributes.createdAt,
+        createdAt: new Date(txn.attributes.createdAt),
         isTransfer: !!txn.relationships.transferAccount.data || isDescriptionTransferLike(txn.attributes.description)
       };
     });
@@ -75037,7 +75059,7 @@ var mortgageAccountId = "753061668";
 var savingsAccountId = "753037756";
 function createUpUpdateRoutes(app2, knex2) {
   app2.post("/up", limiter, (req, res, next) => __async(this, null, function* () {
-    var _a, _b, _c;
+    var _a2, _b, _c;
     try {
       const body = req.body.data;
       const upSigningSecret = process.env.UP_SIGNING_SECRET;
@@ -75046,7 +75068,7 @@ function createUpUpdateRoutes(app2, knex2) {
         console.log("secrets or data missing");
         return res.status(200).end();
       }
-      const txnId = (_c = (_b = (_a = body.relationships) == null ? void 0 : _a.transaction) == null ? void 0 : _b.data) == null ? void 0 : _c.id;
+      const txnId = (_c = (_b = (_a2 = body.relationships) == null ? void 0 : _a2.transaction) == null ? void 0 : _b.data) == null ? void 0 : _c.id;
       const hashChris = import_crypto2.default.createHmac("sha256", upSigningSecret).update(req.rawBody).digest("hex");
       const hashKate = import_crypto2.default.createHmac("sha256", upSigningSecretKate).update(req.rawBody).digest("hex");
       const upSignature = req.headers["x-up-authenticity-signature"];
@@ -75143,7 +75165,7 @@ function createUpUpdateRoutes(app2, knex2) {
     }
   }));
   app2.post("/savers/transact", limiter, (req, res, next) => __async(this, null, function* () {
-    var _a, _b;
+    var _a2, _b;
     try {
       const hasAuthHeaders = getHasAuthHeaders(req);
       if (!hasAuthHeaders) {
@@ -75153,7 +75175,7 @@ function createUpUpdateRoutes(app2, knex2) {
       if (!body.name && !body.id) {
         throw new Error("At least one of name or ID must be specified");
       }
-      const saverId = (_b = body.id) != null ? _b : body.name ? (_a = yield createOrUpdateSaver(knex2, body.name)) == null ? void 0 : _a.id : void 0;
+      const saverId = (_b = body.id) != null ? _b : body.name ? (_a2 = yield createOrUpdateSaver(knex2, body.name)) == null ? void 0 : _a2.id : void 0;
       if (!saverId) {
         throw new Error("Unable to find or create saver");
       }

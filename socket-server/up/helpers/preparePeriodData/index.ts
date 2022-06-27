@@ -9,6 +9,7 @@ import {
 import { createBalancesData } from './balances';
 import { createExpensesData } from './expenses';
 import { createSaversData } from './savers';
+import { findUncategorisedTransactions } from './transactions';
 
 export type TransactionWithStart = Transaction & { startDate: string };
 
@@ -33,6 +34,10 @@ export function createPeriodicData({
 		...createExpensesData(transactions, period),
 		balances: createBalancesData({ accounts, balances }),
 		savers: createSaversData({ savers, balances, saverTransactions }),
-		saverNames: savers,
+		saverNames: savers.map(saver => ({
+			...saver,
+			archivedAt: saver.archivedAt?.toISOString() || null,
+		})),
+		uncategorisedTransactions: findUncategorisedTransactions(transactions),
 	};
 }

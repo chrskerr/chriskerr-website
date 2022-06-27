@@ -42,6 +42,6 @@ export type Transaction = {
 	parentCategory: string | null;
 	description: string;
 	accountId: string;
-	createdAt: string;
+	createdAt: Date;
 	isTransfer: boolean;
 };
