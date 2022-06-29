@@ -20,11 +20,6 @@ import { generateSlug, RandomWordOptions } from 'random-word-slugs';
 
 import { unsavedNoteId } from '../lib/constants';
 
-import {
-	createUpFetchRoutes,
-	createUpUpdateRoutes,
-	// createUpAdminRoutes,
-} from './up/routes';
 import { migrate, TableNames } from './migrations';
 
 const corsSettings: CorsOptions = {
@@ -174,11 +169,6 @@ io.on('connection', socket => {
 		socket.join(room);
 	});
 });
-
-app.set('trust proxy', 1);
-createUpUpdateRoutes(app, knex);
-// createUpAdminRoutes(app);
-createUpFetchRoutes(app, knex);
 
 const port = process.env.PORT || 8080;
 server.listen(port, () => {
