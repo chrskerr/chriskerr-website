@@ -2,6 +2,12 @@ import type { ReactElement } from 'react';
 import type { AppProps } from 'next/app';
 import Link from 'next/link';
 import Image from 'next/image';
+import Router from 'next/router';
+import nProgress from 'nprogress';
+
+Router.events.on('routeChangeStart', () => nProgress.start());
+Router.events.on('routeChangeComplete', () => nProgress.done());
+Router.events.on('routeChangeError', () => nProgress.done());
 
 import { DefaultSeo } from 'next-seo';
 
