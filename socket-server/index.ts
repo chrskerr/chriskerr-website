@@ -35,7 +35,19 @@ const io = new Server(server, {
 	cors: corsSettings,
 });
 
-app.use(bodyParser.json());
+declare module 'http' {
+	interface IncomingMessage {
+		rawBody: Buffer;
+	}
+}
+
+app.use(
+	bodyParser.json({
+		verify: (req, res, buf) => {
+			req.rawBody = buf;
+		},
+	}),
+);
 app.use(cors(corsSettings));
 
 interface INote {
