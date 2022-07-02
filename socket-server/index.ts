@@ -13,14 +13,12 @@ import { Server } from 'socket.io';
 import bodyParser from 'body-parser';
 import cors, { CorsOptions } from 'cors';
 
-import Knex from 'knex';
+import { PrismaClient } from '@prisma/client';
 
 import { processAllChanges } from '../components/editable-canvas/helpers';
 import { generateSlug, RandomWordOptions } from 'random-word-slugs';
 
 import { unsavedNoteId } from '../lib/constants';
-
-import { migrate, TableNames } from './migrations';
 
 const corsSettings: CorsOptions = {
 	origin: [
@@ -37,19 +35,7 @@ const io = new Server(server, {
 	cors: corsSettings,
 });
 
-declare module 'http' {
-	interface IncomingMessage {
-		rawBody: Buffer;
-	}
-}
-
-app.use(
-	bodyParser.json({
-		verify: (req, res, buf) => {
-			req.rawBody = buf;
-		},
-	}),
-);
+app.use(bodyParser.json());
 app.use(cors(corsSettings));
 
 interface INote {
@@ -57,18 +43,7 @@ interface INote {
 	data: StoredNote;
 }
 
-const knex = Knex({
-	client: 'pg',
-	connection: {
-		connectionString:
-			process.env.DATABASE_URL || 'postgres://127.0.0.1:5432/postgres',
-		...(process.env.DATABASE_URL && {
-			ssl: {
-				rejectUnauthorized: false,
-			},
-		}),
-	},
-});
+const db = new PrismaClient();
 
 const idLength = 3;
 const idOptions: RandomWordOptions<typeof idLength> = {
@@ -85,13 +60,12 @@ const createNewId = async (): Promise<string> => {
 	try {
 		const id = getId();
 
-		const insertData: INote = { id, data: { cells: [] } };
+		const newNote = await db.note.create({
+			data: { id, data: { cells: [] } },
+			select: { id: true },
+		});
 
-		const newNote = await knex(TableNames.NOTES)
-			.insert(insertData)
-			.returning('id');
-
-		if (newNote && newNote[0] === id) return id;
+		if (newNote?.id === id) return id;
 		throw new Error();
 	} catch (e) {
 		console.log(e);
@@ -115,32 +89,27 @@ app.post('/editor/:id', async (req, res, next) => {
 		const responseData: UpdateNoteAPIResponse = { noteId };
 		res.status(200).json(responseData);
 
-		knex.transaction(async trx => {
-			const [currentData]: INote[] = await knex(TableNames.NOTES)
-				.transacting(trx)
-				.where({ id: noteId })
-				.select('data')
-				.limit(1)
-				.forUpdate();
+		db.$transaction(async trx => {
+			const currentData = await trx.note.findFirst({
+				where: { id: noteId },
+				select: { data: true },
+			});
 
-			if (!currentData) return;
+			if (!currentData?.data) return;
+			const data = currentData.data as unknown as INote['data'];
 
 			const updatedData = processAllChanges(
 				[{ ...body, applied_to_note: false, note_id: noteId }],
 				{
 					id: noteId,
-					cells: currentData.data.cells,
+					cells: data.cells,
 				},
 			);
 
-			const updateData: Partial<INote> = {
-				data: updatedData,
-			};
-
-			await knex(TableNames.NOTES)
-				.transacting(trx)
-				.where({ id: noteId })
-				.update(updateData);
+			await trx.note.update({
+				where: { id: noteId },
+				data: { data: updatedData },
+			});
 		});
 	} catch (e) {
 		next(e);
@@ -153,10 +122,10 @@ app.get('/editor/:id', async (req, res, next) => {
 
 		if (!noteId) return res.status(500).end();
 
-		const [noteData]: INote[] = await knex(TableNames.NOTES)
-			.where({ id: noteId })
-			.select('data')
-			.limit(1);
+		const noteData = await db.note.findFirst({
+			where: { id: noteId },
+			select: { data: true },
+		});
 
 		return res.status(200).json(noteData?.data);
 	} catch (e) {
@@ -174,5 +143,3 @@ const port = process.env.PORT || 8080;
 server.listen(port, () => {
 	console.log(`listening on *:${port}`);
 });
-
-migrate(knex);

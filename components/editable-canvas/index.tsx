@@ -20,7 +20,7 @@ const MarkdownRenderer = dynamic(
 	),
 );
 
-import { io } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 import { useRouter } from 'next/router';
 import serialize from 'async-function-serializer';
 
@@ -120,13 +120,19 @@ export default function Editor({ id: propsId, initialData }: EditorProps) {
 	});
 
 	const [tab, setTab] = useState<'editor' | 'viewer'>('editor');
+	const [socket, setSocket] = useState<Socket | undefined>();
 
 	useEffect(() => {
-		const socket = io(socketServerUrl);
+		if (socket) {
+			socket.disconnect();
+		}
 
-		socket.emit('join', id);
+		const newSocket = io(socketServerUrl);
+		setSocket(newSocket);
 
-		socket.on('change', (message: StoredChanges) => {
+		newSocket.emit('join', id);
+
+		newSocket.on('change', (message: StoredChanges) => {
 			if (message.sessionId !== sessionId) {
 				processChange(message);
 			}
@@ -136,10 +142,10 @@ export default function Editor({ id: propsId, initialData }: EditorProps) {
 		window.addEventListener('online', _isOnline);
 
 		return () => {
-			socket.close();
+			newSocket.disconnect();
 			window.removeEventListener('online', _isOnline);
 		};
-	}, []);
+	}, [id]);
 
 	const href = `${process.env.NEXT_PUBLIC_URL_BASE}/editor/${id}`;
 

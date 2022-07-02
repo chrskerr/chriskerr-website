@@ -149,10 +149,6 @@ const useEditableCanvas = ({
 		let selectedTextStart: RowCol | undefined = undefined;
 		let selectedTextEnd: RowCol | undefined = undefined;
 
-		let isControlDepressed = false;
-		let isMetaDepressed = false;
-		let isAltDepressed = false;
-
 		let isRunning = true;
 
 		const onResize = throttle(() => {
@@ -326,44 +322,26 @@ const useEditableCanvas = ({
 			}
 		};
 
-		const onKeyup = (e: KeyboardEvent) => {
-			const { key } = e;
-			if (key === 'Control') isControlDepressed = false;
-			if (key === 'Meta') isMetaDepressed = false;
-			if (key === 'Alt') isAltDepressed = false;
-		};
-
 		const onKeypress = (e: KeyboardEvent) => {
-			const { key } = e;
+			e.preventDefault();
+			e.stopPropagation();
 
-			if (
-				['Shift', 'CapsLock', 'Escape'].includes(key) ||
-				isAltDepressed
-			) {
+			const { key, metaKey, ctrlKey, altKey } = e;
+
+			if (['Shift', 'CapsLock', 'Escape'].includes(key) || altKey) {
 				// do nothing;
-			} else if (key === 'Control') isControlDepressed = true;
-			else if (key === 'Alt') isAltDepressed = true;
-			else if (key === 'Meta') isMetaDepressed = true;
-			else if (key === 'ArrowRight') doNavigate('right');
+			} else if (key === 'ArrowRight') doNavigate('right');
 			else if (key === 'ArrowLeft') doNavigate('left');
 			else if (key === 'ArrowUp') doNavigate('up');
 			else if (key === 'ArrowDown') doNavigate('down');
-			else if (key === 'z' && xor(isControlDepressed, isMetaDepressed))
-				onUndoRedo('undo');
-			else if (key === 'y' && xor(isControlDepressed, isMetaDepressed))
-				onUndoRedo('redo');
-			else if (key === 'x' && xor(isControlDepressed, isMetaDepressed))
-				onCutCopy('cut');
-			else if (key === 'c' && xor(isControlDepressed, isMetaDepressed))
-				onCutCopy('copy');
-			else if (key === 'v' && xor(isControlDepressed, isMetaDepressed))
-				onPaste();
+			else if (key === 'z' && xor(ctrlKey, metaKey)) onUndoRedo('undo');
+			else if (key === 'y' && xor(ctrlKey, metaKey)) onUndoRedo('redo');
+			else if (key === 'x' && xor(ctrlKey, metaKey)) onCutCopy('cut');
+			else if (key === 'c' && xor(ctrlKey, metaKey)) onCutCopy('copy');
+			else if (key === 'v' && xor(ctrlKey, metaKey)) onPaste();
 			else if (key === 'Enter') processInsertDelete('Enter');
 			else if (key === 'Backspace') processInsertDelete('Backspace');
 			else processInsertDelete(key);
-
-			// e.preventDefault();
-			// e.stopPropagation();
 
 			if (key !== 'Control' && key !== 'Meta') {
 				selectedTextStart = undefined;
@@ -404,8 +382,7 @@ const useEditableCanvas = ({
 
 			requestAnimationFrame(render);
 
-			canvas.addEventListener('keydown', onKeypress, { passive: true });
-			canvas.addEventListener('keyup', onKeyup, { passive: true });
+			canvas.addEventListener('keypress', onKeypress);
 			canvas.addEventListener('focusin', onFocusIn, { passive: true });
 			canvas.addEventListener('focusout', onFocusOut, { passive: true });
 			canvas.addEventListener('click', onClick, { passive: true });
@@ -423,8 +400,7 @@ const useEditableCanvas = ({
 		})();
 
 		return () => {
-			ref.current?.removeEventListener('keydown', onKeypress);
-			ref.current?.removeEventListener('keyup', onKeyup);
+			ref.current?.removeEventListener('keypress', onKeypress);
 			ref.current?.removeEventListener('focusin', onFocusIn);
 			ref.current?.removeEventListener('focusout', onFocusOut);
 			ref.current?.removeEventListener('click', onClick);
