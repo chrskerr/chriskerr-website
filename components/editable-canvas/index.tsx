@@ -23,6 +23,7 @@ const MarkdownRenderer = dynamic(
 import { io, Socket } from 'socket.io-client';
 import { useRouter } from 'next/router';
 import serialize from 'async-function-serializer';
+import { ParsedUrlQuery } from 'querystring';
 
 export const getDateValueString = () => String(new Date().valueOf());
 
@@ -45,18 +46,24 @@ interface EditorProps {
 
 const title = 'Collaborative Markdown Editor';
 
+function getIdFromQuery(query: ParsedUrlQuery): string | undefined {
+	return Array.isArray(query.id) ? query.id[0] : query.id;
+}
+
 export default function Editor({ id: propsId, initialData }: EditorProps) {
 	const router = useRouter();
 
-	const [id, setId] = useState((router.query.id as string) || propsId);
+	const [id, setId] = useState<string>(
+		getIdFromQuery(router.query) || propsId,
+	);
 
 	useEffect(() => {
-		setId((router.query.id as string) || propsId);
+		setId(getIdFromQuery(router.query) || propsId);
 	}, [router.query.id, propsId]);
 
 	const $_ref = useRef<HTMLCanvasElement>(null);
 
-	const $_idRef = useRef(id);
+	const $_idRef = useRef<string>(id);
 	useEffect(() => {
 		$_idRef.current = id;
 	}, [id]);
@@ -106,10 +113,11 @@ export default function Editor({ id: propsId, initialData }: EditorProps) {
 			sessionId,
 		});
 		const newNoteId = await result.data;
-		if (newNoteId && newNoteId !== id)
+		if (newNoteId && newNoteId !== id) {
 			router.push(`/editor/${newNoteId}`, undefined, {
 				shallow: true,
 			});
+		}
 	};
 
 	const { markdown, height, hasFocus, processChange } = useEditableCanvas({
