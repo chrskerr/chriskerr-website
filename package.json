@@ -8,7 +8,6 @@
 	"scripts": {
 		"predev": "npm i --force && cd socket-server && npm run bundle",
 		"dev": "next dev",
-		"build:wasm": "as ./components/bad-factors/worker.asssembly.ts -b public/worker.wasm",
 		"build": "next build",
 		"start": "next start",
 		"lint": "next lint",
