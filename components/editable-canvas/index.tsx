@@ -157,11 +157,6 @@ export default function Editor({ id: propsId, initialData }: EditorProps) {
 
 	const href = `${process.env.NEXT_PUBLIC_URL_BASE}/editor/${id}`;
 
-	const classes = `
-		p-8 border-2 mt-2 w-full
-		${hasFocus ? 'border-brand' : ''}
-	`;
-
 	return (
 		<>
 			<NextSeo
@@ -245,7 +240,11 @@ export default function Editor({ id: propsId, initialData }: EditorProps) {
 						tab === 'editor' ? '' : 'hidden'
 					}`}
 				>
-					<div className={classes}>
+					<div
+						className={`p-8 border-2 mt-2 w-full ${
+							hasFocus ? 'border-brand' : ''
+						}`}
+					>
 						<canvas
 							ref={$_ref}
 							height={height}

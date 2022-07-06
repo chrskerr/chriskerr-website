@@ -8,7 +8,7 @@ import type {
 	StoredChanges,
 } from 'types/editor';
 
-export const cellWidth = 14;
+export const cellWidth = 12;
 export const cellHeight = 16;
 export const rowGap = 8;
 

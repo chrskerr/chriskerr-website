@@ -12,6 +12,7 @@ interface RendererProps {
 	selectedTextEnd: RowCol | undefined;
 	dataRows: Cell[][];
 	cursorRowCol: RowCol;
+	isFocussed: boolean;
 }
 
 export const renderer = ({
@@ -22,6 +23,7 @@ export const renderer = ({
 	selectedTextStart,
 	selectedTextEnd,
 	cursorRowCol,
+	isFocussed,
 }: RendererProps) => {
 	if (!canvas || !ctx) return;
 
@@ -64,7 +66,8 @@ export const renderer = ({
 		});
 	}
 
-	const displayCursor = Boolean(Math.floor(timestamp / 750) % 2);
+	const displayCursor =
+		isFocussed && Boolean(Math.floor(timestamp / 750) % 2);
 	const { row: cursorRow, col: cursorCol } = cursorRowCol;
 
 	if (!isSelecting && displayCursor) {

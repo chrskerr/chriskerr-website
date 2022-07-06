@@ -376,6 +376,7 @@ const useEditableCanvas = ({
 					cursorRowCol: cursorRowCol.current,
 					selectedTextEnd,
 					selectedTextStart,
+					isFocussed: focusRef.current,
 				});
 				if (isRunning) requestAnimationFrame(render);
 			};
@@ -384,7 +385,11 @@ const useEditableCanvas = ({
 
 			canvas.addEventListener('keypress', onKeypress);
 			canvas.addEventListener('focusin', onFocusIn, { passive: true });
+			window.addEventListener('blur', onFocusOut, { passive: true });
 			canvas.addEventListener('focusout', onFocusOut, { passive: true });
+			canvas.parentElement?.addEventListener('click', onFocusIn, {
+				passive: true,
+			});
 			canvas.addEventListener('click', onClick, { passive: true });
 			canvas.addEventListener('mousedown', onMouseStart, {
 				passive: true,
@@ -402,7 +407,9 @@ const useEditableCanvas = ({
 		return () => {
 			ref.current?.removeEventListener('keypress', onKeypress);
 			ref.current?.removeEventListener('focusin', onFocusIn);
+			window.removeEventListener('blur', onFocusOut);
 			ref.current?.removeEventListener('focusout', onFocusOut);
+			ref.current?.parentElement?.removeEventListener('click', onFocusIn);
 			ref.current?.removeEventListener('click', onClick);
 			ref.current?.removeEventListener('mousedown', onMouseStart);
 			ref.current?.removeEventListener('mousemove', onMouseMove);
