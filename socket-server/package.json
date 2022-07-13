@@ -1,15 +1,10 @@
 {
-	"name": "socket-server",
-	"version": "1.0.0",
-	"description": "",
-	"main": "index.js",
-	"scripts": {
-		"bundle": "npm i && npx prisma generate && npx esbuild ./index.ts --bundle --outfile=index.js --platform=node",
-		"tsc": "tsc",
-		"start": "npx prisma migrate deploy && node index.js"
-	},
 	"author": "",
-	"license": "ISC",
+	"dependencies": {
+		"@prisma/client": "^4.0.0",
+		"puppeteer": "^14.3.0"
+	},
+	"description": "",
 	"devDependencies": {
 		"@types/body-parser": "^1.19.2",
 		"@types/express": "^4.17.13",
@@ -32,8 +27,13 @@
 		"socket.io": "^4.5.1",
 		"typescript": "^4.7.3"
 	},
-	"dependencies": {
-		"@prisma/client": "^4.0.0",
-		"puppeteer": "^14.3.0"
-	}
+	"license": "ISC",
+	"main": "index.js",
+	"name": "socket-server",
+	"scripts": {
+		"bundle": "npm i && npx prisma db push && npx esbuild ./index.ts --bundle --outfile=index.js --platform=node",
+		"start": "npx prisma migrate deploy && node index.js",
+		"tsc": "tsc"
+	},
+	"version": "1.0.0"
 }
