@@ -10,8 +10,8 @@ import Satellites from './satellites/index';
 
 export default function ISSRender(): ReactElement {
 	const [context, setContext] = useState({
-		totalSatellites: 150,
-		displayedSatellites: 150,
+		totalSatellites: 250,
+		displayedSatellites: 250,
 	});
 
 	const updateDisplayedSatellites = (e: ChangeEvent<HTMLInputElement>) => {

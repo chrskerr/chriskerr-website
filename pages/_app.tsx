@@ -13,7 +13,6 @@ import { DefaultSeo } from 'next-seo';
 
 import 'tailwindcss/tailwind.css';
 import '../styles/index.css';
-import { ElementIds } from 'types/bird-eat-bird';
 
 export const defaultTitle = 'Chris Kerr';
 
@@ -49,10 +48,7 @@ export default function App({ Component, pageProps }: AppProps): ReactElement {
 				<div className="flex flex-col flex-1">
 					<Component {...pageProps} />
 				</div>
-				<footer
-					id={ElementIds.FOOTER}
-					className="flex flex-col items-center pb-12 mx-auto sm:flex-row sm:justify-between display-width divider-before"
-				>
+				<footer className="flex flex-col items-center pb-12 mx-auto sm:flex-row sm:justify-between display-width divider-before">
 					<Link href="/uncopyright" passHref>
 						<a className="mb-4 sm:mb-0">
 							<Image
