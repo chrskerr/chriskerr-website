@@ -41,11 +41,11 @@ export default function QuickAndDead({
 	}, [urlWeek]);
 
 	useEffect(() => {
-		setDayUrl(day ? `${baseUrl}/${encode(day)}` : undefined);
+		setDayUrl(day ? encodeURI(`${baseUrl}/${encode(day)}`) : undefined);
 	}, [day]);
 
 	useEffect(() => {
-		setWeekUrl(week ? `${baseUrl}/${encode(week)}` : undefined);
+		setWeekUrl(week ? encodeURI(`${baseUrl}/${encode(week)}`) : undefined);
 	}, [week]);
 
 	return (

@@ -3,7 +3,7 @@ import { ReactElement } from 'react';
 import { NextSeo, SocialProfileJsonLd } from 'next-seo';
 import { defaultTitle } from 'pages/_app';
 import Link from 'next/link';
-import Image from 'next/image';
+import Image, { ImageProps } from 'next/image';
 import { BlogPostSlugs, BlogPostTitles } from 'types/writing';
 
 export const description =
@@ -48,32 +48,31 @@ export default function Landing(): ReactElement {
 					<Tile
 						url="/editor"
 						title="Collaborative Markdown Editor"
-						image="/images/tiles/stacked-waves.png"
-					/>
-					<Tile
-						url={`/writing/${BlogPostSlugs.ASYNC_FUNCTIONS}`}
-						title={BlogPostTitles.ASYNC_FUNCTIONS}
-						image="/images/tiles/asynchronous_function_tile.png"
-					/>
-					<Tile
-						url="/quick-and-dead"
-						title="Quick &amp; Dead Generator"
-						image="/images/tiles/q&amp;d_tile.png"
-					/>
-					<Tile
-						url="/website-graph"
-						title="Website Connection Graph Visualiser"
-						image="/images/tiles/website.png"
-					/>
-					<Tile
-						url="/javascript-randomness"
-						title="Javascript Random Number Generation"
-						image="/images/tiles/blob-scatter.png"
+						image="/images/tiles/meerkats.png"
+						objectPosition="center 30%"
 					/>
 					<Tile
 						url="/leo"
 						title="Low Earth Orbit"
-						image="/images/tiles/stars.png"
+						image="/images/tiles/young_astronaut.png"
+						objectPosition="center 55%"
+					/>
+					<Tile
+						url={`/writing/${BlogPostSlugs.ASYNC_FUNCTIONS}`}
+						title={BlogPostTitles.ASYNC_FUNCTIONS}
+						image="/images/tiles/froot_loops.png"
+						objectPosition="center 70%"
+					/>
+					<Tile
+						url="/quick-and-dead"
+						title="Quick &amp; Dead Generator"
+						image="/images/tiles/dancing_reaper.png"
+						objectPosition="center 15%"
+					/>
+					<Tile
+						url="/javascript-randomness"
+						title="Javascript Random Number Generation"
+						image="/images/tiles/numbers.png"
 					/>
 				</div>
 			</section>
@@ -85,10 +84,12 @@ function Tile({
 	url,
 	title,
 	image,
+	objectPosition = 'center',
 }: {
 	url: string;
 	title: string;
 	image: `/images/tiles/${string}`;
+	objectPosition?: ImageProps['objectPosition'];
 }) {
 	return (
 		<Link href={url} passHref>
@@ -99,7 +100,7 @@ function Tile({
 						alt={title}
 						layout="fill"
 						objectFit="cover"
-						objectPosition="center"
+						objectPosition={objectPosition}
 						sizes="(max-width: 768px) 100vw, 440px"
 						className="transition-all duration-700 group-hover:scale-[1.15]"
 					/>
