@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react';
 import type { AppProps } from 'next/app';
 import Link from 'next/link';
-import Image from 'next/image';
+import Image from 'next/future/image';
 import Router from 'next/router';
 import nProgress from 'nprogress';
 
@@ -55,7 +55,6 @@ export default function App({ Component, pageProps }: AppProps): ReactElement {
 								src="/images/uncopyrighted-black_1@2x.png"
 								width={(50 * 1296) / 392}
 								height={50}
-								layout="fixed"
 								alt="Uncopywrited notice"
 							/>
 						</a>

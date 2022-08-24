@@ -7,6 +7,9 @@ module.exports = {
 	experimental: {
 		concurrentFeatures: false,
 		serverComponents: false,
+		images: {
+			allowFutureImage: true,
+		},
 	},
 	reactStrictMode: true,
 };

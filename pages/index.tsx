@@ -3,7 +3,7 @@ import { ReactElement } from 'react';
 import { NextSeo, SocialProfileJsonLd } from 'next-seo';
 import { defaultTitle } from 'pages/_app';
 import Link from 'next/link';
-import Image, { ImageProps } from 'next/image';
+import Image from 'next/future/image';
 import { BlogPostSlugs, BlogPostTitles } from 'types/writing';
 
 export const description =
@@ -49,25 +49,25 @@ export default function Landing(): ReactElement {
 						url="/editor"
 						title="Collaborative Markdown Editor"
 						image="/images/tiles/meerkats.png"
-						objectPosition="center 30%"
+						className="object-[center_30%]"
 					/>
 					<Tile
 						url="/leo"
 						title="Low Earth Orbit"
 						image="/images/tiles/young_astronaut.png"
-						objectPosition="center 55%"
+						className="object-[center_55%]"
 					/>
 					<Tile
 						url={`/writing/${BlogPostSlugs.ASYNC_FUNCTIONS}`}
 						title={BlogPostTitles.ASYNC_FUNCTIONS}
 						image="/images/tiles/froot_loops.png"
-						objectPosition="center 70%"
+						className="object-[center_70%]"
 					/>
 					<Tile
 						url="/quick-and-dead"
 						title="Quick &amp; Dead Generator"
 						image="/images/tiles/dancing_reaper.png"
-						objectPosition="center 15%"
+						className="object-[center_15%]"
 					/>
 					<Tile
 						url="/javascript-randomness"
@@ -84,12 +84,12 @@ function Tile({
 	url,
 	title,
 	image,
-	objectPosition = 'center',
+	className,
 }: {
 	url: string;
 	title: string;
 	image: `/images/tiles/${string}`;
-	objectPosition?: ImageProps['objectPosition'];
+	className?: string;
 }) {
 	return (
 		<Link href={url} passHref>
@@ -98,11 +98,9 @@ function Tile({
 					<Image
 						src={image}
 						alt={title}
-						layout="fill"
-						objectFit="cover"
-						objectPosition={objectPosition}
+						fill
 						sizes="(max-width: 768px) 100vw, 440px"
-						className="transition-all duration-700 group-hover:scale-[1.15]"
+						className={`${className} transition-all w-full h-auto duration-700 group-hover:scale-[1.15] object-cover`}
 					/>
 					<p className="absolute flex items-center justify-center px-5 py-3 text-lg text-center -translate-x-1/2 -translate-y-1/2 bg-white rounded top-1/2 left-1/2">
 						{title}
