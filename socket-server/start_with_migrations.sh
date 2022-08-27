@@ -1,5 +1,5 @@
 #!/bin/sh
 
 set -ex
-npx prisma migrate deploy
-npm run start
+yarn prisma migrate deploy
+yarn start

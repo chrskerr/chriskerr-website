@@ -27,10 +27,11 @@
 	"main": "index.js",
 	"name": "socket-server",
 	"scripts": {
-		"bundle": "npm i && npx prisma db push && npx esbuild ./index.ts --bundle --outfile=index.js --platform=node",
+		"bundle": "npm i && npx prisma generate && npx esbuild ./index.ts --bundle --outfile=index.js --platform=node",
 		"dev": "npm run bundle --watch & nodemon index.js",
-		"start": "node index.js",
-		"tsc": "tsc"
+		"start": "npx prisma migrate deploy && node index.js",
+		"tsc": "tsc",
+		"deploy": "npm prune --omit=dev && fly deploy --remote-only"
 	},
 	"version": "1.0.0"
 }
