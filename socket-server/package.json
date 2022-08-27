@@ -1,8 +1,7 @@
 {
 	"author": "",
 	"dependencies": {
-		"@prisma/client": "^4.2.1",
-		"puppeteer": "^16.1.0"
+		"@prisma/client": "^4.2.1"
 	},
 	"description": "",
 	"devDependencies": {
@@ -11,28 +10,26 @@
 		"axios": "^0.27.2",
 		"body-parser": "^1.20.0",
 		"cors": "^2.8.5",
-		"date-fns": "^2.29.1",
+		"date-fns": "^2.29.2",
 		"dotenv": "^16.0.1",
-		"esbuild": "^0.15.3",
+		"esbuild": "^0.15.5",
 		"express": "^4.18.1",
-		"express-rate-limit": "^6.5.1",
+		"express-rate-limit": "^6.5.2",
 		"lodash": "^4.17.21",
 		"node-fetch": "^3.2.10",
 		"nodemon": "^2.0.19",
-		"pg": "^8.7.3",
-		"pg-native": "^3.0.0",
-		"pg-query-stream": "^4.2.3",
 		"prisma": "^4.2.1",
 		"random-word-slugs": "^0.1.6",
 		"socket.io": "^4.5.1",
-		"typescript": "^4.7.4"
+		"typescript": "^4.8.2"
 	},
 	"license": "ISC",
 	"main": "index.js",
 	"name": "socket-server",
 	"scripts": {
 		"bundle": "npm i && npx prisma db push && npx esbuild ./index.ts --bundle --outfile=index.js --platform=node",
-		"start": "npx prisma migrate deploy && node index.js",
+		"dev": "npm run bundle --watch & nodemon index.js",
+		"start": "node index.js",
 		"tsc": "tsc"
 	},
 	"version": "1.0.0"

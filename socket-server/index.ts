@@ -70,7 +70,7 @@ const createNewId = async (): Promise<string> => {
 		const id = getId();
 
 		const newNote = await db.note.create({
-			data: { id, data: { cells: [] } },
+			data: { id, data: JSON.stringify({ cells: [] }) },
 			select: { id: true },
 		});
 
@@ -105,7 +105,7 @@ app.post('/editor/:id', async (req, res, next) => {
 			});
 
 			if (!currentData?.data) return;
-			const data = currentData.data as unknown as INote['data'];
+			const data = JSON.parse(currentData.data) as INote['data'];
 
 			const updatedData = processAllChanges(
 				[{ ...body, applied_to_note: false, note_id: noteId }],
@@ -114,10 +114,9 @@ app.post('/editor/:id', async (req, res, next) => {
 					cells: data.cells,
 				},
 			);
-
 			await trx.note.update({
 				where: { id: noteId },
-				data: { data: updatedData },
+				data: { data: JSON.stringify(updatedData) },
 			});
 		});
 	} catch (e) {

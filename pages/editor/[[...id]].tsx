@@ -48,10 +48,10 @@ export const getServerSideProps: GetServerSideProps = async context => {
 			},
 		};
 
-	const data = (await res.json()) as StoredNote;
+	const data = JSON.parse(await res.json()) as StoredNote;
 
 	const props: EditorProps = {
-		initialData: { id, cells: data.cells },
+		initialData: { id, cells: data.cells ?? [] },
 		id,
 	};
 

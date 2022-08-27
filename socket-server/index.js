@@ -61169,36 +61169,21 @@ var require_client3 = __commonJS2({
     function makeEnum(x) {
       return x;
     }
-    exports2.Prisma.JsonNullValueFilter = makeEnum({
-      DbNull: Prisma.DbNull,
-      JsonNull: Prisma.JsonNull,
-      AnyNull: Prisma.AnyNull
-    });
-    exports2.Prisma.JsonNullValueInput = makeEnum({
-      JsonNull: Prisma.JsonNull
-    });
     exports2.Prisma.NoteScalarFieldEnum = makeEnum({
       id: "id",
       data: "data"
-    });
-    exports2.Prisma.QueryMode = makeEnum({
-      default: "default",
-      insensitive: "insensitive"
     });
     exports2.Prisma.SortOrder = makeEnum({
       asc: "asc",
       desc: "desc"
     });
     exports2.Prisma.TransactionIsolationLevel = makeStrictEnum2({
-      ReadUncommitted: "ReadUncommitted",
-      ReadCommitted: "ReadCommitted",
-      RepeatableRead: "RepeatableRead",
       Serializable: "Serializable"
     });
     exports2.Prisma.ModelName = makeEnum({
       Note: "Note"
     });
-    var dmmfString = '{"datamodel":{"enums":[],"models":[{"name":"Note","dbName":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":false,"type":"String","isGenerated":false,"isUpdatedAt":false},{"name":"data","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"Json","isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false}],"types":[]},"mappings":{"modelOperations":[{"model":"Note","plural":"notes","findUnique":"findUniqueNote","findFirst":"findFirstNote","findMany":"findManyNote","create":"createOneNote","createMany":"createManyNote","delete":"deleteOneNote","update":"updateOneNote","deleteMany":"deleteManyNote","updateMany":"updateManyNote","upsert":"upsertOneNote","aggregate":"aggregateNote","groupBy":"groupByNote"}],"otherOperations":{"read":[],"write":["executeRaw","queryRaw"]}}}';
+    var dmmfString = '{"datamodel":{"enums":[],"models":[{"name":"Note","dbName":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":false,"type":"String","isGenerated":false,"isUpdatedAt":false},{"name":"data","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","isGenerated":false,"isUpdatedAt":false}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false}],"types":[]},"mappings":{"modelOperations":[{"model":"Note","plural":"notes","findUnique":"findUniqueNote","findFirst":"findFirstNote","findMany":"findManyNote","create":"createOneNote","delete":"deleteOneNote","update":"updateOneNote","deleteMany":"deleteManyNote","updateMany":"updateManyNote","upsert":"upsertOneNote","aggregate":"aggregateNote","groupBy":"groupByNote"}],"otherOperations":{"read":[],"write":["executeRaw","queryRaw"]}}}';
     var dmmf = JSON.parse(dmmfString);
     exports2.Prisma.dmmf = JSON.parse(dmmfString);
     var config2 = {
@@ -61230,7 +61215,7 @@ var require_client3 = __commonJS2({
       "datasourceNames": [
         "db"
       ],
-      "activeProvider": "postgresql",
+      "activeProvider": "sqlite",
       "dataProxy": false
     };
     config2.document = dmmf;
@@ -62207,7 +62192,7 @@ var createNewId = () => __async(exports, null, function* () {
   try {
     const id = getId();
     const newNote = yield db.note.create({
-      data: { id, data: { cells: [] } },
+      data: { id, data: JSON.stringify({ cells: [] }) },
       select: { id: true }
     });
     if ((newNote == null ? void 0 : newNote.id) === id)
@@ -62237,7 +62222,7 @@ app.post("/editor/:id", (req, res, next) => __async(exports, null, function* () 
       });
       if (!(currentData == null ? void 0 : currentData.data))
         return;
-      const data = currentData.data;
+      const data = JSON.parse(currentData.data);
       const updatedData = processAllChanges(
         [__spreadProps(__spreadValues({}, body), { applied_to_note: false, note_id: noteId })],
         {
@@ -62247,7 +62232,7 @@ app.post("/editor/:id", (req, res, next) => __async(exports, null, function* () 
       );
       yield trx.note.update({
         where: { id: noteId },
-        data: { data: updatedData }
+        data: { data: JSON.stringify(updatedData) }
       });
     }));
   } catch (e) {
