@@ -11,7 +11,7 @@ var __hasOwnProp2 = Object.prototype.hasOwnProperty;
 var __propIsEnum = Object.prototype.propertyIsEnumerable;
 var __defNormalProp2 = (obj, key, value) => key in obj ? __defProp2(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __spreadValues = (a, b) => {
-  for (var prop in b || (b = {}))
+  for (var prop in b ||= {})
     if (__hasOwnProp2.call(b, prop))
       __defNormalProp2(a, prop, b[prop]);
   if (__getOwnPropSymbols)
@@ -215,13 +215,13 @@ var require_depd = __commonJS2({
       if (!funcName) {
         funcName = "<anonymous@" + formatLocation(site) + ">";
       }
-      var context3 = callSite.getThis();
-      var typeName = context3 && callSite.getTypeName();
+      var context5 = callSite.getThis();
+      var typeName = context5 && callSite.getTypeName();
       if (typeName === "Object") {
         typeName = void 0;
       }
       if (typeName === "Function") {
-        typeName = context3.name || typeName;
+        typeName = context5.name || typeName;
       }
       return typeName && callSite.getMethodName() ? typeName + "." + funcName : funcName;
     }
@@ -14785,7 +14785,7 @@ var require_get_intrinsic = __commonJS2({
       if (arguments.length > 1 && typeof allowMissing !== "boolean") {
         throw new $TypeError('"allowMissing" argument must be a boolean');
       }
-      if ($exec(/^%?[^%]*%?$/g, name) === null) {
+      if ($exec(/^%?[^%]*%?$/, name) === null) {
         throw new $SyntaxError("`%` may not be present anywhere but at the beginning and end of the intrinsic name");
       }
       var parts = stringToPath(name);
@@ -15800,7 +15800,7 @@ var require_stringify = __commonJS2({
       return typeof v === "string" || typeof v === "number" || typeof v === "boolean" || typeof v === "symbol" || typeof v === "bigint";
     };
     var sentinel = {};
-    var stringify2 = function stringify3(object, prefix, generateArrayPrefix, strictNullHandling, skipNulls, encoder, filter, sort, allowDots, serializeDate, format, formatter, encodeValuesOnly, charset, sideChannel) {
+    var stringify2 = function stringify3(object, prefix, generateArrayPrefix, commaRoundTrip, strictNullHandling, skipNulls, encoder, filter, sort, allowDots, serializeDate, format, formatter, encodeValuesOnly, charset, sideChannel) {
       var obj = object;
       var tmpSc = sideChannel;
       var step = 0;
@@ -15846,7 +15846,7 @@ var require_stringify = __commonJS2({
             for (var i = 0; i < valuesArray.length; ++i) {
               valuesJoined += (i === 0 ? "" : ",") + formatter(encoder(valuesArray[i], defaults.encoder, charset, "value", format));
             }
-            return [formatter(keyValue) + "=" + valuesJoined];
+            return [formatter(keyValue) + (commaRoundTrip && isArray2(obj) && valuesArray.length === 1 ? "[]" : "") + "=" + valuesJoined];
           }
           return [formatter(keyValue) + "=" + formatter(encoder(obj, defaults.encoder, charset, "value", format))];
         }
@@ -15865,13 +15865,14 @@ var require_stringify = __commonJS2({
         var keys2 = Object.keys(obj);
         objKeys = sort ? keys2.sort(sort) : keys2;
       }
+      var adjustedPrefix = commaRoundTrip && isArray2(obj) && obj.length === 1 ? prefix + "[]" : prefix;
       for (var j = 0; j < objKeys.length; ++j) {
         var key = objKeys[j];
         var value = typeof key === "object" && typeof key.value !== "undefined" ? key.value : obj[key];
         if (skipNulls && value === null) {
           continue;
         }
-        var keyPrefix = isArray2(obj) ? typeof generateArrayPrefix === "function" ? generateArrayPrefix(prefix, key) : prefix : prefix + (allowDots ? "." + key : "[" + key + "]");
+        var keyPrefix = isArray2(obj) ? typeof generateArrayPrefix === "function" ? generateArrayPrefix(adjustedPrefix, key) : adjustedPrefix : adjustedPrefix + (allowDots ? "." + key : "[" + key + "]");
         sideChannel.set(object, step);
         var valueSideChannel = getSideChannel();
         valueSideChannel.set(sentinel, sideChannel);
@@ -15879,6 +15880,7 @@ var require_stringify = __commonJS2({
           value,
           keyPrefix,
           generateArrayPrefix,
+          commaRoundTrip,
           strictNullHandling,
           skipNulls,
           encoder,
@@ -15961,6 +15963,10 @@ var require_stringify = __commonJS2({
         arrayFormat = "indices";
       }
       var generateArrayPrefix = arrayPrefixGenerators[arrayFormat];
+      if (opts && "commaRoundTrip" in opts && typeof opts.commaRoundTrip !== "boolean") {
+        throw new TypeError("`commaRoundTrip` must be a boolean, or absent");
+      }
+      var commaRoundTrip = generateArrayPrefix === "comma" && opts && opts.commaRoundTrip;
       if (!objKeys) {
         objKeys = Object.keys(obj);
       }
@@ -15977,6 +15983,7 @@ var require_stringify = __commonJS2({
           obj[key],
           key,
           generateArrayPrefix,
+          commaRoundTrip,
           options.strictNullHandling,
           options.skipNulls,
           options.encode ? options.encoder : null,
@@ -16410,14 +16417,14 @@ var require_body_parser = __commonJS2({
       get: createParserGetter("urlencoded")
     });
     function bodyParser2(options) {
-      var opts = {};
-      if (options) {
-        for (var prop in options) {
-          if (prop !== "type") {
-            opts[prop] = options[prop];
-          }
+      var opts = Object.create(options || null, {
+        type: {
+          configurable: true,
+          enumerable: true,
+          value: void 0,
+          writable: true
         }
-      }
+      });
       var _urlencoded = exports2.urlencoded(opts);
       var _json = exports2.json(opts);
       return function bodyParser3(req, res, next) {
@@ -17026,7 +17033,7 @@ var require_route2 = __commonJS2({
   "node_modules/express/lib/router/route.js"(exports2, module2) {
     "use strict";
     var debug = require_src2()("express:router:route");
-    var flatten2 = require_array_flatten();
+    var flatten = require_array_flatten();
     var Layer = require_layer();
     var methods = require_methods();
     var slice = Array.prototype.slice;
@@ -17078,17 +17085,16 @@ var require_route2 = __commonJS2({
         if (err && err === "router") {
           return done(err);
         }
+        if (++sync > 100) {
+          return setImmediate(next, err);
+        }
         var layer = stack[idx++];
         if (!layer) {
           return done(err);
         }
-        if (++sync > 100) {
-          return setImmediate(next, err);
-        }
         if (layer.method && layer.method !== method) {
-          return next(err);
-        }
-        if (err) {
+          next(err);
+        } else if (err) {
           layer.handle_error(err, req, res, next);
         } else {
           layer.handle_request(req, res, next);
@@ -17097,7 +17103,7 @@ var require_route2 = __commonJS2({
       }
     };
     Route.prototype.all = function all() {
-      var handles = flatten2(slice.call(arguments));
+      var handles = flatten(slice.call(arguments));
       for (var i = 0; i < handles.length; i++) {
         var handle = handles[i];
         if (typeof handle !== "function") {
@@ -17114,7 +17120,7 @@ var require_route2 = __commonJS2({
     };
     methods.forEach(function(method) {
       Route.prototype[method] = function() {
-        var handles = flatten2(slice.call(arguments));
+        var handles = flatten(slice.call(arguments));
         for (var i = 0; i < handles.length; i++) {
           var handle = handles[i];
           if (typeof handle !== "function") {
@@ -17158,7 +17164,7 @@ var require_router = __commonJS2({
     var mixin = require_utils_merge();
     var debug = require_src2()("express:router");
     var deprecate = require_depd()("express");
-    var flatten2 = require_array_flatten();
+    var flatten = require_array_flatten();
     var parseUrl = require_parseurl();
     var setPrototypeOf = require_setprototypeof();
     var objectRegExp = /^\[object (\S+)\]$/;
@@ -17398,7 +17404,7 @@ var require_router = __commonJS2({
           path = fn;
         }
       }
-      var callbacks = flatten2(slice.call(arguments, offset));
+      var callbacks = flatten(slice.call(arguments, offset));
       if (callbacks.length === 0) {
         throw new TypeError("Router.use() requires a middleware function");
       }
@@ -19650,7 +19656,7 @@ var require_utils3 = __commonJS2({
     var contentDisposition = require_content_disposition();
     var contentType = require_content_type();
     var deprecate = require_depd()("express");
-    var flatten2 = require_array_flatten();
+    var flatten = require_array_flatten();
     var mime = require_send().mime;
     var etag = require_etag();
     var proxyaddr = require_proxy_addr();
@@ -19667,7 +19673,7 @@ var require_utils3 = __commonJS2({
         return true;
     };
     exports2.flatten = deprecate.function(
-      flatten2,
+      flatten,
       "utils.flatten: use array-flatten npm module instead"
     );
     exports2.normalizeType = function(type) {
@@ -19799,7 +19805,7 @@ var require_application = __commonJS2({
     var compileQueryParser = require_utils3().compileQueryParser;
     var compileTrust = require_utils3().compileTrust;
     var deprecate = require_depd()("express");
-    var flatten2 = require_array_flatten();
+    var flatten = require_array_flatten();
     var merge2 = require_utils_merge();
     var resolve = require("path").resolve;
     var setPrototypeOf = require_setprototypeof();
@@ -19887,7 +19893,7 @@ var require_application = __commonJS2({
           path = fn;
         }
       }
-      var fns = flatten2(slice.call(arguments, offset));
+      var fns = flatten(slice.call(arguments, offset));
       if (fns.length === 0) {
         throw new TypeError("app.use() requires a middleware function");
       }
@@ -28228,7 +28234,7 @@ var require_userver = __commonJS2({
           this.verify(req, false, callback);
         }
       }
-      handleUpgrade(res, req, context3) {
+      handleUpgrade(res, req, context5) {
         debug("on upgrade");
         this.prepare(req, res);
         req.res = res;
@@ -28269,7 +28275,7 @@ var require_userver = __commonJS2({
           }
           res.upgrade({
             transport
-          }, req.getHeader("sec-websocket-key"), req.getHeader("sec-websocket-protocol"), req.getHeader("sec-websocket-extensions"), context3);
+          }, req.getHeader("sec-websocket-key"), req.getHeader("sec-websocket-protocol"), req.getHeader("sec-websocket-extensions"), context5);
         });
       }
       abortRequest(res, errorCode, errorContext) {
@@ -28386,12 +28392,10 @@ var require_engine_io = __commonJS2({
   }
 });
 
-// node_modules/component-emitter/index.js
+// node_modules/@socket.io/component-emitter/index.js
 var require_component_emitter = __commonJS2({
-  "node_modules/component-emitter/index.js"(exports2, module2) {
-    if (typeof module2 !== "undefined") {
-      module2.exports = Emitter;
-    }
+  "node_modules/@socket.io/component-emitter/index.js"(exports2) {
+    exports2.Emitter = Emitter;
     function Emitter(obj) {
       if (obj)
         return mixin(obj);
@@ -28456,6 +28460,7 @@ var require_component_emitter = __commonJS2({
       }
       return this;
     };
+    Emitter.prototype.emitReserved = Emitter.prototype.emit;
     Emitter.prototype.listeners = function(event) {
       this._callbacks = this._callbacks || {};
       return this._callbacks["$" + event] || [];
@@ -28466,9 +28471,9 @@ var require_component_emitter = __commonJS2({
   }
 });
 
-// node_modules/socket.io-parser/dist/is-binary.js
+// node_modules/socket.io-parser/build/cjs/is-binary.js
 var require_is_binary = __commonJS2({
-  "node_modules/socket.io-parser/dist/is-binary.js"(exports2) {
+  "node_modules/socket.io-parser/build/cjs/is-binary.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.hasBinary = exports2.isBinary = void 0;
@@ -28512,13 +28517,13 @@ var require_is_binary = __commonJS2({
   }
 });
 
-// node_modules/socket.io-parser/dist/binary.js
+// node_modules/socket.io-parser/build/cjs/binary.js
 var require_binary = __commonJS2({
-  "node_modules/socket.io-parser/dist/binary.js"(exports2) {
+  "node_modules/socket.io-parser/build/cjs/binary.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.reconstructPacket = exports2.deconstructPacket = void 0;
-    var is_binary_1 = require_is_binary();
+    var is_binary_js_1 = require_is_binary();
     function deconstructPacket(packet) {
       const buffers = [];
       const packetData = packet.data;
@@ -28531,7 +28536,7 @@ var require_binary = __commonJS2({
     function _deconstructPacket(data, buffers) {
       if (!data)
         return data;
-      if (is_binary_1.isBinary(data)) {
+      if (is_binary_js_1.isBinary(data)) {
         const placeholder = { _placeholder: true, num: buffers.length };
         buffers.push(data);
         return placeholder;
@@ -28544,7 +28549,7 @@ var require_binary = __commonJS2({
       } else if (typeof data === "object" && !(data instanceof Date)) {
         const newData = {};
         for (const key in data) {
-          if (data.hasOwnProperty(key)) {
+          if (Object.prototype.hasOwnProperty.call(data, key)) {
             newData[key] = _deconstructPacket(data[key], buffers);
           }
         }
@@ -28561,15 +28566,20 @@ var require_binary = __commonJS2({
     function _reconstructPacket(data, buffers) {
       if (!data)
         return data;
-      if (data && data._placeholder) {
-        return buffers[data.num];
+      if (data && data._placeholder === true) {
+        const isIndexValid = typeof data.num === "number" && data.num >= 0 && data.num < buffers.length;
+        if (isIndexValid) {
+          return buffers[data.num];
+        } else {
+          throw new Error("illegal attachments");
+        }
       } else if (Array.isArray(data)) {
         for (let i = 0; i < data.length; i++) {
           data[i] = _reconstructPacket(data[i], buffers);
         }
       } else if (typeof data === "object") {
         for (const key in data) {
-          if (data.hasOwnProperty(key)) {
+          if (Object.prototype.hasOwnProperty.call(data, key)) {
             data[key] = _reconstructPacket(data[key], buffers);
           }
         }
@@ -28807,7 +28817,7 @@ var require_common3 = __commonJS2({
           }
           namespaces = split[i].replace(/\*/g, ".*?");
           if (namespaces[0] === "-") {
-            createDebug.skips.push(new RegExp("^" + namespaces.substr(1) + "$"));
+            createDebug.skips.push(new RegExp("^" + namespaces.slice(1) + "$"));
           } else {
             createDebug.names.push(new RegExp("^" + namespaces + "$"));
           }
@@ -29208,16 +29218,17 @@ var require_src5 = __commonJS2({
   }
 });
 
-// node_modules/socket.io-parser/dist/index.js
-var require_dist2 = __commonJS2({
-  "node_modules/socket.io-parser/dist/index.js"(exports2) {
+// node_modules/socket.io-parser/build/cjs/index.js
+var require_cjs2 = __commonJS2({
+  "node_modules/socket.io-parser/build/cjs/index.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.Decoder = exports2.Encoder = exports2.PacketType = exports2.protocol = void 0;
-    var Emitter = require_component_emitter();
-    var binary_1 = require_binary();
-    var is_binary_1 = require_is_binary();
-    var debug = require_src5()("socket.io-parser");
+    var component_emitter_1 = require_component_emitter();
+    var binary_js_1 = require_binary();
+    var is_binary_js_1 = require_is_binary();
+    var debug_1 = require_src5();
+    var debug = debug_1.default("socket.io-parser");
     exports2.protocol = 5;
     var PacketType;
     (function(PacketType2) {
@@ -29230,10 +29241,13 @@ var require_dist2 = __commonJS2({
       PacketType2[PacketType2["BINARY_ACK"] = 6] = "BINARY_ACK";
     })(PacketType = exports2.PacketType || (exports2.PacketType = {}));
     var Encoder = class {
+      constructor(replacer) {
+        this.replacer = replacer;
+      }
       encode(obj) {
         debug("encoding packet %j", obj);
         if (obj.type === PacketType.EVENT || obj.type === PacketType.ACK) {
-          if (is_binary_1.hasBinary(obj)) {
+          if (is_binary_js_1.hasBinary(obj)) {
             obj.type = obj.type === PacketType.EVENT ? PacketType.BINARY_EVENT : PacketType.BINARY_ACK;
             return this.encodeAsBinary(obj);
           }
@@ -29252,13 +29266,13 @@ var require_dist2 = __commonJS2({
           str += obj.id;
         }
         if (null != obj.data) {
-          str += JSON.stringify(obj.data);
+          str += JSON.stringify(obj.data, this.replacer);
         }
         debug("encoded %j as %s", obj, str);
         return str;
       }
       encodeAsBinary(obj) {
-        const deconstruction = binary_1.deconstructPacket(obj);
+        const deconstruction = binary_js_1.deconstructPacket(obj);
         const pack = this.encodeAsString(deconstruction.packet);
         const buffers = deconstruction.buffers;
         buffers.unshift(pack);
@@ -29266,30 +29280,34 @@ var require_dist2 = __commonJS2({
       }
     };
     exports2.Encoder = Encoder;
-    var Decoder = class extends Emitter {
-      constructor() {
+    var Decoder = class extends component_emitter_1.Emitter {
+      constructor(reviver) {
         super();
+        this.reviver = reviver;
       }
       add(obj) {
         let packet;
         if (typeof obj === "string") {
+          if (this.reconstructor) {
+            throw new Error("got plaintext data when reconstructing a packet");
+          }
           packet = this.decodeString(obj);
           if (packet.type === PacketType.BINARY_EVENT || packet.type === PacketType.BINARY_ACK) {
             this.reconstructor = new BinaryReconstructor(packet);
             if (packet.attachments === 0) {
-              super.emit("decoded", packet);
+              super.emitReserved("decoded", packet);
             }
           } else {
-            super.emit("decoded", packet);
+            super.emitReserved("decoded", packet);
           }
-        } else if (is_binary_1.isBinary(obj) || obj.base64) {
+        } else if (is_binary_js_1.isBinary(obj) || obj.base64) {
           if (!this.reconstructor) {
             throw new Error("got binary data when not reconstructing a packet");
           } else {
             packet = this.reconstructor.takeBinaryData(obj);
             if (packet) {
               this.reconstructor = null;
-              super.emit("decoded", packet);
+              super.emitReserved("decoded", packet);
             }
           }
         } else {
@@ -29342,7 +29360,7 @@ var require_dist2 = __commonJS2({
           p.id = Number(str.substring(start, i + 1));
         }
         if (str.charAt(++i)) {
-          const payload = tryParse(str.substr(i));
+          const payload = this.tryParse(str.substr(i));
           if (Decoder.isPayloadValid(p.type, payload)) {
             p.data = payload;
           } else {
@@ -29351,6 +29369,13 @@ var require_dist2 = __commonJS2({
         }
         debug("decoded %s as %j", str, p);
         return p;
+      }
+      tryParse(str) {
+        try {
+          return JSON.parse(str, this.reviver);
+        } catch (e) {
+          return false;
+        }
       }
       static isPayloadValid(type, payload) {
         switch (type) {
@@ -29375,13 +29400,6 @@ var require_dist2 = __commonJS2({
       }
     };
     exports2.Decoder = Decoder;
-    function tryParse(str) {
-      try {
-        return JSON.parse(str);
-      } catch (e) {
-        return false;
-      }
-    }
     var BinaryReconstructor = class {
       constructor(packet) {
         this.packet = packet;
@@ -29391,7 +29409,7 @@ var require_dist2 = __commonJS2({
       takeBinaryData(binData) {
         this.buffers.push(binData);
         if (this.buffers.length === this.reconPack.attachments) {
-          const packet = binary_1.reconstructPacket(this.reconPack, this.buffers);
+          const packet = binary_js_1.reconstructPacket(this.reconPack, this.buffers);
           this.finishedReconstruction();
           return packet;
         }
@@ -30040,7 +30058,7 @@ var require_client2 = __commonJS2({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.Client = void 0;
-    var socket_io_parser_1 = require_dist2();
+    var socket_io_parser_1 = require_cjs2();
     var debugModule = require_src6();
     var url = require("url");
     var debug = debugModule("socket.io:client");
@@ -30247,7 +30265,7 @@ var require_broadcast_operator = __commonJS2({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.RemoteSocket = exports2.BroadcastOperator = void 0;
     var socket_1 = require_socket2();
-    var socket_io_parser_1 = require_dist2();
+    var socket_io_parser_1 = require_cjs2();
     var BroadcastOperator = class {
       constructor(adapter, rooms = /* @__PURE__ */ new Set(), exceptRooms = /* @__PURE__ */ new Set(), flags = {}) {
         this.adapter = adapter;
@@ -30294,7 +30312,7 @@ var require_broadcast_operator = __commonJS2({
       }
       emit(ev, ...args) {
         if (socket_1.RESERVED_EVENTS.has(ev)) {
-          throw new Error(`"${ev}" is a reserved event name`);
+          throw new Error(`"${String(ev)}" is a reserved event name`);
         }
         const data = [ev, ...args];
         const packet = {
@@ -30423,7 +30441,7 @@ var require_socket2 = __commonJS2({
     };
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.Socket = exports2.RESERVED_EVENTS = void 0;
-    var socket_io_parser_1 = require_dist2();
+    var socket_io_parser_1 = require_cjs2();
     var debug_1 = __importDefault(require_src6());
     var typed_events_1 = require_typed_events();
     var base64id_1 = __importDefault(require_base64id());
@@ -30437,6 +30455,8 @@ var require_socket2 = __commonJS2({
       "newListener",
       "removeListener"
     ]);
+    function noop() {
+    }
     var Socket2 = class extends typed_events_1.StrictEventEmitter {
       constructor(nsp, client, auth) {
         super();
@@ -30471,7 +30491,7 @@ var require_socket2 = __commonJS2({
       }
       emit(ev, ...args) {
         if (exports2.RESERVED_EVENTS.has(ev)) {
-          throw new Error(`"${ev}" is a reserved event name`);
+          throw new Error(`"${String(ev)}" is a reserved event name`);
         }
         const data = [ev, ...args];
         const packet = {
@@ -30627,12 +30647,16 @@ var require_socket2 = __commonJS2({
           return this;
         debug("closing socket - reason %s", reason);
         this.emitReserved("disconnecting", reason);
-        this.leaveAll();
+        this._cleanup();
         this.nsp._remove(this);
         this.client._remove(this);
         this.connected = false;
         this.emitReserved("disconnect", reason);
         return;
+      }
+      _cleanup() {
+        this.leaveAll();
+        this.join = noop;
       }
       _error(err) {
         this.packet({ type: socket_io_parser_1.PacketType.CONNECT_ERROR, data: err });
@@ -30851,26 +30875,29 @@ var require_namespace = __commonJS2({
         const socket = new socket_1.Socket(this, client, query2);
         this.run(socket, (err) => {
           process.nextTick(() => {
-            if ("open" == client.conn.readyState) {
-              if (err) {
-                if (client.conn.protocol === 3) {
-                  return socket._error(err.data || err.message);
-                } else {
-                  return socket._error({
-                    message: err.message,
-                    data: err.data
-                  });
-                }
-              }
-              this.sockets.set(socket.id, socket);
-              socket._onconnect();
-              if (fn)
-                fn();
-              this.emitReserved("connect", socket);
-              this.emitReserved("connection", socket);
-            } else {
+            if ("open" !== client.conn.readyState) {
               debug("next called after client was closed - ignoring socket");
+              socket._cleanup();
+              return;
             }
+            if (err) {
+              debug("middleware error, sending CONNECT_ERROR packet to the client");
+              socket._cleanup();
+              if (client.conn.protocol === 3) {
+                return socket._error(err.data || err.message);
+              } else {
+                return socket._error({
+                  message: err.message,
+                  data: err.data
+                });
+              }
+            }
+            this.sockets.set(socket.id, socket);
+            socket._onconnect();
+            if (fn)
+              fn();
+            this.emitReserved("connect", socket);
+            this.emitReserved("connection", socket);
           });
         });
         return socket;
@@ -30895,7 +30922,7 @@ var require_namespace = __commonJS2({
       }
       serverSideEmit(ev, ...args) {
         if (exports2.RESERVED_EVENTS.has(ev)) {
-          throw new Error(`"${ev}" is a reserved event name`);
+          throw new Error(`"${String(ev)}" is a reserved event name`);
         }
         args.unshift(ev);
         this.adapter.serverSideEmit(args);
@@ -30981,7 +31008,7 @@ var require_parent_namespace = __commonJS2({
 });
 
 // node_modules/socket.io-adapter/dist/index.js
-var require_dist3 = __commonJS2({
+var require_dist = __commonJS2({
   "node_modules/socket.io-adapter/dist/index.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -31170,7 +31197,7 @@ var require_uws = __commonJS2({
     };
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.serveFile = exports2.restoreAdapter = exports2.patchAdapter = void 0;
-    var socket_io_adapter_1 = require_dist3();
+    var socket_io_adapter_1 = require_dist();
     var fs_1 = require("fs");
     var debug_1 = __importDefault(require_src6());
     var debug = (0, debug_1.default)("socket.io:adapter-uws");
@@ -31191,7 +31218,9 @@ var require_uws = __commonJS2({
         if (isNew) {
           socket.conn.on("upgrade", () => {
             const rooms2 = this.sids.get(id);
-            subscribe(this.nsp.name, socket, isNew, rooms2);
+            if (rooms2) {
+              subscribe(this.nsp.name, socket, isNew, rooms2);
+            }
           });
         }
       };
@@ -31292,7 +31321,7 @@ var require_package3 = __commonJS2({
   "node_modules/socket.io/package.json"(exports2, module2) {
     module2.exports = {
       name: "socket.io",
-      version: "4.5.1",
+      version: "4.5.3",
       description: "node.js realtime framework server",
       keywords: [
         "realtime",
@@ -31332,7 +31361,7 @@ var require_package3 = __commonJS2({
         compile: "rimraf ./dist && tsc",
         test: "npm run format:check && npm run compile && npm run test:types && npm run test:unit",
         "test:types": "tsd",
-        "test:unit": "nyc mocha --require ts-node/register --reporter spec --slow 200 --bail --timeout 10000 test/socket.io.ts",
+        "test:unit": "nyc mocha --require ts-node/register --reporter spec --slow 200 --bail --timeout 10000 test/index.ts",
         "format:check": 'prettier --check "lib/**/*.ts" "test/**/*.ts"',
         "format:fix": 'prettier --write "lib/**/*.ts" "test/**/*.ts"',
         prepack: "npm run compile"
@@ -31343,21 +31372,21 @@ var require_package3 = __commonJS2({
         debug: "~4.3.2",
         "engine.io": "~6.2.0",
         "socket.io-adapter": "~2.4.0",
-        "socket.io-parser": "~4.0.4"
+        "socket.io-parser": "~4.2.0"
       },
       devDependencies: {
         "@types/mocha": "^9.0.0",
         "expect.js": "0.3.1",
-        mocha: "^3.5.3",
+        mocha: "^10.0.0",
         nyc: "^15.1.0",
         prettier: "^2.3.2",
         rimraf: "^3.0.2",
-        "socket.io-client": "4.5.1",
+        "socket.io-client": "4.5.3",
         "socket.io-client-v2": "npm:socket.io-client@^2.4.0",
-        superagent: "^6.1.0",
+        superagent: "^8.0.0",
         supertest: "^6.1.6",
         "ts-node": "^10.2.1",
-        tsd: "^0.17.0",
+        tsd: "^0.21.0",
         typescript: "^4.4.2",
         "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.0.0"
       },
@@ -31390,15 +31419,19 @@ var require_package3 = __commonJS2({
 });
 
 // node_modules/socket.io/dist/index.js
-var require_dist4 = __commonJS2({
+var require_dist2 = __commonJS2({
   "node_modules/socket.io/dist/index.js"(exports2, module2) {
     "use strict";
     var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
-      Object.defineProperty(o, k2, { enumerable: true, get: function() {
-        return m[k];
-      } });
+      var desc = Object.getOwnPropertyDescriptor(m, k);
+      if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m[k];
+        } };
+      }
+      Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
@@ -31440,8 +31473,8 @@ var require_dist4 = __commonJS2({
       return namespace_1.Namespace;
     } });
     var parent_namespace_1 = require_parent_namespace();
-    var socket_io_adapter_1 = require_dist3();
-    var parser = __importStar(require_dist2());
+    var socket_io_adapter_1 = require_dist();
+    var parser = __importStar(require_cjs2());
     var debug_1 = __importDefault(require_src6());
     var socket_1 = require_socket2();
     Object.defineProperty(exports2, "Socket", { enumerable: true, get: function() {
@@ -31722,8 +31755,8 @@ var require_dist4 = __commonJS2({
       in(room) {
         return this.sockets.in(room);
       }
-      except(name) {
-        return this.sockets.except(name);
+      except(room) {
+        return this.sockets.except(room);
       }
       send(...args) {
         this.sockets.emit("message", ...args);
@@ -31777,6 +31810,7 @@ var require_dist4 = __commonJS2({
     module2.exports.Server = Server2;
     module2.exports.Namespace = namespace_1.Namespace;
     module2.exports.Socket = socket_1.Socket;
+    var socket_2 = require_socket2();
   }
 });
 
@@ -31807,7 +31841,10 @@ var require_runtime = __commonJS2({
       }
       return to;
     };
-    var __toESM = (mod2, isNodeMode, target) => (target = mod2 != null ? __create(__getProtoOf(mod2)) : {}, __copyProps(isNodeMode || !mod2 || !mod2.__esModule ? __defProp(target, "default", { value: mod2, enumerable: true }) : target, mod2));
+    var __toESM = (mod2, isNodeMode, target) => (target = mod2 != null ? __create(__getProtoOf(mod2)) : {}, __copyProps(
+      isNodeMode || !mod2 || !mod2.__esModule ? __defProp(target, "default", { value: mod2, enumerable: true }) : target,
+      mod2
+    ));
     var __toCommonJS = (mod2) => __copyProps(__defProp({}, "__esModule", { value: true }), mod2);
     var __publicField = (obj, key, value) => {
       __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
@@ -33792,7 +33829,10 @@ var require_runtime = __commonJS2({
           const arguments_ = strings.slice(1);
           const parts = [firstString.raw[0]];
           for (let i = 1; i < firstString.length; i++) {
-            parts.push(String(arguments_[i - 1]).replace(/[{}\\]/g, "\\$&"), String(firstString.raw[i]));
+            parts.push(
+              String(arguments_[i - 1]).replace(/[{}\\]/g, "\\$&"),
+              String(firstString.raw[i])
+            );
           }
           if (template === void 0) {
             template = require_templates();
@@ -33817,13 +33857,19 @@ var require_runtime = __commonJS2({
             ...options
           };
           if (typeof string !== "string") {
-            throw new TypeError(`Expected \`input\` to be a \`string\`, got \`${typeof string}\``);
+            throw new TypeError(
+              `Expected \`input\` to be a \`string\`, got \`${typeof string}\``
+            );
           }
           if (typeof count2 !== "number") {
-            throw new TypeError(`Expected \`count\` to be a \`number\`, got \`${typeof count2}\``);
+            throw new TypeError(
+              `Expected \`count\` to be a \`number\`, got \`${typeof count2}\``
+            );
           }
           if (typeof options.indent !== "string") {
-            throw new TypeError(`Expected \`options.indent\` to be a \`string\`, got \`${typeof options.indent}\``);
+            throw new TypeError(
+              `Expected \`options.indent\` to be a \`string\`, got \`${typeof options.indent}\``
+            );
           }
           if (count2 === 0) {
             return string;
@@ -33934,14 +33980,18 @@ var require_runtime = __commonJS2({
           } else if (type === "number" && isFinite(val)) {
             return options.long ? fmtLong(val) : fmtShort(val);
           }
-          throw new Error("val is not a non-empty string or a valid number. val=" + JSON.stringify(val));
+          throw new Error(
+            "val is not a non-empty string or a valid number. val=" + JSON.stringify(val)
+          );
         };
         function parse2(str) {
           str = String(str);
           if (str.length > 100) {
             return;
           }
-          var match = /^(-?(?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(str);
+          var match = /^(-?(?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(
+            str
+          );
           if (!match) {
             return;
           }
@@ -34382,8 +34432,11 @@ var require_runtime = __commonJS2({
         exports2.save = save;
         exports2.load = load;
         exports2.useColors = useColors;
-        exports2.destroy = util2.deprecate(() => {
-        }, "Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`.");
+        exports2.destroy = util2.deprecate(
+          () => {
+          },
+          "Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`."
+        );
         exports2.colors = [6, 2, 3, 4, 5, 1];
         try {
           const supportsColor = require_supports_color();
@@ -34561,7 +34614,7 @@ var require_runtime = __commonJS2({
       "../../node_modules/.pnpm/isexe@2.0.0/node_modules/isexe/windows.js"(exports2, module2) {
         module2.exports = isexe;
         isexe.sync = sync;
-        var fs10 = require("fs");
+        var fs11 = require("fs");
         function checkPathExt(path7, options) {
           var pathext = options.pathExt !== void 0 ? options.pathExt : process.env.PATHEXT;
           if (!pathext) {
@@ -34588,13 +34641,13 @@ var require_runtime = __commonJS2({
         }
         __name(checkStat, "checkStat");
         function isexe(path7, options, cb) {
-          fs10.stat(path7, function(er, stat) {
+          fs11.stat(path7, function(er, stat) {
             cb(er, er ? false : checkStat(stat, path7, options));
           });
         }
         __name(isexe, "isexe");
         function sync(path7, options) {
-          return checkStat(fs10.statSync(path7), path7, options);
+          return checkStat(fs11.statSync(path7), path7, options);
         }
         __name(sync, "sync");
       }
@@ -34603,15 +34656,15 @@ var require_runtime = __commonJS2({
       "../../node_modules/.pnpm/isexe@2.0.0/node_modules/isexe/mode.js"(exports2, module2) {
         module2.exports = isexe;
         isexe.sync = sync;
-        var fs10 = require("fs");
+        var fs11 = require("fs");
         function isexe(path7, options, cb) {
-          fs10.stat(path7, function(er, stat) {
+          fs11.stat(path7, function(er, stat) {
             cb(er, er ? false : checkStat(stat, options));
           });
         }
         __name(isexe, "isexe");
         function sync(path7, options) {
-          return checkStat(fs10.statSync(path7), options);
+          return checkStat(fs11.statSync(path7), options);
         }
         __name(sync, "sync");
         function checkStat(stat, options) {
@@ -34636,7 +34689,7 @@ var require_runtime = __commonJS2({
     });
     var require_isexe = __commonJS({
       "../../node_modules/.pnpm/isexe@2.0.0/node_modules/isexe/index.js"(exports2, module2) {
-        var fs10 = require("fs");
+        var fs11 = require("fs");
         var core;
         if (process.platform === "win32" || global.TESTING_WINDOWS) {
           core = require_windows();
@@ -34890,16 +34943,16 @@ var require_runtime = __commonJS2({
     var require_readShebang = __commonJS({
       "../../node_modules/.pnpm/cross-spawn@7.0.3/node_modules/cross-spawn/lib/util/readShebang.js"(exports2, module2) {
         "use strict";
-        var fs10 = require("fs");
+        var fs11 = require("fs");
         var shebangCommand = require_shebang_command();
         function readShebang(command) {
           const size = 150;
           const buffer = Buffer.alloc(size);
           let fd;
           try {
-            fd = fs10.openSync(command, "r");
-            fs10.readSync(fd, buffer, 0, size, 0);
-            fs10.closeSync(fd);
+            fd = fs11.openSync(command, "r");
+            fs11.readSync(fd, buffer, 0, size, 0);
+            fs11.closeSync(fd);
           } catch (e) {
           }
           return shebangCommand(buffer.toString());
@@ -35051,16 +35104,16 @@ var require_runtime = __commonJS2({
       }
     });
     var require_package = __commonJS({
-      "../../node_modules/.pnpm/@prisma+engines-version@4.2.0-33.2920a97877e12e055c1333079b8d19cee7f33826/node_modules/@prisma/engines-version/package.json"(exports2, module2) {
+      "../../node_modules/.pnpm/@prisma+engines-version@4.5.0-43.0362da9eebca54d94c8ef5edd3b2e90af99ba452/node_modules/@prisma/engines-version/package.json"(exports2, module2) {
         module2.exports = {
           name: "@prisma/engines-version",
-          version: "4.2.0-33.2920a97877e12e055c1333079b8d19cee7f33826",
+          version: "4.5.0-43.0362da9eebca54d94c8ef5edd3b2e90af99ba452",
           main: "index.js",
           types: "index.d.ts",
           license: "Apache-2.0",
           author: "Tim Suchanek <suchanek@prisma.io>",
           prisma: {
-            enginesVersion: "2920a97877e12e055c1333079b8d19cee7f33826"
+            enginesVersion: "0362da9eebca54d94c8ef5edd3b2e90af99ba452"
           },
           repository: {
             type: "git",
@@ -35068,8 +35121,8 @@ var require_runtime = __commonJS2({
             directory: "packages/engines-version"
           },
           devDependencies: {
-            "@types/node": "16.11.47",
-            typescript: "4.7.4"
+            "@types/node": "16.11.64",
+            typescript: "4.8.4"
           },
           files: [
             "index.js",
@@ -35082,7 +35135,7 @@ var require_runtime = __commonJS2({
       }
     });
     var require_engines_version = __commonJS({
-      "../../node_modules/.pnpm/@prisma+engines-version@4.2.0-33.2920a97877e12e055c1333079b8d19cee7f33826/node_modules/@prisma/engines-version/index.js"(exports2) {
+      "../../node_modules/.pnpm/@prisma+engines-version@4.5.0-43.0362da9eebca54d94c8ef5edd3b2e90af99ba452/node_modules/@prisma/engines-version/index.js"(exports2) {
         "use strict";
         Object.defineProperty(exports2, "__esModule", { value: true });
         exports2.enginesVersion = void 0;
@@ -35708,10 +35761,25 @@ ${error2.message}` : execaMessage;
           "SIGTERM"
         ];
         if (process.platform !== "win32") {
-          module2.exports.push("SIGVTALRM", "SIGXCPU", "SIGXFSZ", "SIGUSR2", "SIGTRAP", "SIGSYS", "SIGQUIT", "SIGIOT");
+          module2.exports.push(
+            "SIGVTALRM",
+            "SIGXCPU",
+            "SIGXFSZ",
+            "SIGUSR2",
+            "SIGTRAP",
+            "SIGSYS",
+            "SIGQUIT",
+            "SIGIOT"
+          );
         }
         if (process.platform === "linux") {
-          module2.exports.push("SIGIO", "SIGPOLL", "SIGPWR", "SIGSTKFLT", "SIGUNUSED");
+          module2.exports.push(
+            "SIGIO",
+            "SIGPOLL",
+            "SIGPWR",
+            "SIGSTKFLT",
+            "SIGUNUSED"
+          );
         }
       }
     });
@@ -35909,10 +35977,10 @@ ${error2.message}` : execaMessage;
           }
           return forceKillAfterTimeout;
         }, "getForceKillAfterTimeout");
-        var spawnedCancel = /* @__PURE__ */ __name((spawned, context3) => {
+        var spawnedCancel = /* @__PURE__ */ __name((spawned, context5) => {
           const killResult = spawned.kill();
           if (killResult) {
-            context3.isCanceled = true;
+            context5.isCanceled = true;
           }
         }, "spawnedCancel");
         var timeoutKill = /* @__PURE__ */ __name((spawned, signal, reject) => {
@@ -36352,9 +36420,9 @@ ${error2.message}` : execaMessage;
           const spawnedPromise = getSpawnedPromise(spawned);
           const timedPromise = setupTimeout(spawned, parsed.options, spawnedPromise);
           const processDone = setExitHandler(spawned, parsed.options, timedPromise);
-          const context3 = { isCanceled: false };
+          const context5 = { isCanceled: false };
           spawned.kill = spawnedKill.bind(null, spawned.kill.bind(spawned));
-          spawned.cancel = spawnedCancel.bind(null, spawned, context3);
+          spawned.cancel = spawnedCancel.bind(null, spawned, context5);
           const handlePromise = /* @__PURE__ */ __name(async () => {
             const [{ error: error2, exitCode, signal, timedOut }, stdoutResult, stderrResult, allResult] = await getSpawnedResult(spawned, parsed.options, processDone);
             const stdout = handleOutput(parsed.options, stdoutResult);
@@ -36372,7 +36440,7 @@ ${error2.message}` : execaMessage;
                 escapedCommand,
                 parsed,
                 timedOut,
-                isCanceled: context3.isCanceled,
+                isCanceled: context5.isCanceled,
                 killed: spawned.killed
               });
               if (!parsed.options.reject) {
@@ -36473,18 +36541,22 @@ ${error2.message}` : execaMessage;
             nodePath = process.execPath,
             nodeOptions = defaultExecArgv
           } = options;
-          return execa2(nodePath, [
-            ...nodeOptions,
-            scriptPath,
-            ...Array.isArray(args) ? args : []
-          ], {
-            ...options,
-            stdin: void 0,
-            stdout: void 0,
-            stderr: void 0,
-            stdio,
-            shell: false
-          });
+          return execa2(
+            nodePath,
+            [
+              ...nodeOptions,
+              scriptPath,
+              ...Array.isArray(args) ? args : []
+            ],
+            {
+              ...options,
+              stdin: void 0,
+              stdout: void 0,
+              stderr: void 0,
+              stdio,
+              shell: false
+            }
+          );
         };
       }
     });
@@ -36845,7 +36917,7 @@ ${error2.message}` : execaMessage;
       }
     });
     var require_symbols = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/core/symbols.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/core/symbols.js"(exports2, module2) {
         module2.exports = {
           kClose: Symbol("close"),
           kDestroy: Symbol("destroy"),
@@ -36901,7 +36973,7 @@ ${error2.message}` : execaMessage;
       }
     });
     var require_errors = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/core/errors.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/core/errors.js"(exports2, module2) {
         "use strict";
         var UndiciError = class extends Error {
           constructor(message) {
@@ -37109,7 +37181,7 @@ ${error2.message}` : execaMessage;
       }
     });
     var require_util2 = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/core/util.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/core/util.js"(exports2, module2) {
         "use strict";
         var assert = require("assert");
         var { kDestroyed, kBodyUsed } = require_symbols();
@@ -37194,9 +37266,15 @@ ${error2.message}` : execaMessage;
           }
           if (!(url instanceof URL)) {
             const port2 = url.port != null ? url.port : url.protocol === "https:" ? 443 : 80;
-            const origin = url.origin != null ? url.origin : `${url.protocol}//${url.hostname}:${port2}`;
-            const path7 = url.path != null ? url.path : `${url.pathname || ""}${url.search || ""}`;
-            url = new URL(path7, origin);
+            let origin = url.origin != null ? url.origin : `${url.protocol}//${url.hostname}:${port2}`;
+            let path7 = url.path != null ? url.path : `${url.pathname || ""}${url.search || ""}`;
+            if (origin.endsWith("/")) {
+              origin = origin.substring(0, origin.length - 1);
+            }
+            if (path7 && !path7.startsWith("/")) {
+              path7 = `/${path7}`;
+            }
+            url = new URL(origin + path7);
           }
           return url;
         }
@@ -37298,7 +37376,11 @@ ${error2.message}` : execaMessage;
             const key = headers[i].toString().toLowerCase();
             let val = obj[key];
             if (!val) {
-              obj[key] = headers[i + 1].toString();
+              if (Array.isArray(headers[i + 1])) {
+                obj[key] = headers[i + 1];
+              } else {
+                obj[key] = headers[i + 1].toString();
+              }
             } else {
               if (!Array.isArray(val)) {
                 val = [val];
@@ -37353,11 +37435,15 @@ ${error2.message}` : execaMessage;
         }
         __name(isDisturbed, "isDisturbed");
         function isErrored(body) {
-          return !!(body && (stream2.isErrored ? stream2.isErrored(body) : /state: 'errored'/.test(nodeUtil.inspect(body))));
+          return !!(body && (stream2.isErrored ? stream2.isErrored(body) : /state: 'errored'/.test(
+            nodeUtil.inspect(body)
+          )));
         }
         __name(isErrored, "isErrored");
         function isReadable(body) {
-          return !!(body && (stream2.isReadable ? stream2.isReadable(body) : /state: 'readable'/.test(nodeUtil.inspect(body))));
+          return !!(body && (stream2.isReadable ? stream2.isReadable(body) : /state: 'readable'/.test(
+            nodeUtil.inspect(body)
+          )));
         }
         __name(isReadable, "isReadable");
         function getSocketInfo(socket) {
@@ -37382,26 +37468,29 @@ ${error2.message}` : execaMessage;
             return ReadableStream.from(iterable);
           }
           let iterator;
-          return new ReadableStream({
-            async start() {
-              iterator = iterable[Symbol.asyncIterator]();
-            },
-            async pull(controller) {
-              const { done, value } = await iterator.next();
-              if (done) {
-                queueMicrotask(() => {
-                  controller.close();
-                });
-              } else {
-                const buf = Buffer.isBuffer(value) ? value : Buffer.from(value);
-                controller.enqueue(new Uint8Array(buf));
+          return new ReadableStream(
+            {
+              async start() {
+                iterator = iterable[Symbol.asyncIterator]();
+              },
+              async pull(controller) {
+                const { done, value } = await iterator.next();
+                if (done) {
+                  queueMicrotask(() => {
+                    controller.close();
+                  });
+                } else {
+                  const buf = Buffer.isBuffer(value) ? value : Buffer.from(value);
+                  controller.enqueue(new Uint8Array(buf));
+                }
+                return controller.desiredSize > 0;
+              },
+              async cancel(reason) {
+                await iterator.return();
               }
-              return controller.desiredSize > 0;
             },
-            async cancel(reason) {
-              await iterator.return();
-            }
-          }, 0);
+            0
+          );
         }
         __name(ReadableStreamFrom, "ReadableStreamFrom");
         function isFormDataLike(chunk) {
@@ -37442,7 +37531,7 @@ ${error2.message}` : execaMessage;
       }
     });
     var require_constants = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/fetch/constants.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/fetch/constants.js"(exports2, module2) {
         "use strict";
         var corsSafeListedMethods = ["GET", "HEAD", "POST"];
         var nullBodyStatus = [101, 204, 205, 304];
@@ -37517,7 +37606,7 @@ ${error2.message}` : execaMessage;
       }
     });
     var require_symbols2 = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/fetch/symbols.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/fetch/symbols.js"(exports2, module2) {
         "use strict";
         module2.exports = {
           kUrl: Symbol("url"),
@@ -37530,7 +37619,7 @@ ${error2.message}` : execaMessage;
       }
     });
     var require_webidl = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/fetch/webidl.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/fetch/webidl.js"(exports2, module2) {
         "use strict";
         var { types } = require("util");
         var { hasOwn, toUSVString } = require_util3();
@@ -37541,18 +37630,18 @@ ${error2.message}` : execaMessage;
         webidl.errors.exception = function(message) {
           throw new TypeError(`${message.header}: ${message.message}`);
         };
-        webidl.errors.conversionFailed = function(context3) {
-          const plural = context3.types.length === 1 ? "" : " one of";
-          const message = `${context3.argument} could not be converted to${plural}: ${context3.types.join(", ")}.`;
+        webidl.errors.conversionFailed = function(context5) {
+          const plural = context5.types.length === 1 ? "" : " one of";
+          const message = `${context5.argument} could not be converted to${plural}: ${context5.types.join(", ")}.`;
           return webidl.errors.exception({
-            header: context3.prefix,
+            header: context5.prefix,
             message
           });
         };
-        webidl.errors.invalidArgument = function(context3) {
+        webidl.errors.invalidArgument = function(context5) {
           return webidl.errors.exception({
-            header: context3.prefix,
-            message: `"${context3.value}" is an invalid ${context3.type}.`
+            header: context5.prefix,
+            message: `"${context5.value}" is an invalid ${context5.type}.`
           });
         };
         webidl.util.Type = function(V) {
@@ -37756,11 +37845,15 @@ ${error2.message}` : execaMessage;
           }
           return String(V);
         };
-        var isNotLatin1 = /[^\u0000-\u00ff]/;
         webidl.converters.ByteString = function(V) {
           const x = webidl.converters.DOMString(V);
-          if (isNotLatin1.test(x)) {
-            throw new TypeError("Argument is not a ByteString");
+          for (let index = 0; index < x.length; index++) {
+            const charCode = x.charCodeAt(index);
+            if (charCode > 255) {
+              throw new TypeError(
+                `Cannot convert argument to a ByteString because the character atindex ${index} has a value of ${charCode} which is greater than 255.`
+              );
+            }
           }
           return x;
         };
@@ -37839,16 +37932,23 @@ ${error2.message}` : execaMessage;
           }
           throw new TypeError(`Could not convert ${V} to a BufferSource.`);
         };
-        webidl.converters["sequence<ByteString>"] = webidl.sequenceConverter(webidl.converters.ByteString);
-        webidl.converters["sequence<sequence<ByteString>>"] = webidl.sequenceConverter(webidl.converters["sequence<ByteString>"]);
-        webidl.converters["record<ByteString, ByteString>"] = webidl.recordConverter(webidl.converters.ByteString, webidl.converters.ByteString);
+        webidl.converters["sequence<ByteString>"] = webidl.sequenceConverter(
+          webidl.converters.ByteString
+        );
+        webidl.converters["sequence<sequence<ByteString>>"] = webidl.sequenceConverter(
+          webidl.converters["sequence<ByteString>"]
+        );
+        webidl.converters["record<ByteString, ByteString>"] = webidl.recordConverter(
+          webidl.converters.ByteString,
+          webidl.converters.ByteString
+        );
         module2.exports = {
           webidl
         };
       }
     });
     var require_file = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/fetch/file.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/fetch/file.js"(exports2, module2) {
         "use strict";
         var { Blob: Blob2 } = require("buffer");
         var { types } = require("util");
@@ -37965,7 +38065,9 @@ ${error2.message}` : execaMessage;
             return webidl.converters.USVString(V, opts);
           }
         };
-        webidl.converters["sequence<BlobPart>"] = webidl.sequenceConverter(webidl.converters.BlobPart);
+        webidl.converters["sequence<BlobPart>"] = webidl.sequenceConverter(
+          webidl.converters.BlobPart
+        );
         webidl.converters.FilePropertyBag = webidl.dictionaryConverter([
           {
             key: "lastModified",
@@ -38005,7 +38107,9 @@ ${error2.message}` : execaMessage;
               if (!element.buffer) {
                 bytes.push(new Uint8Array(element));
               } else {
-                bytes.push(element.buffer);
+                bytes.push(
+                  new Uint8Array(element.buffer, element.byteOffset, element.byteLength)
+                );
               }
             } else if (isBlobLike(element)) {
               bytes.push(element);
@@ -38026,13 +38130,19 @@ ${error2.message}` : execaMessage;
       }
     });
     var require_util3 = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/fetch/util.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/fetch/util.js"(exports2, module2) {
         "use strict";
         var { redirectStatus } = require_constants();
         var { performance: performance3 } = require("perf_hooks");
         var { isBlobLike, toUSVString, ReadableStreamFrom } = require_util2();
         var assert = require("assert");
+        var { isUint8Array } = require("util/types");
         var File2;
+        var crypto2;
+        try {
+          crypto2 = require("crypto");
+        } catch (e) {
+        }
         var badPorts = [
           "1",
           "7",
@@ -38152,6 +38262,11 @@ ${error2.message}` : execaMessage;
           return object instanceof File2 || object && (typeof object.stream === "function" || typeof object.arrayBuffer === "function") && /^(File)$/.test(object[Symbol.toStringTag]);
         }
         __name(isFileLike, "isFileLike");
+        function isErrorLike(object) {
+          var _a32, _b22;
+          return object instanceof Error || (((_a32 = object == null ? void 0 : object.constructor) == null ? void 0 : _a32.name) === "Error" || ((_b22 = object == null ? void 0 : object.constructor) == null ? void 0 : _b22.name) === "DOMException");
+        }
+        __name(isErrorLike, "isErrorLike");
         function isValidReasonPhrase(statusText) {
           for (let i = 0; i < statusText.length; ++i) {
             const c = statusText.charCodeAt(i);
@@ -38290,10 +38405,51 @@ ${error2.message}` : execaMessage;
           return "no-referrer";
         }
         __name(determineRequestsReferrer, "determineRequestsReferrer");
-        function matchRequestIntegrity(request2, bytes) {
+        function bytesMatch(bytes, metadataList) {
+          if (crypto2 === void 0) {
+            return true;
+          }
+          const parsedMetadata = parseMetadata(metadataList);
+          if (parsedMetadata === "no metadata") {
+            return true;
+          }
+          if (parsedMetadata.length === 0) {
+            return true;
+          }
+          const metadata = parsedMetadata.sort((c, d) => d.algo.localeCompare(c.algo));
+          for (const item of metadata) {
+            const algorithm = item.algo;
+            const expectedValue = item.hash;
+            const actualValue = crypto2.createHash(algorithm).update(bytes).digest("base64");
+            if (actualValue === expectedValue) {
+              return true;
+            }
+          }
           return false;
         }
-        __name(matchRequestIntegrity, "matchRequestIntegrity");
+        __name(bytesMatch, "bytesMatch");
+        var parseHashWithOptions = /((?<algo>sha256|sha384|sha512)-(?<hash>[A-z0-9+/]{1}.*={1,2}))( +[\x21-\x7e]?)?/i;
+        function parseMetadata(metadata) {
+          const result = [];
+          let empty2 = true;
+          const supportedHashes = crypto2.getHashes();
+          for (const token of metadata.split(" ")) {
+            empty2 = false;
+            const parsedToken = parseHashWithOptions.exec(token);
+            if (parsedToken === null || parsedToken.groups === void 0) {
+              continue;
+            }
+            const algorithm = parsedToken.groups.algo;
+            if (supportedHashes.includes(algorithm.toLowerCase())) {
+              result.push(parsedToken.groups);
+            }
+          }
+          if (empty2 === true) {
+            return "no metadata";
+          }
+          return result;
+        }
+        __name(parseMetadata, "parseMetadata");
         function tryUpgradeRequestToAPotentiallyTrustworthyURL(request2) {
         }
         __name(tryUpgradeRequestToAPotentiallyTrustworthyURL, "tryUpgradeRequestToAPotentiallyTrustworthyURL");
@@ -38340,7 +38496,9 @@ ${error2.message}` : execaMessage;
           const i = {
             next() {
               if (Object.getPrototypeOf(this) !== i) {
-                throw new TypeError(`'next' called on an object that does not implement interface ${name} Iterator.`);
+                throw new TypeError(
+                  `'next' called on an object that does not implement interface ${name} Iterator.`
+                );
               }
               return iterator.next();
             },
@@ -38350,6 +38508,29 @@ ${error2.message}` : execaMessage;
           return Object.setPrototypeOf({}, i);
         }
         __name(makeIterator, "makeIterator");
+        async function fullyReadBody(body, processBody, processBodyError) {
+          try {
+            const chunks = [];
+            let length = 0;
+            const reader = body.stream.getReader();
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done === true) {
+                break;
+              }
+              assert(isUint8Array(value));
+              chunks.push(value);
+              length += value.byteLength;
+            }
+            const fulfilledSteps = /* @__PURE__ */ __name((bytes) => queueMicrotask(() => {
+              processBody(bytes);
+            }), "fulfilledSteps");
+            fulfilledSteps(Buffer.concat(chunks, length));
+          } catch (err) {
+            queueMicrotask(() => processBodyError(err));
+          }
+        }
+        __name(fullyReadBody, "fullyReadBody");
         var hasOwn = Object.hasOwn || ((dict, key) => Object.prototype.hasOwnProperty.call(dict, key));
         module2.exports = {
           isAborted,
@@ -38359,7 +38540,6 @@ ${error2.message}` : execaMessage;
           toUSVString,
           tryUpgradeRequestToAPotentiallyTrustworthyURL,
           coarsenedSharedCurrentTime,
-          matchRequestIntegrity,
           determineRequestsReferrer,
           makePolicyContainer,
           clonePolicyContainer,
@@ -38384,12 +38564,15 @@ ${error2.message}` : execaMessage;
           makeIterator,
           isValidHeaderName,
           isValidHeaderValue,
-          hasOwn
+          hasOwn,
+          isErrorLike,
+          fullyReadBody,
+          bytesMatch
         };
       }
     });
     var require_formdata = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/fetch/formdata.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/fetch/formdata.js"(exports2, module2) {
         "use strict";
         var { isBlobLike, isFileLike, toUSVString, makeIterator } = require_util3();
         var { kState } = require_symbols2();
@@ -38412,10 +38595,14 @@ ${error2.message}` : execaMessage;
               throw new TypeError("Illegal invocation");
             }
             if (arguments.length < 2) {
-              throw new TypeError(`Failed to execute 'append' on 'FormData': 2 arguments required, but only ${arguments.length} present.`);
+              throw new TypeError(
+                `Failed to execute 'append' on 'FormData': 2 arguments required, but only ${arguments.length} present.`
+              );
             }
             if (arguments.length === 3 && !isBlobLike(value)) {
-              throw new TypeError("Failed to execute 'append' on 'FormData': parameter 2 is not of type 'Blob'");
+              throw new TypeError(
+                "Failed to execute 'append' on 'FormData': parameter 2 is not of type 'Blob'"
+              );
             }
             name = webidl.converters.USVString(name);
             value = isBlobLike(value) ? webidl.converters.Blob(value, { strict: false }) : webidl.converters.USVString(value);
@@ -38428,7 +38615,9 @@ ${error2.message}` : execaMessage;
               throw new TypeError("Illegal invocation");
             }
             if (arguments.length < 1) {
-              throw new TypeError(`Failed to execute 'delete' on 'FormData': 1 arguments required, but only ${arguments.length} present.`);
+              throw new TypeError(
+                `Failed to execute 'delete' on 'FormData': 1 arguments required, but only ${arguments.length} present.`
+              );
             }
             name = webidl.converters.USVString(name);
             const next = [];
@@ -38444,7 +38633,9 @@ ${error2.message}` : execaMessage;
               throw new TypeError("Illegal invocation");
             }
             if (arguments.length < 1) {
-              throw new TypeError(`Failed to execute 'get' on 'FormData': 1 arguments required, but only ${arguments.length} present.`);
+              throw new TypeError(
+                `Failed to execute 'get' on 'FormData': 1 arguments required, but only ${arguments.length} present.`
+              );
             }
             name = webidl.converters.USVString(name);
             const idx = this[kState].findIndex((entry) => entry.name === name);
@@ -38458,7 +38649,9 @@ ${error2.message}` : execaMessage;
               throw new TypeError("Illegal invocation");
             }
             if (arguments.length < 1) {
-              throw new TypeError(`Failed to execute 'getAll' on 'FormData': 1 arguments required, but only ${arguments.length} present.`);
+              throw new TypeError(
+                `Failed to execute 'getAll' on 'FormData': 1 arguments required, but only ${arguments.length} present.`
+              );
             }
             name = webidl.converters.USVString(name);
             return this[kState].filter((entry) => entry.name === name).map((entry) => entry.value);
@@ -38468,7 +38661,9 @@ ${error2.message}` : execaMessage;
               throw new TypeError("Illegal invocation");
             }
             if (arguments.length < 1) {
-              throw new TypeError(`Failed to execute 'has' on 'FormData': 1 arguments required, but only ${arguments.length} present.`);
+              throw new TypeError(
+                `Failed to execute 'has' on 'FormData': 1 arguments required, but only ${arguments.length} present.`
+              );
             }
             name = webidl.converters.USVString(name);
             return this[kState].findIndex((entry) => entry.name === name) !== -1;
@@ -38478,10 +38673,14 @@ ${error2.message}` : execaMessage;
               throw new TypeError("Illegal invocation");
             }
             if (arguments.length < 2) {
-              throw new TypeError(`Failed to execute 'set' on 'FormData': 2 arguments required, but only ${arguments.length} present.`);
+              throw new TypeError(
+                `Failed to execute 'set' on 'FormData': 2 arguments required, but only ${arguments.length} present.`
+              );
             }
             if (arguments.length === 3 && !isBlobLike(value)) {
-              throw new TypeError("Failed to execute 'set' on 'FormData': parameter 2 is not of type 'Blob'");
+              throw new TypeError(
+                "Failed to execute 'set' on 'FormData': parameter 2 is not of type 'Blob'"
+              );
             }
             name = webidl.converters.USVString(name);
             value = isBlobLike(value) ? webidl.converters.Blob(value, { strict: false }) : webidl.converters.USVString(value);
@@ -38505,29 +38704,42 @@ ${error2.message}` : execaMessage;
             if (!(this instanceof _FormData)) {
               throw new TypeError("Illegal invocation");
             }
-            return makeIterator(makeIterable(this[kState], "entries"), "FormData");
+            return makeIterator(
+              makeIterable(this[kState], "entries"),
+              "FormData"
+            );
           }
           keys() {
             if (!(this instanceof _FormData)) {
               throw new TypeError("Illegal invocation");
             }
-            return makeIterator(makeIterable(this[kState], "keys"), "FormData");
+            return makeIterator(
+              makeIterable(this[kState], "keys"),
+              "FormData"
+            );
           }
           values() {
             if (!(this instanceof _FormData)) {
               throw new TypeError("Illegal invocation");
             }
-            return makeIterator(makeIterable(this[kState], "values"), "FormData");
+            return makeIterator(
+              makeIterable(this[kState], "values"),
+              "FormData"
+            );
           }
           forEach(callbackFn, thisArg = globalThis) {
             if (!(this instanceof _FormData)) {
               throw new TypeError("Illegal invocation");
             }
             if (arguments.length < 1) {
-              throw new TypeError(`Failed to execute 'forEach' on 'FormData': 1 argument required, but only ${arguments.length} present.`);
+              throw new TypeError(
+                `Failed to execute 'forEach' on 'FormData': 1 argument required, but only ${arguments.length} present.`
+              );
             }
             if (typeof callbackFn !== "function") {
-              throw new TypeError("Failed to execute 'forEach' on 'FormData': parameter 1 is not of type 'Function'.");
+              throw new TypeError(
+                "Failed to execute 'forEach' on 'FormData': parameter 1 is not of type 'Function'."
+              );
             }
             for (const [key, value] of this) {
               callbackFn.apply(thisArg, [value, key, this]);
@@ -38569,7 +38781,7 @@ ${error2.message}` : execaMessage;
       }
     });
     var require_body = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/fetch/body.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/fetch/body.js"(exports2, module2) {
         "use strict";
         var util2 = require_util2();
         var { ReadableStreamFrom, toUSVString, isBlobLike } = require_util3();
@@ -38600,11 +38812,10 @@ ${error2.message}` : execaMessage;
           } else if (object instanceof URLSearchParams) {
             source = object.toString();
             contentType = "application/x-www-form-urlencoded;charset=UTF-8";
-          } else if (isArrayBuffer(object) || ArrayBuffer.isView(object)) {
-            if (object instanceof DataView) {
-              object = object.buffer;
-            }
-            source = new Uint8Array(object);
+          } else if (isArrayBuffer(object)) {
+            source = new Uint8Array(object.slice());
+          } else if (ArrayBuffer.isView(object)) {
+            source = new Uint8Array(object.buffer.slice(object.byteOffset, object.byteOffset + object.byteLength));
           } else if (util2.isFormDataLike(object)) {
             const boundary = "----formdata-undici-" + Math.random();
             const prefix = `--${boundary}\r
@@ -38615,15 +38826,19 @@ Content-Disposition: form-data`;
               const enc = new TextEncoder();
               for (const [name, value] of object2) {
                 if (typeof value === "string") {
-                  yield enc.encode(prefix + `; name="${escape2(normalizeLinefeeds(name))}"\r
+                  yield enc.encode(
+                    prefix + `; name="${escape2(normalizeLinefeeds(name))}"\r
 \r
 ${normalizeLinefeeds(value)}\r
-`);
+`
+                  );
                 } else {
-                  yield enc.encode(prefix + `; name="${escape2(normalizeLinefeeds(name))}"` + (value.name ? `; filename="${escape2(value.name)}"` : "") + `\r
+                  yield enc.encode(
+                    prefix + `; name="${escape2(normalizeLinefeeds(name))}"` + (value.name ? `; filename="${escape2(value.name)}"` : "") + `\r
 Content-Type: ${value.type || "application/octet-stream"}\r
 \r
-`);
+`
+                  );
                   yield* blobGen(value);
                   yield enc.encode("\r\n");
                 }
@@ -38644,7 +38859,9 @@ Content-Type: ${value.type || "application/octet-stream"}\r
               throw new TypeError("keepalive");
             }
             if (util2.isDisturbed(object) || object.locked) {
-              throw new TypeError("Response body object should not be disturbed or locked");
+              throw new TypeError(
+                "Response body object should not be disturbed or locked"
+              );
             }
             stream2 = object instanceof ReadableStream ? object : ReadableStreamFrom(object);
           } else {
@@ -38680,7 +38897,9 @@ Content-Type: ${value.type || "application/octet-stream"}\r
           } else if (!stream2) {
             stream2 = new ReadableStream({
               async pull(controller) {
-                controller.enqueue(typeof source === "string" ? new TextEncoder().encode(source) : source);
+                controller.enqueue(
+                  typeof source === "string" ? new TextEncoder().encode(source) : source
+                );
                 queueMicrotask(() => {
                   controller.close();
                 });
@@ -38811,7 +39030,16 @@ Content-Type: ${value.type || "application/octet-stream"}\r
               } else if (/application\/x-www-form-urlencoded/.test(contentType)) {
                 let entries;
                 try {
-                  entries = new URLSearchParams(await this.text());
+                  let text = "";
+                  const textDecoder = new TextDecoder("utf-8", { ignoreBOM: true });
+                  for await (const chunk of consumeBody(this[kState].body)) {
+                    if (!isUint8Array(chunk)) {
+                      throw new TypeError("Expected Uint8Array chunk");
+                    }
+                    text += textDecoder.decode(chunk, { stream: true });
+                  }
+                  text += textDecoder.decode();
+                  entries = new URLSearchParams(text);
                 } catch (err) {
                   throw Object.assign(new TypeError(), { cause: err });
                 }
@@ -38865,7 +39093,7 @@ Content-Type: ${value.type || "application/octet-stream"}\r
       }
     });
     var require_request = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/core/request.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/core/request.js"(exports2, module2) {
         "use strict";
         var {
           InvalidArgumentError,
@@ -39079,7 +39307,7 @@ Content-Type: ${value.type || "application/octet-stream"}\r
             if (!Number.isFinite(request2.contentLength)) {
               throw new InvalidArgumentError("invalid content-length header");
             }
-          } else if (request2.contentType === null && key.length === 12 && key.toLowerCase() === "content-type") {
+          } else if (request2.contentType === null && key.length === 12 && key.toLowerCase() === "content-type" && headerCharRegex.exec(val) === null) {
             request2.contentType = val;
             request2.headers += `${key}: ${val}\r
 `;
@@ -39107,7 +39335,7 @@ Content-Type: ${value.type || "application/octet-stream"}\r
       }
     });
     var require_dispatcher = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/dispatcher.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/dispatcher.js"(exports2, module2) {
         "use strict";
         var EventEmitter4 = require("events");
         var Dispatcher = class extends EventEmitter4 {
@@ -39126,7 +39354,7 @@ Content-Type: ${value.type || "application/octet-stream"}\r
       }
     });
     var require_dispatcher_base = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/dispatcher-base.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/dispatcher-base.js"(exports2, module2) {
         "use strict";
         var Dispatcher = require_dispatcher();
         var {
@@ -39257,7 +39485,7 @@ Content-Type: ${value.type || "application/octet-stream"}\r
       }
     });
     var require_redirect = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/handler/redirect.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/handler/redirect.js"(exports2, module2) {
         "use strict";
         var util2 = require_util2();
         var { kBodyUsed } = require_symbols();
@@ -39399,7 +39627,7 @@ Content-Type: ${value.type || "application/octet-stream"}\r
       }
     });
     var require_connect = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/core/connect.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/core/connect.js"(exports2, module2) {
         "use strict";
         var net2 = require("net");
         var assert = require("assert");
@@ -39456,16 +39684,16 @@ Content-Type: ${value.type || "application/octet-stream"}\r
                 host: hostname3
               });
             }
-            const timeoutId = timeout ? setTimeout(onConnectTimeout, timeout, socket) : null;
+            const cancelTimeout = setupTimeout(() => onConnectTimeout(socket), timeout);
             socket.setNoDelay(true).once(protocol === "https:" ? "secureConnect" : "connect", function() {
-              clearTimeout(timeoutId);
+              cancelTimeout();
               if (callback) {
                 const cb = callback;
                 callback = null;
                 cb(null, this);
               }
             }).on("error", function(err) {
-              clearTimeout(timeoutId);
+              cancelTimeout();
               if (callback) {
                 const cb = callback;
                 callback = null;
@@ -39476,6 +39704,29 @@ Content-Type: ${value.type || "application/octet-stream"}\r
           }, "connect");
         }
         __name(buildConnector, "buildConnector");
+        function setupTimeout(onConnectTimeout2, timeout) {
+          if (!timeout) {
+            return () => {
+            };
+          }
+          let s1 = null;
+          let s2 = null;
+          const timeoutId = setTimeout(() => {
+            s1 = setImmediate(() => {
+              if (process.platform === "win32") {
+                s2 = setImmediate(() => onConnectTimeout2());
+              } else {
+                onConnectTimeout2();
+              }
+            });
+          }, timeout);
+          return () => {
+            clearTimeout(timeoutId);
+            clearImmediate(s1);
+            clearImmediate(s2);
+          };
+        }
+        __name(setupTimeout, "setupTimeout");
         function onConnectTimeout(socket) {
           util2.destroy(socket, new ConnectTimeoutError());
         }
@@ -39484,7 +39735,7 @@ Content-Type: ${value.type || "application/octet-stream"}\r
       }
     });
     var require_utils = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/llhttp/utils.js"(exports2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/llhttp/utils.js"(exports2) {
         "use strict";
         Object.defineProperty(exports2, "__esModule", { value: true });
         exports2.enumToMap = void 0;
@@ -39503,7 +39754,7 @@ Content-Type: ${value.type || "application/octet-stream"}\r
       }
     });
     var require_constants2 = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/llhttp/constants.js"(exports2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/llhttp/constants.js"(exports2) {
         "use strict";
         Object.defineProperty(exports2, "__esModule", { value: true });
         exports2.SPECIAL_HEADERS = exports2.HEADER_STATE = exports2.MINOR = exports2.MAJOR = exports2.CONNECTION_TOKEN_CHARS = exports2.HEADER_CHARS = exports2.TOKEN = exports2.STRICT_TOKEN = exports2.HEX = exports2.URL_CHAR = exports2.STRICT_URL_CHAR = exports2.USERINFO_CHARS = exports2.MARK = exports2.ALPHANUM = exports2.NUM = exports2.HEX_MAP = exports2.NUM_MAP = exports2.ALPHA = exports2.FINISH = exports2.H_METHOD_MAP = exports2.METHOD_MAP = exports2.METHODS_RTSP = exports2.METHODS_ICE = exports2.METHODS_HTTP = exports2.METHODS = exports2.LENIENT_FLAGS = exports2.FLAGS = exports2.TYPE = exports2.ERROR = void 0;
@@ -39820,17 +40071,17 @@ Content-Type: ${value.type || "application/octet-stream"}\r
       }
     });
     var require_llhttp_wasm = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/llhttp/llhttp.wasm.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/llhttp/llhttp.wasm.js"(exports2, module2) {
         module2.exports = "AGFzbQEAAAABMAhgAX8Bf2ADf39/AX9gBH9/f38Bf2AAAGADf39/AGABfwBgAn9/AGAGf39/f39/AALLAQgDZW52GHdhc21fb25faGVhZGVyc19jb21wbGV0ZQACA2VudhV3YXNtX29uX21lc3NhZ2VfYmVnaW4AAANlbnYLd2FzbV9vbl91cmwAAQNlbnYOd2FzbV9vbl9zdGF0dXMAAQNlbnYUd2FzbV9vbl9oZWFkZXJfZmllbGQAAQNlbnYUd2FzbV9vbl9oZWFkZXJfdmFsdWUAAQNlbnYMd2FzbV9vbl9ib2R5AAEDZW52GHdhc21fb25fbWVzc2FnZV9jb21wbGV0ZQAAAzk4AwMEAAAFAAAAAAAABQEFAAUFBQAABgAAAAYGAQEBAQEBAQEBAQEBAQEBAQABAAABAQcAAAUFAAMEBQFwAQ4OBQMBAAIGCAF/AUGAuAQLB/UEHwZtZW1vcnkCAAtfaW5pdGlhbGl6ZQAJGV9faW5kaXJlY3RfZnVuY3Rpb25fdGFibGUBAAtsbGh0dHBfaW5pdAAKGGxsaHR0cF9zaG91bGRfa2VlcF9hbGl2ZQA1DGxsaHR0cF9hbGxvYwAMBm1hbGxvYwA6C2xsaHR0cF9mcmVlAA0EZnJlZQA8D2xsaHR0cF9nZXRfdHlwZQAOFWxsaHR0cF9nZXRfaHR0cF9tYWpvcgAPFWxsaHR0cF9nZXRfaHR0cF9taW5vcgAQEWxsaHR0cF9nZXRfbWV0aG9kABEWbGxodHRwX2dldF9zdGF0dXNfY29kZQASEmxsaHR0cF9nZXRfdXBncmFkZQATDGxsaHR0cF9yZXNldAAUDmxsaHR0cF9leGVjdXRlABUUbGxodHRwX3NldHRpbmdzX2luaXQAFg1sbGh0dHBfZmluaXNoABcMbGxodHRwX3BhdXNlABgNbGxodHRwX3Jlc3VtZQAZG2xsaHR0cF9yZXN1bWVfYWZ0ZXJfdXBncmFkZQAaEGxsaHR0cF9nZXRfZXJybm8AGxdsbGh0dHBfZ2V0X2Vycm9yX3JlYXNvbgAcF2xsaHR0cF9zZXRfZXJyb3JfcmVhc29uAB0UbGxodHRwX2dldF9lcnJvcl9wb3MAHhFsbGh0dHBfZXJybm9fbmFtZQAfEmxsaHR0cF9tZXRob2RfbmFtZQAgGmxsaHR0cF9zZXRfbGVu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f2pB5ABJDQAgAEHMAUYNACAAQbACRg0AQQQhBSAEQYgEcUGABEYNAiAEQShxRQ0CC0EADwtBAEEDIAApAyBQGyEFCyAFC10BAn9BACEBAkAgAC0AKEEBRg0AIAAvATIiAkGcf2pB5ABJDQAgAkHMAUYNACACQbACRg0AIAAvATAiAEHAAHENAEEBIQEgAEGIBHFBgARGDQAgAEEocUUhAQsgAQuiAQEDfwJAAkACQCAALQAqRQ0AIAAtACtFDQBBACEDIAAvATAiBEECcUUNAQwCC0EAIQMgAC8BMCIEQQFxRQ0BC0EBIQMgAC0AKEEBRg0AIAAvATIiBUGcf2pB5ABJDQAgBUHMAUYNACAFQbACRg0AIARBwABxDQBBACEDIARBiARxQYAERg0AIARBKHFBAEchAwsgAEEAOwEwIABBADoALyADC5QBAQJ/AkACQAJAIAAtACpFDQAgAC0AK0UNAEEAIQEgAC8BMCICQQJxRQ0BDAILQQAhASAALwEwIgJBAXFFDQELQQEhASAALQAoQQFGDQAgAC8BMiIAQZx/akHkAEkNACAAQcwBRg0AIABBsAJGDQAgAkHAAHENAEEAIQEgAkGIBHFBgARGDQAgAkEocUEARyEBCyABC08AIABBGGpCADcDACAAQgA3AwAgAEEwakIANwMAIABBKGpCADcDACAAQSBqQgA3AwAgAEEQakIANwMAIABBCGpCADcDACAAQbwBNgIcQQALewEBfwJAIAAoAgwiAw0AAkAgACgCBEUNACAAIAE2AgQLAkAgACABIAIQuICAgAAiAw0AIAAoAgwPCyAAIAM2AhxBACEDIAAoAgQiAUUNACAAIAEgAiAAKAIIEYGAgIAAACIBRQ0AIAAgAjYCFCAAIAE2AgwgASEDCyADC9POAQMcfwN+BX8jgICAgABBEGsiAySAgICAACABIQQgASEFIAEhBiABIQcgASEIIAEhCSABIQogASELIAEhDCABIQ0gASEOIAEhDyABIRAgASERIAEhEiABIRMgASEUIAEhFSABIRYgASEXIAEhGCABIRkgASEaIAEhGyABIRwgASEdAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkAC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HgwTC0GZASEeDBILQZ0BIR4MEQtBmgEhHgwQC0EBIR4MDwtBmwEhHgwOC0GcASEeDA0LQZ4BIR4MDAtBoAEhHgwLC0GfASEeDAoLQaEBIR4MCQtBogEhHgwIC0GjASEeDAcLQaQBIR4MBgtBpQEhHgwFC0GmASEeDAQLQacBIR4MAwtBqAEhHgwCC0GpASEeDAELQa8BIR4LA0ACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkAC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AbsBuwG7AbsBuwG7AbsBuwG7AQG7AQsgCEEBaiEBQdQAIR4MmAILIAhBAWohAUHVACEeDJcCC0HnACEeIAEiIiACRg2mAiACICJrIAAoAgAiJmohIyAiIQggJiEBAkADQCAILQAAIAFB7bOAgABqLQAARw25ASABQQJGDQEgAUEBaiEBIAhBAWoiCCACRw0ACyAAICM2AgAMpwILIABBADYCACAiICZrQQNqIQFBECEeDLYBC0HoACEeIAEiIiACRg2lAiACICJrIAAoAgAiJmohIyAiIQggJiEBAkADQCAILQAAIAFB9rKAgABqLQAARw24ASABQQVGDQEgAUEBaiEBIAhBAWoiCCACRw0ACyAAICM2AgAMpgILIABBADYCACAiICZrQQZqIQFBFiEeDLUBC0HpACEeIAEiIiACRg2kAiACICJrIAAoAgAiJmohIyAiIQggJiEBAkADQCAILQAAIAFB/LKAgABqLQAARw23ASABQQNGDQEgAUEBaiEBIAhBAWoiCCACRw0ACyAAICM2AgAMpQILIABBADYCACAiICZrQQRqIQFBBSEeDLQBCwJAIAEiCCACRw0AQeoAIR4MpAILIAgtAABB2QBHDbUBIAhBAWohAUEIIR4MswELAkAgASIIIAJHDQBB6wAhHgyjAgsCQAJAIAgtAABBsn9qDgMAtgEBtgELIAhBAWohAUHZACEeDJMCCyAIQQFqIQFB2gAhHgySAgsCQCABIgggAkcNAEHsACEeDKICCwJAAkAgCC0AAEG4f2oOCAC1AbUBtQG1AbUBtQEBtQELIAhBAWohAUHYACEeDJICCyAIQQFqIQFB2wAhHgyRAgtB7QAhHiABIiIgAkYNoAIgAiAiayAAKAIAIiZqISMgIiEIICYhAQJAA0AgCC0AACABQYCzgIAAai0AAEcNswEgAUECRg0BIAFBAWohASAIQQFqIgggAkcNAAsgACAjNgIADKECC0EAIR4gAEEANgIAICIgJmtBA2ohAQywAQtB7gAhHiABIiIgAkYNnwIgAiAiayAAKAIAIiZqISMgIiEIICYhAQJAA0AgCC0AACABQYOzgIAAai0AAEcNsgEgAUEERg0BIAFBAWohASAIQQFqIgggAkcNAAsgACAjNgIADKACCyAAQQA2AgAgIiAma0EFaiEBQSMhHgyvAQsCQCABIgggAkcNAEHvACEeDJ8CCwJAAkAgCC0AAEG0f2oOCACyAbIBsgGyAbIBsgEBsgELIAhBAWohAUHdACEeDI8CCyAIQQFqIQFB3gAhHgyOAgsCQCABIgggAkcNAEHwACEeDJ4CCyAILQAAQcUARw2vASAIQQFqIQEM3gELQfEAIR4gASIiIAJGDZwCIAIgImsgACgCACImaiEjICIhCCAmIQECQANAIAgtAAAgAUGIs4CAAGotAABHDa8BIAFBA0YNASABQQFqIQEgCEEBaiIIIAJHDQALIAAgIzYCAAydAgsgAEEANgIAICIgJmtBBGohAUEtIR4MrAELQfIAIR4gASIiIAJGDZsCIAIgImsgACgCACImaiEjICIhCCAmIQECQANAIAgtAAAgAUHQs4CAAGotAABHDa4BIAFBCEYNASABQQFqIQEgCEEBaiIIIAJHDQALIAAgIzYCAAycAgsgAEEANgIAICIgJmtBCWohAUEpIR4MqwELAkAgASIBIAJHDQBB8wAhHgybAgtBASEeIAEtAABB3wBHDaoBIAFBAWohAQzcAQtB9AAhHiABIiIgAkYNmQIgAiAiayAAKAIAIiZqISMgIiEIICYhAQNAIAgtAAAgAUGMs4CAAGotAABHDasBIAFBAUYN9wEgAUEBaiEBIAhBAWoiCCACRw0ACyAAICM2AgAMmQILAkAgASIeIAJHDQBB9QAhHgyZAgsgAiAeayAAKAIAIiJqISYgHiEIICIhAQJAA0AgCC0AACABQY6zgIAAai0AAEcNqwEgAUECRg0BIAFBAWohASAIQQFqIgggAkcNAAsgACAmNgIAQfUAIR4MmQILIABBADYCACAeICJrQQNqIQFBAiEeDKgBCwJAIAEiHiACRw0AQfYAIR4MmAILIAIgHmsgACgCACIiaiEmIB4hCCAiIQECQANAIAgtAAAgAUHws4CAAGotAABHDaoBIAFBAUYNASABQQFqIQEgCEEBaiIIIAJHDQALIAAgJjYCAEH2ACEeDJgCCyAAQQA2AgAgHiAia0ECaiEBQR8hHgynAQsCQCABIh4gAkcNAEH3ACEeDJcCCyACIB5rIAAoAgAiImohJiAeIQggIiEBAkADQCAILQAAIAFB8rOAgABqLQAARw2pASABQQFGDQEgAUEBaiEBIAhBAWoiCCACRw0ACyAAICY2AgBB9wAhHgyXAgsgAEEANgIAIB4gImtBAmohAUEJIR4MpgELAkAgASIIIAJHDQBB+AAhHgyWAgsCQAJAIAgtAABBt39qDgcAqQGpAakBqQGpAQGpAQsgCEEBaiEBQeYAIR4MhgILIAhBAWohAUHnACEeDIUCCwJAIAEiHiACRw0AQfkAIR4MlQILIAIgHmsgACgCACIiaiEmIB4hCCAiIQECQANAIAgtAAAgAUGRs4CAAGotAABHDacBIAFBBUYNASABQQFqIQEgCEEBaiIIIAJHDQALIAAgJjYCAEH5ACEeDJUCCyAAQQA2AgAgHiAia0EGaiEBQRghHgykAQsCQCABIh4gAkcNAEH6ACEeDJQCCyACIB5rIAAoAgAiImohJiAeIQggIiEBAkADQCAILQAAIAFBl7OAgABqLQAARw2mASABQQJGDQEgAUEBaiEBIAhBAWoiCCACRw0ACyAAICY2AgBB+gAhHgyUAgsgAEEANgIAIB4gImtBA2ohAUEXIR4MowELAkAgASIeIAJHDQBB+wAhHgyTAgsgAiAeayAAKAIAIiJqISYgHiEIICIhAQJAA0AgCC0AACABQZqzgIAAai0AAEcNpQEgAUEGRg0BIAFBAWohASAIQQFqIgggAkcNAAsgACAmNgIAQfsAIR4MkwILIABBADYCACAeICJrQQdqIQFBFSEeDKIBCwJAIAEiHiACRw0AQfwAIR4MkgILIAIgHmsgACgCACIiaiEmIB4hCCAiIQECQANAIAgtAAAgAUGhs4CAAGotAABHDaQBIAFBBUYNASABQQFqIQEgCEEBaiIIIAJHDQALIAAgJjYCAEH8ACEeDJICCyAAQQA2AgAgHiAia0EGaiEBQR4hHgyhAQsCQCABIgggAkcNAEH9ACEeDJECCyAILQAAQcwARw2iASAIQQFqIQFBCiEeDKABCwJAIAEiCCACRw0AQf4AIR4MkAILAkACQCAILQAAQb9/ag4PAKMBowGjAaMBowGjAaMBowGjAaMBowGjAaMBAaMBCyAIQQFqIQFB7AAhHgyAAgsgCEEBaiEBQe0AIR4M/wELAkAgASIIIAJHDQBB/wAhHgyPAgsCQAJAIAgtAABBv39qDgMAogEBogELIAhBAWohAUHrACEeDP8BCyAIQQFqIQFB7gAhHgz+AQsCQCABIh4gAkcNAEGAASEeDI4CCyACIB5rIAAoAgAiImohJiAeIQggIiEBAkADQCAILQAAIAFBp7OAgABqLQAARw2gASABQQFGDQEgAUEBaiEBIAhBAWoiCCACRw0ACyAAICY2AgBBgAEhHgyOAgsgAEEANgIAIB4gImtBAmohAUELIR4MnQELAkAgASIIIAJHDQBBgQEhHgyNAgsCQAJAAkACQCAILQAAQVNqDiMAogGiAaIBogGiAaIBogGiAaIBogGiAaIBogGiAaIBogGiAaIBogGiAaIBogGiAQGiAaIBogGiAaIBAqIBogGiAQOiAQsgCEEBaiEBQekAIR4M/wELIAhBAWohAUHqACEeDP4BCyAIQQFqIQFB7wAhHgz9AQsgCEEBaiEBQfAAIR4M/AELAkAgASIeIAJHDQBBggEhHgyMAgsgAiAeayAAKAIAIiJqISYgHiEIICIhAQJAA0AgCC0AACABQamzgIAAai0AAEcNngEgAUEERg0BIAFBAWohASAIQQFqIgggAkcNAAsgACAmNgIAQYIBIR4MjAILIABBADYCACAeICJrQQVqIQFBGSEeDJsBCwJAIAEiIiACRw0AQYMBIR4MiwILIAIgImsgACgCACImaiEeICIhCCAmIQECQANAIAgtAAAgAUGus4CAAGotAABHDZ0BIAFBBUYNASABQQFqIQEgCEEBaiIIIAJHDQALIAAgHjYCAEGDASEeDIsCCyAAQQA2AgBBBiEeICIgJmtBBmohAQyaAQsCQCABIh4gAkcNAEGEASEeDIoCCyACIB5rIAAoAgAiImohJiAeIQggIiEBAkADQCAILQAAIAFBtLOAgABqLQAARw2cASABQQFGDQEgAUEBaiEBIAhBAWoiCCACRw0ACyAAICY2AgBBhAEhHgyKAgsgAEEANgIAIB4gImtBAmohAUEcIR4MmQELAkAgASIeIAJHDQBBhQEhHgyJAgsgAiAeayAAKAIAIiJqISYgHiEIICIhAQJAA0AgCC0AACABQbazgIAAai0AAEcNmwEgAUEBRg0BIAFBAWohASAIQQFqIgggAkcNAAsgACAmNgIAQYUBIR4MiQILIABBADYCACAeICJrQQJqIQFBJyEeDJgBCwJAIAEiCCACRw0AQYYBIR4MiAILAkACQCAILQAAQax/ag4CAAGbAQsgCEEBaiEBQfQAIR4M+AELIAhBAWohAUH1ACEeDPcBCwJAIAEiHiAC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IiEBDDELIABBxAA2AhwgACAiNgIUIAAgATYCDEEAIR4MeQsgACgCBCEBIABBADYCBAJAIAAgASAiEKSAgIAAIgENACAiIQEMMQsgAEHFADYCHCAAICI2AhQgACABNgIMQQAhHgx4CyAAKAIEIQEgAEEANgIEAkAgACABICIQpICAgAAiAQ0AICIhAQw1CyAAQdAANgIcIAAgIjYCFCAAIAE2AgxBACEeDHcLIABBADYCHCAAICI2AhQgAEHQjICAADYCECAAQQc2AgxBACEeDHYLIABBADYCHCAAIAE2AhQgAEHQjICAADYCECAAQQc2AgxBACEeDHULQQAhHiAAQQA2AhwgACAiNgIUIABBv5SAgAA2AhAgAEEHNgIMDHQLIABBADYCHCAAICI2AhQgAEG/lICAADYCECAAQQc2AgxBACEeDHMLIABBADYCHCAAICI2AhQgAEHUjoCAADYCECAAQQc2AgxBACEeDHILIABBADYCHCAAIAE2AhQgAEHBk4CAADYCECAAQQY2AgxBACEeDHELIABBADYCACAiICZrQQZqIQFBJCEeCyAAIB46ACkgASEBDE4LIABBADYCAAtBACEeIABBADYCHCAAIAg2AhQgAEGklICAADYCECAAQQY2AgwMbQsgACgCBCETIABBADYCBCAAIBMgHhCmgICAACITDQEgHkEBaiETC0GdASEeDFsLIABBqgE2AhwgACATNgIMIAAgHkEBajYCFEEAIR4MagsgACgCBCEUIABBADYCBCAAIBQgHhCmgICAACIUDQEgHkEBaiEUC0GaASEeDFgLIABBqwE2AhwgACAUNgIMIAAgHkEBajYCFEEAIR4MZwsgAEEANgIcIAAgFTYCFCAAQfOKgIAANgIQIABBDTYCDEEAIR4MZgsgAEEANgIcIAAgFjYCFCAAQc6NgIAANgIQIABBCTYCDEEAIR4MZQtBASEeCyAAIB46ACsgF0EBaiEWDC4LIABBADYCHCAAIBc2AhQgAEGijYCAADYCECAAQQk2AgxBACEeDGILIABBADYCHCAAIBg2AhQgAEHFioCAADYCECAAQQk2AgxBACEeDGELQQEhHgsgACAeOgAqIBlBAWohGAwsCyAAQQA2AhwgACAZNgIUIABBuI2AgAA2AhAgAEEJNgIMQQAhHgxeCyAAQQA2AhwgACAZNgIUIABB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QR9GG3QhAiAEKAIAIQYCQANAIAYiBCgCBEF4cSAARg0BIAJBHXYhBiACQQF0IQIgBCAGQQRxakEQaiIDKAIAIgYNAAsgAyABNgIAIAFBGGogBDYCACABIAE2AgwgASABNgIIDAELIAQoAggiACABNgIMIAQgATYCCCABQRhqQQA2AgAgASAENgIMIAEgADYCCAtBAEEAKAKotICAAEF/aiIBQX8gARs2Aqi0gIAACwtOAAJAIAANAD8AQRB0DwsCQCAAQf//A3ENACAAQX9MDQACQCAAQRB2QAAiAEF/Rw0AQQBBMDYC+LeAgABBfw8LIABBEHQPCxC/gICAAAALBAAAAAsLjiwBAEGACAuGLAEAAAACAAAAAwAAAAQAAAAFAAAABgAAAAcAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASW52YWxpZCBjaGFyIGluIHVybCBxdWVyeQBTcGFuIGNhbGxiYWNrIGVycm9yIGluIG9uX2JvZHkAQ29udGVudC1MZW5ndGggb3ZlcmZsb3cAQ2h1bmsgc2l6ZSBvdmVyZmxvdwBSZXNwb25zZSBvdmVyZmxvdwBJbnZhbGlkIG1ldGhvZCBmb3IgSFRUUC94LnggcmVxdWVzdABJbnZhbGlkIG1ldGhvZCBmb3IgUlRTUC94LnggcmVxdWVzdABFeHBlY3RlZCBTT1VSQ0UgbWV0aG9kIGZvciBJQ0UveC54IHJlcXVlc3QASW52YWxpZCBjaGFyIGluIHVybCBmcmFnbWVudCBzdGFydABFeHBlY3RlZCBkb3QAU3BhbiBjYWxsYmFjayBlcnJvciBpbiBvbl9zdGF0dXMASW52YWxpZCByZXNwb25zZSBzdGF0dXMASW52YWxpZCBjaGFyYWN0ZXIgaW4gY2h1bmsgcGFyYW1ldGVycwBVc2VyIGNhbGxiYWNrIGVycm9yAGBvbl9jaHVua19oZWFkZXJgIGNhbGxiYWNrIGVycm9yAGBvbl9tZXNzYWdlX2JlZ2luYCBjYWxsYmFjayBlcnJvcgBgb25fY2h1bmtfY29tcGxldGVgIGNhbGxiYWNrIGVycm9yAGBvbl9tZXNzYWdlX2NvbXBsZXRlYCBjYWxsYmFjayBlcnJvcgBVbmV4cGVjdGVkIGNoYXIgaW4gdXJsIHNlcnZlcgBJbnZhbGlkIGhlYWRlciB2YWx1ZSBjaGFyAEludmFsaWQgaGVhZGVyIGZpZWxkIGNoYXIASW52YWxpZCBtaW5vciB2ZXJzaW9uAEludmFsaWQgbWFqb3IgdmVyc2lvbgBFeHBlY3RlZCBzcGFjZSBhZnRlciB2ZXJzaW9uAEV4cGVjdGVkIENSTEYgYWZ0ZXIgdmVyc2lvbgBJbnZhbGlkIGhlYWRlciB0b2tlbgBTcGFuIGNhbGxiYWNrIGVycm9yIGluIG9uX3VybABJbnZhbGlkIGNoYXJhY3RlcnMgaW4gdXJsAFVuZXhwZWN0ZWQgc3RhcnQgY2hhciBpbiB1cmwARG91YmxlIEAgaW4gdXJsAEVtcHR5IENvbnRlbnQtTGVuZ3RoAEludmFsaWQgY2hhcmFjdGVyIGluIENvbnRlbnQtTGVuZ3RoAER1cGxpY2F0ZSBDb250ZW50LUxlbmd0aABJbnZhbGlkIGNoYXIgaW4gdXJsIHBhdGgAQ29udGVudC1MZW5ndGggY2FuJ3QgYmUgcHJlc2VudCB3aXRoIFRyYW5zZmVyLUVuY29kaW5nAEludmFsaWQgY2hhcmFjdGVyIGluIGNodW5rIHNpemUAU3BhbiBjYWxsYmFjayBlcnJvciBpbiBvbl9oZWFkZXJfdmFsdWUATWlzc2luZyBleHBlY3RlZCBDUiBhZnRlciBoZWFkZXIgdmFsdWUATWlzc2luZyBleHBlY3RlZCBMRiBhZnRlciBoZWFkZXIgdmFsdWUASW52YWxpZCBgVHJhbnNmZXItRW5jb2RpbmdgIGhlYWRlciB2YWx1ZQBQYXVzZWQgYnkgb25faGVhZGVyc19jb21wbGV0ZQBJbnZhbGlkIEVPRiBzdGF0ZQBvbl9jaHVua19oZWFkZXIgcGF1c2UAb25fbWVzc2FnZV9iZWdpbiBwYXVzZQBvbl9jaHVua19jb21wbGV0ZSBwYXVzZQBvbl9tZXNzYWdlX2NvbXBsZXRlIHBhdXNlAFBhdXNlIG9uIENPTk5FQ1QvVXBncmFkZQBQYXVzZSBvbiBQUkkvVXBncmFkZQBFeHBlY3RlZCBIVFRQLzIgQ29ubmVjdGlvbiBQcmVmYWNlAEV4cGVjdGVkIHNwYWNlIGFmdGVyIG1ldGhvZABTcGFuIGNhbGxiYWNrIGVycm9yIGluIG9uX2hlYWRlcl9maWVsZABQYXVzZWQASW52YWxpZCB3b3JkIGVuY291bnRlcmVkAEludmFsaWQgbWV0aG9kIGVuY291bnRlcmVkAFVuZXhwZWN0ZWQgY2hhciBpbiB1cmwgc2NoZW1hAFJlcXVlc3QgaGFzIGludmFsaWQgYFRyYW5zZmVyLUVuY29kaW5nYABNS0FDVElWSVRZAENPUFkATk9USUZZAFBMQVkAUFVUAENIRUNLT1VUAFBPU1QAUkVQT1JUAEhQRV9JTlZBTElEX0NPTlNUQU5UAEdFVABIUEVfU1RSSUNUAFJFRElSRUNUAENPTk5FQ1QASFBFX0lOVkFMSURfU1RBVFVTAE9QVElPTlMAU0VUX1BBUkFNRVRFUgBHRVRfUEFSQU1FVEVSAEhQRV9VU0VSAEhQRV9DQl9DSFVOS19IRUFERVIATUtDQUxFTkRBUgBTRVRVUABURUFSRE9XTgBIUEVfQ0xPU0VEX0NPTk5FQ1RJT04ASFBFX0lOVkFMSURfVkVSU0lPTgBIUEVfQ0JfTUVTU0FHRV9CRUdJTgBIUEVfSU5WQUxJRF9IRUFERVJfVE9LRU4ASFBFX0lOVkFMSURfVVJMAE1LQ09MAEFDTABIUEVfSU5URVJOQUwASFBFX09LAFVOTElOSwBVTkxPQ0sAUFJJAEhQRV9JTlZBTElEX0NPTlRFTlRfTEVOR1RIAEhQRV9VTkVYUEVDVEVEX0NPTlRFTlRfTEVOR1RIAEZMVVNIAFBST1BQQVRDSABNLVNFQVJDSABIUEVfSU5WQUxJRF9UUkFOU0ZFUl9FTkNPRElORwBFeHBlY3RlZCBDUkxGAEhQRV9JTlZBTElEX0NIVU5LX1NJWkUATU9WRQBIUEVfQ0JfSEVBREVSU19DT01QTEVURQBIUEVfQ0JfQ0hVTktfQ09NUExFVEUASFBFX0NCX01FU1NBR0VfQ09NUExFVEUAREVMRVRFAEhQRV9JTlZBTElEX0VPRl9TVEFURQBQQVVTRQBQVVJHRQBNRVJHRQBIUEVfUEFVU0VEX1VQR1JBREUASFBFX1BBVVNFRF9IMl9VUEdSQURFAFNPVVJDRQBBTk5PVU5DRQBUUkFDRQBERVNDUklCRQBVTlNVQlNDUklCRQBSRUNPUkQASFBFX0lOVkFMSURfTUVUSE9EAFBST1BGSU5EAFVO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AAAAAAAAAAAAAAAEAQEFAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQABAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQAAAAAAAAAAAAEAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQABAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEAAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEAAAAAAAAAAAAAAQAAAgAAAAAAAAAAAAAAAAAAAAAAAAMEAAAEBAQEBAQEBAQEBAUEBAQEBAQEBAQEBAQABAAGBwQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAAEAAQABAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAEAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAADAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwAAAAAAAAMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAABAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAIAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMAAAAAAAADAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABOT1VOQ0VFQ0tPVVRORUNURVRFQ1JJQkVMVVNIRVRFQURTRUFSQ0hSR0VDVElWSVRZTEVOREFSVkVPVElGWVBUSU9OU0NIU0VBWVNUQVRDSEdFT1JESVJFQ1RPUlRSQ0hQQVJBTUVURVJVUkNFQlNDUklCRUFSRE9XTkFDRUlORE5LQ0tVQlNDUklCRUhUVFAvQURUUC8=";
       }
     });
     var require_llhttp_simd_wasm = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/llhttp/llhttp_simd.wasm.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/llhttp/llhttp_simd.wasm.js"(exports2, module2) {
         module2.exports = "AGFzbQEAAAABMAhgAX8Bf2ADf39/AX9gBH9/f38Bf2AAAGADf39/AGABfwBgAn9/AGAGf39/f39/AALLAQgDZW52GHdhc21fb25faGVhZGVyc19jb21wbGV0ZQACA2VudhV3YXNtX29uX21lc3NhZ2VfYmVnaW4AAANlbnYLd2FzbV9vbl91cmwAAQNlbnYOd2FzbV9vbl9zdGF0dXMAAQNlbnYUd2FzbV9vbl9oZWFkZXJfZmllbGQAAQNlbnYUd2FzbV9vbl9oZWFkZXJfdmFsdWUAAQNlbnYMd2FzbV9vbl9ib2R5AAEDZW52GHdhc21fb25fbWVzc2FnZV9jb21wbGV0ZQAAAzk4AwMEAAAFAAAAAAAABQEFAAUFBQAABgAAAAYGAQEBAQEBAQEBAQEBAQEBAQABAAABAQcAAAUFAAMEBQFwAQ4OBQMBAAIGCAF/AUGAuAQLB/UEHwZtZW1vcnkCAAtfaW5pdGlhbGl6ZQAJGV9faW5kaXJlY3RfZnVuY3Rpb25fdGFibGUBAAtsbGh0dHBfaW5pdAAKGGxsaHR0cF9zaG91bGRfa2VlcF9hbGl2ZQA1DGxsaHR0cF9hbGxvYwAMBm1hbGxvYwA6C2xsaHR0cF9mcmVlAA0EZnJlZQA8D2xsaHR0cF9nZXRfdHlwZQAOFWxsaHR0cF9nZXRfaHR0cF9tYWpvcgAPFWxsaHR0cF9nZXRfaHR0cF9taW5vcgAQEWxsaHR0cF9nZXRfbWV0aG9kABEWbGxodHRwX2dldF9zdGF0dXNfY29kZQASEmxsaHR0cF9nZXRfdXBncmFkZQATDGxsaHR0cF9yZXNldAAUDmxsaHR0cF9leGVjdXRlABUUbGxodHRwX3NldHRpbmdzX2luaXQAFg1sbGh0dHBfZmluaXNoABcMbGxodHRwX3BhdXNlABgNbGxodHRwX3Jlc3VtZQAZG2xsaHR0cF9yZXN1bWVfYWZ0ZXJfdXBncmFkZQAaEGxsaHR0cF9nZXRfZXJybm8AGxdsbGh0dHBfZ2V0X2Vycm9yX3JlYXNvbgAcF2xsaHR0cF9zZXRfZXJyb3JfcmVhc29uAB0UbGxodHRwX2dldF9lcnJvcl9wb3MAHhFsbGh0dHBfZXJybm9fbmFtZQAfEmxsaHR0cF9tZXRob2RfbmFtZQAgGmxsaHR0cF9zZXRfbGVu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ASEeDBELQZoBIR4MEAtBASEeDA8LQZsBIR4MDgtBnAEhHgwNC0GeASEeDAwLQaABIR4MCwtBnwEhHgwKC0GhASEeDAkLQaIBIR4MCAtBowEhHgwHC0GkASEeDAYLQaUBIR4MBQtBpgEhHgwEC0GnASEeDAMLQagBIR4MAgtBqQEhHgwBC0GvASEeCwNAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkAC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IAgtAABBtH9qDggAsgGyAbIBsgGyAbIBAbIBCyAIQQFqIQFB3QAhHgyPAgsgCEEBaiEBQd4AIR4MjgILAkAgASIIIAJHDQBB8AAhHgyeAgsgCC0AAEHFAEcNrwEgCEEBaiEBDN4BC0HxACEeIAEiIiACRg2cAiACICJrIAAoAgAiJmohIyAiIQggJiEBAkADQCAILQAAIAFBiLOAgABqLQAARw2vASABQQNGDQEgAUEBaiEBIAhBAWoiCCACRw0ACyAAICM2AgAMnQILIABBADYCACAiICZrQQRqIQFBLSEeDKwBC0HyACEeIAEiIiACRg2bAiACICJrIAAoAgAiJmohIyAiIQggJiEBAkADQCAILQAAIAFB0LOAgABqLQAARw2uASABQQhGDQEgAUEBaiEBIAhBAWoiCCACRw0ACyAAICM2AgAMnAILIABBADYCACAiICZrQQlqIQFBKSEeDKsBCwJAIAEiASACRw0AQfMAIR4MmwILQQEhHiABLQAAQd8ARw2qASABQQFqIQEM3AELQfQAIR4gASIiIAJGDZkCIAIgImsgACgCACImaiEjICIhCCAmIQEDQCAILQAAIAFBjLOAgABqLQAARw2rASABQQFGDfcBIAFBAWohASAIQQFqIgggAkcNAAsgACAjNgIADJkCCwJAIAEiHiACRw0AQfUAIR4MmQILIAIgHmsgACgCACIiaiEmIB4hCCAiIQECQANAIAgtAAAgAUGOs4CAAGotAABHDasBIAFBAkYNASABQQFqIQEgCEEBaiIIIAJHDQALIAAgJjYCAEH1ACEeDJkCCyAAQQA2AgAgHiAia0EDaiEBQQIhHgyoAQsCQCABIh4gAkcNAEH2ACEeDJgCCyACIB5rIAAoAgAiImohJiAeIQggIiEBAkADQCAILQAAIAFB8LOAgABqLQAARw2qASABQQFGDQEgAUEBaiEBIAhBAWoiCCACRw0ACyAAICY2AgBB9gAhHgyYAgsgAEEANgIAIB4gImtBAmohAUEfIR4MpwELAkAgASIeIAJHDQBB9wAhHgyXAgsgAiAeayAAKAIAIiJqISYgHiEIICIhAQJAA0AgCC0AACABQfKzgIAAai0AAEcNqQEgAUEBRg0BIAFBAWohASAIQQFqIgggAkcNAAsgACAmNgIAQfcAIR4MlwILIABBADYCACAeICJrQQJqIQFBCSEeDKYBCwJAIAEiCCACRw0AQfgAIR4MlgILAkACQCAILQAAQbd/ag4HAKkBqQGpAakBqQEBqQELIAhBAWohAUHmACEeDIYCCyAIQQFqIQFB5wAhHgyFAgsCQCABIh4gAkcNAEH5ACEeDJUCCyACIB5rIAAoAgAiImohJiAeIQggIiEBAkADQCAILQAAIAFBkbOAgABqLQAARw2nASABQQVGDQEgAUEBaiEBIAhBAWoiCCACRw0ACyAAICY2AgBB+QAhHgyVAgsgAEEANgIAIB4gImtBBmohAUEYIR4MpAELAkAgASIeIAJHDQBB+gAhHgyUAgsgAiAeayAAKAIAIiJqISYgHiEIICIhAQJAA0AgCC0AACABQZezgIAAai0AAEcNpgEgAUECRg0BIAFBAWohASAIQQFqIgggAkcNAAsgACAmNgIAQfoAIR4MlAILIABBADYCACAeICJrQQNqIQFBFyEeDKMBCwJAIAEiHiACRw0AQfsAIR4MkwILIAIgHmsgACgCACIiaiEmIB4hCCAiIQECQANAIAgtAAAgAUGas4CAAGotAABHDaUBIAFBBkYNASABQQFqIQEgCEEBaiIIIAJHDQALIAAgJjYCAEH7ACEeDJMCCyAAQQA2AgAgHiAia0EHaiEBQRUhHgyiAQsCQCABIh4gAkcNAEH8ACEeDJICCyACIB5rIAAoAgAiImohJiAeIQggIiEBAkADQCAILQAAIAFBobOAgABqLQAARw2kASABQQVGDQEgAUEBaiEBIAhBAWoiCCACRw0ACyAAICY2AgBB/AAhHgySAgsgAEEANgIAIB4gImtBBmohAUEeIR4MoQELAkAgASIIIAJHDQBB/QAhHgyRAgsgCC0AAEHMAEcNogEgCEEBaiEBQQohHgygAQsCQCABIgggAkcNAEH+ACEeDJACCwJAAkAgCC0AAEG/f2oODwCjAaMBowGjAaMBowGjAaMBowGjAaMBowGjAQGjAQsgCEEBaiEBQewAIR4MgAILIAhBAWohAUHtACEeDP8BCwJAIAEiCCACRw0AQf8AIR4MjwILAkACQCAILQAAQb9/ag4DAKIBAaIBCyAIQQFqIQFB6wAhHgz/AQsgCEEBaiEBQe4AIR4M/gELAkAgASIeIAJHDQBBgAEhHgyOAgsgAiAeayAAKAIAIiJqISYgHiEIICIhAQJAA0AgCC0AACABQaezgIAAai0AAEcNoAEgAUEBRg0BIAFBAWohASAIQQFqIgggAkcNAAsgACAmNgIAQYABIR4MjgILIABBADYCACAeICJrQQJqIQFBCyEeDJ0BCwJAIAEiCCACRw0AQYEBIR4MjQILAkACQAJAAkAgCC0AAEFTag4jAKIBogGiAaIBogGiAaIBogGiAaIBogGiAaIBogGiAaIBogGiAaIBogGiAaIBogEBogGiAaIBogGiAQKiAaIBogEDogELIAhBAWohAUHpACEeDP8BCyAIQQFqIQFB6gAhHgz+AQsgCEEBaiEBQe8AIR4M/QELIAhBAWohAUHwACEeDPwBCwJAIAEiHiACRw0AQYIBIR4MjAILIAIgHmsgACgCACIiaiEmIB4hCCAiIQECQANAIAgtAAAgAUGps4CAAGotAABHDZ4BIAFBBEYNASABQQFqIQEgCEEBaiIIIAJHDQALIAAgJjYCAEGCASEeDIwCCyAAQQA2AgAgHiAia0EFaiEBQRkhHgybAQsCQCABIiIgAkcNAEGDASEeDIsCCyACICJrIAAoAgAiJmohHiAiIQggJiEBAkADQCAILQAAIAFBrrOAgABqLQAARw2dASABQQVGDQEgAUEBaiEBIAhBAWoiCCACRw0ACyAAIB42AgBBgwEhHgyLAgsgAEEANgIAQQYhHiAiICZrQQZqIQEMmgELAkAgASIeIAJHDQBBhAEhHgyKAgsgAiAeayAAKAIAIiJqISYgHiEIICIhAQJAA0AgCC0AACABQbSzgIAAai0AAEcNnAEgAUEBRg0BIAFBAWohASAIQQFqIgggAkcNAAsgACAmNgIAQYQBIR4MigILIABBADYCACAeICJrQQJqIQFBHCEeDJkBCwJAIAEiHiACRw0AQYUBIR4MiQILIAIgHmsgACgCACIiaiEmIB4hCCAiIQECQANAIAgtAAAgAUG2s4CAAGotAABHDZsBIAFBAUYNASABQQFqIQEgCEEBaiIIIAJHDQALIAAgJjYCAEGFASEeDIkCCyAAQQA2AgAgHiAia0ECaiEBQSchHgyYAQsCQCABIgggAkcNAEGGASEeDIgCCwJAAkAgCC0AAEGsf2oOAgABmwELIAhBAWohAUH0ACEeDPgBCyAIQQFqIQFB9QAhHgz3AQsCQCABIh4gAkcNAEGHASEeDIcCCyACIB5rIAAoAgAiImohJiAeIQggIiEBAkADQCAILQAAIAFBuLOAgABqLQAARw2ZASABQQFGDQEgAUEBaiEBIAhBAWoiCCACRw0ACyAAICY2AgBBhwEhHgyHAgsgAEEANgIAIB4gImtBAmohAUEmIR4MlgELAkAgASIeIAJHDQBBiAEhHgyGAgsgAiAeayAAKAIAIiJqISYgHiEIICIhAQJAA0AgCC0AACABQbqzgIAAai0AAEcNmAEgAUEBRg0BIAFBAWohASAIQQFqIgggAkcNAAsgACAmNgIAQYgBIR4MhgILIABBADYCACAeICJrQQJqIQFBAyEeDJUBCwJAIAEiHiACRw0AQYkBIR4MhQILIAIgHmsgACgCACIiaiEmIB4hCCAiIQECQANAIAgtAAAgAUHts4CAAGotAABHDZcBIAFBAkYNASABQQFqIQEgCEEBaiIIIAJHDQALIAAgJjYCAEGJASEeDIUCCyAAQQA2AgAgHiAia0EDaiEBQQwhHgyUAQsCQCABIh4gAkcNAEGKASEeDIQCCyACIB5rIAAoAgAiImohJiAeIQggIiEBAkADQCAILQAAIAFBvLOAgABqLQAARw2WASABQQNGDQEgAUEBaiEBIAhBAWoiCCACRw0ACyAAICY2AgBBigEhHgyEAgsgAEEANgIAIB4gImtBBGohAUENIR4MkwELAkAgASIIIAJHDQBBiwEhHgyDAgsCQAJAIAgtAABBun9qDgsAlgGWAZYBlgGWAZYBlgGWAZYBAZYBCyAIQQFqIQFB+QAhHgzzAQsgCEEBaiEBQfoAIR4M8gELAkAgASIIIAJHDQBBjAEhHgyCAgsgCC0AAEHQAEcNkwEgCEEBaiEBDMQBCwJAIAEiCCACRw0AQY0BIR4MgQILAkACQCAILQAAQbd/ag4HAZQBlAGUAZQBlAEAlAELIAhBAWohAUH8ACEeDPEBCyAIQQFqIQFBIiEeDJABCwJAIAEiHiACRw0AQY4BIR4MgAILIAIgHmsgACgCACIiaiEmIB4hCCAiIQECQANAIAgtAAAgAUHAs4CAAGotAABHDZIBIAFBAUYNASABQQFqIQEgCEEBaiIIIAJHDQALIAAgJjYCAEGOASEeDIACCyAAQQA2AgAgHiAia0ECaiEBQR0hHgyPAQsCQCABIgggAkcNAEGPASEeDP8BCwJAAkAgCC0AAEGuf2oOAwCSAQGSAQsgCEEBaiEBQf4AIR4M7wELIAhBAWohAUEEIR4MjgELAkAgASIIIAJHDQBBkAEhHgz+AQsCQAJAAkACQAJAIAgtAABBv39qDhUAlAGUAZQBlAGUAZQBlAGUAZQBlAEBlAGUAQKUAZQBA5QBlAEElAELIAhBAWohAUH2ACEeDPEBCyAIQQFqIQFB9wAhHgzwAQsgCEEBaiEBQfgAIR4M7wELIAhBAWohAUH9ACEeDO4BCyAIQQFqIQFB/wAhHgztAQsCQCAEIAJHDQBBkQEhHgz9AQsgAiAEayAAKAIAIh5qISIgBCEIIB4hAQJAA0AgCC0AACABQe2zgIAAai0AAEcNjwEgAUECRg0BIAFBAWohASAIQQFqIgggAkcNAAsgACAiNgIAQZEBIR4M/QELIABBADYCACAEIB5rQQNqIQFBESEeDIwBCwJAIAUgAkcNAEGSASEeDPwBCyACIAVrIAAoAgAiHmohIiAFIQggHiEBAkADQCAILQAAIAFBwrOAgABqLQAARw2OASABQQJGDQEgAUEBaiEBIAhBAWoiCCACRw0ACyAAICI2AgBBkgEhHgz8AQsgAEEANgIAIAUgHmtBA2ohAUEsIR4MiwELAkAgBiACRw0AQZMBIR4M+wELIAIgBmsgACgCACIeaiEiIAYhCCAeIQECQANAIAgtAAAgAUHFs4CAAGotAABHDY0BIAFBBEYNASABQQFqIQEgCEEBaiIIIAJHDQALIAAgIjYCAEGTASEeDPsBCyAAQQA2AgAgBiAea0EFaiEBQSshHgyKAQsCQCAHIAJHDQBBlAEhHgz6AQsgAiAHayAAKAIAIh5qISIgByEIIB4hAQJAA0AgCC0AACABQcqzgIAAai0AAEcNjAEgAUECRg0BIAFBAWohASAIQQFqIgggAkcNAAsgACAiNgIAQZQBIR4M+gELIABBADYCACAHIB5rQQNqIQFBFCEeDIkBCwJAIAggAkcNAEGVASEeDPkBCwJAAkACQAJAIAgtAABBvn9qDg8AAQKOAY4BjgGOAY4BjgGOAY4BjgGOAY4BA44BCyAIQQFqIQRBgQEhHgzrAQsgCEEBaiEFQYIBIR4M6gELIAhBAWohBkGDASEeDOkBCyAIQQFqIQdBhAEhHgzoAQsCQCAIIAJHDQBBlgEhHgz4AQsgCC0AAEHFAEcNiQEgCEEBaiEIDLsBCwJAIAkgAkcNAEGXASEeDPcBCyACIAlrIAAoAgAiHmohIiAJIQggHiEBAkADQCAILQAAIAFBzbOAgABqLQAARw2JASABQQJGDQEgAUEBaiEBIAhBAWoiCCACRw0ACyAAICI2AgBBlwEhHgz3AQsgAEEANgIAIAkgHmtBA2ohAUEOIR4MhgELAkAgCCACRw0AQZgBIR4M9gELIAgtAABB0ABHDYcBIAhBAWohAUElIR4MhQELAkAgCiACRw0AQZkBIR4M9QELIAIgCmsgACgCACIeaiEiIAohCCAeIQECQANAIAgtAAAgAUHQs4CAAGotAABHDYcBIAFBCEYNASABQQFqIQEgCEEBaiIIIAJHDQALIAAgIjYCAEGZASEeDPUBCyAAQQA2AgAgCiAea0EJaiEBQSohHgyEAQsCQCAIIAJHDQBBmgEhHgz0AQsCQAJAIAgtAABBq39qDgsAhwGHAYcBhwGHAYcBhwGHAYcBAYcBCyAIQQFqIQhBiAEhHgzkAQsgCEEBaiEKQYkBIR4M4wELAkAgCCACRw0AQZsBIR4M8wELAkACQCAILQAAQb9/ag4UAIYBhgGGAYYBhgGGAYYBhgGGAYYBhgGGAYYBhgGGAYYBhgGGAQGGAQsgCEEBaiEJQYcBIR4M4wELIAhBAWohCEGKASEeDOIBCwJAIAsgAkcNAEGcASEeDPIBCyACIAtrIAAoAgAiHmohIiALIQggHiEBAkADQCAILQAAIAFB2bOAgABqLQAARw2EASABQQNGDQEgAUEBaiEBIAhBAWoiCCACRw0ACyAAICI2AgBBnAEhHgzyAQsgAEEANgIAIAsgHmtBBGohAUEhIR4MgQELAkAgDCACRw0AQZ0BIR4M8QELIAIgDGsgACgCACIeaiEiIAwhCCAeIQECQANAIAgtAAAgAUHds4CAAGotAABHDYMBIAFBBkYNASABQQFqIQEgCEEBaiIIIAJHDQALIAAgIjYCAEGdASEeDPEBCyAAQQA2AgAgDCAea0EHaiEBQRohHgyAAQsCQCAIIAJHDQBBngEhHgzwAQsCQAJAAkAgCC0AAEG7f2oOEQCEAYQBhAGEAYQBhAGEAYQBhAEBhAGEAYQBhAGEAQKEAQsgCEEBaiEIQYsBIR4M4QELIAhBAWohC0GMASEeDOABCyAIQQFqIQxBjQEhHgzfAQsCQCANIAJHDQBBnwEhHgzvAQsgAiANayAAKAIAIh5qISIgDSEIIB4hAQJAA0AgCC0AACABQeSzgIAAai0AAEcNgQEgAUEFRg0BIAFBAWohASAIQQFqIgggAkcNAAsgACAiNgIAQZ8BIR4M7wELIABBADYCACANIB5rQQZqIQFBKCEeDH4LAkAgDiACRw0AQaABIR4M7gELIAIgDmsgACgCACIeaiEiIA4hCCAeIQECQANAIAgtAAAgAUHqs4CAAGotAABHDYABIAFBAkYNASABQQFqIQEgCEEBaiIIIAJHDQALIAAgIjYCAEGgASEeDO4BCyAAQQA2AgAgDiAea0EDaiEBQQchHgx9CwJAIAggAkcNAEGhASEeDO0BCwJAAkAgCC0AAEG7f2oODgCAAYABgAGAAYABgAGAAYABgAGAAYABgAEBgAELIAhBAWohDUGPASEeDN0BCyAIQQFqIQ5BkAEhHgzcAQsCQCAPIAJHDQBBogEhHgzsAQsgAiAPayAAKAIAIh5qISIgDyEIIB4hAQJAA0AgCC0AACABQe2zgIAAai0AAEcNfiABQQJGDQEgAUEBaiEBIAhBAWoiCCACRw0ACyAAICI2AgBBogEhHgzsAQsgAEEANgIAIA8gHmtBA2ohAUESIR4MewsCQCAQIAJHDQBBowEhHgzrAQsgAiAQayAAKAIAIh5qISIgECEIIB4hAQJAA0AgCC0AACABQfCzgIAAai0AAEcNfSABQQFGDQEgAUEBaiEBIAhBAWoiCCACRw0ACyAAICI2AgBBowEhHgzrAQsgAEEANgIAIBAgHmtBAmohAUEgIR4MegsCQCARIAJHDQBBpAEhHgzqAQsgAiARayAAKAIAIh5qISIgESEIIB4hAQJAA0AgCC0AACABQfKzgIAAai0AAEcNfCABQQFGDQEgAUEBaiEBIAhBAWoiCCACRw0ACyAAICI2AgBBpAEhHgzqAQsgAEEANgIAIBEgHmtBAmohAUEPIR4MeQsCQCAIIAJHDQBBpQEhHgzpAQsCQAJAIAgtAABBt39qDgcAfHx8fHwBfAsgCEEBaiEQQZMBIR4M2QELIAhBAWohEUGUASEeDNgBCwJAIBIgAkcNAEGmASEeDOgBCyACIBJrIAAoAgAiHmohIiASIQggHiEBAkADQCAILQAAIAFB9LOAgABqLQAARw16IAFBB0YNASABQQFqIQEgCEEBaiIIIAJHDQALIAAgIjYCAEGmASEeDOgBCyAAQQA2AgAgEiAea0EIaiEBQRshHgx3CwJAIAggAkcNAEGnASEeDOcBCwJAAkACQCAILQAAQb5/ag4SAHt7e3t7e3t7ewF7e3t7e3sCewsgCEEBaiEPQZIBIR4M2AELIAhBAWohCEGVASEeDNcBCyAIQQFqIRJBlgEhHgzWAQsCQCAIIAJHDQBBqAEhHgzmAQsgCC0AAEHOAEcNdyAIQQFqIQgMqgELAkAgCCACRw0AQakBIR4M5QELAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkAgCC0AAEG/f2oOFQABAgOGAQQFBoYBhgGGAQcICQoLhgEMDQ4PhgELIAhBAWohAUHWACEeDOMBCyAIQQFqIQFB1wAhHgziAQsgCEEBaiEBQdwAIR4M4QELIAhBAWohAUHgACEeDOABCyAIQQFqIQFB4QAhHgzfAQsgCEEBaiEBQeQAIR4M3gELIAhBAWohAUHlACEeDN0BCyAIQQFqIQFB6AAhHgzcAQsgCEEBaiEBQfEAIR4M2wELIAhBAWohAUHyACEeDNoBCyAIQQFqIQFB8wAhHgzZAQsgCEEBaiEBQYABIR4M2AELIAhBAWohCEGGASEeDNcBCyAIQQFqIQhBjgEhHgzWAQsgCEEBaiEIQZEBIR4M1QELIAhBAWohCEGYASEeDNQBCwJAIBQgAkcNAEGrASEeDOQBCyAUQQFqIRMMdwsDQAJAIB4tAABBdmoOBHcAAHoACyAeQQFqIh4gAkcNAAtBrAEhHgziAQsCQCAVIAJGDQAgAEGNgICAADYCCCAAIBU2AgQgFSEBQQEhHgzSAQtBrQEhHgzhAQsCQCAVIAJHDQBBrgEhHgzhAQsCQAJAIBUtAABBdmoOBAGrAasBAKsBCyAVQQFqIRQMeAsgFUEBaiETDHQLIAAgEyACEKeAgIAAGiATIQEMRQsCQCAVIAJHDQBBrwEhHgzfAQsCQAJAIBUtAABBdmoOFwF5eQF5eXl5eXl5eXl5eXl5eXl5eXkAeQsgFUEBaiEVC0GcASEeDM4BCwJAIBYgAkcNAEGxASEeDN4BCyAWLQAAQSBHDXcgAEEAOwEyIBZBAWohAUGgASEeDM0BCyABISYCQANAICYiFSACRg0BIBUtAABBUGpB/wFxIh5BCk8NqAECQCAALwEyIiJBmTNLDQAgACAiQQpsIiI7ATIgHkH//wNzICJB/v8DcUkNACAVQQFqISYgACAiIB5qIh47ATIgHkH//wNxQegHSQ0BCwtBACEeIABBADYCHCAAQZ2JgIAANgIQIABBDTYCDCAAIBVBAWo2AhQM3QELQbABIR4M3AELAkAgFyACRw0AQbIBIR4M3AELQQAhHgJAAkACQAJAAkACQAJAAkAgFy0AAEFQag4Kf34AAQIDBAUGB4ABC0ECIR4MfgtBAyEeDH0LQQQhHgx8C0EFIR4MewtBBiEeDHoLQQchHgx5C0EIIR4MeAtBCSEeDHcLAkAgGCACRw0AQbMBIR4M2wELIBgtAABBLkcNeCAYQQFqIRcMpgELAkAgGSACRw0AQbQBIR4M2gELQQAhHgJAAkACQAJAAkACQAJAAkAgGS0AAEFQag4KgQGAAQABAgMEBQYHggELQQIhHgyAAQtBAyEeDH8LQQQhHgx+C0EFIR4MfQtBBiEeDHwLQQchHgx7C0EIIR4MegtBCSEeDHkLAkAgCCACRw0AQbUBIR4M2QELIAIgCGsgACgCACIiaiEmIAghGSAiIR4DQCAZLQAAIB5B/LOAgABqLQAARw17IB5BBEYNtAEgHkEBaiEeIBlBAWoiGSACRw0ACyAAICY2AgBBtQEhHgzYAQsCQCAaIAJHDQBBtgEhHgzYAQsgAiAaayAAKAIAIh5qISIgGiEIIB4hAQNAIAgtAAAgAUGBtICAAGotAABHDXsgAUEBRg22ASABQQFqIQEgCEEBaiIIIAJHDQALIAAgIjYCAEG2ASEeDNcBCwJAIBsgAkcNAEG3ASEeDNcBCyACIBtrIAAoAgAiGWohIiAbIQggGSEeA0AgCC0AACAeQYO0gIAAai0AAEcNeiAeQQJGDXwgHkEBaiEeIAhBAWoiCCACRw0ACyAAICI2AgBBtwEhHgzWAQsCQCAIIAJHDQBBuAEhHgzWAQsCQAJAIAgtAABBu39qDhAAe3t7e3t7e3t7e3t7e3sBewsgCEEBaiEaQaUBIR4MxgELIAhBAWohG0GmASEeDMUBCwJAIAggAkcNAEG5ASEeDNUBCyAILQAAQcgARw14IAhBAWohCAyiAQsCQCAIIAJHDQBBugEhHgzUAQsgCC0AAEHIAEYNogEgAEEBOgAoDJkBCwNAAkAgCC0AAEF2ag4EAHp6AHoLIAhBAWoiCCACRw0AC0G8ASEeDNIBCyAAQQA6AC8gAC0ALUEEcUUNyAELIABBADoALyABIQEMeQsgHkEVRg2pASAAQQA2AhwgACABNgIUIABBq4yAgAA2AhAgAEESNgIMQQAhHgzPAQsCQCAAIB4gAhCtgICAACIBDQAgHiEBDMUBCwJAIAFBFUcNACAAQQM2AhwgACAeNgIUIABB1pKAgAA2AhAgAEEVNgIMQQAhHgzPAQsgAEEANgIcIAAgHjYCFCAAQauMgIAANgIQIABBEjYCDEEAIR4MzgELIB5BFUYNpQEgAEEANgIcIAAgATYCFCAAQYiMgIAANgIQIABBFDYCDEEAIR4MzQELIAAoAgQhJiAAQQA2AgQgHiAfp2oiIyEBIAAgJiAeICMgIhsiHhCugICAACIiRQ16IABBBzYCHCAAIB42AhQgACAiNgIMQQAhHgzMAQsgACAALwEwQYABcjsBMCABIQEMMQsgHkEVRg2hASAAQQA2AhwgACABNgIUIABBxYuAgAA2AhAgAEETNgIMQQAhHgzKAQsgAEEANgIcIAAgATYCFCAAQYuLgIAANgIQIABBAjYCDEEAIR4MyQELIB5BO0cNASABQQFqIQELQQghHgy3AQtBACEeIABBADYCHCAAIAE2AhQgAEGjkICAADYCECAAQQw2AgwMxgELQgEhHwsgHkEBaiEBAkAgACkDICIgQv//////////D1YNACAAICBCBIYgH4Q3AyAgASEBDHcLIABBADYCHCAAIAE2AhQgAEGJiYCAADYCECAAQQw2AgxBACEeDMQBCyAAQQA2AhwgACAeNgIUIABBo5CAgAA2AhAgAEEMNgIMQQAhHgzDAQsgACgCBCEmIABBADYCBCAeIB+naiIjIQEgACAmIB4gIyAiGyIeEK6AgIAAIiJFDW4gAEEFNgIcIAAgHjYCFCAAICI2AgxBACEeDMIBCyAAQQA2AhwgACAeNgIUIABB3ZSAgAA2AhAgAEEPNgIMQQAhHgzBAQsgACAeIAIQrYCAgAAiAQ0BIB4hAQtBDyEeDK8BCwJAIAFBFUcNACAAQQI2AhwgACAeNgIUIABB1pKAgAA2AhAgAEEVNgIMQQAhHgy/AQsgAEEANgIcIAAgHjYCFCAAQauMgIAANgIQIABBEjYCDEEAIR4MvgELIAFBAWohHgJAIAAvATAiAUGAAXFFDQACQCAAIB4gAhCwgICAACIBDQAgHiEBDGsLIAFBFUcNlwEgAEEFNgIcIAAgHjYCFCAAQb6SgIAANgIQIABBFTYCDEEAIR4MvgELAkAgAUGgBHFBoARHDQAgAC0ALUECcQ0AIABBADYCHCAAIB42AhQgAEHsj4CAADYCECAAQQQ2AgxBACEeDL4BCyAAIB4gAhCxgICAABogHiEBAkACQAJAAkACQCAAIB4gAhCsgICAAA4WAgEABAQEBAQEBAQEBAQEBAQEBAQEAwQLIABBAToALgsgACAALwEwQcAAcjsBMCAeIQELQR0hHgyvAQsgAEEVNgIcIAAgHjYCFCAAQeGRgIAANgIQIABBFTYCDEEAIR4MvgELIABBADYCHCAAIB42AhQgAEGxi4CAADYCECAAQRE2AgxBACEeDL0BCyAALQAtQQFxRQ0BQaoBIR4MrAELAkAgHCACRg0AA0ACQCAcLQAAQSBGDQAgHCEBDKgBCyAcQQFqIhwgAkcNAAtBFyEeDLwBC0EXIR4MuwELIAAoAgQhASAAQQA2AgQgACABIBwQqICAgAAiAUUNkAEgAEEYNgIcIAAgATYCDCAAIBxBAWo2AhRBACEeDLoBCyAAQRk2AhwgACABNgIUIAAgHjYCDEEAIR4MuQELIB4hAUEBISICQAJAAkACQAJAAkACQCAALQAsQX5qDgcGBQUDAQIABQsgACAALwEwQQhyOwEwDAMLQQIhIgwBC0EEISILIABBAToALCAAIAAvATAgInI7ATALIB4hAQtBICEeDKkBCyAAQQA2AhwgACAeNgIUIABBgY+AgAA2AhAgAEELNgIMQQAhHgy4AQsgHiEBQQEhIgJAAkACQAJAAkAgAC0ALEF7ag4EAgABAwULQQIhIgwBC0EEISILIABBAToALCAAIAAvATAgInI7ATAMAQsgACAALwEwQQhyOwEwCyAeIQELQasBIR4MpgELIAAgASACEKuAgIAAGgwbCwJAIAEiHiACRg0AIB4hAQJAAkAgHi0AAEF2ag4EAWpqAGoLIB5BAWohAQtBHiEeDKUBC0HDACEeDLQBCyAAQQA2AhwgACABNgIUIABBkZGAgAA2AhAgAEEDNgIMQQAhHgyzAQsCQCABLQAAQQ1HDQAgACgCBCEeIABBADYCBAJAIAAgHiABEKqAgIAAIh4NACABQQFqIQEMaQsgAEEeNgIcIAAgHjYCDCAAIAFBAWo2AhRBACEeDLMBCyABIQEgAC0ALUEBcUUNrgFBrQEhHgyiAQsCQCABIgEgAkcNAEEfIR4MsgELAkACQANAAkAgAS0AAEF2ag4EAgAAAwALIAFBAWoiASACRw0AC0EfIR4MswELIAAoAgQhHiAAQQA2AgQCQCAAIB4gARCqgICAACIeDQAgASEBDGgLIABBHjYCHCAAIAE2AhQgACAeNgIMQQAhHgyyAQsgACgCBCEeIABBADYCBAJAIAAgHiABEKqAgIAAIh4NACABQQFqIQEMZwsgAEEeNgIcIAAgHjYCDCAAIAFBAWo2AhRBACEeDLEBCyAeQSxHDQEgAUEBaiEeQQEhAQJAAkACQAJAAkAgAC0ALEF7ag4EAwECBAALIB4hAQwEC0ECIQEMAQtBBCEBCyAAQQE6ACwgACAALwEwIAFyOwEwIB4hAQwBCyAAIAAvATBBCHI7ATAgHiEBC0EuIR4MnwELIABBADoALCABIQELQSkhHgydAQsgAEEANgIAICMgJGtBCWohAUEFIR4MmAELIABBADYCACAjICRrQQZqIQFBByEeDJcBCyAAIAAvATBBIHI7ATAgASEBDAILIAAoAgQhCCAAQQA2AgQCQCAAIAggARCqgICAACIIDQAgASEBDJ0BCyAAQSo2AhwgACABNgIUIAAgCDYCDEEAIR4MqQELIABBCDoALCABIQELQSUhHgyXAQsCQCAALQAoQQFGDQAgASEBDAQLIAAtAC1BCHFFDXggASEBDAMLIAAtADBBIHENeUGuASEeDJUBCwJAIB0gAkYNAAJAA0ACQCAdLQAAQVBqIgFB/wFxQQpJDQAgHSEBQSohHgyYAQsgACkDICIfQpmz5syZs+bMGVYNASAAIB9CCn4iHzcDICAfIAGtIiBCf4VCgH6EVg0BIAAgHyAgQv8Bg3w3AyAgHUEBaiIdIAJHDQALQSwhHgymAQsgACgCBCEIIABBADYCBCAAIAggHUEBaiIBEKqAgIAAIggNeiABIQEMmQELQSwhHgykAQsCQCAALwEwIgFBCHFFDQAgAC0AKEEBRw0AIAAtAC1BCHFFDXULIAAgAUH3+wNxQYAEcjsBMCAdIQELQSwhHgySAQsgACAALwEwQRByOwEwDIcBCyAAQTY2AhwgACABNgIMIAAgHEEBajYCFEEAIR4MoAELIAEtAABBOkcNAiAAKAIEIR4gAEEANgIEIAAgHiABEKiAgIAAIh4NASABQQFqIQELQTEhHgyOAQsgAEE2NgIcIAAgHjYCDCAAIAFBAWo2AhRBACEeDJ0BCyAAQQA2AhwgACABNgIUIABBh46AgAA2AhAgAEEKNgIMQQAhHgycAQsgAUEBaiEBCyAAQYASOwEqIAAgASACEKWAgIAAGiABIQELQawBIR4MiQELIAAoAgQhHiAAQQA2AgQCQCAAIB4gARCkgICAACIeDQAgASEBDFALIABBxAA2AhwgACABNgIUIAAgHjYCDEEAIR4MmAELIABBADYCHCAAICI2AhQgAEHlmICAADYCECAAQQc2AgwgAEEANgIAQQAhHgyXAQsgACgCBCEeIABBADYCBAJAIAAgHiABEKSAgIAAIh4NACABIQEMTwsgAEHFADYCHCAAIAE2AhQgACAeNgIMQQAhHgyWAQtBACEeIABBADYCHCAAIAE2AhQgAEHrjYCAADYCECAAQQk2AgwMlQELQQEhHgsgACAeOgArIAFBAWohASAALQApQSJGDYsBDEwLIABBADYCHCAAIAE2AhQgAEGijYCAADYCECAAQQk2AgxBACEeDJIBCyAAQQA2AhwgACABNgIUIABBxYqAgAA2AhAgAEEJNgIMQQAhHgyRAQtBASEeCyAAIB46ACogAUEBaiEBDEoLIABBADYCHCAAIAE2AhQgAEG4jYCAADYCECAAQQk2AgxBACEeDI4BCyAAQQA2AgAgJiAja0EEaiEBAkAgAC0AKUEjTw0AIAEhAQxKCyAAQQA2AhwgACABNgIUIABBr4mAgAA2AhAgAEEINgIMQQAhHgyNAQsgAEEANgIAC0EAIR4gAEEANgIcIAAgATYCFCAAQbmbgIAANgIQIABBCDYCDAyLAQsgAEEANgIAICYgI2tBA2ohAQJAIAAtAClBIUcNACABIQEMRwsgAEEANgIcIAAgATYCFCAAQfeJgIAANgIQIABBCDYCDEEAIR4MigELIABBADYCACAmICNrQQRqIQECQCAALQApIh5BXWpBC08NACABIQEMRgsCQCAeQQZLDQBBASAedEHKAHFFDQAgASEBDEYLQQAhHiAAQQA2AhwgACAB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HiAAQQA2AhwgACABNgIUIABB6pCAgAA2AhAgAEEZNgIMDAILIABBIDYCHCAAIAg2AgwgACABQQFqNgIUQQAhHgwBCwJAIAEiASACRw0AQRQhHgwBCyAAQYmAgIAANgIIIAAgATYCBEETIR4LIANBEGokgICAgAAgHguvAQECfyABKAIAIQYCQAJAIAIgA0YNACAEIAZqIQQgBiADaiACayEHIAIgBkF/cyAFaiIGaiEFA0ACQCACLQAAIAQtAABGDQBBAiEEDAMLAkAgBg0AQQAhBCAFIQIMAwsgBkF/aiEGIARBAWohBCACQQFqIgIgA0cNAAsgByEGIAMhAgsgAEEBNgIAIAEgBjYCACAAIAI2AgQPCyABQQA2AgAgACAENgIAIAAgAjYCBAsKACAAELuAgIAAC5U3AQt/I4CAgIAAQRBrIgEkgICAgAACQEEAKAKgtICAAA0AQQAQvoCAgABBgLiEgABrIgJB2QBJDQBBACEDAkBBACgC4LeAgAAiBA0AQQBCfzcC7LeAgABBAEKAgISAgIDAADcC5LeAgABBACABQQhqQXBxQdiq1aoFcyIENgLgt4CAAEEAQQA2AvS3gIAAQQBBADYCxLeAgAALQQAgAjYCzLeAgABBAEGAuISAADYCyLeAgABBAEGAuISAADYCmLSAgABBACAENgKstICAAEEAQX82Aqi0gIAAA0AgA0HEtICAAGogA0G4tICAAGoiBDYCACAEIANBsLSAgABqIgU2AgAgA0G8tICAAGogBTYCACADQcy0gIAAaiADQcC0gIAAaiIFNgIAIAUgBDYCACADQdS0gIAAaiADQci0gIAAaiIENgIAIAQgBTYCACADQdC0gIAAaiAENgIAIANBIGoiA0GAAkcNAAtBgLiEgABBeEGAuISAAGtBD3FBAEGAuISAAEEIakEPcRsiA2oiBEEEaiACIANrQUhqIgNBAXI2AgBBAEEAKALwt4CAADYCpLSAgABBACAENgKgtICAAEEAIAM2ApS0gIAAIAJBgLiEgABqQUxqQTg2AgALAkACQAJAAkACQAJAAkACQAJAAkACQAJAIABB7AFLDQACQEEAKAKItICAACIGQRAgAEETakFwcSAAQQtJGyICQQN2IgR2IgNBA3FFDQAgA0EBcSAEckEBcyIFQQN0IgBBuLSAgABqKAIAIgRBCGohAwJA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AkADQCAGIgQoAgRBeHEgAEYNASACQR12IQYgAkEBdCECIAQgBkEEcWpBEGoiAygCACIGDQALIAMgATYCACABQRhqIAQ2AgAgASABNgIMIAEgATYCCAwBCyAEKAIIIgAgATYCDCAEIAE2AgggAUEYakEANgIAIAEgBDYCDCABIAA2AggLQQBBACgCqLSAgABBf2oiAUF/IAEbNgKotICAAAsLTgACQCAADQA/AEEQdA8LAkAgAEH//wNxDQAgAEF/TA0AAkAgAEEQdkAAIgBBf0cNAEEAQTA2Avi3gIAAQX8PCyAAQRB0DwsQv4CAgAAACwQAAAALC44sAQBBgAgLhiwBAAAAAgAAAAMAAAAEAAAABQAAAAYAAAAHAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEludmFsaWQgY2hhciBpbiB1cmwgcXVlcnkAU3BhbiBjYWxsYmFjayBlcnJvciBpbiBvbl9ib2R5AENvbnRlbnQtTGVuZ3RoIG92ZXJmbG93AENodW5rIHNpemUgb3ZlcmZsb3cAUmVzcG9uc2Ugb3ZlcmZsb3cASW52YWxpZCBtZXRob2QgZm9yIEhUVFAveC54IHJlcXVlc3QASW52YWxpZCBtZXRob2QgZm9yIFJUU1AveC54IHJlcXVlc3QARXhwZWN0ZWQgU09VUkNFIG1ldGhvZCBmb3IgSUNFL3gueCByZXF1ZXN0AEludmFsaWQgY2hhciBpbiB1cmwgZnJhZ21lbnQgc3RhcnQARXhwZWN0ZWQgZG90AFNwYW4gY2FsbGJhY2sgZXJyb3IgaW4gb25fc3RhdHVzAEludmFsaWQgcmVzcG9uc2Ugc3RhdHVzAEludmFsaWQgY2hhcmFjdGVyIGluIGNodW5rIHBhcmFtZXRlcnMAVXNlciBjYWxsYmFjayBlcnJvcgBgb25fY2h1bmtfaGVhZGVyYCBjYWxsYmFjayBlcnJvcgBgb25fbWVzc2FnZV9iZWdpbmAgY2FsbGJhY2sgZXJyb3IAYG9uX2NodW5rX2NvbXBsZXRlYCBjYWxsYmFjayBlcnJvcgBgb25fbWVzc2FnZV9jb21wbGV0ZWAgY2FsbGJhY2sgZXJyb3IAVW5leHBlY3RlZCBjaGFyIGluIHVybCBzZXJ2ZXIASW52YWxpZCBoZWFkZXIgdmFsdWUgY2hhcgBJbnZhbGlkIGhlYWRlciBmaWVsZCBjaGFyAEludmFsaWQgbWlub3IgdmVyc2lvbgBJbnZhbGlkIG1ham9yIHZlcnNpb24ARXhwZWN0ZWQgc3BhY2UgYWZ0ZXIgdmVyc2lvbgBFeHBlY3RlZCBDUkxGIGFmdGVyIHZlcnNpb24ASW52YWxpZCBoZWFkZXIgdG9rZW4AU3BhbiBjYWxsYmFjayBlcnJvciBpbiBvbl91cmwASW52YWxpZCBjaGFyYWN0ZXJzIGluIHVybABVbmV4cGVjdGVkIHN0YXJ0IGNoYXIgaW4gdXJsAERvdWJsZSBAIGluIHVybABFbXB0eSBDb250ZW50LUxlbmd0aABJbnZhbGlkIGNoYXJhY3RlciBpbiBDb250ZW50LUxlbmd0aABEdXBsaWNhdGUgQ29udGVudC1MZW5ndGgASW52YWxpZCBjaGFyIGluIHVybCBwYXRoAENvbnRlbnQtTGVuZ3RoIGNhbid0IGJlIHByZXNlbnQgd2l0aCBUcmFuc2Zlci1FbmNvZGluZwBJbnZhbGlkIGNoYXJhY3RlciBpbiBjaHVuayBzaXplAFNwYW4gY2FsbGJhY2sgZXJyb3IgaW4gb25faGVhZGVyX3ZhbHVlAE1pc3NpbmcgZXhwZWN0ZWQgQ1IgYWZ0ZXIgaGVhZGVyIHZhbHVlAE1pc3NpbmcgZXhwZWN0ZWQgTEYgYWZ0ZXIgaGVhZGVyIHZhbHVlAEludmFsaWQgYFRyYW5zZmVyLUVuY29kaW5nYCBoZWFkZXIgdmFsdWUAUGF1c2VkIGJ5IG9uX2hlYWRlcnNfY29tcGxldGUASW52YWxpZCBFT0Ygc3RhdGUAb25fY2h1bmtfaGVhZGVyIHBhdXNlAG9uX21lc3NhZ2VfYmVnaW4gcGF1c2UAb25fY2h1bmtfY29tcGxldGUgcGF1c2UAb25fbWVzc2FnZV9jb21wbGV0ZSBwYXVzZQBQYXVzZSBvbiBDT05ORUNUL1VwZ3JhZGUAUGF1c2Ugb24gUFJJL1VwZ3JhZGUARXhwZWN0ZWQgSFRUUC8yIENvbm5lY3Rpb24gUHJlZmFjZQBFeHBlY3RlZCBzcGFjZSBhZnRlciBtZXRob2QAU3BhbiBjYWxsYmFjayBlcnJvciBpbiBvbl9oZWFkZXJfZmllbGQAUGF1c2VkAEludmFsaWQgd29yZCBlbmNvdW50ZXJlZABJbnZhbGlkIG1ldGhvZCBlbmNvdW50ZXJlZABVbmV4cGVjdGVkIGNoYXIgaW4gdXJsIHNjaGVtYQBSZXF1ZXN0IGhhcyBpbnZhbGlkIGBUcmFuc2Zlci1FbmNvZGluZ2AATUtBQ1RJVklUWQBDT1BZAE5PVElGWQBQTEFZAFBVVABDSEVDS09VVABQT1NUAFJFUE9SVABIUEVfSU5WQUxJRF9DT05TVEFOVABHRVQASFBFX1NUUklDVABSRURJUkVDVABDT05ORUNUAEhQRV9JTlZBTElEX1NUQVRVUwBPUFRJT05TAFNFVF9QQVJBTUVURVIAR0VUX1BBUkFNRVRFUgBIUEVfVVNFUgBIUEVfQ0JfQ0hVTktfSEVBREVSAE1LQ0FMRU5EQVIAU0VUVVAAVEVBUkRPV04ASFBFX0NMT1NFRF9DT05ORUNUSU9OAEhQRV9JTlZBTElEX1ZFUlNJT04ASFBFX0NCX01FU1NBR0VfQkVHSU4ASFBFX0lOVkFMSURfSEVBREVSX1RPS0VOAEhQRV9JTlZBTElEX1VSTABNS0NPTABBQ0wASFBFX0lOVEVSTkFMAEhQRV9PSwBVTkxJTksAVU5MT0NLAFBSSQBIUEVfSU5WQUxJRF9DT05URU5UX0xFTkdUSABIUEVfVU5FWFBFQ1RFRF9DT05URU5UX0xFTkdUSABGTFVTSABQUk9QUEFUQ0gATS1TRUFSQ0gASFBFX0lOVkFMSURfVFJBTlNGRVJfRU5DT0RJTkcARXhwZWN0ZWQgQ1JMRgBIUEVfSU5WQUxJRF9DSFVOS19TSVpFAE1PVkUASFBFX0NCX0hFQURFUlNfQ09NUExFVEUASFBFX0NCX0NIVU5LX0NPTVBMRVRFAEhQRV9DQl9NRVNTQUdFX0NPTVBMRVRFAERFTEVURQBIUEVfSU5WQUxJRF9FT0ZfU1RBVEUAUEFVU0UAUFVSR0UATUVSR0UASFBFX1BBVVNFRF9VUEdSQURFAEhQRV9QQVVTRURfSDJfVVBHUkFERQBTT1VSQ0UAQU5OT1VOQ0UAVFJBQ0UAREVTQ1JJQkUAVU5TVUJTQ1JJQkUAUkVDT1JEAEhQRV9JTlZBTElEX01FVEhPRABQUk9QRklORABVTkJJTkQAUkVCSU5EAEhQ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BQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEAAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEAAAAAAAAAAAABAAABAAAAAAAAAAAAAAAAAAAAAAAAAAABAQABAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEAAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAAAAAAAAAAAAAAEAAAIAAAAAAAAAAAAAAAAAAAAAAAADBAAABAQEBAQEBAQEBAQFBAQEBAQEBAQEBAQEAAQABgcEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQABAAEAAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAABAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMAAAAAAAADAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAQAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAACAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAAAAAAAAAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATk9VTkNFRUNLT1VUTkVDVEVURUNSSUJFTFVTSEVURUFEU0VBUkNIUkdFQ1RJVklUWUxFTkRBUlZFT1RJRllQVElPTlNDSFNFQVlTVEFUQ0hHRU9SRElSRUNUT1JUUkNIUEFSQU1FVEVSVVJDRUJTQ1JJQkVBUkRPV05BQ0VJTkROS0NLVUJTQ1JJQkVIVFRQL0FEVFAv";
       }
     });
     var require_client = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/client.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/client.js"(exports2, module2) {
         "use strict";
         var assert = require("assert");
         var net2 = require("net");
@@ -40411,7 +40662,10 @@ Content-Type: ${value.type || "application/octet-stream"}\r
             if (shouldKeepAlive && client[kPipelining]) {
               const keepAliveTimeout = this.keepAlive ? util2.parseKeepAliveTimeout(this.keepAlive) : null;
               if (keepAliveTimeout != null) {
-                const timeout = Math.min(keepAliveTimeout - client[kKeepAliveTimeoutThreshold], client[kKeepAliveMaxTimeout]);
+                const timeout = Math.min(
+                  keepAliveTimeout - client[kKeepAliveTimeoutThreshold],
+                  client[kKeepAliveMaxTimeout]
+                );
                 if (timeout <= 0) {
                   socket[kReset] = true;
                 } else {
@@ -40520,8 +40774,10 @@ Content-Type: ${value.type || "application/octet-stream"}\r
         function onParserTimeout(parser) {
           const { socket, timeoutType, client } = parser;
           if (timeoutType === TIMEOUT_HEADERS) {
-            assert(!parser.paused, "cannot be paused while waiting for headers");
-            util2.destroy(socket, new HeadersTimeoutError());
+            if (!socket[kWriting] || socket.writableNeedDrain || client[kRunning] > 1) {
+              assert(!parser.paused, "cannot be paused while waiting for headers");
+              util2.destroy(socket, new HeadersTimeoutError());
+            }
           } else if (timeoutType === TIMEOUT_BODY) {
             if (!parser.paused) {
               util2.destroy(socket, new BodyTimeoutError());
@@ -41084,6 +41340,13 @@ ${len.toString(16)}\r
             this.bytesWritten += len;
             const ret = socket.write(chunk);
             request2.onBodySent(chunk);
+            if (!ret) {
+              if (socket[kParser].timeout && socket[kParser].timeoutType === TIMEOUT_HEADERS) {
+                if (socket[kParser].timeout.refresh) {
+                  socket[kParser].timeout.refresh();
+                }
+              }
+            }
             return ret;
           }
           end() {
@@ -41145,7 +41408,7 @@ ${len.toString(16)}\r
       }
     });
     var require_fixed_queue = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/node/fixed-queue.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/node/fixed-queue.js"(exports2, module2) {
         "use strict";
         var kSize = 2048;
         var kMask = kSize - 1;
@@ -41201,7 +41464,7 @@ ${len.toString(16)}\r
       }
     });
     var require_pool_stats = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/pool-stats.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/pool-stats.js"(exports2, module2) {
         var { kFree, kConnected, kPending, kQueued, kRunning, kSize } = require_symbols();
         var kPool = Symbol("pool");
         var PoolStats = class {
@@ -41232,7 +41495,7 @@ ${len.toString(16)}\r
       }
     });
     var require_pool_base = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/pool-base.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/pool-base.js"(exports2, module2) {
         "use strict";
         var DispatcherBase = require_dispatcher_base();
         var FixedQueue = require_fixed_queue();
@@ -41386,7 +41649,7 @@ ${len.toString(16)}\r
       }
     });
     var require_pool = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/pool.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/pool.js"(exports2, module2) {
         "use strict";
         var {
           PoolBase,
@@ -41461,7 +41724,7 @@ ${len.toString(16)}\r
       }
     });
     var require_balanced_pool = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/balanced-pool.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/balanced-pool.js"(exports2, module2) {
         "use strict";
         var {
           BalancedPoolMissingUpstreamError,
@@ -41597,7 +41860,7 @@ ${len.toString(16)}\r
       }
     });
     var require_dispatcher_weakref = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/compat/dispatcher-weakref.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/compat/dispatcher-weakref.js"(exports2, module2) {
         "use strict";
         var { kConnected, kSize } = require_symbols();
         var CompatWeakRef = class {
@@ -41631,7 +41894,7 @@ ${len.toString(16)}\r
       }
     });
     var require_agent = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/agent.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/agent.js"(exports2, module2) {
         "use strict";
         var { InvalidArgumentError } = require_errors();
         var { kClients, kRunning, kClose, kDestroy, kDispatch } = require_symbols();
@@ -41749,7 +42012,7 @@ ${len.toString(16)}\r
       }
     });
     var require_readable = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/api/readable.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/api/readable.js"(exports2, module2) {
         "use strict";
         var assert = require("assert");
         var { Readable } = require("stream");
@@ -41816,7 +42079,7 @@ ${len.toString(16)}\r
             return this.off(ev, ...args);
           }
           push(chunk) {
-            if (this[kConsume] && chunk !== null) {
+            if (this[kConsume] && chunk !== null && this.readableLength === 0) {
               consumePush(this[kConsume], chunk);
               return this[kReading] ? super.push(chunk) : true;
             }
@@ -41968,7 +42231,7 @@ ${len.toString(16)}\r
       }
     });
     var require_abort_signal = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/api/abort-signal.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/api/abort-signal.js"(exports2, module2) {
         var { RequestAbortedError } = require_errors();
         var kListener = Symbol("kListener");
         var kSignal = Symbol("kSignal");
@@ -42021,7 +42284,7 @@ ${len.toString(16)}\r
       }
     });
     var require_api_request = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/api/api-request.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/api/api-request.js"(exports2, module2) {
         "use strict";
         var Readable = require_readable();
         var {
@@ -42075,15 +42338,15 @@ ${len.toString(16)}\r
             }
             addSignal(this, signal);
           }
-          onConnect(abort, context3) {
+          onConnect(abort, context5) {
             if (!this.callback) {
               throw new RequestAbortedError();
             }
             this.abort = abort;
-            this.context = context3;
+            this.context = context5;
           }
           onHeaders(statusCode, rawHeaders, resume, statusMessage) {
-            const { callback, opaque, abort, context: context3 } = this;
+            const { callback, opaque, abort, context: context5 } = this;
             if (statusCode < 200) {
               if (this.onInfo) {
                 const headers2 = this.responseHeaders === "raw" ? util2.parseRawHeaders(rawHeaders) : util2.parseHeaders(rawHeaders);
@@ -42099,7 +42362,11 @@ ${len.toString(16)}\r
             const headers = this.responseHeaders === "raw" ? util2.parseRawHeaders(rawHeaders) : util2.parseHeaders(rawHeaders);
             if (callback !== null) {
               if (this.throwOnError && statusCode >= 400) {
-                this.runInAsyncScope(getResolveErrorBodyCallback, null, { callback, body, contentType, statusCode, statusMessage, headers });
+                this.runInAsyncScope(
+                  getResolveErrorBodyCallback,
+                  null,
+                  { callback, body, contentType, statusCode, statusMessage, headers }
+                );
                 return;
               }
               this.runInAsyncScope(callback, null, null, {
@@ -42108,7 +42375,7 @@ ${len.toString(16)}\r
                 trailers: this.trailers,
                 opaque,
                 body,
-                context: context3
+                context: context5
               });
             }
           }
@@ -42190,7 +42457,7 @@ ${len.toString(16)}\r
       }
     });
     var require_api_stream = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/api/api-stream.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/api/api-stream.js"(exports2, module2) {
         "use strict";
         var { finished } = require("stream");
         var {
@@ -42247,15 +42514,15 @@ ${len.toString(16)}\r
             }
             addSignal(this, signal);
           }
-          onConnect(abort, context3) {
+          onConnect(abort, context5) {
             if (!this.callback) {
               throw new RequestAbortedError();
             }
             this.abort = abort;
-            this.context = context3;
+            this.context = context5;
           }
           onHeaders(statusCode, rawHeaders, resume) {
-            const { factory, opaque, context: context3 } = this;
+            const { factory, opaque, context: context5 } = this;
             if (statusCode < 200) {
               if (this.onInfo) {
                 const headers2 = this.responseHeaders === "raw" ? util2.parseRawHeaders(rawHeaders) : util2.parseHeaders(rawHeaders);
@@ -42269,7 +42536,7 @@ ${len.toString(16)}\r
               statusCode,
               headers,
               opaque,
-              context: context3
+              context: context5
             });
             if (!res || typeof res.write !== "function" || typeof res.end !== "function" || typeof res.on !== "function") {
               throw new InvalidReturnValueError("expected Writable");
@@ -42344,7 +42611,7 @@ ${len.toString(16)}\r
       }
     });
     var require_api_pipeline = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/api/api-pipeline.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/api/api-pipeline.js"(exports2, module2) {
         "use strict";
         var {
           Readable,
@@ -42459,17 +42726,17 @@ ${len.toString(16)}\r
             this.res = null;
             addSignal(this, signal);
           }
-          onConnect(abort, context3) {
+          onConnect(abort, context5) {
             const { ret, res } = this;
             assert(!res, "pipeline cannot be retried");
             if (ret.destroyed) {
               throw new RequestAbortedError();
             }
             this.abort = abort;
-            this.context = context3;
+            this.context = context5;
           }
           onHeaders(statusCode, rawHeaders, resume) {
-            const { opaque, handler, context: context3 } = this;
+            const { opaque, handler, context: context5 } = this;
             if (statusCode < 200) {
               if (this.onInfo) {
                 const headers = this.responseHeaders === "raw" ? util2.parseRawHeaders(rawHeaders) : util2.parseHeaders(rawHeaders);
@@ -42487,7 +42754,7 @@ ${len.toString(16)}\r
                 headers,
                 opaque,
                 body: this.res,
-                context: context3
+                context: context5
               });
             } catch (err) {
               this.res.on("error", util2.nop);
@@ -42544,7 +42811,7 @@ ${len.toString(16)}\r
       }
     });
     var require_api_upgrade = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/api/api-upgrade.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/api/api-upgrade.js"(exports2, module2) {
         "use strict";
         var { InvalidArgumentError, RequestAbortedError, SocketError } = require_errors();
         var { AsyncResource: AsyncResource2 } = require("async_hooks");
@@ -42571,7 +42838,7 @@ ${len.toString(16)}\r
             this.context = null;
             addSignal(this, signal);
           }
-          onConnect(abort, context3) {
+          onConnect(abort, context5) {
             if (!this.callback) {
               throw new RequestAbortedError();
             }
@@ -42582,7 +42849,7 @@ ${len.toString(16)}\r
             throw new SocketError("bad upgrade", null);
           }
           onUpgrade(statusCode, rawHeaders, socket) {
-            const { callback, opaque, context: context3 } = this;
+            const { callback, opaque, context: context5 } = this;
             assert.strictEqual(statusCode, 101);
             removeSignal(this);
             this.callback = null;
@@ -42591,7 +42858,7 @@ ${len.toString(16)}\r
               headers,
               socket,
               opaque,
-              context: context3
+              context: context5
             });
           }
           onError(err) {
@@ -42634,7 +42901,7 @@ ${len.toString(16)}\r
       }
     });
     var require_api_connect = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/api/api-connect.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/api/api-connect.js"(exports2, module2) {
         "use strict";
         var { InvalidArgumentError, RequestAbortedError, SocketError } = require_errors();
         var { AsyncResource: AsyncResource2 } = require("async_hooks");
@@ -42659,18 +42926,18 @@ ${len.toString(16)}\r
             this.abort = null;
             addSignal(this, signal);
           }
-          onConnect(abort, context3) {
+          onConnect(abort, context5) {
             if (!this.callback) {
               throw new RequestAbortedError();
             }
             this.abort = abort;
-            this.context = context3;
+            this.context = context5;
           }
           onHeaders() {
             throw new SocketError("bad connect", null);
           }
           onUpgrade(statusCode, rawHeaders, socket) {
-            const { callback, opaque, context: context3 } = this;
+            const { callback, opaque, context: context5 } = this;
             removeSignal(this);
             this.callback = null;
             const headers = this.responseHeaders === "raw" ? util2.parseRawHeaders(rawHeaders) : util2.parseHeaders(rawHeaders);
@@ -42679,7 +42946,7 @@ ${len.toString(16)}\r
               headers,
               socket,
               opaque,
-              context: context3
+              context: context5
             });
           }
           onError(err) {
@@ -42718,7 +42985,7 @@ ${len.toString(16)}\r
       }
     });
     var require_api = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/api/index.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/api/index.js"(exports2, module2) {
         "use strict";
         module2.exports.request = require_api_request();
         module2.exports.stream = require_api_stream();
@@ -42728,7 +42995,7 @@ ${len.toString(16)}\r
       }
     });
     var require_mock_errors = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/mock/mock-errors.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/mock/mock-errors.js"(exports2, module2) {
         "use strict";
         var { UndiciError } = require_errors();
         var MockNotMatchedError = class extends UndiciError {
@@ -42747,7 +43014,7 @@ ${len.toString(16)}\r
       }
     });
     var require_mock_symbols = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/mock/mock-symbols.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/mock/mock-symbols.js"(exports2, module2) {
         "use strict";
         module2.exports = {
           kAgent: Symbol("agent"),
@@ -42773,7 +43040,7 @@ ${len.toString(16)}\r
       }
     });
     var require_mock_utils = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/mock/mock-utils.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/mock/mock-utils.js"(exports2, module2) {
         "use strict";
         var { MockNotMatchedError } = require_mock_errors();
         var {
@@ -42798,15 +43065,17 @@ ${len.toString(16)}\r
         }
         __name(matchValue, "matchValue");
         function lowerCaseEntries(headers) {
-          return Object.fromEntries(Object.entries(headers).map(([headerName, headerValue]) => {
-            return [headerName.toLocaleLowerCase(), headerValue];
-          }));
+          return Object.fromEntries(
+            Object.entries(headers).map(([headerName, headerValue]) => {
+              return [headerName.toLocaleLowerCase(), headerValue];
+            })
+          );
         }
         __name(lowerCaseEntries, "lowerCaseEntries");
         function getHeaderByName(headers, key) {
           if (Array.isArray(headers)) {
             for (let i = 0; i < headers.length; i += 2) {
-              if (headers[i] === key) {
+              if (headers[i].toLocaleLowerCase() === key.toLocaleLowerCase()) {
                 return headers[i + 1];
               }
             }
@@ -42814,19 +43083,23 @@ ${len.toString(16)}\r
           } else if (typeof headers.get === "function") {
             return headers.get(key);
           } else {
-            return headers[key];
+            return lowerCaseEntries(headers)[key.toLocaleLowerCase()];
           }
         }
         __name(getHeaderByName, "getHeaderByName");
+        function buildHeadersFromArray(headers) {
+          const clone2 = headers.slice();
+          const entries = [];
+          for (let index = 0; index < clone2.length; index += 2) {
+            entries.push([clone2[index], clone2[index + 1]]);
+          }
+          return Object.fromEntries(entries);
+        }
+        __name(buildHeadersFromArray, "buildHeadersFromArray");
         function matchHeaders(mockDispatch2, headers) {
           if (typeof mockDispatch2.headers === "function") {
             if (Array.isArray(headers)) {
-              const clone2 = headers.slice();
-              const entries = [];
-              for (let index = 0; index < clone2.length; index += 2) {
-                entries.push([clone2[index], clone2[index + 1]]);
-              }
-              headers = Object.fromEntries(entries);
+              headers = buildHeadersFromArray(headers);
             }
             return mockDispatch2.headers(headers ? lowerCaseEntries(headers) : {});
           }
@@ -42845,6 +43118,19 @@ ${len.toString(16)}\r
           return true;
         }
         __name(matchHeaders, "matchHeaders");
+        function safeUrl(path7) {
+          if (typeof path7 !== "string") {
+            return path7;
+          }
+          const pathSegments = path7.split("?");
+          if (pathSegments.length !== 2) {
+            return path7;
+          }
+          const qp = new URLSearchParams(pathSegments.pop());
+          qp.sort();
+          return [...pathSegments, qp.toString()].join("?");
+        }
+        __name(safeUrl, "safeUrl");
         function matchKey(mockDispatch2, { path: path7, method, body, headers }) {
           const pathMatch = matchValue(mockDispatch2.path, path7);
           const methodMatch = matchValue(mockDispatch2.method, method);
@@ -42864,8 +43150,9 @@ ${len.toString(16)}\r
         }
         __name(getResponseData, "getResponseData");
         function getMockDispatch(mockDispatches, key) {
-          const resolvedPath = key.query ? buildURL(key.path, key.query) : key.path;
-          let matchedMockDispatches = mockDispatches.filter(({ consumed }) => !consumed).filter(({ path: path7 }) => matchValue(path7, resolvedPath));
+          const basePath = key.query ? buildURL(key.path, key.query) : key.path;
+          const resolvedPath = typeof basePath === "string" ? safeUrl(basePath) : basePath;
+          let matchedMockDispatches = mockDispatches.filter(({ consumed }) => !consumed).filter(({ path: path7 }) => matchValue(safeUrl(path7), resolvedPath));
           if (matchedMockDispatches.length === 0) {
             throw new MockNotMatchedError(`Mock dispatch not matched for path '${resolvedPath}'`);
           }
@@ -43084,7 +43371,10 @@ ${len.toString(16)}\r
             handleReply(this[kDispatches]);
           }
           function handleReply(mockDispatches) {
-            const responseData = getResponseData(typeof data === "function" ? data(opts) : data);
+            const optsHeaders = Array.isArray(opts.headers) ? buildHeadersFromArray(opts.headers) : opts.headers;
+            const responseData = getResponseData(
+              typeof data === "function" ? data({ ...opts, headers: optsHeaders }) : data
+            );
             const responseHeaders = generateKeyValues(headers);
             const responseTrailers = generateKeyValues(trailers);
             handler.abort = nop;
@@ -43165,7 +43455,7 @@ ${len.toString(16)}\r
       }
     });
     var require_mock_interceptor = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/mock/mock-interceptor.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/mock/mock-interceptor.js"(exports2, module2) {
         "use strict";
         var { getResponseData, buildKey, addMockDispatch } = require_mock_utils();
         var {
@@ -43302,7 +43592,7 @@ ${len.toString(16)}\r
       }
     });
     var require_mock_client = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/mock/mock-client.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/mock/mock-client.js"(exports2, module2) {
         "use strict";
         var { promisify: promisify4 } = require("util");
         var Client = require_client();
@@ -43351,7 +43641,7 @@ ${len.toString(16)}\r
       }
     });
     var require_mock_pool = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/mock/mock-pool.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/mock/mock-pool.js"(exports2, module2) {
         "use strict";
         var { promisify: promisify4 } = require("util");
         var Pool = require_pool();
@@ -43400,7 +43690,7 @@ ${len.toString(16)}\r
       }
     });
     var require_pluralizer = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/mock/pluralizer.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/mock/pluralizer.js"(exports2, module2) {
         "use strict";
         var singulars = {
           pronoun: "it",
@@ -43429,7 +43719,7 @@ ${len.toString(16)}\r
       }
     });
     var require_pending_interceptors_formatter = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/mock/pending-interceptors-formatter.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/mock/pending-interceptors-formatter.js"(exports2, module2) {
         "use strict";
         var { Transform } = require("stream");
         var { Console } = require("console");
@@ -43448,15 +43738,17 @@ ${len.toString(16)}\r
             });
           }
           format(pendingInterceptors) {
-            const withPrettyHeaders = pendingInterceptors.map(({ method, path: path7, data: { statusCode }, persist, times, timesInvoked, origin }) => ({
-              Method: method,
-              Origin: origin,
-              Path: path7,
-              "Status code": statusCode,
-              Persistent: persist ? "\u2705" : "\u274C",
-              Invocations: timesInvoked,
-              Remaining: persist ? Infinity : times - timesInvoked
-            }));
+            const withPrettyHeaders = pendingInterceptors.map(
+              ({ method, path: path7, data: { statusCode }, persist, times, timesInvoked, origin }) => ({
+                Method: method,
+                Origin: origin,
+                Path: path7,
+                "Status code": statusCode,
+                Persistent: persist ? "\u2705" : "\u274C",
+                Invocations: timesInvoked,
+                Remaining: persist ? Infinity : times - timesInvoked
+              })
+            );
             this.logger.table(withPrettyHeaders);
             return this.transform.read().toString();
           }
@@ -43464,7 +43756,7 @@ ${len.toString(16)}\r
       }
     });
     var require_mock_agent = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/mock/mock-agent.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/mock/mock-agent.js"(exports2, module2) {
         "use strict";
         var { kClients } = require_symbols();
         var Agent = require_agent();
@@ -43601,7 +43893,7 @@ ${pendingInterceptorsFormatter.format(pending)}
       }
     });
     var require_proxy_agent = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/proxy-agent.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/proxy-agent.js"(exports2, module2) {
         "use strict";
         var { kClose, kDestroy } = require_symbols();
         var Client = require_agent();
@@ -43682,13 +43974,16 @@ ${pendingInterceptorsFormatter.format(pending)}
             const { host } = new URL(opts.origin);
             const headers = buildHeaders2(opts.headers);
             throwIfProxyAuthIsSent(headers);
-            return this[kAgent].dispatch({
-              ...opts,
-              headers: {
-                ...headers,
-                host
-              }
-            }, handler);
+            return this[kAgent].dispatch(
+              {
+                ...opts,
+                headers: {
+                  ...headers,
+                  host
+                }
+              },
+              handler
+            );
           }
           async [kClose]() {
             await this[kAgent].close();
@@ -43722,7 +44017,7 @@ ${pendingInterceptorsFormatter.format(pending)}
       }
     });
     var require_global = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/global.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/global.js"(exports2, module2) {
         "use strict";
         var globalDispatcher = Symbol.for("undici.globalDispatcher.1");
         var { InvalidArgumentError } = require_errors();
@@ -43753,7 +44048,7 @@ ${pendingInterceptorsFormatter.format(pending)}
       }
     });
     var require_headers = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/fetch/headers.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/fetch/headers.js"(exports2, module2) {
         "use strict";
         var { kHeadersList } = require_symbols();
         var { kGuard } = require_symbols2();
@@ -43767,7 +44062,10 @@ ${pendingInterceptorsFormatter.format(pending)}
         var kHeadersMap = Symbol("headers map");
         var kHeadersSortedMap = Symbol("headers map sorted");
         function headerValueNormalize(potentialValue) {
-          return potentialValue.replace(/^[\r\n\t ]+|[\r\n\t ]+$/g, "");
+          return potentialValue.replace(
+            /^[\r\n\t ]+|[\r\n\t ]+$/g,
+            ""
+          );
         }
         __name(headerValueNormalize, "headerValueNormalize");
         function fill(headers, object) {
@@ -43875,7 +44173,9 @@ ${pendingInterceptorsFormatter.format(pending)}
               throw new TypeError("Illegal invocation");
             }
             if (arguments.length < 2) {
-              throw new TypeError(`Failed to execute 'append' on 'Headers': 2 arguments required, but only ${arguments.length} present.`);
+              throw new TypeError(
+                `Failed to execute 'append' on 'Headers': 2 arguments required, but only ${arguments.length} present.`
+              );
             }
             name = webidl.converters.ByteString(name);
             value = webidl.converters.ByteString(value);
@@ -43904,7 +44204,9 @@ ${pendingInterceptorsFormatter.format(pending)}
               throw new TypeError("Illegal invocation");
             }
             if (arguments.length < 1) {
-              throw new TypeError(`Failed to execute 'delete' on 'Headers': 1 argument required, but only ${arguments.length} present.`);
+              throw new TypeError(
+                `Failed to execute 'delete' on 'Headers': 1 argument required, but only ${arguments.length} present.`
+              );
             }
             name = webidl.converters.ByteString(name);
             if (!isValidHeaderName(name)) {
@@ -43928,7 +44230,9 @@ ${pendingInterceptorsFormatter.format(pending)}
               throw new TypeError("Illegal invocation");
             }
             if (arguments.length < 1) {
-              throw new TypeError(`Failed to execute 'get' on 'Headers': 1 argument required, but only ${arguments.length} present.`);
+              throw new TypeError(
+                `Failed to execute 'get' on 'Headers': 1 argument required, but only ${arguments.length} present.`
+              );
             }
             name = webidl.converters.ByteString(name);
             if (!isValidHeaderName(name)) {
@@ -43945,7 +44249,9 @@ ${pendingInterceptorsFormatter.format(pending)}
               throw new TypeError("Illegal invocation");
             }
             if (arguments.length < 1) {
-              throw new TypeError(`Failed to execute 'has' on 'Headers': 1 argument required, but only ${arguments.length} present.`);
+              throw new TypeError(
+                `Failed to execute 'has' on 'Headers': 1 argument required, but only ${arguments.length} present.`
+              );
             }
             name = webidl.converters.ByteString(name);
             if (!isValidHeaderName(name)) {
@@ -43962,7 +44268,9 @@ ${pendingInterceptorsFormatter.format(pending)}
               throw new TypeError("Illegal invocation");
             }
             if (arguments.length < 2) {
-              throw new TypeError(`Failed to execute 'set' on 'Headers': 2 arguments required, but only ${arguments.length} present.`);
+              throw new TypeError(
+                `Failed to execute 'set' on 'Headers': 2 arguments required, but only ${arguments.length} present.`
+              );
             }
             name = webidl.converters.ByteString(name);
             value = webidl.converters.ByteString(value);
@@ -44014,10 +44322,14 @@ ${pendingInterceptorsFormatter.format(pending)}
               throw new TypeError("Illegal invocation");
             }
             if (arguments.length < 1) {
-              throw new TypeError(`Failed to execute 'forEach' on 'Headers': 1 argument required, but only ${arguments.length} present.`);
+              throw new TypeError(
+                `Failed to execute 'forEach' on 'Headers': 1 argument required, but only ${arguments.length} present.`
+              );
             }
             if (typeof callbackFn !== "function") {
-              throw new TypeError("Failed to execute 'forEach' on 'Headers': parameter 1 is not of type 'Function'.");
+              throw new TypeError(
+                "Failed to execute 'forEach' on 'Headers': parameter 1 is not of type 'Function'."
+              );
             }
             for (const [key, value] of this) {
               callbackFn.apply(thisArg, [value, key, this]);
@@ -44064,7 +44376,7 @@ ${pendingInterceptorsFormatter.format(pending)}
       }
     });
     var require_response = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/fetch/response.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/fetch/response.js"(exports2, module2) {
         "use strict";
         var { Headers, HeadersList, fill } = require_headers();
         var { extractBody, cloneBody, mixinBody } = require_body();
@@ -44076,7 +44388,8 @@ ${pendingInterceptorsFormatter.format(pending)}
           isCancelled,
           isAborted,
           isBlobLike,
-          serializeJavascriptValueToJSONString
+          serializeJavascriptValueToJSONString,
+          isErrorLike
         } = require_util3();
         var {
           redirectStatus,
@@ -44103,12 +44416,16 @@ ${pendingInterceptorsFormatter.format(pending)}
           }
           static json(data, init = {}) {
             if (arguments.length === 0) {
-              throw new TypeError("Failed to execute 'json' on 'Response': 1 argument required, but 0 present.");
+              throw new TypeError(
+                "Failed to execute 'json' on 'Response': 1 argument required, but 0 present."
+              );
             }
             if (init !== null) {
               init = webidl.converters.ResponseInit(init);
             }
-            const bytes = new TextEncoder("utf-8").encode(serializeJavascriptValueToJSONString(data));
+            const bytes = new TextEncoder("utf-8").encode(
+              serializeJavascriptValueToJSONString(data)
+            );
             const body = extractBody(bytes);
             const relevantRealm = { settingsObject: {} };
             const responseObject = new Response();
@@ -44121,7 +44438,9 @@ ${pendingInterceptorsFormatter.format(pending)}
           static redirect(url, status = 302) {
             const relevantRealm = { settingsObject: {} };
             if (arguments.length < 1) {
-              throw new TypeError(`Failed to execute 'redirect' on 'Response': 1 argument required, but only ${arguments.length} present.`);
+              throw new TypeError(
+                `Failed to execute 'redirect' on 'Response': 1 argument required, but only ${arguments.length} present.`
+              );
             }
             url = webidl.converters.USVString(url);
             status = webidl.converters["unsigned short"](status);
@@ -44250,7 +44569,10 @@ ${pendingInterceptorsFormatter.format(pending)}
         });
         function cloneResponse(response) {
           if (response.internalResponse) {
-            return filterResponse(cloneResponse(response.internalResponse), response.type);
+            return filterResponse(
+              cloneResponse(response.internalResponse),
+              response.type
+            );
           }
           const newResponse = makeResponse({ ...response, body: null });
           if (response.body != null) {
@@ -44277,11 +44599,12 @@ ${pendingInterceptorsFormatter.format(pending)}
         }
         __name(makeResponse, "makeResponse");
         function makeNetworkError(reason) {
+          const isError2 = isErrorLike(reason);
           return makeResponse({
             type: "error",
             status: 0,
-            error: reason instanceof Error ? reason : new Error(reason ? String(reason) : reason, {
-              cause: reason instanceof Error ? reason : void 0
+            error: isError2 ? reason : new Error(reason ? String(reason) : reason, {
+              cause: isError2 ? reason : void 0
             }),
             aborted: reason && reason.name === "AbortError"
           });
@@ -44373,9 +44696,15 @@ ${pendingInterceptorsFormatter.format(pending)}
           }
         }
         __name(initializeResponse, "initializeResponse");
-        webidl.converters.ReadableStream = webidl.interfaceConverter(ReadableStream);
-        webidl.converters.FormData = webidl.interfaceConverter(FormData);
-        webidl.converters.URLSearchParams = webidl.interfaceConverter(URLSearchParams);
+        webidl.converters.ReadableStream = webidl.interfaceConverter(
+          ReadableStream
+        );
+        webidl.converters.FormData = webidl.interfaceConverter(
+          FormData
+        );
+        webidl.converters.URLSearchParams = webidl.interfaceConverter(
+          URLSearchParams
+        );
         webidl.converters.XMLHttpRequestBodyInit = function(V) {
           if (typeof V === "string") {
             return webidl.converters.USVString(V);
@@ -44429,10 +44758,11 @@ ${pendingInterceptorsFormatter.format(pending)}
       }
     });
     var require_request2 = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/fetch/request.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/fetch/request.js"(exports2, module2) {
         "use strict";
         var { extractBody, mixinBody, cloneBody } = require_body();
         var { Headers, fill: fillHeaders, HeadersList } = require_headers();
+        var { FinalizationRegistry: FinalizationRegistry2 } = require_dispatcher_weakref()();
         var util2 = require_util2();
         var {
           isValidHTTPToken,
@@ -44455,7 +44785,7 @@ ${pendingInterceptorsFormatter.format(pending)}
         var assert = require("assert");
         var TransformStream;
         var kInit = Symbol("init");
-        var requestFinalizer = new FinalizationRegistry(({ signal, abort }) => {
+        var requestFinalizer = new FinalizationRegistry2(({ signal, abort }) => {
           signal.removeEventListener("abort", abort);
         });
         var Request = class {
@@ -44465,7 +44795,9 @@ ${pendingInterceptorsFormatter.format(pending)}
               return;
             }
             if (arguments.length < 1) {
-              throw new TypeError(`Failed to construct 'Request': 1 argument required, but only ${arguments.length} present.`);
+              throw new TypeError(
+                `Failed to construct 'Request': 1 argument required, but only ${arguments.length} present.`
+              );
             }
             input = webidl.converters.RequestInfo(input);
             init = webidl.converters.RequestInit(init);
@@ -44482,7 +44814,9 @@ ${pendingInterceptorsFormatter.format(pending)}
                 throw new TypeError("Failed to parse URL from " + input, { cause: err });
               }
               if (parsedURL.username || parsedURL.password) {
-                throw new TypeError("Request cannot be constructed from a URL that includes credentials: " + input);
+                throw new TypeError(
+                  "Request cannot be constructed from a URL that includes credentials: " + input
+                );
               }
               request2 = makeRequest({ urlList: [parsedURL] });
               fallbackMode = "cors";
@@ -44551,14 +44885,18 @@ ${pendingInterceptorsFormatter.format(pending)}
             if (init.referrerPolicy !== void 0) {
               request2.referrerPolicy = init.referrerPolicy;
               if (!referrerPolicy.includes(request2.referrerPolicy)) {
-                throw new TypeError(`Failed to construct 'Request': The provided value '${request2.referrerPolicy}' is not a valid enum value of type ReferrerPolicy.`);
+                throw new TypeError(
+                  `Failed to construct 'Request': The provided value '${request2.referrerPolicy}' is not a valid enum value of type ReferrerPolicy.`
+                );
               }
             }
             let mode;
             if (init.mode !== void 0) {
               mode = init.mode;
               if (!requestMode.includes(mode)) {
-                throw new TypeError(`Failed to construct 'Request': The provided value '${request2.mode}' is not a valid enum value of type RequestMode.`);
+                throw new TypeError(
+                  `Failed to construct 'Request': The provided value '${request2.mode}' is not a valid enum value of type RequestMode.`
+                );
               }
             } else {
               mode = fallbackMode;
@@ -44575,22 +44913,30 @@ ${pendingInterceptorsFormatter.format(pending)}
             if (init.credentials !== void 0) {
               request2.credentials = init.credentials;
               if (!requestCredentials.includes(request2.credentials)) {
-                throw new TypeError(`Failed to construct 'Request': The provided value '${request2.credentials}' is not a valid enum value of type RequestCredentials.`);
+                throw new TypeError(
+                  `Failed to construct 'Request': The provided value '${request2.credentials}' is not a valid enum value of type RequestCredentials.`
+                );
               }
             }
             if (init.cache !== void 0) {
               request2.cache = init.cache;
               if (!requestCache.includes(request2.cache)) {
-                throw new TypeError(`Failed to construct 'Request': The provided value '${request2.cache}' is not a valid enum value of type RequestCache.`);
+                throw new TypeError(
+                  `Failed to construct 'Request': The provided value '${request2.cache}' is not a valid enum value of type RequestCache.`
+                );
               }
             }
             if (request2.cache === "only-if-cached" && request2.mode !== "same-origin") {
-              throw new TypeError("'only-if-cached' can be set only with 'same-origin' mode");
+              throw new TypeError(
+                "'only-if-cached' can be set only with 'same-origin' mode"
+              );
             }
             if (init.redirect !== void 0) {
               request2.redirect = init.redirect;
               if (!requestRedirect.includes(request2.redirect)) {
-                throw new TypeError(`Failed to construct 'Request': The provided value '${request2.redirect}' is not a valid enum value of type RequestRedirect.`);
+                throw new TypeError(
+                  `Failed to construct 'Request': The provided value '${request2.redirect}' is not a valid enum value of type RequestRedirect.`
+                );
               }
             }
             if (init.integrity !== void 0 && init.integrity != null) {
@@ -44619,12 +44965,14 @@ ${pendingInterceptorsFormatter.format(pending)}
             this[kSignal][kRealm] = this[kRealm];
             if (signal != null) {
               if (!signal || typeof signal.aborted !== "boolean" || typeof signal.addEventListener !== "function") {
-                throw new TypeError("Failed to construct 'Request': member signal is not of type AbortSignal.");
+                throw new TypeError(
+                  "Failed to construct 'Request': member signal is not of type AbortSignal."
+                );
               }
               if (signal.aborted) {
-                ac.abort();
+                ac.abort(signal.reason);
               } else {
-                const abort = /* @__PURE__ */ __name(() => ac.abort(), "abort");
+                const abort = /* @__PURE__ */ __name(() => ac.abort(signal.reason), "abort");
                 signal.addEventListener("abort", abort, { once: true });
                 requestFinalizer.register(this, { signal, abort });
               }
@@ -44635,7 +44983,9 @@ ${pendingInterceptorsFormatter.format(pending)}
             this[kHeaders][kRealm] = this[kRealm];
             if (mode === "no-cors") {
               if (!corsSafeListedMethods.includes(request2.method)) {
-                throw new TypeError(`'${request2.method} is unsupported in no-cors mode.`);
+                throw new TypeError(
+                  `'${request2.method} is unsupported in no-cors mode.`
+                );
               }
               this[kHeaders][kGuard] = "request-no-cors";
             }
@@ -44659,7 +45009,10 @@ ${pendingInterceptorsFormatter.format(pending)}
             }
             let initBody = null;
             if (init.body !== void 0 && init.body != null) {
-              const [extractedBody, contentType] = extractBody(init.body, request2.keepalive);
+              const [extractedBody, contentType] = extractBody(
+                init.body,
+                request2.keepalive
+              );
               initBody = extractedBody;
               if (contentType && !this[kHeaders].has("content-type")) {
                 this[kHeaders].append("content-type", contentType);
@@ -44668,14 +45021,18 @@ ${pendingInterceptorsFormatter.format(pending)}
             const inputOrInitBody = initBody != null ? initBody : inputBody;
             if (inputOrInitBody != null && inputOrInitBody.source == null) {
               if (request2.mode !== "same-origin" && request2.mode !== "cors") {
-                throw new TypeError('If request is made from ReadableStream, mode should be "same-origin" or "cors"');
+                throw new TypeError(
+                  'If request is made from ReadableStream, mode should be "same-origin" or "cors"'
+                );
               }
               request2.useCORSPreflightFlag = true;
             }
             let finalBody = inputOrInitBody;
             if (initBody == null && inputBody != null) {
               if (util2.isDisturbed(inputBody.stream) || inputBody.stream.locked) {
-                throw new TypeError("Cannot construct a Request with a Request object that has already been used.");
+                throw new TypeError(
+                  "Cannot construct a Request with a Request object that has already been used."
+                );
               }
               if (!TransformStream) {
                 TransformStream = require("stream/web").TransformStream;
@@ -44804,11 +45161,15 @@ ${pendingInterceptorsFormatter.format(pending)}
             clonedRequestObject[kHeaders][kRealm] = this[kHeaders][kRealm];
             const ac = new AbortController();
             if (this.signal.aborted) {
-              ac.abort();
+              ac.abort(this.signal.reason);
             } else {
-              this.signal.addEventListener("abort", function() {
-                ac.abort();
-              }, { once: true });
+              this.signal.addEventListener(
+                "abort",
+                () => {
+                  ac.abort(this.signal.reason);
+                },
+                { once: true }
+              );
             }
             clonedRequestObject[kSignal] = ac.signal;
             return clonedRequestObject;
@@ -44876,7 +45237,9 @@ ${pendingInterceptorsFormatter.format(pending)}
           clone: kEnumerableProperty,
           signal: kEnumerableProperty
         });
-        webidl.converters.Request = webidl.interfaceConverter(Request);
+        webidl.converters.Request = webidl.interfaceConverter(
+          Request
+        );
         webidl.converters.RequestInfo = function(V) {
           if (typeof V === "string") {
             return webidl.converters.USVString(V);
@@ -44886,7 +45249,9 @@ ${pendingInterceptorsFormatter.format(pending)}
           }
           return webidl.converters.USVString(V);
         };
-        webidl.converters.AbortSignal = webidl.interfaceConverter(AbortSignal);
+        webidl.converters.AbortSignal = webidl.interfaceConverter(
+          AbortSignal
+        );
         webidl.converters.RequestInit = webidl.dictionaryConverter([
           {
             key: "method",
@@ -44898,7 +45263,9 @@ ${pendingInterceptorsFormatter.format(pending)}
           },
           {
             key: "body",
-            converter: webidl.nullableConverter(webidl.converters.BodyInit)
+            converter: webidl.nullableConverter(
+              webidl.converters.BodyInit
+            )
           },
           {
             key: "referrer",
@@ -44970,7 +45337,12 @@ ${pendingInterceptorsFormatter.format(pending)}
           },
           {
             key: "signal",
-            converter: webidl.nullableConverter(webidl.converters.AbortSignal)
+            converter: webidl.nullableConverter(
+              (signal) => webidl.converters.AbortSignal(
+                signal,
+                { strict: false }
+              )
+            )
           },
           {
             key: "window",
@@ -44981,7 +45353,7 @@ ${pendingInterceptorsFormatter.format(pending)}
       }
     });
     var require_dataURL = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/fetch/dataURL.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/fetch/dataURL.js"(exports2, module2) {
         var assert = require("assert");
         var { atob: atob2 } = require("buffer");
         var encoder = new TextEncoder();
@@ -44990,7 +45362,11 @@ ${pendingInterceptorsFormatter.format(pending)}
           let input = URLSerializer(dataURL, true);
           input = input.slice(5);
           const position = { position: 0 };
-          let mimeType = collectASequenceOfCodePoints((char) => char !== ",", input, position);
+          let mimeType = collectASequenceOfCodePoints(
+            (char) => char !== ",",
+            input,
+            position
+          );
           const mimeTypeLength = mimeType.length;
           mimeType = mimeType.replace(/^(\u0020)+|(\u0020)+$/g, "");
           if (position.position >= input.length) {
@@ -45077,13 +45453,17 @@ ${pendingInterceptorsFormatter.format(pending)}
               i += 2;
             }
           }
-          return Uint8Array.of(...output);
+          return Uint8Array.from(output);
         }
         __name(percentDecode, "percentDecode");
         function parseMIMEType(input) {
           input = input.trim();
           const position = { position: 0 };
-          const type = collectASequenceOfCodePoints((char) => char !== "/", input, position);
+          const type = collectASequenceOfCodePoints(
+            (char) => char !== "/",
+            input,
+            position
+          );
           if (type.length === 0 || !/^[!#$%&'*+-.^_|~A-z0-9]+$/.test(type)) {
             return "failure";
           }
@@ -45091,7 +45471,11 @@ ${pendingInterceptorsFormatter.format(pending)}
             return "failure";
           }
           position.position++;
-          let subtype = collectASequenceOfCodePoints((char) => char !== ";", input, position);
+          let subtype = collectASequenceOfCodePoints(
+            (char) => char !== ";",
+            input,
+            position
+          );
           subtype = subtype.trim();
           if (subtype.length === 0 || !/^[!#$%&'*+-.^_|~A-z0-9]+$/.test(subtype)) {
             return "failure";
@@ -45103,8 +45487,16 @@ ${pendingInterceptorsFormatter.format(pending)}
           };
           while (position.position < input.length) {
             position.position++;
-            collectASequenceOfCodePoints((char) => /(\u000A|\u000D|\u0009|\u0020)/.test(char), input, position);
-            let parameterName = collectASequenceOfCodePoints((char) => char !== ";" && char !== "=", input, position);
+            collectASequenceOfCodePoints(
+              (char) => /(\u000A|\u000D|\u0009|\u0020)/.test(char),
+              input,
+              position
+            );
+            let parameterName = collectASequenceOfCodePoints(
+              (char) => char !== ";" && char !== "=",
+              input,
+              position
+            );
             parameterName = parameterName.toLowerCase();
             if (position.position < input.length) {
               if (input[position.position] === ";") {
@@ -45118,9 +45510,17 @@ ${pendingInterceptorsFormatter.format(pending)}
             let parameterValue = null;
             if (input[position.position] === '"') {
               parameterValue = collectAnHTTPQuotedString(input, position);
-              collectASequenceOfCodePoints((char) => char !== ";", input, position);
+              collectASequenceOfCodePoints(
+                (char) => char !== ";",
+                input,
+                position
+              );
             } else {
-              parameterValue = collectASequenceOfCodePoints((char) => char !== ";", input, position);
+              parameterValue = collectASequenceOfCodePoints(
+                (char) => char !== ";",
+                input,
+                position
+              );
               parameterValue = parameterValue.trim();
               if (parameterValue.length === 0) {
                 continue;
@@ -45158,7 +45558,11 @@ ${pendingInterceptorsFormatter.format(pending)}
           assert(input[position.position] === '"');
           position.position++;
           while (true) {
-            value += collectASequenceOfCodePoints((char) => char !== '"' && char !== "\\", input, position);
+            value += collectASequenceOfCodePoints(
+              (char) => char !== '"' && char !== "\\",
+              input,
+              position
+            );
             if (position.position >= input.length) {
               break;
             }
@@ -45193,7 +45597,7 @@ ${pendingInterceptorsFormatter.format(pending)}
       }
     });
     var require_fetch = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/lib/fetch/index.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/lib/fetch/index.js"(exports2, module2) {
         "use strict";
         var {
           Response,
@@ -45206,7 +45610,7 @@ ${pendingInterceptorsFormatter.format(pending)}
         var { Request, makeRequest } = require_request2();
         var zlib = require("zlib");
         var {
-          matchRequestIntegrity,
+          bytesMatch,
           makePolicyContainer,
           clonePolicyContainer,
           requestBadPort,
@@ -45226,7 +45630,9 @@ ${pendingInterceptorsFormatter.format(pending)}
           isBlobLike,
           sameOrigin,
           isCancelled,
-          isAborted
+          isAborted,
+          isErrorLike,
+          fullyReadBody
         } = require_util3();
         var { kState, kHeaders, kGuard, kRealm } = require_symbols2();
         var assert = require("assert");
@@ -45282,7 +45688,9 @@ ${pendingInterceptorsFormatter.format(pending)}
         async function fetch2(input, init = {}) {
           var _a32;
           if (arguments.length < 1) {
-            throw new TypeError(`Failed to execute 'fetch' on 'Window': 1 argument required, but only ${arguments.length} present.`);
+            throw new TypeError(
+              `Failed to execute 'fetch' on 'Window': 1 argument required, but only ${arguments.length} present.`
+            );
           }
           const p = createDeferredPromise();
           let requestObject;
@@ -45305,13 +45713,17 @@ ${pendingInterceptorsFormatter.format(pending)}
           const relevantRealm = null;
           let locallyAborted = false;
           let controller = null;
-          requestObject.signal.addEventListener("abort", () => {
-            locallyAborted = true;
-            abortFetch(p, request2, responseObject);
-            if (controller != null) {
-              controller.abort();
-            }
-          }, { once: true });
+          requestObject.signal.addEventListener(
+            "abort",
+            () => {
+              locallyAborted = true;
+              abortFetch(p, request2, responseObject);
+              if (controller != null) {
+                controller.abort();
+              }
+            },
+            { once: true }
+          );
           const handleFetchDone = /* @__PURE__ */ __name((response) => finalizeAndReportTiming(response, "fetch"), "handleFetchDone");
           const processResponse = /* @__PURE__ */ __name((response) => {
             if (locallyAborted) {
@@ -45322,7 +45734,9 @@ ${pendingInterceptorsFormatter.format(pending)}
               return;
             }
             if (response.type === "error") {
-              p.reject(Object.assign(new TypeError("fetch failed"), { cause: response.error }));
+              p.reject(
+                Object.assign(new TypeError("fetch failed"), { cause: response.error })
+              );
               return;
             }
             responseObject = new Response();
@@ -45367,7 +45781,13 @@ ${pendingInterceptorsFormatter.format(pending)}
           }
           response.timingInfo.endTime = coarsenedSharedCurrentTime();
           response.timingInfo = timingInfo;
-          markResourceTiming(timingInfo, originalURL, initiatorType, globalThis, cacheState);
+          markResourceTiming(
+            timingInfo,
+            originalURL,
+            initiatorType,
+            globalThis,
+            cacheState
+          );
         }
         __name(finalizeAndReportTiming, "finalizeAndReportTiming");
         function markResourceTiming(timingInfo, originalURL, initiatorType, globalThis2, cacheState) {
@@ -45444,7 +45864,9 @@ ${pendingInterceptorsFormatter.format(pending)}
           }
           if (request2.policyContainer === "client") {
             if (request2.client != null) {
-              request2.policyContainer = clonePolicyContainer(request2.client.policyContainer);
+              request2.policyContainer = clonePolicyContainer(
+                request2.client.policyContainer
+              );
             } else {
               request2.policyContainer = makePolicyContainer();
             }
@@ -45494,7 +45916,9 @@ ${pendingInterceptorsFormatter.format(pending)}
               }
               if (request2.mode === "no-cors") {
                 if (request2.redirect !== "follow") {
-                  return makeNetworkError('redirect mode cannot be "follow" for "no-cors" request');
+                  return makeNetworkError(
+                    'redirect mode cannot be "follow" for "no-cors" request'
+                  );
                 }
                 request2.responseTainting = "opaque";
                 return await schemeFetch(fetchParams);
@@ -45543,18 +45967,14 @@ ${pendingInterceptorsFormatter.format(pending)}
               return;
             }
             const processBody = /* @__PURE__ */ __name((bytes) => {
-              if (!matchRequestIntegrity(request2, bytes)) {
+              if (!bytesMatch(bytes, request2.integrity)) {
                 processBodyError("integrity mismatch");
                 return;
               }
               response.body = safelyExtractBody(bytes)[0];
               fetchFinale(fetchParams, response);
             }, "processBody");
-            try {
-              processBody(await response.arrayBuffer());
-            } catch (err) {
-              processBodyError(err);
-            }
+            await fullyReadBody(response.body, processBody, processBodyError);
           } else {
             fetchFinale(fetchParams, response);
           }
@@ -45680,11 +46100,7 @@ ${pendingInterceptorsFormatter.format(pending)}
             if (response.body == null) {
               queueMicrotask(() => processBody(null));
             } else {
-              try {
-                processBody(await response.body.stream.arrayBuffer());
-              } catch (err) {
-                processBodyError(err);
-              }
+              await fullyReadBody(response.body, processBody, processBodyError);
             }
           }
         }
@@ -45708,7 +46124,12 @@ ${pendingInterceptorsFormatter.format(pending)}
               request2.timingAllowFailed = true;
             }
           }
-          if ((request2.responseTainting === "opaque" || response.type === "opaque") && crossOriginResourcePolicyCheck(request2.origin, request2.client, request2.destination, actualResponse) === "blocked") {
+          if ((request2.responseTainting === "opaque" || response.type === "opaque") && crossOriginResourcePolicyCheck(
+            request2.origin,
+            request2.client,
+            request2.destination,
+            actualResponse
+          ) === "blocked") {
             return makeNetworkError("blocked");
           }
           if (redirectStatus.includes(actualResponse.status)) {
@@ -45732,7 +46153,10 @@ ${pendingInterceptorsFormatter.format(pending)}
           const actualResponse = response.internalResponse ? response.internalResponse : response;
           let locationURL;
           try {
-            locationURL = responseLocationURL(actualResponse, requestCurrentURL(request2).hash);
+            locationURL = responseLocationURL(
+              actualResponse,
+              requestCurrentURL(request2).hash
+            );
             if (locationURL == null) {
               return response;
             }
@@ -45750,7 +46174,9 @@ ${pendingInterceptorsFormatter.format(pending)}
             return makeNetworkError('cross origin not allowed for request mode "cors"');
           }
           if (request2.responseTainting === "cors" && (locationURL.username || locationURL.password)) {
-            return makeNetworkError('URL cannot contain credentials for request mode "cors"');
+            return makeNetworkError(
+              'URL cannot contain credentials for request mode "cors"'
+            );
           }
           if (actualResponse.status !== 303 && request2.body != null && request2.body.source == null) {
             return makeNetworkError();
@@ -45848,7 +46274,11 @@ ${pendingInterceptorsFormatter.format(pending)}
             if (httpRequest.mode === "only-if-cached") {
               return makeNetworkError("only if cached");
             }
-            const forwardResponse = await httpNetworkFetch(httpFetchParams, includeCredentials, isNewConnectionFetch);
+            const forwardResponse = await httpNetworkFetch(
+              httpFetchParams,
+              includeCredentials,
+              isNewConnectionFetch
+            );
             if (!safeMethods.includes(httpRequest.method) && forwardResponse.status >= 200 && forwardResponse.status <= 399) {
             }
             if (revalidatingFlag && forwardResponse.status === 304) {
@@ -45876,7 +46306,11 @@ ${pendingInterceptorsFormatter.format(pending)}
               return makeAppropriateNetworkError(fetchParams);
             }
             fetchParams.controller.connection.destroy();
-            response = await httpNetworkOrCacheFetch(fetchParams, isAuthenticationFetch, true);
+            response = await httpNetworkOrCacheFetch(
+              fetchParams,
+              isAuthenticationFetch,
+              true
+            );
           }
           if (isAuthenticationFetch) {
           }
@@ -45969,17 +46403,20 @@ ${pendingInterceptorsFormatter.format(pending)}
           if (!ReadableStream) {
             ReadableStream = require("stream/web").ReadableStream;
           }
-          const stream2 = new ReadableStream({
-            async start(controller) {
-              fetchParams.controller.controller = controller;
+          const stream2 = new ReadableStream(
+            {
+              async start(controller) {
+                fetchParams.controller.controller = controller;
+              },
+              async pull(controller) {
+                await pullAlgorithm(controller);
+              },
+              async cancel(reason) {
+                await cancelAlgorithm(reason);
+              }
             },
-            async pull(controller) {
-              await pullAlgorithm(controller);
-            },
-            async cancel(reason) {
-              await cancelAlgorithm(reason);
-            }
-          }, { highWaterMark: 0 });
+            { highWaterMark: 0 }
+          );
           response.body = { stream: stream2 };
           fetchParams.controller.on("terminated", onAborted);
           fetchParams.controller.resume = async () => {
@@ -46011,7 +46448,7 @@ ${pendingInterceptorsFormatter.format(pending)}
                 return;
               }
               timingInfo.decodedBodySize += (_a32 = bytes == null ? void 0 : bytes.byteLength) != null ? _a32 : 0;
-              if (bytes instanceof Error) {
+              if (isErrorLike(bytes)) {
                 fetchParams.controller.terminate(bytes);
                 return;
               }
@@ -46029,12 +46466,14 @@ ${pendingInterceptorsFormatter.format(pending)}
             if (isAborted(fetchParams)) {
               response.aborted = true;
               if (isReadable(stream2)) {
-                fetchParams.controller.controller.error(new DOMException("The operation was aborted.", "AbortError"));
+                fetchParams.controller.controller.error(
+                  new DOMException("The operation was aborted.", "AbortError")
+                );
               }
             } else {
               if (isReadable(stream2)) {
                 fetchParams.controller.controller.error(new TypeError("terminated", {
-                  cause: reason instanceof Error ? reason : void 0
+                  cause: isErrorLike(reason) ? reason : void 0
                 }));
               }
             }
@@ -46044,92 +46483,98 @@ ${pendingInterceptorsFormatter.format(pending)}
           return response;
           async function dispatch({ body }) {
             const url = requestCurrentURL(request2);
-            return new Promise((resolve, reject) => fetchParams.controller.dispatcher.dispatch({
-              path: url.pathname + url.search,
-              origin: url.origin,
-              method: request2.method,
-              body: fetchParams.controller.dispatcher.isMockActive ? request2.body && request2.body.source : body,
-              headers: [...request2.headersList].flat(),
-              maxRedirections: 0,
-              bodyTimeout: 3e5,
-              headersTimeout: 3e5
-            }, {
-              body: null,
-              abort: null,
-              onConnect(abort) {
-                const { connection } = fetchParams.controller;
-                if (connection.destroyed) {
-                  abort(new DOMException("The operation was aborted.", "AbortError"));
-                } else {
-                  fetchParams.controller.on("terminated", abort);
-                  this.abort = connection.abort = abort;
-                }
+            return new Promise((resolve, reject) => fetchParams.controller.dispatcher.dispatch(
+              {
+                path: url.pathname + url.search,
+                origin: url.origin,
+                method: request2.method,
+                body: fetchParams.controller.dispatcher.isMockActive ? request2.body && request2.body.source : body,
+                headers: [...request2.headersList].flat(),
+                maxRedirections: 0,
+                bodyTimeout: 3e5,
+                headersTimeout: 3e5
               },
-              onHeaders(status, headersList, resume, statusText) {
-                if (status < 200) {
-                  return;
-                }
-                let codings = [];
-                const headers = new Headers();
-                for (let n = 0; n < headersList.length; n += 2) {
-                  const key = headersList[n + 0].toString();
-                  const val = headersList[n + 1].toString();
-                  if (key.toLowerCase() === "content-encoding") {
-                    codings = val.split(",").map((x) => x.trim());
+              {
+                body: null,
+                abort: null,
+                onConnect(abort) {
+                  const { connection } = fetchParams.controller;
+                  if (connection.destroyed) {
+                    abort(new DOMException("The operation was aborted.", "AbortError"));
+                  } else {
+                    fetchParams.controller.on("terminated", abort);
+                    this.abort = connection.abort = abort;
                   }
-                  headers.append(key, val);
-                }
-                this.body = new Readable({ read: resume });
-                const decoders = [];
-                if (request2.method !== "HEAD" && request2.method !== "CONNECT" && !nullBodyStatus.includes(status)) {
-                  for (const coding of codings) {
-                    if (/(x-)?gzip/.test(coding)) {
-                      decoders.push(zlib.createGunzip());
-                    } else if (/(x-)?deflate/.test(coding)) {
-                      decoders.push(zlib.createInflate());
-                    } else if (coding === "br") {
-                      decoders.push(zlib.createBrotliDecompress());
-                    } else {
-                      decoders.length = 0;
-                      break;
+                },
+                onHeaders(status, headersList, resume, statusText) {
+                  if (status < 200) {
+                    return;
+                  }
+                  let codings = [];
+                  let location = "";
+                  const headers = new Headers();
+                  for (let n = 0; n < headersList.length; n += 2) {
+                    const key = headersList[n + 0].toString("latin1");
+                    const val = headersList[n + 1].toString("latin1");
+                    if (key.toLowerCase() === "content-encoding") {
+                      codings = val.split(",").map((x) => x.trim());
+                    } else if (key.toLowerCase() === "location") {
+                      location = val;
+                    }
+                    headers.append(key, val);
+                  }
+                  this.body = new Readable({ read: resume });
+                  const decoders = [];
+                  if (request2.method !== "HEAD" && request2.method !== "CONNECT" && !nullBodyStatus.includes(status) && !(request2.redirect === "follow" && location)) {
+                    for (const coding of codings) {
+                      if (/(x-)?gzip/.test(coding)) {
+                        decoders.push(zlib.createGunzip());
+                      } else if (/(x-)?deflate/.test(coding)) {
+                        decoders.push(zlib.createInflate());
+                      } else if (coding === "br") {
+                        decoders.push(zlib.createBrotliDecompress());
+                      } else {
+                        decoders.length = 0;
+                        break;
+                      }
                     }
                   }
+                  resolve({
+                    status,
+                    statusText,
+                    headersList: headers[kHeadersList],
+                    body: decoders.length ? pipeline(this.body, ...decoders, () => {
+                    }) : this.body.on("error", () => {
+                    })
+                  });
+                  return true;
+                },
+                onData(chunk) {
+                  if (fetchParams.controller.dump) {
+                    return;
+                  }
+                  const bytes = chunk;
+                  timingInfo.encodedBodySize += bytes.byteLength;
+                  return this.body.push(bytes);
+                },
+                onComplete() {
+                  if (this.abort) {
+                    fetchParams.controller.off("terminated", this.abort);
+                  }
+                  fetchParams.controller.ended = true;
+                  this.body.push(null);
+                },
+                onError(error2) {
+                  var _a32;
+                  if (this.abort) {
+                    fetchParams.controller.off("terminated", this.abort);
+                  }
+                  (_a32 = this.body) == null ? void 0 : _a32.destroy(error2);
+                  fetchParams.controller.terminate(error2);
+                  reject(error2);
                 }
-                resolve({
-                  status,
-                  statusText,
-                  headersList: headers[kHeadersList],
-                  body: decoders.length ? pipeline(this.body, ...decoders, () => {
-                  }) : this.body.on("error", () => {
-                  })
-                });
-                return true;
-              },
-              onData(chunk) {
-                if (fetchParams.controller.dump) {
-                  return;
-                }
-                const bytes = chunk;
-                timingInfo.encodedBodySize += bytes.byteLength;
-                return this.body.push(bytes);
-              },
-              onComplete() {
-                if (this.abort) {
-                  fetchParams.controller.off("terminated", this.abort);
-                }
-                fetchParams.controller.ended = true;
-                this.body.push(null);
-              },
-              onError(error2) {
-                var _a32;
-                if (this.abort) {
-                  fetchParams.controller.off("terminated", this.abort);
-                }
-                (_a32 = this.body) == null ? void 0 : _a32.destroy(error2);
-                fetchParams.controller.terminate(error2);
-                reject(error2);
               }
-            }));
+            ));
           }
           __name(dispatch, "dispatch");
         }
@@ -46138,7 +46583,7 @@ ${pendingInterceptorsFormatter.format(pending)}
       }
     });
     var require_undici = __commonJS({
-      "../../node_modules/.pnpm/undici@5.8.0/node_modules/undici/index.js"(exports2, module2) {
+      "../../node_modules/.pnpm/undici@5.10.0/node_modules/undici/index.js"(exports2, module2) {
         "use strict";
         var Client = require_client();
         var Dispatcher = require_dispatcher();
@@ -46184,7 +46629,11 @@ ${pendingInterceptorsFormatter.format(pending)}
               if (typeof opts.path !== "string") {
                 throw new InvalidArgumentError("invalid opts.path");
               }
-              url = new URL(opts.path, util2.parseOrigin(url));
+              let path7 = opts.path;
+              if (!opts.path.startsWith("/")) {
+                path7 = `/${path7}`;
+              }
+              url = new URL(util2.parseOrigin(url).origin + path7);
             } else {
               if (!opts) {
                 opts = typeof url === "object" ? url : {};
@@ -46233,8 +46682,8 @@ ${pendingInterceptorsFormatter.format(pending)}
       }
     });
     var require_main2 = __commonJS({
-      "../../node_modules/.pnpm/dotenv@16.0.1/node_modules/dotenv/lib/main.js"(exports2, module2) {
-        var fs10 = require("fs");
+      "../../node_modules/.pnpm/dotenv@16.0.2/node_modules/dotenv/lib/main.js"(exports2, module2) {
+        var fs11 = require("fs");
         var path7 = require("path");
         var os3 = require("os");
         var LINE = /(?:^|^)\s*(?:export\s+)?([\w.-]+)(?:\s*=\s*?|:\s+?)(\s*'(?:\\'|[^'])*'|\s*"(?:\\"|[^"])*"|\s*`(?:\\`|[^`])*`|[^#\r\n]+)?\s*(?:#.*)?(?:$|$)/mg;
@@ -46280,7 +46729,7 @@ ${pendingInterceptorsFormatter.format(pending)}
             }
           }
           try {
-            const parsed = DotenvModule.parse(fs10.readFileSync(dotenvPath, { encoding }));
+            const parsed = DotenvModule.parse(fs11.readFileSync(dotenvPath, { encoding }));
             Object.keys(parsed).forEach(function(key) {
               if (!Object.prototype.hasOwnProperty.call(process.env, key)) {
                 process.env[key] = parsed[key];
@@ -46333,20 +46782,32 @@ ${pendingInterceptorsFormatter.format(pending)}
           stopAtPositional = false
         } = {}) {
           if (!opts) {
-            throw new ArgError("argument specification object is required", "ARG_CONFIG_NO_SPEC");
+            throw new ArgError(
+              "argument specification object is required",
+              "ARG_CONFIG_NO_SPEC"
+            );
           }
           const result = { _: [] };
           const aliases = {};
           const handlers = {};
           for (const key of Object.keys(opts)) {
             if (!key) {
-              throw new ArgError("argument key cannot be an empty string", "ARG_CONFIG_EMPTY_KEY");
+              throw new ArgError(
+                "argument key cannot be an empty string",
+                "ARG_CONFIG_EMPTY_KEY"
+              );
             }
             if (key[0] !== "-") {
-              throw new ArgError(`argument key must start with '-' but found: '${key}'`, "ARG_CONFIG_NONOPT_KEY");
+              throw new ArgError(
+                `argument key must start with '-' but found: '${key}'`,
+                "ARG_CONFIG_NONOPT_KEY"
+              );
             }
             if (key.length === 1) {
-              throw new ArgError(`argument key must have a name; singular '-' keys are not allowed: ${key}`, "ARG_CONFIG_NONAME_KEY");
+              throw new ArgError(
+                `argument key must have a name; singular '-' keys are not allowed: ${key}`,
+                "ARG_CONFIG_NONAME_KEY"
+              );
             }
             if (typeof opts[key] === "string") {
               aliases[key] = opts[key];
@@ -46364,10 +46825,16 @@ ${pendingInterceptorsFormatter.format(pending)}
             } else if (typeof type === "function") {
               isFlag = type === Boolean || type[flagSymbol] === true;
             } else {
-              throw new ArgError(`type missing or not a function or valid array type: ${key}`, "ARG_CONFIG_VAD_TYPE");
+              throw new ArgError(
+                `type missing or not a function or valid array type: ${key}`,
+                "ARG_CONFIG_VAD_TYPE"
+              );
             }
             if (key[1] !== "-" && key.length > 2) {
-              throw new ArgError(`short argument keys (with a single hyphen) must have only one character: ${key}`, "ARG_CONFIG_SHORTOPT_TOOLONG");
+              throw new ArgError(
+                `short argument keys (with a single hyphen) must have only one character: ${key}`,
+                "ARG_CONFIG_SHORTOPT_TOOLONG"
+              );
             }
             handlers[key] = [type, isFlag];
           }
@@ -46395,19 +46862,28 @@ ${pendingInterceptorsFormatter.format(pending)}
                     result._.push(arg3);
                     continue;
                   } else {
-                    throw new ArgError(`unknown or unexpected option: ${originalArgName}`, "ARG_UNKNOWN_OPTION");
+                    throw new ArgError(
+                      `unknown or unexpected option: ${originalArgName}`,
+                      "ARG_UNKNOWN_OPTION"
+                    );
                   }
                 }
                 const [type, isFlag] = handlers[argName];
                 if (!isFlag && j + 1 < separatedArguments.length) {
-                  throw new ArgError(`option requires argument (but was followed by another short argument): ${originalArgName}`, "ARG_MISSING_REQUIRED_SHORTARG");
+                  throw new ArgError(
+                    `option requires argument (but was followed by another short argument): ${originalArgName}`,
+                    "ARG_MISSING_REQUIRED_SHORTARG"
+                  );
                 }
                 if (isFlag) {
                   result[argName] = type(true, argName, result[argName]);
                 } else if (argStr === void 0) {
                   if (argv.length < i + 2 || argv[i + 1].length > 1 && argv[i + 1][0] === "-" && !(argv[i + 1].match(/^-?\d*(\.(?=\d))?\d*$/) && (type === Number || typeof BigInt !== "undefined" && type === BigInt))) {
                     const extended = originalArgName === argName ? "" : ` (alias for ${argName})`;
-                    throw new ArgError(`option requires argument: ${originalArgName}${extended}`, "ARG_MISSING_REQUIRED_LONGARG");
+                    throw new ArgError(
+                      `option requires argument: ${originalArgName}${extended}`,
+                      "ARG_MISSING_REQUIRED_LONGARG"
+                    );
                   }
                   result[argName] = type(argv[i + 1], argName, result[argName]);
                   ++i;
@@ -46455,90 +46931,6 @@ ${pendingInterceptorsFormatter.format(pending)}
           const regex = new RegExp(`^[ \\t]{${indent4}}`, "gm");
           return string.replace(regex, "");
         };
-      }
-    });
-    var require_dist = __commonJS({
-      "../../node_modules/.pnpm/sql-template-tag@4.0.0/node_modules/sql-template-tag/dist/index.js"(exports2) {
-        "use strict";
-        Object.defineProperty(exports2, "__esModule", { value: true });
-        exports2.sqltag = exports2.empty = exports2.raw = exports2.join = exports2.Sql = void 0;
-        var util_1 = require("util");
-        var Sql2 = class {
-          constructor(rawStrings, rawValues) {
-            let valuesLength = rawValues.length;
-            let stringsLength = rawStrings.length;
-            if (stringsLength === 0) {
-              throw new TypeError("Expected at least 1 string");
-            }
-            if (stringsLength - 1 !== valuesLength) {
-              throw new TypeError(`Expected ${stringsLength} strings to have ${stringsLength - 1} values`);
-            }
-            for (const child of rawValues) {
-              if (child instanceof Sql2) {
-                valuesLength += child.values.length - 1;
-                stringsLength += child.strings.length - 2;
-              }
-            }
-            this.values = new Array(valuesLength);
-            this.strings = new Array(stringsLength);
-            this.strings[0] = rawStrings[0];
-            let index = 1;
-            let position = 0;
-            while (index < rawStrings.length) {
-              const child = rawValues[index - 1];
-              const rawString = rawStrings[index++];
-              if (child instanceof Sql2) {
-                this.strings[position] += child.strings[0];
-                let childIndex = 0;
-                while (childIndex < child.values.length) {
-                  this.values[position++] = child.values[childIndex++];
-                  this.strings[position] = child.strings[childIndex];
-                }
-                this.strings[position] += rawString;
-              } else {
-                this.values[position++] = child;
-                this.strings[position] = rawString;
-              }
-            }
-          }
-          get text() {
-            return this.strings.reduce((text, part, index) => `${text}$${index}${part}`);
-          }
-          get sql() {
-            return this.strings.join("?");
-          }
-          [util_1.inspect.custom]() {
-            return {
-              text: this.text,
-              sql: this.sql,
-              values: this.values
-            };
-          }
-        };
-        __name(Sql2, "Sql");
-        exports2.Sql = Sql2;
-        Object.defineProperty(Sql2.prototype, "sql", { enumerable: true });
-        Object.defineProperty(Sql2.prototype, "text", { enumerable: true });
-        function join2(values, separator = ",") {
-          if (values.length === 0) {
-            throw new TypeError("Expected `join([])` to be called with an array of multiple elements, but got an empty array");
-          }
-          return new Sql2(["", ...Array(values.length - 1).fill(separator), ""], values);
-        }
-        __name(join2, "join");
-        exports2.join = join2;
-        function raw2(value) {
-          return new Sql2([value], []);
-        }
-        __name(raw2, "raw");
-        exports2.raw = raw2;
-        exports2.empty = raw2("");
-        function sqltag3(strings, ...values) {
-          return new Sql2(strings, values);
-        }
-        __name(sqltag3, "sqltag");
-        exports2.sqltag = sqltag3;
-        exports2.default = sqltag3;
       }
     });
     var require_pluralize = __commonJS({
@@ -46637,10 +47029,26 @@ ${pendingInterceptorsFormatter.format(pending)}
             return (inclusive ? count2 + " " : "") + pluralized;
           }
           __name(pluralize2, "pluralize");
-          pluralize2.plural = replaceWord(irregularSingles, irregularPlurals, pluralRules);
-          pluralize2.isPlural = checkWord(irregularSingles, irregularPlurals, pluralRules);
-          pluralize2.singular = replaceWord(irregularPlurals, irregularSingles, singularRules);
-          pluralize2.isSingular = checkWord(irregularPlurals, irregularSingles, singularRules);
+          pluralize2.plural = replaceWord(
+            irregularSingles,
+            irregularPlurals,
+            pluralRules
+          );
+          pluralize2.isPlural = checkWord(
+            irregularSingles,
+            irregularPlurals,
+            pluralRules
+          );
+          pluralize2.singular = replaceWord(
+            irregularPlurals,
+            irregularSingles,
+            singularRules
+          );
+          pluralize2.isSingular = checkWord(
+            irregularPlurals,
+            irregularSingles,
+            singularRules
+          );
           pluralize2.addPluralRule = function(rule, replacement) {
             pluralRules.push([sanitizeRule(rule), replacement]);
           };
@@ -46902,7 +47310,7 @@ ${pendingInterceptorsFormatter.format(pending)}
       "package.json"(exports2, module2) {
         module2.exports = {
           name: "@prisma/client",
-          version: "4.2.1",
+          version: "4.5.0",
           description: "Prisma Client is an auto-generated, type-safe and modern JavaScript/TypeScript ORM for Node.js that's tailored to your data. Supports MySQL, PostgreSQL, MariaDB, SQLite databases.",
           keywords: [
             "orm",
@@ -46941,6 +47349,7 @@ ${pendingInterceptorsFormatter.format(pending)}
             build: "node -r esbuild-register helpers/build.ts",
             test: "jest --verbose",
             "test:functional": "node -r esbuild-register helpers/functional-test/run-tests.ts",
+            "test:memory": "node -r esbuild-register helpers/memory-tests.ts",
             "test:functional:code": "node -r esbuild-register helpers/functional-test/run-tests.ts --no-types",
             "test:functional:types": "node -r esbuild-register helpers/functional-test/run-tests.ts --types-only",
             "test-notypes": "jest --verbose --testPathIgnorePatterns src/__tests__/types/types.test.ts",
@@ -46961,43 +47370,46 @@ ${pendingInterceptorsFormatter.format(pending)}
             "index-browser.js"
           ],
           devDependencies: {
-            "@faker-js/faker": "7.3.0",
+            "@faker-js/faker": "7.6.0",
+            "@fast-check/jest": "1.0.1",
             "@jest/test-sequencer": "28.1.3",
-            "@microsoft/api-extractor": "7.25.2",
-            "@opentelemetry/api": "1.1.0",
-            "@opentelemetry/context-async-hooks": "^1.4.0",
-            "@opentelemetry/instrumentation": "^0.30.0",
-            "@opentelemetry/resources": "^1.4.0",
-            "@opentelemetry/sdk-trace-base": "1.4.0",
-            "@opentelemetry/semantic-conventions": "^1.4.0",
-            "@prisma/debug": "workspace:4.2.1",
-            "@prisma/engine-core": "workspace:4.2.1",
-            "@prisma/engines": "workspace:4.2.1",
-            "@prisma/fetch-engine": "workspace:4.2.1",
-            "@prisma/generator-helper": "workspace:4.2.1",
-            "@prisma/get-platform": "workspace:4.2.1",
-            "@prisma/instrumentation": "workspace:4.2.1",
-            "@prisma/internals": "workspace:4.2.1",
-            "@prisma/migrate": "workspace:4.2.1",
-            "@swc-node/register": "1.5.1",
-            "@swc/core": "1.2.204",
+            "@microsoft/api-extractor": "7.33.1",
+            "@opentelemetry/api": "1.2.0",
+            "@opentelemetry/context-async-hooks": "1.7.0",
+            "@opentelemetry/instrumentation": "0.33.0",
+            "@opentelemetry/resources": "1.7.0",
+            "@opentelemetry/sdk-trace-base": "1.7.0",
+            "@opentelemetry/semantic-conventions": "1.7.0",
+            "@prisma/debug": "workspace:4.5.0",
+            "@prisma/engine-core": "workspace:4.5.0",
+            "@prisma/engines": "workspace:4.5.0",
+            "@prisma/fetch-engine": "workspace:4.5.0",
+            "@prisma/generator-helper": "workspace:4.5.0",
+            "@prisma/get-platform": "workspace:4.5.0",
+            "@prisma/instrumentation": "workspace:4.5.0",
+            "@prisma/internals": "workspace:4.5.0",
+            "@prisma/migrate": "workspace:4.5.0",
+            "@prisma/mini-proxy": "0.2.0",
+            "@swc-node/register": "1.5.4",
+            "@swc/core": "1.3.8",
             "@swc/jest": "0.2.22",
             "@timsuchanek/copy": "1.4.5",
             "@types/debug": "4.1.7",
-            "@types/jest": "28.1.6",
+            "@types/fs-extra": "9.0.13",
+            "@types/jest": "28.1.8",
             "@types/js-levenshtein": "1.1.1",
-            "@types/mssql": "8.0.3",
-            "@types/node": "12.20.55",
+            "@types/mssql": "8.1.1",
+            "@types/node": "14.18.32",
             "@types/pg": "8.6.5",
-            "@types/yeoman-generator": "^5.2.10",
+            "@types/yeoman-generator": "5.2.11",
             arg: "5.0.2",
             benchmark: "2.1.4",
             chalk: "4.1.2",
             cuid: "2.1.8",
-            "decimal.js": "10.3.1",
-            esbuild: "0.14.47",
+            "decimal.js": "10.4.2",
+            esbuild: "0.15.10",
             execa: "5.1.1",
-            "expect-type": "0.13.0",
+            "expect-type": "0.14.2",
             "flat-map-polyfill": "0.3.8",
             "fs-extra": "10.1.0",
             "fs-monkey": "1.0.3",
@@ -47007,31 +47419,36 @@ ${pendingInterceptorsFormatter.format(pending)}
             "is-obj": "2.0.0",
             "is-regexp": "2.1.0",
             jest: "28.1.3",
-            "jest-junit": "14.0.0",
+            "jest-junit": "14.0.1",
+            "jest-snapshot": "28.1.3",
             "js-levenshtein": "1.1.6",
             klona: "2.0.5",
             "lz-string": "1.4.4",
             "make-dir": "3.1.0",
-            mariadb: "3.0.0",
-            mssql: "8.1.2",
-            pg: "8.7.3",
+            mariadb: "3.0.1",
+            memfs: "3.4.7",
+            mssql: "9.0.1",
+            "node-fetch": "2.6.7",
+            pg: "8.8.0",
             "pkg-up": "3.1.0",
             pluralize: "8.0.0",
             "replace-string": "3.1.0",
             resolve: "1.22.1",
             rimraf: "3.0.2",
+            "simple-statistics": "7.7.6",
             "sort-keys": "4.2.0",
             "source-map-support": "0.5.21",
-            "sql-template-tag": "4.0.0",
+            "sql-template-tag": "5.0.3",
             "stacktrace-parser": "0.1.10",
             "strip-ansi": "6.0.1",
             "strip-indent": "3.0.0",
-            "ts-jest": "28.0.7",
-            "ts-node": "10.8.1",
+            "ts-jest": "28.0.8",
+            "ts-node": "10.9.1",
+            "ts-pattern": "4.0.5",
             tsd: "0.21.0",
-            typescript: "4.7.4",
-            "yeoman-generator": "^5.6.1",
-            yo: "^4.3.0"
+            typescript: "4.8.4",
+            "yeoman-generator": "5.7.0",
+            yo: "4.3.0"
           },
           peerDependencies: {
             prisma: "*"
@@ -47042,7 +47459,7 @@ ${pendingInterceptorsFormatter.format(pending)}
             }
           },
           dependencies: {
-            "@prisma/engines-version": "4.2.0-33.2920a97877e12e055c1333079b8d19cee7f33826"
+            "@prisma/engines-version": "4.5.0-43.0362da9eebca54d94c8ef5edd3b2e90af99ba452"
           },
           sideEffects: false
         };
@@ -47062,17 +47479,17 @@ ${pendingInterceptorsFormatter.format(pending)}
       PrismaClientRustPanicError: () => PrismaClientRustPanicError,
       PrismaClientUnknownRequestError: () => PrismaClientUnknownRequestError,
       PrismaClientValidationError: () => PrismaClientValidationError,
-      Sql: () => import_sql_template_tag.Sql,
+      Sql: () => Sql,
       decompressFromBase64: () => decompressFromBase642,
-      empty: () => import_sql_template_tag.empty,
+      empty: () => empty,
       findSync: () => findSync,
       getPrismaClient: () => getPrismaClient,
-      join: () => import_sql_template_tag.join,
+      join: () => join,
       makeDocument: () => makeDocument,
       makeStrictEnum: () => makeStrictEnum,
       objectEnumValues: () => objectEnumValues,
-      raw: () => import_sql_template_tag.raw,
-      sqltag: () => import_sql_template_tag.sqltag,
+      raw: () => raw,
+      sqltag: () => sql,
       transformDocument: () => transformDocument,
       unpack: () => unpack,
       warnEnvConflicts: () => warnEnvConflicts
@@ -47095,7 +47512,11 @@ ${pendingInterceptorsFormatter.format(pending)}
       var _a32;
       for (const baseCtor of constructors) {
         for (const name of Object.getOwnPropertyNames(baseCtor.prototype)) {
-          Object.defineProperty(derivedCtor.prototype, name, (_a32 = Object.getOwnPropertyDescriptor(baseCtor.prototype, name)) != null ? _a32 : /* @__PURE__ */ Object.create(null));
+          Object.defineProperty(
+            derivedCtor.prototype,
+            name,
+            (_a32 = Object.getOwnPropertyDescriptor(baseCtor.prototype, name)) != null ? _a32 : /* @__PURE__ */ Object.create(null)
+          );
         }
       }
     }
@@ -48253,7 +48674,9 @@ ${pendingInterceptorsFormatter.format(pending)}
       return function(x, y, pr, rm, dp, base) {
         var cmp, e, i, k, logBase, more, prod, prodL, q, qd, rem, remL, rem0, sd, t, xi, xL, yd0, yL, yz, Ctor = x.constructor, sign2 = x.s == y.s ? 1 : -1, xd = x.d, yd = y.d;
         if (!xd || !xd[0] || !yd || !yd[0]) {
-          return new Ctor(!x.s || !y.s || (xd ? yd && xd[0] == yd[0] : !yd) ? NaN : xd && xd[0] == 0 || !yd ? sign2 * 0 : sign2 / 0);
+          return new Ctor(
+            !x.s || !y.s || (xd ? yd && xd[0] == yd[0] : !yd) ? NaN : xd && xd[0] == 0 || !yd ? sign2 * 0 : sign2 / 0
+          );
         }
         if (base) {
           logBase = 1;
@@ -49466,6 +49889,19 @@ ${pendingInterceptorsFormatter.format(pending)}
     var decimal_default = Decimal;
     var import_indent_string = __toESM(require_indent_string());
     var import_js_levenshtein = __toESM(require_js_levenshtein());
+    var FieldRefImpl = class {
+      constructor(modelName, name, fieldType, isList) {
+        this.modelName = modelName;
+        this.name = name;
+        this.typeName = fieldType;
+        this.isList = isList;
+      }
+      _toGraphQLInputType() {
+        const prefix = this.isList ? `List${this.typeName}` : this.typeName;
+        return `${prefix}FieldRefInput<${this.modelName}>`;
+      }
+    };
+    __name(FieldRefImpl, "FieldRefImpl");
     var objectEnumNames = ["JsonNullValueInput", "NullableJsonNullValueInput", "JsonNullValueFilter"];
     var secret = Symbol();
     var representations = /* @__PURE__ */ new WeakMap();
@@ -49521,13 +49957,13 @@ ${pendingInterceptorsFormatter.format(pending)}
     __name(isDecimalJsLike, "isDecimalJsLike");
     function stringifyDecimalJsLike(value) {
       if (Decimal.isDecimal(value)) {
-        return String(value);
+        return JSON.stringify(String(value));
       }
       const tmpDecimal = new Decimal(0);
       tmpDecimal.d = value.d;
       tmpDecimal.e = value.e;
       tmpDecimal.s = value.s;
-      return String(tmpDecimal);
+      return JSON.stringify(String(tmpDecimal));
     }
     __name(stringifyDecimalJsLike, "stringifyDecimalJsLike");
     var keyBy = /* @__PURE__ */ __name((collection, prop) => {
@@ -49597,6 +50033,9 @@ ${pendingInterceptorsFormatter.format(pending)}
       if (value instanceof ObjectEnumValue) {
         return value._getName();
       }
+      if (value instanceof FieldRefImpl) {
+        return value._toGraphQLInputType();
+      }
       if (Array.isArray(value)) {
         let scalarTypes = value.reduce((acc, val) => {
           const type = getGraphQLType(val, inputType);
@@ -49650,19 +50089,22 @@ ${pendingInterceptorsFormatter.format(pending)}
     }
     __name(isValidEnumValue, "isValidEnumValue");
     function getSuggestion(str, possibilities) {
-      const bestMatch = possibilities.reduce((acc, curr) => {
-        const distance = (0, import_js_levenshtein.default)(str, curr);
-        if (distance < acc.distance) {
-          return {
-            distance,
-            str: curr
-          };
+      const bestMatch = possibilities.reduce(
+        (acc, curr) => {
+          const distance = (0, import_js_levenshtein.default)(str, curr);
+          if (distance < acc.distance) {
+            return {
+              distance,
+              str: curr
+            };
+          }
+          return acc;
+        },
+        {
+          distance: Math.min(Math.floor(str.length) * 1.1, ...possibilities.map((p) => p.length * 3)),
+          str: null
         }
-        return acc;
-      }, {
-        distance: Math.min(Math.floor(str.length) * 1.1, ...possibilities.map((p) => p.length * 3)),
-        str: null
-      });
+      );
       return bestMatch.str;
     }
     __name(getSuggestion, "getSuggestion");
@@ -49675,16 +50117,24 @@ ${pendingInterceptorsFormatter.format(pending)}
 ${(0, import_indent_string.default)(input.values.join(", "), 2)}
 }`;
       } else {
-        const body = (0, import_indent_string.default)(input.fields.map((arg2) => {
-          const key = `${arg2.name}`;
-          const str = `${greenKeys ? import_chalk.default.green(key) : key}${arg2.isRequired ? "" : "?"}: ${import_chalk.default.white(arg2.inputTypes.map((argType) => {
-            return wrapWithList(argIsInputType(argType.type) ? argType.type.name : stringifyGraphQLType(argType.type), argType.isList);
-          }).join(" | "))}`;
-          if (!arg2.isRequired) {
-            return import_chalk.default.dim(str);
-          }
-          return str;
-        }).join("\n"), 2);
+        const body = (0, import_indent_string.default)(
+          input.fields.map((arg2) => {
+            const key = `${arg2.name}`;
+            const str = `${greenKeys ? import_chalk.default.green(key) : key}${arg2.isRequired ? "" : "?"}: ${import_chalk.default.white(
+              arg2.inputTypes.map((argType) => {
+                return wrapWithList(
+                  argIsInputType(argType.type) ? argType.type.name : stringifyGraphQLType(argType.type),
+                  argType.isList
+                );
+              }).join(" | ")
+            )}`;
+            if (!arg2.isRequired) {
+              return import_chalk.default.dim(str);
+            }
+            return str;
+          }).join("\n"),
+          2
+        );
         return `${import_chalk.default.dim("type")} ${import_chalk.default.bold.dim(input.name)} ${import_chalk.default.dim("{")}
 ${body}
 ${import_chalk.default.dim("}")}`;
@@ -49726,10 +50176,12 @@ ${import_chalk.default.dim("}")}`;
         return input.values.join(" | ");
       }
       const inputType = input;
-      const showDeepType = isRequired && inputType.fields.every((arg2) => {
-        var _a32;
-        return arg2.inputTypes[0].location === "inputObjectTypes" || ((_a32 = arg2.inputTypes[1]) == null ? void 0 : _a32.location) === "inputObjectTypes";
-      });
+      const showDeepType = isRequired && inputType.fields.every(
+        (arg2) => {
+          var _a32;
+          return arg2.inputTypes[0].location === "inputObjectTypes" || ((_a32 = arg2.inputTypes[1]) == null ? void 0 : _a32.location) === "inputObjectTypes";
+        }
+      );
       if (nameOnly) {
         return getInputTypeName(input);
       }
@@ -49989,12 +50441,14 @@ ${import_chalk.default.dim("}")}`;
     __name(debugCall, "debugCall");
     var Debug = Object.assign(debugCall, import_debug.default);
     function getLogs(numChars = 7500) {
-      const output = debugArgsHistory.map((c) => c.map((item) => {
-        if (typeof item === "string") {
-          return item;
-        }
-        return JSON.stringify(item);
-      }).join(" ")).join("\n");
+      const output = debugArgsHistory.map(
+        (c) => c.map((item) => {
+          if (typeof item === "string") {
+            return item;
+          }
+          return JSON.stringify(item);
+        }).join(" ")
+      ).join("\n");
       if (output.length < numChars) {
         return output;
       }
@@ -50003,7 +50457,7 @@ ${import_chalk.default.dim("}")}`;
     __name(getLogs, "getLogs");
     var src_default = Debug;
     var _globalThis = typeof globalThis === "object" ? globalThis : global;
-    var VERSION = "1.1.0";
+    var VERSION = "1.2.0";
     var re = /^(\d+)\.(\d+)\.(\d+)(-(.+))?$/;
     function _makeCompatibilityCheck(ownVersion) {
       var acceptedVersions = /* @__PURE__ */ new Set([ownVersion]);
@@ -50035,7 +50489,7 @@ ${import_chalk.default.dim("}")}`;
         return true;
       }
       __name(_accept, "_accept");
-      return /* @__PURE__ */ __name(function isCompatible2(globalVersion) {
+      return /* @__PURE__ */ __name(function isCompatible3(globalVersion) {
         if (acceptedVersions.has(globalVersion)) {
           return true;
         }
@@ -50075,7 +50529,7 @@ ${import_chalk.default.dim("}")}`;
     var major = VERSION.split(".")[0];
     var GLOBAL_OPENTELEMETRY_API_KEY = Symbol.for("opentelemetry.js.api." + major);
     var _global = _globalThis;
-    function registerGlobal(type, instance, diag3, allowOverride) {
+    function registerGlobal(type, instance, diag5, allowOverride) {
       var _a32;
       if (allowOverride === void 0) {
         allowOverride = false;
@@ -50085,16 +50539,16 @@ ${import_chalk.default.dim("}")}`;
       };
       if (!allowOverride && api[type]) {
         var err = new Error("@opentelemetry/api: Attempted duplicate registration of API: " + type);
-        diag3.error(err.stack || err.message);
+        diag5.error(err.stack || err.message);
         return false;
       }
       if (api.version !== VERSION) {
         var err = new Error("@opentelemetry/api: All API registration versions must match");
-        diag3.error(err.stack || err.message);
+        diag5.error(err.stack || err.message);
         return false;
       }
       api[type] = instance;
-      diag3.debug("@opentelemetry/api: Registered a global for " + type + " v" + VERSION + ".");
+      diag5.debug("@opentelemetry/api: Registered a global for " + type + " v" + VERSION + ".");
       return true;
     }
     __name(registerGlobal, "registerGlobal");
@@ -50107,8 +50561,8 @@ ${import_chalk.default.dim("}")}`;
       return (_b22 = _global[GLOBAL_OPENTELEMETRY_API_KEY]) === null || _b22 === void 0 ? void 0 : _b22[type];
     }
     __name(getGlobal, "getGlobal");
-    function unregisterGlobal(type, diag3) {
-      diag3.debug("@opentelemetry/api: Unregistering a global for " + type + " v" + VERSION + ".");
+    function unregisterGlobal(type, diag5) {
+      diag5.debug("@opentelemetry/api: Unregistering a global for " + type + " v" + VERSION + ".");
       var api = _global[GLOBAL_OPENTELEMETRY_API_KEY];
       if (api) {
         delete api[type];
@@ -50116,46 +50570,46 @@ ${import_chalk.default.dim("}")}`;
     }
     __name(unregisterGlobal, "unregisterGlobal");
     var DiagComponentLogger = function() {
-      function DiagComponentLogger2(props) {
+      function DiagComponentLogger3(props) {
         this._namespace = props.namespace || "DiagComponentLogger";
       }
-      __name(DiagComponentLogger2, "DiagComponentLogger");
-      DiagComponentLogger2.prototype.debug = function() {
+      __name(DiagComponentLogger3, "DiagComponentLogger");
+      DiagComponentLogger3.prototype.debug = function() {
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
           args[_i] = arguments[_i];
         }
         return logProxy("debug", this._namespace, args);
       };
-      DiagComponentLogger2.prototype.error = function() {
+      DiagComponentLogger3.prototype.error = function() {
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
           args[_i] = arguments[_i];
         }
         return logProxy("error", this._namespace, args);
       };
-      DiagComponentLogger2.prototype.info = function() {
+      DiagComponentLogger3.prototype.info = function() {
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
           args[_i] = arguments[_i];
         }
         return logProxy("info", this._namespace, args);
       };
-      DiagComponentLogger2.prototype.warn = function() {
+      DiagComponentLogger3.prototype.warn = function() {
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
           args[_i] = arguments[_i];
         }
         return logProxy("warn", this._namespace, args);
       };
-      DiagComponentLogger2.prototype.verbose = function() {
+      DiagComponentLogger3.prototype.verbose = function() {
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
           args[_i] = arguments[_i];
         }
         return logProxy("verbose", this._namespace, args);
       };
-      return DiagComponentLogger2;
+      return DiagComponentLogger3;
     }();
     function logProxy(funcName, namespace, args) {
       var logger2 = getGlobal("diag");
@@ -50167,14 +50621,14 @@ ${import_chalk.default.dim("}")}`;
     }
     __name(logProxy, "logProxy");
     var DiagLogLevel;
-    (function(DiagLogLevel2) {
-      DiagLogLevel2[DiagLogLevel2["NONE"] = 0] = "NONE";
-      DiagLogLevel2[DiagLogLevel2["ERROR"] = 30] = "ERROR";
-      DiagLogLevel2[DiagLogLevel2["WARN"] = 50] = "WARN";
-      DiagLogLevel2[DiagLogLevel2["INFO"] = 60] = "INFO";
-      DiagLogLevel2[DiagLogLevel2["DEBUG"] = 70] = "DEBUG";
-      DiagLogLevel2[DiagLogLevel2["VERBOSE"] = 80] = "VERBOSE";
-      DiagLogLevel2[DiagLogLevel2["ALL"] = 9999] = "ALL";
+    (function(DiagLogLevel3) {
+      DiagLogLevel3[DiagLogLevel3["NONE"] = 0] = "NONE";
+      DiagLogLevel3[DiagLogLevel3["ERROR"] = 30] = "ERROR";
+      DiagLogLevel3[DiagLogLevel3["WARN"] = 50] = "WARN";
+      DiagLogLevel3[DiagLogLevel3["INFO"] = 60] = "INFO";
+      DiagLogLevel3[DiagLogLevel3["DEBUG"] = 70] = "DEBUG";
+      DiagLogLevel3[DiagLogLevel3["VERBOSE"] = 80] = "VERBOSE";
+      DiagLogLevel3[DiagLogLevel3["ALL"] = 9999] = "ALL";
     })(DiagLogLevel || (DiagLogLevel = {}));
     function createLogLevelDiagLogger(maxLevel, logger2) {
       if (maxLevel < DiagLogLevel.NONE) {
@@ -50203,7 +50657,7 @@ ${import_chalk.default.dim("}")}`;
     __name(createLogLevelDiagLogger, "createLogLevelDiagLogger");
     var API_NAME = "diag";
     var DiagAPI = function() {
-      function DiagAPI2() {
+      function DiagAPI3() {
         function _logProxy(funcName) {
           return function() {
             var args = [];
@@ -50249,59 +50703,59 @@ ${import_chalk.default.dim("}")}`;
         self2.warn = _logProxy("warn");
         self2.error = _logProxy("error");
       }
-      __name(DiagAPI2, "DiagAPI");
-      DiagAPI2.instance = function() {
+      __name(DiagAPI3, "DiagAPI");
+      DiagAPI3.instance = function() {
         if (!this._instance) {
-          this._instance = new DiagAPI2();
+          this._instance = new DiagAPI3();
         }
         return this._instance;
       };
-      return DiagAPI2;
+      return DiagAPI3;
     }();
     var BaggageImpl = function() {
-      function BaggageImpl2(entries) {
+      function BaggageImpl3(entries) {
         this._entries = entries ? new Map(entries) : /* @__PURE__ */ new Map();
       }
-      __name(BaggageImpl2, "BaggageImpl");
-      BaggageImpl2.prototype.getEntry = function(key) {
+      __name(BaggageImpl3, "BaggageImpl");
+      BaggageImpl3.prototype.getEntry = function(key) {
         var entry = this._entries.get(key);
         if (!entry) {
           return void 0;
         }
         return Object.assign({}, entry);
       };
-      BaggageImpl2.prototype.getAllEntries = function() {
+      BaggageImpl3.prototype.getAllEntries = function() {
         return Array.from(this._entries.entries()).map(function(_a32) {
           var k = _a32[0], v = _a32[1];
           return [k, v];
         });
       };
-      BaggageImpl2.prototype.setEntry = function(key, entry) {
-        var newBaggage = new BaggageImpl2(this._entries);
+      BaggageImpl3.prototype.setEntry = function(key, entry) {
+        var newBaggage = new BaggageImpl3(this._entries);
         newBaggage._entries.set(key, entry);
         return newBaggage;
       };
-      BaggageImpl2.prototype.removeEntry = function(key) {
-        var newBaggage = new BaggageImpl2(this._entries);
+      BaggageImpl3.prototype.removeEntry = function(key) {
+        var newBaggage = new BaggageImpl3(this._entries);
         newBaggage._entries.delete(key);
         return newBaggage;
       };
-      BaggageImpl2.prototype.removeEntries = function() {
+      BaggageImpl3.prototype.removeEntries = function() {
         var keys2 = [];
         for (var _i = 0; _i < arguments.length; _i++) {
           keys2[_i] = arguments[_i];
         }
-        var newBaggage = new BaggageImpl2(this._entries);
+        var newBaggage = new BaggageImpl3(this._entries);
         for (var _a32 = 0, keys_1 = keys2; _a32 < keys_1.length; _a32++) {
           var key = keys_1[_a32];
           newBaggage._entries.delete(key);
         }
         return newBaggage;
       };
-      BaggageImpl2.prototype.clear = function() {
-        return new BaggageImpl2();
+      BaggageImpl3.prototype.clear = function() {
+        return new BaggageImpl3();
       };
-      return BaggageImpl2;
+      return BaggageImpl3;
     }();
     var baggageEntryMetadataSymbol = Symbol("BaggageEntryMetadata");
     var diag = DiagAPI.instance();
@@ -50312,19 +50766,6 @@ ${import_chalk.default.dim("}")}`;
       return new BaggageImpl(new Map(Object.entries(entries)));
     }
     __name(createBaggage, "createBaggage");
-    function baggageEntryMetadataFromString(str) {
-      if (typeof str !== "string") {
-        diag.error("Cannot create baggage metadata from unknown type: " + typeof str);
-        str = "";
-      }
-      return {
-        __TYPE__: baggageEntryMetadataSymbol,
-        toString: function() {
-          return str;
-        }
-      };
-    }
-    __name(baggageEntryMetadataFromString, "baggageEntryMetadataFromString");
     var consoleMap = [
       { n: "error", c: "error" },
       { n: "warn", c: "warn" },
@@ -50333,7 +50774,7 @@ ${import_chalk.default.dim("}")}`;
       { n: "verbose", c: "trace" }
     ];
     var DiagConsoleLogger = function() {
-      function DiagConsoleLogger2() {
+      function DiagConsoleLogger3() {
         function _consoleFunc(funcName) {
           return function() {
             var args = [];
@@ -50356,8 +50797,8 @@ ${import_chalk.default.dim("}")}`;
           this[consoleMap[i].n] = _consoleFunc(consoleMap[i].c);
         }
       }
-      __name(DiagConsoleLogger2, "DiagConsoleLogger");
-      return DiagConsoleLogger2;
+      __name(DiagConsoleLogger3, "DiagConsoleLogger");
+      return DiagConsoleLogger3;
     }();
     var defaultTextMapGetter = {
       get: function(carrier, key) {
@@ -50386,25 +50827,25 @@ ${import_chalk.default.dim("}")}`;
     }
     __name(createContextKey, "createContextKey");
     var BaseContext = function() {
-      function BaseContext2(parentContext) {
+      function BaseContext3(parentContext) {
         var self2 = this;
         self2._currentContext = parentContext ? new Map(parentContext) : /* @__PURE__ */ new Map();
         self2.getValue = function(key) {
           return self2._currentContext.get(key);
         };
         self2.setValue = function(key, value) {
-          var context3 = new BaseContext2(self2._currentContext);
-          context3._currentContext.set(key, value);
-          return context3;
+          var context5 = new BaseContext3(self2._currentContext);
+          context5._currentContext.set(key, value);
+          return context5;
         };
         self2.deleteValue = function(key) {
-          var context3 = new BaseContext2(self2._currentContext);
-          context3._currentContext.delete(key);
-          return context3;
+          var context5 = new BaseContext3(self2._currentContext);
+          context5._currentContext.delete(key);
+          return context5;
         };
       }
-      __name(BaseContext2, "BaseContext");
-      return BaseContext2;
+      __name(BaseContext3, "BaseContext");
+      return BaseContext3;
     }();
     var ROOT_CONTEXT = new BaseContext();
     var __spreadArray = function(to, from) {
@@ -50413,29 +50854,29 @@ ${import_chalk.default.dim("}")}`;
       return to;
     };
     var NoopContextManager = function() {
-      function NoopContextManager2() {
+      function NoopContextManager3() {
       }
-      __name(NoopContextManager2, "NoopContextManager");
-      NoopContextManager2.prototype.active = function() {
+      __name(NoopContextManager3, "NoopContextManager");
+      NoopContextManager3.prototype.active = function() {
         return ROOT_CONTEXT;
       };
-      NoopContextManager2.prototype.with = function(_context, fn, thisArg) {
+      NoopContextManager3.prototype.with = function(_context, fn, thisArg) {
         var args = [];
         for (var _i = 3; _i < arguments.length; _i++) {
           args[_i - 3] = arguments[_i];
         }
         return fn.call.apply(fn, __spreadArray([thisArg], args));
       };
-      NoopContextManager2.prototype.bind = function(_context, target) {
+      NoopContextManager3.prototype.bind = function(_context, target) {
         return target;
       };
-      NoopContextManager2.prototype.enable = function() {
+      NoopContextManager3.prototype.enable = function() {
         return this;
       };
-      NoopContextManager2.prototype.disable = function() {
+      NoopContextManager3.prototype.disable = function() {
         return this;
       };
-      return NoopContextManager2;
+      return NoopContextManager3;
     }();
     var __spreadArray2 = function(to, from) {
       for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
@@ -50445,45 +50886,45 @@ ${import_chalk.default.dim("}")}`;
     var API_NAME2 = "context";
     var NOOP_CONTEXT_MANAGER = new NoopContextManager();
     var ContextAPI = function() {
-      function ContextAPI2() {
+      function ContextAPI3() {
       }
-      __name(ContextAPI2, "ContextAPI");
-      ContextAPI2.getInstance = function() {
+      __name(ContextAPI3, "ContextAPI");
+      ContextAPI3.getInstance = function() {
         if (!this._instance) {
-          this._instance = new ContextAPI2();
+          this._instance = new ContextAPI3();
         }
         return this._instance;
       };
-      ContextAPI2.prototype.setGlobalContextManager = function(contextManager) {
+      ContextAPI3.prototype.setGlobalContextManager = function(contextManager) {
         return registerGlobal(API_NAME2, contextManager, DiagAPI.instance());
       };
-      ContextAPI2.prototype.active = function() {
+      ContextAPI3.prototype.active = function() {
         return this._getContextManager().active();
       };
-      ContextAPI2.prototype.with = function(context3, fn, thisArg) {
+      ContextAPI3.prototype.with = function(context5, fn, thisArg) {
         var _a32;
         var args = [];
         for (var _i = 3; _i < arguments.length; _i++) {
           args[_i - 3] = arguments[_i];
         }
-        return (_a32 = this._getContextManager()).with.apply(_a32, __spreadArray2([context3, fn, thisArg], args));
+        return (_a32 = this._getContextManager()).with.apply(_a32, __spreadArray2([context5, fn, thisArg], args));
       };
-      ContextAPI2.prototype.bind = function(context3, target) {
-        return this._getContextManager().bind(context3, target);
+      ContextAPI3.prototype.bind = function(context5, target) {
+        return this._getContextManager().bind(context5, target);
       };
-      ContextAPI2.prototype._getContextManager = function() {
+      ContextAPI3.prototype._getContextManager = function() {
         return getGlobal(API_NAME2) || NOOP_CONTEXT_MANAGER;
       };
-      ContextAPI2.prototype.disable = function() {
+      ContextAPI3.prototype.disable = function() {
         this._getContextManager().disable();
         unregisterGlobal(API_NAME2, DiagAPI.instance());
       };
-      return ContextAPI2;
+      return ContextAPI3;
     }();
     var TraceFlags;
-    (function(TraceFlags2) {
-      TraceFlags2[TraceFlags2["NONE"] = 0] = "NONE";
-      TraceFlags2[TraceFlags2["SAMPLED"] = 1] = "SAMPLED";
+    (function(TraceFlags3) {
+      TraceFlags3[TraceFlags3["NONE"] = 0] = "NONE";
+      TraceFlags3[TraceFlags3["SAMPLED"] = 1] = "SAMPLED";
     })(TraceFlags || (TraceFlags = {}));
     var INVALID_SPANID = "0000000000000000";
     var INVALID_TRACEID = "00000000000000000000000000000000";
@@ -50493,60 +50934,64 @@ ${import_chalk.default.dim("}")}`;
       traceFlags: TraceFlags.NONE
     };
     var NonRecordingSpan = function() {
-      function NonRecordingSpan2(_spanContext) {
+      function NonRecordingSpan3(_spanContext) {
         if (_spanContext === void 0) {
           _spanContext = INVALID_SPAN_CONTEXT;
         }
         this._spanContext = _spanContext;
       }
-      __name(NonRecordingSpan2, "NonRecordingSpan");
-      NonRecordingSpan2.prototype.spanContext = function() {
+      __name(NonRecordingSpan3, "NonRecordingSpan");
+      NonRecordingSpan3.prototype.spanContext = function() {
         return this._spanContext;
       };
-      NonRecordingSpan2.prototype.setAttribute = function(_key, _value) {
+      NonRecordingSpan3.prototype.setAttribute = function(_key, _value) {
         return this;
       };
-      NonRecordingSpan2.prototype.setAttributes = function(_attributes) {
+      NonRecordingSpan3.prototype.setAttributes = function(_attributes) {
         return this;
       };
-      NonRecordingSpan2.prototype.addEvent = function(_name, _attributes) {
+      NonRecordingSpan3.prototype.addEvent = function(_name, _attributes) {
         return this;
       };
-      NonRecordingSpan2.prototype.setStatus = function(_status) {
+      NonRecordingSpan3.prototype.setStatus = function(_status) {
         return this;
       };
-      NonRecordingSpan2.prototype.updateName = function(_name) {
+      NonRecordingSpan3.prototype.updateName = function(_name) {
         return this;
       };
-      NonRecordingSpan2.prototype.end = function(_endTime) {
+      NonRecordingSpan3.prototype.end = function(_endTime) {
       };
-      NonRecordingSpan2.prototype.isRecording = function() {
+      NonRecordingSpan3.prototype.isRecording = function() {
         return false;
       };
-      NonRecordingSpan2.prototype.recordException = function(_exception, _time) {
+      NonRecordingSpan3.prototype.recordException = function(_exception, _time) {
       };
-      return NonRecordingSpan2;
+      return NonRecordingSpan3;
     }();
     var SPAN_KEY = createContextKey("OpenTelemetry Context Key SPAN");
-    function getSpan(context3) {
-      return context3.getValue(SPAN_KEY) || void 0;
+    function getSpan(context5) {
+      return context5.getValue(SPAN_KEY) || void 0;
     }
     __name(getSpan, "getSpan");
-    function setSpan(context3, span) {
-      return context3.setValue(SPAN_KEY, span);
+    function getActiveSpan() {
+      return getSpan(ContextAPI.getInstance().active());
+    }
+    __name(getActiveSpan, "getActiveSpan");
+    function setSpan(context5, span) {
+      return context5.setValue(SPAN_KEY, span);
     }
     __name(setSpan, "setSpan");
-    function deleteSpan(context3) {
-      return context3.deleteValue(SPAN_KEY);
+    function deleteSpan(context5) {
+      return context5.deleteValue(SPAN_KEY);
     }
     __name(deleteSpan, "deleteSpan");
-    function setSpanContext(context3, spanContext) {
-      return setSpan(context3, new NonRecordingSpan(spanContext));
+    function setSpanContext(context5, spanContext) {
+      return setSpan(context5, new NonRecordingSpan(spanContext));
     }
     __name(setSpanContext, "setSpanContext");
-    function getSpanContext(context3) {
+    function getSpanContext(context5) {
       var _a32;
-      return (_a32 = getSpan(context3)) === null || _a32 === void 0 ? void 0 : _a32.spanContext();
+      return (_a32 = getSpan(context5)) === null || _a32 === void 0 ? void 0 : _a32.spanContext();
     }
     __name(getSpanContext, "getSpanContext");
     var VALID_TRACEID_REGEX = /^([0-9a-f]{32})$/i;
@@ -50569,22 +51014,22 @@ ${import_chalk.default.dim("}")}`;
     __name(wrapSpanContext, "wrapSpanContext");
     var context = ContextAPI.getInstance();
     var NoopTracer = function() {
-      function NoopTracer2() {
+      function NoopTracer3() {
       }
-      __name(NoopTracer2, "NoopTracer");
-      NoopTracer2.prototype.startSpan = function(name, options, context3) {
+      __name(NoopTracer3, "NoopTracer");
+      NoopTracer3.prototype.startSpan = function(name, options, context5) {
         var root = Boolean(options === null || options === void 0 ? void 0 : options.root);
         if (root) {
           return new NonRecordingSpan();
         }
-        var parentFromContext = context3 && getSpanContext(context3);
+        var parentFromContext = context5 && getSpanContext(context5);
         if (isSpanContext(parentFromContext) && isSpanContextValid(parentFromContext)) {
           return new NonRecordingSpan(parentFromContext);
         } else {
           return new NonRecordingSpan();
         }
       };
-      NoopTracer2.prototype.startActiveSpan = function(name, arg2, arg3, arg4) {
+      NoopTracer3.prototype.startActiveSpan = function(name, arg2, arg3, arg4) {
         var opts;
         var ctx;
         var fn;
@@ -50605,7 +51050,7 @@ ${import_chalk.default.dim("}")}`;
         var contextWithSpanSet = setSpan(parentContext, span);
         return context.with(contextWithSpanSet, fn, void 0, span);
       };
-      return NoopTracer2;
+      return NoopTracer3;
     }();
     function isSpanContext(spanContext) {
       return typeof spanContext === "object" && typeof spanContext["spanId"] === "string" && typeof spanContext["traceId"] === "string" && typeof spanContext["traceFlags"] === "number";
@@ -50613,21 +51058,21 @@ ${import_chalk.default.dim("}")}`;
     __name(isSpanContext, "isSpanContext");
     var NOOP_TRACER = new NoopTracer();
     var ProxyTracer = function() {
-      function ProxyTracer2(_provider, name, version, options) {
+      function ProxyTracer3(_provider, name, version, options) {
         this._provider = _provider;
         this.name = name;
         this.version = version;
         this.options = options;
       }
-      __name(ProxyTracer2, "ProxyTracer");
-      ProxyTracer2.prototype.startSpan = function(name, options, context3) {
-        return this._getTracer().startSpan(name, options, context3);
+      __name(ProxyTracer3, "ProxyTracer");
+      ProxyTracer3.prototype.startSpan = function(name, options, context5) {
+        return this._getTracer().startSpan(name, options, context5);
       };
-      ProxyTracer2.prototype.startActiveSpan = function(_name, _options, _context, _fn) {
+      ProxyTracer3.prototype.startActiveSpan = function(_name, _options, _context, _fn) {
         var tracer = this._getTracer();
         return Reflect.apply(tracer.startActiveSpan, tracer, arguments);
       };
-      ProxyTracer2.prototype._getTracer = function() {
+      ProxyTracer3.prototype._getTracer = function() {
         if (this._delegate) {
           return this._delegate;
         }
@@ -50638,58 +51083,58 @@ ${import_chalk.default.dim("}")}`;
         this._delegate = tracer;
         return this._delegate;
       };
-      return ProxyTracer2;
+      return ProxyTracer3;
     }();
     var NoopTracerProvider = function() {
-      function NoopTracerProvider2() {
+      function NoopTracerProvider3() {
       }
-      __name(NoopTracerProvider2, "NoopTracerProvider");
-      NoopTracerProvider2.prototype.getTracer = function(_name, _version, _options) {
+      __name(NoopTracerProvider3, "NoopTracerProvider");
+      NoopTracerProvider3.prototype.getTracer = function(_name, _version, _options) {
         return new NoopTracer();
       };
-      return NoopTracerProvider2;
+      return NoopTracerProvider3;
     }();
     var NOOP_TRACER_PROVIDER = new NoopTracerProvider();
     var ProxyTracerProvider = function() {
-      function ProxyTracerProvider2() {
+      function ProxyTracerProvider3() {
       }
-      __name(ProxyTracerProvider2, "ProxyTracerProvider");
-      ProxyTracerProvider2.prototype.getTracer = function(name, version, options) {
+      __name(ProxyTracerProvider3, "ProxyTracerProvider");
+      ProxyTracerProvider3.prototype.getTracer = function(name, version, options) {
         var _a32;
         return (_a32 = this.getDelegateTracer(name, version, options)) !== null && _a32 !== void 0 ? _a32 : new ProxyTracer(this, name, version, options);
       };
-      ProxyTracerProvider2.prototype.getDelegate = function() {
+      ProxyTracerProvider3.prototype.getDelegate = function() {
         var _a32;
         return (_a32 = this._delegate) !== null && _a32 !== void 0 ? _a32 : NOOP_TRACER_PROVIDER;
       };
-      ProxyTracerProvider2.prototype.setDelegate = function(delegate) {
+      ProxyTracerProvider3.prototype.setDelegate = function(delegate) {
         this._delegate = delegate;
       };
-      ProxyTracerProvider2.prototype.getDelegateTracer = function(name, version, options) {
+      ProxyTracerProvider3.prototype.getDelegateTracer = function(name, version, options) {
         var _a32;
         return (_a32 = this._delegate) === null || _a32 === void 0 ? void 0 : _a32.getTracer(name, version, options);
       };
-      return ProxyTracerProvider2;
+      return ProxyTracerProvider3;
     }();
     var SamplingDecision;
-    (function(SamplingDecision2) {
-      SamplingDecision2[SamplingDecision2["NOT_RECORD"] = 0] = "NOT_RECORD";
-      SamplingDecision2[SamplingDecision2["RECORD"] = 1] = "RECORD";
-      SamplingDecision2[SamplingDecision2["RECORD_AND_SAMPLED"] = 2] = "RECORD_AND_SAMPLED";
+    (function(SamplingDecision4) {
+      SamplingDecision4[SamplingDecision4["NOT_RECORD"] = 0] = "NOT_RECORD";
+      SamplingDecision4[SamplingDecision4["RECORD"] = 1] = "RECORD";
+      SamplingDecision4[SamplingDecision4["RECORD_AND_SAMPLED"] = 2] = "RECORD_AND_SAMPLED";
     })(SamplingDecision || (SamplingDecision = {}));
     var SpanKind;
-    (function(SpanKind2) {
-      SpanKind2[SpanKind2["INTERNAL"] = 0] = "INTERNAL";
-      SpanKind2[SpanKind2["SERVER"] = 1] = "SERVER";
-      SpanKind2[SpanKind2["CLIENT"] = 2] = "CLIENT";
-      SpanKind2[SpanKind2["PRODUCER"] = 3] = "PRODUCER";
-      SpanKind2[SpanKind2["CONSUMER"] = 4] = "CONSUMER";
+    (function(SpanKind3) {
+      SpanKind3[SpanKind3["INTERNAL"] = 0] = "INTERNAL";
+      SpanKind3[SpanKind3["SERVER"] = 1] = "SERVER";
+      SpanKind3[SpanKind3["CLIENT"] = 2] = "CLIENT";
+      SpanKind3[SpanKind3["PRODUCER"] = 3] = "PRODUCER";
+      SpanKind3[SpanKind3["CONSUMER"] = 4] = "CONSUMER";
     })(SpanKind || (SpanKind = {}));
     var SpanStatusCode;
-    (function(SpanStatusCode2) {
-      SpanStatusCode2[SpanStatusCode2["UNSET"] = 0] = "UNSET";
-      SpanStatusCode2[SpanStatusCode2["OK"] = 1] = "OK";
-      SpanStatusCode2[SpanStatusCode2["ERROR"] = 2] = "ERROR";
+    (function(SpanStatusCode3) {
+      SpanStatusCode3[SpanStatusCode3["UNSET"] = 0] = "UNSET";
+      SpanStatusCode3[SpanStatusCode3["OK"] = 1] = "OK";
+      SpanStatusCode3[SpanStatusCode3["ERROR"] = 2] = "ERROR";
     })(SpanStatusCode || (SpanStatusCode = {}));
     var VALID_KEY_CHAR_RANGE = "[_0-9a-z-*/]";
     var VALID_KEY = "[a-z]" + VALID_KEY_CHAR_RANGE + "{0,255}";
@@ -50710,13 +51155,13 @@ ${import_chalk.default.dim("}")}`;
     var LIST_MEMBERS_SEPARATOR = ",";
     var LIST_MEMBER_KEY_VALUE_SPLITTER = "=";
     var TraceStateImpl = function() {
-      function TraceStateImpl2(rawTraceState) {
+      function TraceStateImpl3(rawTraceState) {
         this._internalState = /* @__PURE__ */ new Map();
         if (rawTraceState)
           this._parse(rawTraceState);
       }
-      __name(TraceStateImpl2, "TraceStateImpl");
-      TraceStateImpl2.prototype.set = function(key, value) {
+      __name(TraceStateImpl3, "TraceStateImpl");
+      TraceStateImpl3.prototype.set = function(key, value) {
         var traceState = this._clone();
         if (traceState._internalState.has(key)) {
           traceState._internalState.delete(key);
@@ -50724,22 +51169,22 @@ ${import_chalk.default.dim("}")}`;
         traceState._internalState.set(key, value);
         return traceState;
       };
-      TraceStateImpl2.prototype.unset = function(key) {
+      TraceStateImpl3.prototype.unset = function(key) {
         var traceState = this._clone();
         traceState._internalState.delete(key);
         return traceState;
       };
-      TraceStateImpl2.prototype.get = function(key) {
+      TraceStateImpl3.prototype.get = function(key) {
         return this._internalState.get(key);
       };
-      TraceStateImpl2.prototype.serialize = function() {
+      TraceStateImpl3.prototype.serialize = function() {
         var _this = this;
         return this._keys().reduce(function(agg, key) {
           agg.push(key + LIST_MEMBER_KEY_VALUE_SPLITTER + _this.get(key));
           return agg;
         }, []).join(LIST_MEMBERS_SEPARATOR);
       };
-      TraceStateImpl2.prototype._parse = function(rawTraceState) {
+      TraceStateImpl3.prototype._parse = function(rawTraceState) {
         if (rawTraceState.length > MAX_TRACE_STATE_LEN)
           return;
         this._internalState = rawTraceState.split(LIST_MEMBERS_SEPARATOR).reverse().reduce(function(agg, part) {
@@ -50759,122 +51204,123 @@ ${import_chalk.default.dim("}")}`;
           this._internalState = new Map(Array.from(this._internalState.entries()).reverse().slice(0, MAX_TRACE_STATE_ITEMS));
         }
       };
-      TraceStateImpl2.prototype._keys = function() {
+      TraceStateImpl3.prototype._keys = function() {
         return Array.from(this._internalState.keys()).reverse();
       };
-      TraceStateImpl2.prototype._clone = function() {
-        var traceState = new TraceStateImpl2();
+      TraceStateImpl3.prototype._clone = function() {
+        var traceState = new TraceStateImpl3();
         traceState._internalState = new Map(this._internalState);
         return traceState;
       };
-      return TraceStateImpl2;
+      return TraceStateImpl3;
     }();
     var API_NAME3 = "trace";
     var TraceAPI = function() {
-      function TraceAPI2() {
+      function TraceAPI3() {
         this._proxyTracerProvider = new ProxyTracerProvider();
         this.wrapSpanContext = wrapSpanContext;
         this.isSpanContextValid = isSpanContextValid;
         this.deleteSpan = deleteSpan;
         this.getSpan = getSpan;
+        this.getActiveSpan = getActiveSpan;
         this.getSpanContext = getSpanContext;
         this.setSpan = setSpan;
         this.setSpanContext = setSpanContext;
       }
-      __name(TraceAPI2, "TraceAPI");
-      TraceAPI2.getInstance = function() {
+      __name(TraceAPI3, "TraceAPI");
+      TraceAPI3.getInstance = function() {
         if (!this._instance) {
-          this._instance = new TraceAPI2();
+          this._instance = new TraceAPI3();
         }
         return this._instance;
       };
-      TraceAPI2.prototype.setGlobalTracerProvider = function(provider) {
+      TraceAPI3.prototype.setGlobalTracerProvider = function(provider) {
         var success = registerGlobal(API_NAME3, this._proxyTracerProvider, DiagAPI.instance());
         if (success) {
           this._proxyTracerProvider.setDelegate(provider);
         }
         return success;
       };
-      TraceAPI2.prototype.getTracerProvider = function() {
+      TraceAPI3.prototype.getTracerProvider = function() {
         return getGlobal(API_NAME3) || this._proxyTracerProvider;
       };
-      TraceAPI2.prototype.getTracer = function(name, version) {
+      TraceAPI3.prototype.getTracer = function(name, version) {
         return this.getTracerProvider().getTracer(name, version);
       };
-      TraceAPI2.prototype.disable = function() {
+      TraceAPI3.prototype.disable = function() {
         unregisterGlobal(API_NAME3, DiagAPI.instance());
         this._proxyTracerProvider = new ProxyTracerProvider();
       };
-      return TraceAPI2;
+      return TraceAPI3;
     }();
     var NoopTextMapPropagator = function() {
-      function NoopTextMapPropagator2() {
+      function NoopTextMapPropagator3() {
       }
-      __name(NoopTextMapPropagator2, "NoopTextMapPropagator");
-      NoopTextMapPropagator2.prototype.inject = function(_context, _carrier) {
+      __name(NoopTextMapPropagator3, "NoopTextMapPropagator");
+      NoopTextMapPropagator3.prototype.inject = function(_context, _carrier) {
       };
-      NoopTextMapPropagator2.prototype.extract = function(context3, _carrier) {
-        return context3;
+      NoopTextMapPropagator3.prototype.extract = function(context5, _carrier) {
+        return context5;
       };
-      NoopTextMapPropagator2.prototype.fields = function() {
+      NoopTextMapPropagator3.prototype.fields = function() {
         return [];
       };
-      return NoopTextMapPropagator2;
+      return NoopTextMapPropagator3;
     }();
     var BAGGAGE_KEY = createContextKey("OpenTelemetry Baggage Key");
-    function getBaggage(context3) {
-      return context3.getValue(BAGGAGE_KEY) || void 0;
+    function getBaggage(context5) {
+      return context5.getValue(BAGGAGE_KEY) || void 0;
     }
     __name(getBaggage, "getBaggage");
-    function setBaggage(context3, baggage) {
-      return context3.setValue(BAGGAGE_KEY, baggage);
+    function setBaggage(context5, baggage) {
+      return context5.setValue(BAGGAGE_KEY, baggage);
     }
     __name(setBaggage, "setBaggage");
-    function deleteBaggage(context3) {
-      return context3.deleteValue(BAGGAGE_KEY);
+    function deleteBaggage(context5) {
+      return context5.deleteValue(BAGGAGE_KEY);
     }
     __name(deleteBaggage, "deleteBaggage");
     var API_NAME4 = "propagation";
     var NOOP_TEXT_MAP_PROPAGATOR = new NoopTextMapPropagator();
     var PropagationAPI = function() {
-      function PropagationAPI2() {
+      function PropagationAPI3() {
         this.createBaggage = createBaggage;
         this.getBaggage = getBaggage;
         this.setBaggage = setBaggage;
         this.deleteBaggage = deleteBaggage;
       }
-      __name(PropagationAPI2, "PropagationAPI");
-      PropagationAPI2.getInstance = function() {
+      __name(PropagationAPI3, "PropagationAPI");
+      PropagationAPI3.getInstance = function() {
         if (!this._instance) {
-          this._instance = new PropagationAPI2();
+          this._instance = new PropagationAPI3();
         }
         return this._instance;
       };
-      PropagationAPI2.prototype.setGlobalPropagator = function(propagator) {
+      PropagationAPI3.prototype.setGlobalPropagator = function(propagator) {
         return registerGlobal(API_NAME4, propagator, DiagAPI.instance());
       };
-      PropagationAPI2.prototype.inject = function(context3, carrier, setter) {
+      PropagationAPI3.prototype.inject = function(context5, carrier, setter) {
         if (setter === void 0) {
           setter = defaultTextMapSetter;
         }
-        return this._getGlobalPropagator().inject(context3, carrier, setter);
+        return this._getGlobalPropagator().inject(context5, carrier, setter);
       };
-      PropagationAPI2.prototype.extract = function(context3, carrier, getter) {
+      PropagationAPI3.prototype.extract = function(context5, carrier, getter) {
         if (getter === void 0) {
           getter = defaultTextMapGetter;
         }
-        return this._getGlobalPropagator().extract(context3, carrier, getter);
+        return this._getGlobalPropagator().extract(context5, carrier, getter);
       };
-      PropagationAPI2.prototype.fields = function() {
+      PropagationAPI3.prototype.fields = function() {
         return this._getGlobalPropagator().fields();
       };
-      PropagationAPI2.prototype.disable = function() {
+      PropagationAPI3.prototype.disable = function() {
         unregisterGlobal(API_NAME4, DiagAPI.instance());
       };
-      PropagationAPI2.prototype._getGlobalPropagator = function() {
+      PropagationAPI3.prototype._getGlobalPropagator = function() {
         return getGlobal(API_NAME4) || NOOP_TEXT_MAP_PROPAGATOR;
       };
-      return PropagationAPI2;
+      return PropagationAPI3;
     }();
     var context2 = ContextAPI.getInstance();
     var trace = TraceAPI.getInstance();
@@ -51029,14 +51475,14 @@ ${import_chalk.default.dim("}")}`;
       if (platform3 === "netbsd") {
         return "netbsd";
       }
+      if (platform3 === "linux" && distro === "nixos") {
+        return "linux-nixos";
+      }
       if (platform3 === "linux" && arch2 === "arm64") {
         return `linux-arm64-openssl-${libssl}`;
       }
       if (platform3 === "linux" && arch2 === "arm") {
         return `linux-arm-openssl-${libssl}`;
-      }
-      if (platform3 === "linux" && distro === "nixos") {
-        return "linux-nixos";
       }
       if (platform3 === "linux" && distro === "musl") {
         return "linux-musl";
@@ -51059,7 +51505,9 @@ ${import_chalk.default.dim("}")}`;
       const customLibraryExists = customLibraryPath && import_fs2.default.existsSync(customLibraryPath);
       const os3 = await getos();
       if (!customLibraryExists && (os3.arch === "x32" || os3.arch === "ia32")) {
-        throw new Error(`The default query engine type (Node-API, "library") is currently not supported for 32bit Node. Please set \`engineType = "binary"\` in the "generator" block of your "schema.prisma" file (or use the environment variables "PRISMA_CLIENT_ENGINE_TYPE=binary" and/or "PRISMA_CLI_QUERY_ENGINE_TYPE=binary".)`);
+        throw new Error(
+          `The default query engine type (Node-API, "library") is currently not supported for 32bit Node. Please set \`engineType = "binary"\` in the "generator" block of your "schema.prisma" file (or use the environment variables "PRISMA_CLIENT_ENGINE_TYPE=binary" and/or "PRISMA_CLI_QUERY_ENGINE_TYPE=binary".)`
+        );
       }
     }
     __name(isNodeAPISupported, "isNodeAPISupported");
@@ -51315,7 +51763,7 @@ ${err.message}`;
       return [...binaryTargets, transformPlatformToEnvValue(platform3)];
     }
     __name(fixBinaryTargets, "fixBinaryTargets");
-    function getGithubIssueUrl({
+    function getGitHubIssueUrl({
       title,
       user = "prisma",
       repo = "prisma",
@@ -51330,7 +51778,7 @@ ${err.message}`;
         body
       });
     }
-    __name(getGithubIssueUrl, "getGithubIssueUrl");
+    __name(getGitHubIssueUrl, "getGitHubIssueUrl");
     function maskQuery(query2) {
       if (!query2) {
         return "";
@@ -51362,7 +51810,8 @@ ${err.message}`;
 \`\`\`
 ${description}
 \`\`\`` : "";
-      const body = (0, import_strip_ansi.default)(`Hi Prisma Team! My Prisma Client just crashed. This is the report:
+      const body = (0, import_strip_ansi.default)(
+        `Hi Prisma Team! My Prisma Client just crashed. This is the report:
 ## Versions
 
 | Name            | Version            |
@@ -51394,8 +51843,9 @@ ${logs}
 \`\`\`
 ${query2 ? maskQuery(query2) : ""}
 \`\`\`
-`);
-      const url = getGithubIssueUrl({ title, body });
+`
+      );
+      const url = getGitHubIssueUrl({ title, body });
       return `${title}
 
 This is a non-recoverable error which probably happens when the Prisma Query Engine has a panic.
@@ -51410,7 +51860,12 @@ how you used Prisma Client in the issue.
     __name(getErrorMessageWithLink, "getErrorMessageWithLink");
     function prismaGraphQLToJSError(error2, clientVersion2) {
       if (error2.user_facing_error.error_code) {
-        return new PrismaClientKnownRequestError(error2.user_facing_error.message, error2.user_facing_error.error_code, clientVersion2, error2.user_facing_error.meta);
+        return new PrismaClientKnownRequestError(
+          error2.user_facing_error.message,
+          error2.user_facing_error.error_code,
+          clientVersion2,
+          error2.user_facing_error.meta
+        );
       }
       return new PrismaClientUnknownRequestError(error2.error, clientVersion2);
     }
@@ -51427,10 +51882,12 @@ how you used Prisma Client in the issue.
       toString() {
         const { config: config2 } = this;
         const provider = config2.provider.fromEnvVar ? `env("${config2.provider.fromEnvVar}")` : config2.provider.value;
-        const obj = JSON.parse(JSON.stringify({
-          provider,
-          binaryTargets: getOriginalBinaryTargetsValue(config2.binaryTargets)
-        }));
+        const obj = JSON.parse(
+          JSON.stringify({
+            provider,
+            binaryTargets: getOriginalBinaryTargetsValue(config2.binaryTargets)
+          })
+        );
         return `generator ${config2.name} {
 ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
 }`;
@@ -51458,12 +51915,14 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
     }
     __name(printDatamodelObject, "printDatamodelObject");
     function niceStringify(value) {
-      return JSON.parse(JSON.stringify(value, (_, value2) => {
-        if (Array.isArray(value2)) {
-          return `[${value2.map((element) => JSON.stringify(element)).join(", ")}]`;
-        }
-        return JSON.stringify(value2);
-      }));
+      return JSON.parse(
+        JSON.stringify(value, (_, value2) => {
+          if (Array.isArray(value2)) {
+            return `[${value2.map((element) => JSON.stringify(element)).join(", ")}]`;
+          }
+          return JSON.stringify(value2);
+        })
+      );
     }
     __name(niceStringify, "niceStringify");
     var import_stream = __toESM(require("stream"));
@@ -51566,13 +52025,891 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
       }, {});
     }
     __name(omit, "omit");
-    var SUPPRESS_TRACING_KEY = createContextKey("OpenTelemetry SDK Context Key SUPPRESS_TRACING");
-    function suppressTracing(context3) {
-      return context3.setValue(SUPPRESS_TRACING_KEY, true);
+    var _globalThis2 = typeof globalThis === "object" ? globalThis : global;
+    var VERSION2 = "1.1.0";
+    var re2 = /^(\d+)\.(\d+)\.(\d+)(-(.+))?$/;
+    function _makeCompatibilityCheck2(ownVersion) {
+      var acceptedVersions = /* @__PURE__ */ new Set([ownVersion]);
+      var rejectedVersions = /* @__PURE__ */ new Set();
+      var myVersionMatch = ownVersion.match(re2);
+      if (!myVersionMatch) {
+        return function() {
+          return false;
+        };
+      }
+      var ownVersionParsed = {
+        major: +myVersionMatch[1],
+        minor: +myVersionMatch[2],
+        patch: +myVersionMatch[3],
+        prerelease: myVersionMatch[4]
+      };
+      if (ownVersionParsed.prerelease != null) {
+        return /* @__PURE__ */ __name(function isExactmatch(globalVersion) {
+          return globalVersion === ownVersion;
+        }, "isExactmatch");
+      }
+      function _reject(v) {
+        rejectedVersions.add(v);
+        return false;
+      }
+      __name(_reject, "_reject");
+      function _accept(v) {
+        acceptedVersions.add(v);
+        return true;
+      }
+      __name(_accept, "_accept");
+      return /* @__PURE__ */ __name(function isCompatible3(globalVersion) {
+        if (acceptedVersions.has(globalVersion)) {
+          return true;
+        }
+        if (rejectedVersions.has(globalVersion)) {
+          return false;
+        }
+        var globalVersionMatch = globalVersion.match(re2);
+        if (!globalVersionMatch) {
+          return _reject(globalVersion);
+        }
+        var globalVersionParsed = {
+          major: +globalVersionMatch[1],
+          minor: +globalVersionMatch[2],
+          patch: +globalVersionMatch[3],
+          prerelease: globalVersionMatch[4]
+        };
+        if (globalVersionParsed.prerelease != null) {
+          return _reject(globalVersion);
+        }
+        if (ownVersionParsed.major !== globalVersionParsed.major) {
+          return _reject(globalVersion);
+        }
+        if (ownVersionParsed.major === 0) {
+          if (ownVersionParsed.minor === globalVersionParsed.minor && ownVersionParsed.patch <= globalVersionParsed.patch) {
+            return _accept(globalVersion);
+          }
+          return _reject(globalVersion);
+        }
+        if (ownVersionParsed.minor <= globalVersionParsed.minor) {
+          return _accept(globalVersion);
+        }
+        return _reject(globalVersion);
+      }, "isCompatible");
+    }
+    __name(_makeCompatibilityCheck2, "_makeCompatibilityCheck");
+    var isCompatible2 = _makeCompatibilityCheck2(VERSION2);
+    var major2 = VERSION2.split(".")[0];
+    var GLOBAL_OPENTELEMETRY_API_KEY2 = Symbol.for("opentelemetry.js.api." + major2);
+    var _global2 = _globalThis2;
+    function registerGlobal2(type, instance, diag5, allowOverride) {
+      var _a32;
+      if (allowOverride === void 0) {
+        allowOverride = false;
+      }
+      var api = _global2[GLOBAL_OPENTELEMETRY_API_KEY2] = (_a32 = _global2[GLOBAL_OPENTELEMETRY_API_KEY2]) !== null && _a32 !== void 0 ? _a32 : {
+        version: VERSION2
+      };
+      if (!allowOverride && api[type]) {
+        var err = new Error("@opentelemetry/api: Attempted duplicate registration of API: " + type);
+        diag5.error(err.stack || err.message);
+        return false;
+      }
+      if (api.version !== VERSION2) {
+        var err = new Error("@opentelemetry/api: All API registration versions must match");
+        diag5.error(err.stack || err.message);
+        return false;
+      }
+      api[type] = instance;
+      diag5.debug("@opentelemetry/api: Registered a global for " + type + " v" + VERSION2 + ".");
+      return true;
+    }
+    __name(registerGlobal2, "registerGlobal");
+    function getGlobal2(type) {
+      var _a32, _b22;
+      var globalVersion = (_a32 = _global2[GLOBAL_OPENTELEMETRY_API_KEY2]) === null || _a32 === void 0 ? void 0 : _a32.version;
+      if (!globalVersion || !isCompatible2(globalVersion)) {
+        return;
+      }
+      return (_b22 = _global2[GLOBAL_OPENTELEMETRY_API_KEY2]) === null || _b22 === void 0 ? void 0 : _b22[type];
+    }
+    __name(getGlobal2, "getGlobal");
+    function unregisterGlobal2(type, diag5) {
+      diag5.debug("@opentelemetry/api: Unregistering a global for " + type + " v" + VERSION2 + ".");
+      var api = _global2[GLOBAL_OPENTELEMETRY_API_KEY2];
+      if (api) {
+        delete api[type];
+      }
+    }
+    __name(unregisterGlobal2, "unregisterGlobal");
+    var DiagComponentLogger2 = function() {
+      function DiagComponentLogger3(props) {
+        this._namespace = props.namespace || "DiagComponentLogger";
+      }
+      __name(DiagComponentLogger3, "DiagComponentLogger");
+      DiagComponentLogger3.prototype.debug = function() {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+          args[_i] = arguments[_i];
+        }
+        return logProxy2("debug", this._namespace, args);
+      };
+      DiagComponentLogger3.prototype.error = function() {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+          args[_i] = arguments[_i];
+        }
+        return logProxy2("error", this._namespace, args);
+      };
+      DiagComponentLogger3.prototype.info = function() {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+          args[_i] = arguments[_i];
+        }
+        return logProxy2("info", this._namespace, args);
+      };
+      DiagComponentLogger3.prototype.warn = function() {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+          args[_i] = arguments[_i];
+        }
+        return logProxy2("warn", this._namespace, args);
+      };
+      DiagComponentLogger3.prototype.verbose = function() {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+          args[_i] = arguments[_i];
+        }
+        return logProxy2("verbose", this._namespace, args);
+      };
+      return DiagComponentLogger3;
+    }();
+    function logProxy2(funcName, namespace, args) {
+      var logger2 = getGlobal2("diag");
+      if (!logger2) {
+        return;
+      }
+      args.unshift(namespace);
+      return logger2[funcName].apply(logger2, args);
+    }
+    __name(logProxy2, "logProxy");
+    var DiagLogLevel2;
+    (function(DiagLogLevel3) {
+      DiagLogLevel3[DiagLogLevel3["NONE"] = 0] = "NONE";
+      DiagLogLevel3[DiagLogLevel3["ERROR"] = 30] = "ERROR";
+      DiagLogLevel3[DiagLogLevel3["WARN"] = 50] = "WARN";
+      DiagLogLevel3[DiagLogLevel3["INFO"] = 60] = "INFO";
+      DiagLogLevel3[DiagLogLevel3["DEBUG"] = 70] = "DEBUG";
+      DiagLogLevel3[DiagLogLevel3["VERBOSE"] = 80] = "VERBOSE";
+      DiagLogLevel3[DiagLogLevel3["ALL"] = 9999] = "ALL";
+    })(DiagLogLevel2 || (DiagLogLevel2 = {}));
+    function createLogLevelDiagLogger2(maxLevel, logger2) {
+      if (maxLevel < DiagLogLevel2.NONE) {
+        maxLevel = DiagLogLevel2.NONE;
+      } else if (maxLevel > DiagLogLevel2.ALL) {
+        maxLevel = DiagLogLevel2.ALL;
+      }
+      logger2 = logger2 || {};
+      function _filterFunc(funcName, theLevel) {
+        var theFunc = logger2[funcName];
+        if (typeof theFunc === "function" && maxLevel >= theLevel) {
+          return theFunc.bind(logger2);
+        }
+        return function() {
+        };
+      }
+      __name(_filterFunc, "_filterFunc");
+      return {
+        error: _filterFunc("error", DiagLogLevel2.ERROR),
+        warn: _filterFunc("warn", DiagLogLevel2.WARN),
+        info: _filterFunc("info", DiagLogLevel2.INFO),
+        debug: _filterFunc("debug", DiagLogLevel2.DEBUG),
+        verbose: _filterFunc("verbose", DiagLogLevel2.VERBOSE)
+      };
+    }
+    __name(createLogLevelDiagLogger2, "createLogLevelDiagLogger");
+    var API_NAME5 = "diag";
+    var DiagAPI2 = function() {
+      function DiagAPI3() {
+        function _logProxy(funcName) {
+          return function() {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+              args[_i] = arguments[_i];
+            }
+            var logger2 = getGlobal2("diag");
+            if (!logger2)
+              return;
+            return logger2[funcName].apply(logger2, args);
+          };
+        }
+        __name(_logProxy, "_logProxy");
+        var self2 = this;
+        self2.setLogger = function(logger2, logLevel) {
+          var _a32, _b22;
+          if (logLevel === void 0) {
+            logLevel = DiagLogLevel2.INFO;
+          }
+          if (logger2 === self2) {
+            var err = new Error("Cannot use diag as the logger for itself. Please use a DiagLogger implementation like ConsoleDiagLogger or a custom implementation");
+            self2.error((_a32 = err.stack) !== null && _a32 !== void 0 ? _a32 : err.message);
+            return false;
+          }
+          var oldLogger = getGlobal2("diag");
+          var newLogger = createLogLevelDiagLogger2(logLevel, logger2);
+          if (oldLogger) {
+            var stack = (_b22 = new Error().stack) !== null && _b22 !== void 0 ? _b22 : "<failed to generate stacktrace>";
+            oldLogger.warn("Current logger will be overwritten from " + stack);
+            newLogger.warn("Current logger will overwrite one already registered from " + stack);
+          }
+          return registerGlobal2("diag", newLogger, self2, true);
+        };
+        self2.disable = function() {
+          unregisterGlobal2(API_NAME5, self2);
+        };
+        self2.createComponentLogger = function(options) {
+          return new DiagComponentLogger2(options);
+        };
+        self2.verbose = _logProxy("verbose");
+        self2.debug = _logProxy("debug");
+        self2.info = _logProxy("info");
+        self2.warn = _logProxy("warn");
+        self2.error = _logProxy("error");
+      }
+      __name(DiagAPI3, "DiagAPI");
+      DiagAPI3.instance = function() {
+        if (!this._instance) {
+          this._instance = new DiagAPI3();
+        }
+        return this._instance;
+      };
+      return DiagAPI3;
+    }();
+    var BaggageImpl2 = function() {
+      function BaggageImpl3(entries) {
+        this._entries = entries ? new Map(entries) : /* @__PURE__ */ new Map();
+      }
+      __name(BaggageImpl3, "BaggageImpl");
+      BaggageImpl3.prototype.getEntry = function(key) {
+        var entry = this._entries.get(key);
+        if (!entry) {
+          return void 0;
+        }
+        return Object.assign({}, entry);
+      };
+      BaggageImpl3.prototype.getAllEntries = function() {
+        return Array.from(this._entries.entries()).map(function(_a32) {
+          var k = _a32[0], v = _a32[1];
+          return [k, v];
+        });
+      };
+      BaggageImpl3.prototype.setEntry = function(key, entry) {
+        var newBaggage = new BaggageImpl3(this._entries);
+        newBaggage._entries.set(key, entry);
+        return newBaggage;
+      };
+      BaggageImpl3.prototype.removeEntry = function(key) {
+        var newBaggage = new BaggageImpl3(this._entries);
+        newBaggage._entries.delete(key);
+        return newBaggage;
+      };
+      BaggageImpl3.prototype.removeEntries = function() {
+        var keys2 = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+          keys2[_i] = arguments[_i];
+        }
+        var newBaggage = new BaggageImpl3(this._entries);
+        for (var _a32 = 0, keys_1 = keys2; _a32 < keys_1.length; _a32++) {
+          var key = keys_1[_a32];
+          newBaggage._entries.delete(key);
+        }
+        return newBaggage;
+      };
+      BaggageImpl3.prototype.clear = function() {
+        return new BaggageImpl3();
+      };
+      return BaggageImpl3;
+    }();
+    var baggageEntryMetadataSymbol2 = Symbol("BaggageEntryMetadata");
+    var diag3 = DiagAPI2.instance();
+    function createBaggage2(entries) {
+      if (entries === void 0) {
+        entries = {};
+      }
+      return new BaggageImpl2(new Map(Object.entries(entries)));
+    }
+    __name(createBaggage2, "createBaggage");
+    function baggageEntryMetadataFromString2(str) {
+      if (typeof str !== "string") {
+        diag3.error("Cannot create baggage metadata from unknown type: " + typeof str);
+        str = "";
+      }
+      return {
+        __TYPE__: baggageEntryMetadataSymbol2,
+        toString: function() {
+          return str;
+        }
+      };
+    }
+    __name(baggageEntryMetadataFromString2, "baggageEntryMetadataFromString");
+    var consoleMap2 = [
+      { n: "error", c: "error" },
+      { n: "warn", c: "warn" },
+      { n: "info", c: "info" },
+      { n: "debug", c: "debug" },
+      { n: "verbose", c: "trace" }
+    ];
+    var DiagConsoleLogger2 = function() {
+      function DiagConsoleLogger3() {
+        function _consoleFunc(funcName) {
+          return function() {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+              args[_i] = arguments[_i];
+            }
+            if (console) {
+              var theFunc = console[funcName];
+              if (typeof theFunc !== "function") {
+                theFunc = console.log;
+              }
+              if (typeof theFunc === "function") {
+                return theFunc.apply(console, args);
+              }
+            }
+          };
+        }
+        __name(_consoleFunc, "_consoleFunc");
+        for (var i = 0; i < consoleMap2.length; i++) {
+          this[consoleMap2[i].n] = _consoleFunc(consoleMap2[i].c);
+        }
+      }
+      __name(DiagConsoleLogger3, "DiagConsoleLogger");
+      return DiagConsoleLogger3;
+    }();
+    var defaultTextMapGetter2 = {
+      get: function(carrier, key) {
+        if (carrier == null) {
+          return void 0;
+        }
+        return carrier[key];
+      },
+      keys: function(carrier) {
+        if (carrier == null) {
+          return [];
+        }
+        return Object.keys(carrier);
+      }
+    };
+    var defaultTextMapSetter2 = {
+      set: function(carrier, key, value) {
+        if (carrier == null) {
+          return;
+        }
+        carrier[key] = value;
+      }
+    };
+    function createContextKey2(description) {
+      return Symbol.for(description);
+    }
+    __name(createContextKey2, "createContextKey");
+    var BaseContext2 = function() {
+      function BaseContext3(parentContext) {
+        var self2 = this;
+        self2._currentContext = parentContext ? new Map(parentContext) : /* @__PURE__ */ new Map();
+        self2.getValue = function(key) {
+          return self2._currentContext.get(key);
+        };
+        self2.setValue = function(key, value) {
+          var context5 = new BaseContext3(self2._currentContext);
+          context5._currentContext.set(key, value);
+          return context5;
+        };
+        self2.deleteValue = function(key) {
+          var context5 = new BaseContext3(self2._currentContext);
+          context5._currentContext.delete(key);
+          return context5;
+        };
+      }
+      __name(BaseContext3, "BaseContext");
+      return BaseContext3;
+    }();
+    var ROOT_CONTEXT2 = new BaseContext2();
+    var __spreadArray3 = function(to, from) {
+      for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+        to[j] = from[i];
+      return to;
+    };
+    var NoopContextManager2 = function() {
+      function NoopContextManager3() {
+      }
+      __name(NoopContextManager3, "NoopContextManager");
+      NoopContextManager3.prototype.active = function() {
+        return ROOT_CONTEXT2;
+      };
+      NoopContextManager3.prototype.with = function(_context, fn, thisArg) {
+        var args = [];
+        for (var _i = 3; _i < arguments.length; _i++) {
+          args[_i - 3] = arguments[_i];
+        }
+        return fn.call.apply(fn, __spreadArray3([thisArg], args));
+      };
+      NoopContextManager3.prototype.bind = function(_context, target) {
+        return target;
+      };
+      NoopContextManager3.prototype.enable = function() {
+        return this;
+      };
+      NoopContextManager3.prototype.disable = function() {
+        return this;
+      };
+      return NoopContextManager3;
+    }();
+    var __spreadArray4 = function(to, from) {
+      for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+        to[j] = from[i];
+      return to;
+    };
+    var API_NAME6 = "context";
+    var NOOP_CONTEXT_MANAGER2 = new NoopContextManager2();
+    var ContextAPI2 = function() {
+      function ContextAPI3() {
+      }
+      __name(ContextAPI3, "ContextAPI");
+      ContextAPI3.getInstance = function() {
+        if (!this._instance) {
+          this._instance = new ContextAPI3();
+        }
+        return this._instance;
+      };
+      ContextAPI3.prototype.setGlobalContextManager = function(contextManager) {
+        return registerGlobal2(API_NAME6, contextManager, DiagAPI2.instance());
+      };
+      ContextAPI3.prototype.active = function() {
+        return this._getContextManager().active();
+      };
+      ContextAPI3.prototype.with = function(context5, fn, thisArg) {
+        var _a32;
+        var args = [];
+        for (var _i = 3; _i < arguments.length; _i++) {
+          args[_i - 3] = arguments[_i];
+        }
+        return (_a32 = this._getContextManager()).with.apply(_a32, __spreadArray4([context5, fn, thisArg], args));
+      };
+      ContextAPI3.prototype.bind = function(context5, target) {
+        return this._getContextManager().bind(context5, target);
+      };
+      ContextAPI3.prototype._getContextManager = function() {
+        return getGlobal2(API_NAME6) || NOOP_CONTEXT_MANAGER2;
+      };
+      ContextAPI3.prototype.disable = function() {
+        this._getContextManager().disable();
+        unregisterGlobal2(API_NAME6, DiagAPI2.instance());
+      };
+      return ContextAPI3;
+    }();
+    var TraceFlags2;
+    (function(TraceFlags3) {
+      TraceFlags3[TraceFlags3["NONE"] = 0] = "NONE";
+      TraceFlags3[TraceFlags3["SAMPLED"] = 1] = "SAMPLED";
+    })(TraceFlags2 || (TraceFlags2 = {}));
+    var INVALID_SPANID2 = "0000000000000000";
+    var INVALID_TRACEID2 = "00000000000000000000000000000000";
+    var INVALID_SPAN_CONTEXT2 = {
+      traceId: INVALID_TRACEID2,
+      spanId: INVALID_SPANID2,
+      traceFlags: TraceFlags2.NONE
+    };
+    var NonRecordingSpan2 = function() {
+      function NonRecordingSpan3(_spanContext) {
+        if (_spanContext === void 0) {
+          _spanContext = INVALID_SPAN_CONTEXT2;
+        }
+        this._spanContext = _spanContext;
+      }
+      __name(NonRecordingSpan3, "NonRecordingSpan");
+      NonRecordingSpan3.prototype.spanContext = function() {
+        return this._spanContext;
+      };
+      NonRecordingSpan3.prototype.setAttribute = function(_key, _value) {
+        return this;
+      };
+      NonRecordingSpan3.prototype.setAttributes = function(_attributes) {
+        return this;
+      };
+      NonRecordingSpan3.prototype.addEvent = function(_name, _attributes) {
+        return this;
+      };
+      NonRecordingSpan3.prototype.setStatus = function(_status) {
+        return this;
+      };
+      NonRecordingSpan3.prototype.updateName = function(_name) {
+        return this;
+      };
+      NonRecordingSpan3.prototype.end = function(_endTime) {
+      };
+      NonRecordingSpan3.prototype.isRecording = function() {
+        return false;
+      };
+      NonRecordingSpan3.prototype.recordException = function(_exception, _time) {
+      };
+      return NonRecordingSpan3;
+    }();
+    var SPAN_KEY2 = createContextKey2("OpenTelemetry Context Key SPAN");
+    function getSpan2(context5) {
+      return context5.getValue(SPAN_KEY2) || void 0;
+    }
+    __name(getSpan2, "getSpan");
+    function setSpan2(context5, span) {
+      return context5.setValue(SPAN_KEY2, span);
+    }
+    __name(setSpan2, "setSpan");
+    function deleteSpan2(context5) {
+      return context5.deleteValue(SPAN_KEY2);
+    }
+    __name(deleteSpan2, "deleteSpan");
+    function setSpanContext2(context5, spanContext) {
+      return setSpan2(context5, new NonRecordingSpan2(spanContext));
+    }
+    __name(setSpanContext2, "setSpanContext");
+    function getSpanContext2(context5) {
+      var _a32;
+      return (_a32 = getSpan2(context5)) === null || _a32 === void 0 ? void 0 : _a32.spanContext();
+    }
+    __name(getSpanContext2, "getSpanContext");
+    var VALID_TRACEID_REGEX2 = /^([0-9a-f]{32})$/i;
+    var VALID_SPANID_REGEX2 = /^[0-9a-f]{16}$/i;
+    function isValidTraceId2(traceId) {
+      return VALID_TRACEID_REGEX2.test(traceId) && traceId !== INVALID_TRACEID2;
+    }
+    __name(isValidTraceId2, "isValidTraceId");
+    function isValidSpanId2(spanId) {
+      return VALID_SPANID_REGEX2.test(spanId) && spanId !== INVALID_SPANID2;
+    }
+    __name(isValidSpanId2, "isValidSpanId");
+    function isSpanContextValid2(spanContext) {
+      return isValidTraceId2(spanContext.traceId) && isValidSpanId2(spanContext.spanId);
+    }
+    __name(isSpanContextValid2, "isSpanContextValid");
+    function wrapSpanContext2(spanContext) {
+      return new NonRecordingSpan2(spanContext);
+    }
+    __name(wrapSpanContext2, "wrapSpanContext");
+    var context3 = ContextAPI2.getInstance();
+    var NoopTracer2 = function() {
+      function NoopTracer3() {
+      }
+      __name(NoopTracer3, "NoopTracer");
+      NoopTracer3.prototype.startSpan = function(name, options, context5) {
+        var root = Boolean(options === null || options === void 0 ? void 0 : options.root);
+        if (root) {
+          return new NonRecordingSpan2();
+        }
+        var parentFromContext = context5 && getSpanContext2(context5);
+        if (isSpanContext2(parentFromContext) && isSpanContextValid2(parentFromContext)) {
+          return new NonRecordingSpan2(parentFromContext);
+        } else {
+          return new NonRecordingSpan2();
+        }
+      };
+      NoopTracer3.prototype.startActiveSpan = function(name, arg2, arg3, arg4) {
+        var opts;
+        var ctx;
+        var fn;
+        if (arguments.length < 2) {
+          return;
+        } else if (arguments.length === 2) {
+          fn = arg2;
+        } else if (arguments.length === 3) {
+          opts = arg2;
+          fn = arg3;
+        } else {
+          opts = arg2;
+          ctx = arg3;
+          fn = arg4;
+        }
+        var parentContext = ctx !== null && ctx !== void 0 ? ctx : context3.active();
+        var span = this.startSpan(name, opts, parentContext);
+        var contextWithSpanSet = setSpan2(parentContext, span);
+        return context3.with(contextWithSpanSet, fn, void 0, span);
+      };
+      return NoopTracer3;
+    }();
+    function isSpanContext2(spanContext) {
+      return typeof spanContext === "object" && typeof spanContext["spanId"] === "string" && typeof spanContext["traceId"] === "string" && typeof spanContext["traceFlags"] === "number";
+    }
+    __name(isSpanContext2, "isSpanContext");
+    var NOOP_TRACER2 = new NoopTracer2();
+    var ProxyTracer2 = function() {
+      function ProxyTracer3(_provider, name, version, options) {
+        this._provider = _provider;
+        this.name = name;
+        this.version = version;
+        this.options = options;
+      }
+      __name(ProxyTracer3, "ProxyTracer");
+      ProxyTracer3.prototype.startSpan = function(name, options, context5) {
+        return this._getTracer().startSpan(name, options, context5);
+      };
+      ProxyTracer3.prototype.startActiveSpan = function(_name, _options, _context, _fn) {
+        var tracer = this._getTracer();
+        return Reflect.apply(tracer.startActiveSpan, tracer, arguments);
+      };
+      ProxyTracer3.prototype._getTracer = function() {
+        if (this._delegate) {
+          return this._delegate;
+        }
+        var tracer = this._provider.getDelegateTracer(this.name, this.version, this.options);
+        if (!tracer) {
+          return NOOP_TRACER2;
+        }
+        this._delegate = tracer;
+        return this._delegate;
+      };
+      return ProxyTracer3;
+    }();
+    var NoopTracerProvider2 = function() {
+      function NoopTracerProvider3() {
+      }
+      __name(NoopTracerProvider3, "NoopTracerProvider");
+      NoopTracerProvider3.prototype.getTracer = function(_name, _version, _options) {
+        return new NoopTracer2();
+      };
+      return NoopTracerProvider3;
+    }();
+    var NOOP_TRACER_PROVIDER2 = new NoopTracerProvider2();
+    var ProxyTracerProvider2 = function() {
+      function ProxyTracerProvider3() {
+      }
+      __name(ProxyTracerProvider3, "ProxyTracerProvider");
+      ProxyTracerProvider3.prototype.getTracer = function(name, version, options) {
+        var _a32;
+        return (_a32 = this.getDelegateTracer(name, version, options)) !== null && _a32 !== void 0 ? _a32 : new ProxyTracer2(this, name, version, options);
+      };
+      ProxyTracerProvider3.prototype.getDelegate = function() {
+        var _a32;
+        return (_a32 = this._delegate) !== null && _a32 !== void 0 ? _a32 : NOOP_TRACER_PROVIDER2;
+      };
+      ProxyTracerProvider3.prototype.setDelegate = function(delegate) {
+        this._delegate = delegate;
+      };
+      ProxyTracerProvider3.prototype.getDelegateTracer = function(name, version, options) {
+        var _a32;
+        return (_a32 = this._delegate) === null || _a32 === void 0 ? void 0 : _a32.getTracer(name, version, options);
+      };
+      return ProxyTracerProvider3;
+    }();
+    var SamplingDecision2;
+    (function(SamplingDecision4) {
+      SamplingDecision4[SamplingDecision4["NOT_RECORD"] = 0] = "NOT_RECORD";
+      SamplingDecision4[SamplingDecision4["RECORD"] = 1] = "RECORD";
+      SamplingDecision4[SamplingDecision4["RECORD_AND_SAMPLED"] = 2] = "RECORD_AND_SAMPLED";
+    })(SamplingDecision2 || (SamplingDecision2 = {}));
+    var SpanKind2;
+    (function(SpanKind3) {
+      SpanKind3[SpanKind3["INTERNAL"] = 0] = "INTERNAL";
+      SpanKind3[SpanKind3["SERVER"] = 1] = "SERVER";
+      SpanKind3[SpanKind3["CLIENT"] = 2] = "CLIENT";
+      SpanKind3[SpanKind3["PRODUCER"] = 3] = "PRODUCER";
+      SpanKind3[SpanKind3["CONSUMER"] = 4] = "CONSUMER";
+    })(SpanKind2 || (SpanKind2 = {}));
+    var SpanStatusCode2;
+    (function(SpanStatusCode3) {
+      SpanStatusCode3[SpanStatusCode3["UNSET"] = 0] = "UNSET";
+      SpanStatusCode3[SpanStatusCode3["OK"] = 1] = "OK";
+      SpanStatusCode3[SpanStatusCode3["ERROR"] = 2] = "ERROR";
+    })(SpanStatusCode2 || (SpanStatusCode2 = {}));
+    var VALID_KEY_CHAR_RANGE2 = "[_0-9a-z-*/]";
+    var VALID_KEY2 = "[a-z]" + VALID_KEY_CHAR_RANGE2 + "{0,255}";
+    var VALID_VENDOR_KEY2 = "[a-z0-9]" + VALID_KEY_CHAR_RANGE2 + "{0,240}@[a-z]" + VALID_KEY_CHAR_RANGE2 + "{0,13}";
+    var VALID_KEY_REGEX2 = new RegExp("^(?:" + VALID_KEY2 + "|" + VALID_VENDOR_KEY2 + ")$");
+    var VALID_VALUE_BASE_REGEX2 = /^[ -~]{0,255}[!-~]$/;
+    var INVALID_VALUE_COMMA_EQUAL_REGEX2 = /,|=/;
+    function validateKey2(key) {
+      return VALID_KEY_REGEX2.test(key);
+    }
+    __name(validateKey2, "validateKey");
+    function validateValue2(value) {
+      return VALID_VALUE_BASE_REGEX2.test(value) && !INVALID_VALUE_COMMA_EQUAL_REGEX2.test(value);
+    }
+    __name(validateValue2, "validateValue");
+    var MAX_TRACE_STATE_ITEMS2 = 32;
+    var MAX_TRACE_STATE_LEN2 = 512;
+    var LIST_MEMBERS_SEPARATOR2 = ",";
+    var LIST_MEMBER_KEY_VALUE_SPLITTER2 = "=";
+    var TraceStateImpl2 = function() {
+      function TraceStateImpl3(rawTraceState) {
+        this._internalState = /* @__PURE__ */ new Map();
+        if (rawTraceState)
+          this._parse(rawTraceState);
+      }
+      __name(TraceStateImpl3, "TraceStateImpl");
+      TraceStateImpl3.prototype.set = function(key, value) {
+        var traceState = this._clone();
+        if (traceState._internalState.has(key)) {
+          traceState._internalState.delete(key);
+        }
+        traceState._internalState.set(key, value);
+        return traceState;
+      };
+      TraceStateImpl3.prototype.unset = function(key) {
+        var traceState = this._clone();
+        traceState._internalState.delete(key);
+        return traceState;
+      };
+      TraceStateImpl3.prototype.get = function(key) {
+        return this._internalState.get(key);
+      };
+      TraceStateImpl3.prototype.serialize = function() {
+        var _this = this;
+        return this._keys().reduce(function(agg, key) {
+          agg.push(key + LIST_MEMBER_KEY_VALUE_SPLITTER2 + _this.get(key));
+          return agg;
+        }, []).join(LIST_MEMBERS_SEPARATOR2);
+      };
+      TraceStateImpl3.prototype._parse = function(rawTraceState) {
+        if (rawTraceState.length > MAX_TRACE_STATE_LEN2)
+          return;
+        this._internalState = rawTraceState.split(LIST_MEMBERS_SEPARATOR2).reverse().reduce(function(agg, part) {
+          var listMember = part.trim();
+          var i = listMember.indexOf(LIST_MEMBER_KEY_VALUE_SPLITTER2);
+          if (i !== -1) {
+            var key = listMember.slice(0, i);
+            var value = listMember.slice(i + 1, part.length);
+            if (validateKey2(key) && validateValue2(value)) {
+              agg.set(key, value);
+            } else {
+            }
+          }
+          return agg;
+        }, /* @__PURE__ */ new Map());
+        if (this._internalState.size > MAX_TRACE_STATE_ITEMS2) {
+          this._internalState = new Map(Array.from(this._internalState.entries()).reverse().slice(0, MAX_TRACE_STATE_ITEMS2));
+        }
+      };
+      TraceStateImpl3.prototype._keys = function() {
+        return Array.from(this._internalState.keys()).reverse();
+      };
+      TraceStateImpl3.prototype._clone = function() {
+        var traceState = new TraceStateImpl3();
+        traceState._internalState = new Map(this._internalState);
+        return traceState;
+      };
+      return TraceStateImpl3;
+    }();
+    var API_NAME7 = "trace";
+    var TraceAPI2 = function() {
+      function TraceAPI3() {
+        this._proxyTracerProvider = new ProxyTracerProvider2();
+        this.wrapSpanContext = wrapSpanContext2;
+        this.isSpanContextValid = isSpanContextValid2;
+        this.deleteSpan = deleteSpan2;
+        this.getSpan = getSpan2;
+        this.getSpanContext = getSpanContext2;
+        this.setSpan = setSpan2;
+        this.setSpanContext = setSpanContext2;
+      }
+      __name(TraceAPI3, "TraceAPI");
+      TraceAPI3.getInstance = function() {
+        if (!this._instance) {
+          this._instance = new TraceAPI3();
+        }
+        return this._instance;
+      };
+      TraceAPI3.prototype.setGlobalTracerProvider = function(provider) {
+        var success = registerGlobal2(API_NAME7, this._proxyTracerProvider, DiagAPI2.instance());
+        if (success) {
+          this._proxyTracerProvider.setDelegate(provider);
+        }
+        return success;
+      };
+      TraceAPI3.prototype.getTracerProvider = function() {
+        return getGlobal2(API_NAME7) || this._proxyTracerProvider;
+      };
+      TraceAPI3.prototype.getTracer = function(name, version) {
+        return this.getTracerProvider().getTracer(name, version);
+      };
+      TraceAPI3.prototype.disable = function() {
+        unregisterGlobal2(API_NAME7, DiagAPI2.instance());
+        this._proxyTracerProvider = new ProxyTracerProvider2();
+      };
+      return TraceAPI3;
+    }();
+    var NoopTextMapPropagator2 = function() {
+      function NoopTextMapPropagator3() {
+      }
+      __name(NoopTextMapPropagator3, "NoopTextMapPropagator");
+      NoopTextMapPropagator3.prototype.inject = function(_context, _carrier) {
+      };
+      NoopTextMapPropagator3.prototype.extract = function(context5, _carrier) {
+        return context5;
+      };
+      NoopTextMapPropagator3.prototype.fields = function() {
+        return [];
+      };
+      return NoopTextMapPropagator3;
+    }();
+    var BAGGAGE_KEY2 = createContextKey2("OpenTelemetry Baggage Key");
+    function getBaggage2(context5) {
+      return context5.getValue(BAGGAGE_KEY2) || void 0;
+    }
+    __name(getBaggage2, "getBaggage");
+    function setBaggage2(context5, baggage) {
+      return context5.setValue(BAGGAGE_KEY2, baggage);
+    }
+    __name(setBaggage2, "setBaggage");
+    function deleteBaggage2(context5) {
+      return context5.deleteValue(BAGGAGE_KEY2);
+    }
+    __name(deleteBaggage2, "deleteBaggage");
+    var API_NAME8 = "propagation";
+    var NOOP_TEXT_MAP_PROPAGATOR2 = new NoopTextMapPropagator2();
+    var PropagationAPI2 = function() {
+      function PropagationAPI3() {
+        this.createBaggage = createBaggage2;
+        this.getBaggage = getBaggage2;
+        this.setBaggage = setBaggage2;
+        this.deleteBaggage = deleteBaggage2;
+      }
+      __name(PropagationAPI3, "PropagationAPI");
+      PropagationAPI3.getInstance = function() {
+        if (!this._instance) {
+          this._instance = new PropagationAPI3();
+        }
+        return this._instance;
+      };
+      PropagationAPI3.prototype.setGlobalPropagator = function(propagator) {
+        return registerGlobal2(API_NAME8, propagator, DiagAPI2.instance());
+      };
+      PropagationAPI3.prototype.inject = function(context5, carrier, setter) {
+        if (setter === void 0) {
+          setter = defaultTextMapSetter2;
+        }
+        return this._getGlobalPropagator().inject(context5, carrier, setter);
+      };
+      PropagationAPI3.prototype.extract = function(context5, carrier, getter) {
+        if (getter === void 0) {
+          getter = defaultTextMapGetter2;
+        }
+        return this._getGlobalPropagator().extract(context5, carrier, getter);
+      };
+      PropagationAPI3.prototype.fields = function() {
+        return this._getGlobalPropagator().fields();
+      };
+      PropagationAPI3.prototype.disable = function() {
+        unregisterGlobal2(API_NAME8, DiagAPI2.instance());
+      };
+      PropagationAPI3.prototype._getGlobalPropagator = function() {
+        return getGlobal2(API_NAME8) || NOOP_TEXT_MAP_PROPAGATOR2;
+      };
+      return PropagationAPI3;
+    }();
+    var context4 = ContextAPI2.getInstance();
+    var trace2 = TraceAPI2.getInstance();
+    var propagation2 = PropagationAPI2.getInstance();
+    var diag4 = DiagAPI2.instance();
+    var SUPPRESS_TRACING_KEY = createContextKey2("OpenTelemetry SDK Context Key SUPPRESS_TRACING");
+    function suppressTracing(context5) {
+      return context5.setValue(SUPPRESS_TRACING_KEY, true);
     }
     __name(suppressTracing, "suppressTracing");
-    function isTracingSuppressed(context3) {
-      return context3.getValue(SUPPRESS_TRACING_KEY) === true;
+    function isTracingSuppressed(context5) {
+      return context5.getValue(SUPPRESS_TRACING_KEY) === true;
     }
     __name(isTracingSuppressed, "isTracingSuppressed");
     var BAGGAGE_KEY_PAIR_SEPARATOR = "=";
@@ -51635,7 +52972,7 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
       var value = decodeURIComponent(keyPair[1].trim());
       var metadata;
       if (valueProps.length > 0) {
-        metadata = baggageEntryMetadataFromString(valueProps.join(BAGGAGE_PROPERTIES_SEPARATOR));
+        metadata = baggageEntryMetadataFromString2(valueProps.join(BAGGAGE_PROPERTIES_SEPARATOR));
       }
       return { key, value, metadata };
     }
@@ -51644,9 +52981,9 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
       function W3CBaggagePropagator2() {
       }
       __name(W3CBaggagePropagator2, "W3CBaggagePropagator");
-      W3CBaggagePropagator2.prototype.inject = function(context3, carrier, setter) {
-        var baggage = propagation.getBaggage(context3);
-        if (!baggage || isTracingSuppressed(context3))
+      W3CBaggagePropagator2.prototype.inject = function(context5, carrier, setter) {
+        var baggage = propagation2.getBaggage(context5);
+        if (!baggage || isTracingSuppressed(context5))
           return;
         var keyPairs = getKeyPairs(baggage).filter(function(pair) {
           return pair.length <= BAGGAGE_MAX_PER_NAME_VALUE_PAIRS;
@@ -51656,14 +52993,14 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
           setter.set(carrier, BAGGAGE_HEADER, headerValue);
         }
       };
-      W3CBaggagePropagator2.prototype.extract = function(context3, carrier, getter) {
+      W3CBaggagePropagator2.prototype.extract = function(context5, carrier, getter) {
         var headerValue = getter.get(carrier, BAGGAGE_HEADER);
         var baggageString = Array.isArray(headerValue) ? headerValue.join(BAGGAGE_ITEMS_SEPARATOR) : headerValue;
         if (!baggageString)
-          return context3;
+          return context5;
         var baggage = {};
         if (baggageString.length === 0) {
-          return context3;
+          return context5;
         }
         var pairs = baggageString.split(BAGGAGE_ITEMS_SEPARATOR);
         pairs.forEach(function(entry) {
@@ -51677,9 +53014,9 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
           }
         });
         if (Object.entries(baggage).length === 0) {
-          return context3;
+          return context5;
         }
-        return propagation.setBaggage(context3, propagation.createBaggage(baggage));
+        return propagation2.setBaggage(context5, propagation2.createBaggage(baggage));
       };
       W3CBaggagePropagator2.prototype.fields = function() {
         return [BAGGAGE_HEADER];
@@ -51731,11 +53068,11 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
         for (var _b22 = __values(Object.entries(attributes)), _c2 = _b22.next(); !_c2.done; _c2 = _b22.next()) {
           var _d2 = __read2(_c2.value, 2), key = _d2[0], val = _d2[1];
           if (!isAttributeKey(key)) {
-            diag2.warn("Invalid attribute key: " + key);
+            diag4.warn("Invalid attribute key: " + key);
             continue;
           }
           if (!isAttributeValue(val)) {
-            diag2.warn("Invalid attribute value set for key: " + key);
+            diag4.warn("Invalid attribute value set for key: " + key);
             continue;
           }
           if (Array.isArray(val)) {
@@ -51818,7 +53155,7 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
     __name(isValidPrimitiveAttributeValue, "isValidPrimitiveAttributeValue");
     function loggingErrorHandler() {
       return function(ex) {
-        diag2.error(stringifyException(ex));
+        diag4.error(stringifyException(ex));
       };
     }
     __name(loggingErrorHandler, "loggingErrorHandler");
@@ -51865,6 +53202,7 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
       TracesSamplerValues2["ParentBasedTraceIdRatio"] = "parentbased_traceidratio";
       TracesSamplerValues2["TraceIdRatio"] = "traceidratio";
     })(TracesSamplerValues || (TracesSamplerValues = {}));
+    var _globalThis3 = typeof globalThis === "object" ? globalThis : typeof self === "object" ? self : typeof window === "object" ? window : typeof global === "object" ? global : {};
     var DEFAULT_LIST_SEPARATOR = ",";
     var ENVIRONMENT_NUMBERS_KEYS = [
       "OTEL_BSP_EXPORT_TIMEOUT",
@@ -51922,7 +53260,7 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
       OTEL_EXPORTER_OTLP_TRACES_TIMEOUT: 1e4,
       OTEL_EXPORTER_OTLP_METRICS_TIMEOUT: 1e4,
       OTEL_EXPORTER_ZIPKIN_ENDPOINT: "http://localhost:9411/api/v2/spans",
-      OTEL_LOG_LEVEL: DiagLogLevel.INFO,
+      OTEL_LOG_LEVEL: DiagLogLevel2.INFO,
       OTEL_NO_PATCH_MODULES: [],
       OTEL_PROPAGATORS: ["tracecontext", "baggage"],
       OTEL_RESOURCE_ATTRIBUTES: "",
@@ -51986,13 +53324,13 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
     }
     __name(parseStringList, "parseStringList");
     var logLevelMap = {
-      ALL: DiagLogLevel.ALL,
-      VERBOSE: DiagLogLevel.VERBOSE,
-      DEBUG: DiagLogLevel.DEBUG,
-      INFO: DiagLogLevel.INFO,
-      WARN: DiagLogLevel.WARN,
-      ERROR: DiagLogLevel.ERROR,
-      NONE: DiagLogLevel.NONE
+      ALL: DiagLogLevel2.ALL,
+      VERBOSE: DiagLogLevel2.VERBOSE,
+      DEBUG: DiagLogLevel2.DEBUG,
+      INFO: DiagLogLevel2.INFO,
+      WARN: DiagLogLevel2.WARN,
+      ERROR: DiagLogLevel2.ERROR,
+      NONE: DiagLogLevel2.NONE
     };
     function setLogLevelFromEnv(key, environment, values) {
       var value = values[key];
@@ -52028,6 +53366,10 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
       return environment;
     }
     __name(parseEnvironment, "parseEnvironment");
+    function getEnvWithoutDefaults() {
+      return typeof process !== "undefined" ? parseEnvironment(process.env) : parseEnvironment(_globalThis3);
+    }
+    __name(getEnvWithoutDefaults, "getEnvWithoutDefaults");
     function getEnv() {
       var processEnv = parseEnvironment(process.env);
       return Object.assign({
@@ -52035,16 +53377,18 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
       }, DEFAULT_ENVIRONMENT, processEnv);
     }
     __name(getEnv, "getEnv");
-    var _globalThis2 = typeof globalThis === "object" ? globalThis : global;
+    var _globalThis4 = typeof globalThis === "object" ? globalThis : global;
+    var buf8 = Buffer.alloc(8);
+    var buf16 = Buffer.alloc(16);
     var SPAN_ID_BYTES = 8;
     var TRACE_ID_BYTES = 16;
     var RandomIdGenerator = function() {
-      function RandomIdGenerator2() {
+      function RandomIdGenerator3() {
         this.generateTraceId = getIdGenerator(TRACE_ID_BYTES);
         this.generateSpanId = getIdGenerator(SPAN_ID_BYTES);
       }
-      __name(RandomIdGenerator2, "RandomIdGenerator");
-      return RandomIdGenerator2;
+      __name(RandomIdGenerator3, "RandomIdGenerator");
+      return RandomIdGenerator3;
     }();
     var SHARED_BUFFER = Buffer.allocUnsafe(TRACE_ID_BYTES);
     function getIdGenerator(bytes) {
@@ -52065,7 +53409,7 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
     __name(getIdGenerator, "getIdGenerator");
     var import_perf_hooks = require("perf_hooks");
     var otperformance = import_perf_hooks.performance;
-    var VERSION2 = "1.5.0";
+    var VERSION3 = "1.6.0";
     var SemanticAttributes = {
       AWS_LAMBDA_INVOKED_ARN: "aws.lambda.invoked_arn",
       DB_SYSTEM: "db.system",
@@ -52292,7 +53636,7 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
       WEBJS: "webjs"
     };
     var _a2;
-    var SDK_INFO = (_a2 = {}, _a2[SemanticResourceAttributes.TELEMETRY_SDK_NAME] = "opentelemetry", _a2[SemanticResourceAttributes.PROCESS_RUNTIME_NAME] = "node", _a2[SemanticResourceAttributes.TELEMETRY_SDK_LANGUAGE] = TelemetrySdkLanguageValues.NODEJS, _a2[SemanticResourceAttributes.TELEMETRY_SDK_VERSION] = VERSION2, _a2);
+    var SDK_INFO = (_a2 = {}, _a2[SemanticResourceAttributes.TELEMETRY_SDK_NAME] = "opentelemetry", _a2[SemanticResourceAttributes.PROCESS_RUNTIME_NAME] = "node", _a2[SemanticResourceAttributes.TELEMETRY_SDK_LANGUAGE] = TelemetrySdkLanguageValues.NODEJS, _a2[SemanticResourceAttributes.TELEMETRY_SDK_VERSION] = VERSION3, _a2);
     function unrefTimer(timer) {
       timer.unref();
     }
@@ -52398,15 +53742,15 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
         }, [])));
       }
       __name(CompositePropagator2, "CompositePropagator");
-      CompositePropagator2.prototype.inject = function(context3, carrier, setter) {
+      CompositePropagator2.prototype.inject = function(context5, carrier, setter) {
         var e_1, _a32;
         try {
           for (var _b22 = __values2(this._propagators), _c2 = _b22.next(); !_c2.done; _c2 = _b22.next()) {
             var propagator = _c2.value;
             try {
-              propagator.inject(context3, carrier, setter);
+              propagator.inject(context5, carrier, setter);
             } catch (err) {
-              diag2.warn("Failed to inject with " + propagator.constructor.name + ". Err: " + err.message);
+              diag4.warn("Failed to inject with " + propagator.constructor.name + ". Err: " + err.message);
             }
           }
         } catch (e_1_1) {
@@ -52421,39 +53765,39 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
           }
         }
       };
-      CompositePropagator2.prototype.extract = function(context3, carrier, getter) {
+      CompositePropagator2.prototype.extract = function(context5, carrier, getter) {
         return this._propagators.reduce(function(ctx, propagator) {
           try {
             return propagator.extract(ctx, carrier, getter);
           } catch (err) {
-            diag2.warn("Failed to inject with " + propagator.constructor.name + ". Err: " + err.message);
+            diag4.warn("Failed to inject with " + propagator.constructor.name + ". Err: " + err.message);
           }
           return ctx;
-        }, context3);
+        }, context5);
       };
       CompositePropagator2.prototype.fields = function() {
         return this._fields.slice();
       };
       return CompositePropagator2;
     }();
-    var VALID_KEY_CHAR_RANGE2 = "[_0-9a-z-*/]";
-    var VALID_KEY2 = "[a-z]" + VALID_KEY_CHAR_RANGE2 + "{0,255}";
-    var VALID_VENDOR_KEY2 = "[a-z0-9]" + VALID_KEY_CHAR_RANGE2 + "{0,240}@[a-z]" + VALID_KEY_CHAR_RANGE2 + "{0,13}";
-    var VALID_KEY_REGEX2 = new RegExp("^(?:" + VALID_KEY2 + "|" + VALID_VENDOR_KEY2 + ")$");
-    var VALID_VALUE_BASE_REGEX2 = /^[ -~]{0,255}[!-~]$/;
-    var INVALID_VALUE_COMMA_EQUAL_REGEX2 = /,|=/;
-    function validateKey2(key) {
-      return VALID_KEY_REGEX2.test(key);
+    var VALID_KEY_CHAR_RANGE3 = "[_0-9a-z-*/]";
+    var VALID_KEY3 = "[a-z]" + VALID_KEY_CHAR_RANGE3 + "{0,255}";
+    var VALID_VENDOR_KEY3 = "[a-z0-9]" + VALID_KEY_CHAR_RANGE3 + "{0,240}@[a-z]" + VALID_KEY_CHAR_RANGE3 + "{0,13}";
+    var VALID_KEY_REGEX3 = new RegExp("^(?:" + VALID_KEY3 + "|" + VALID_VENDOR_KEY3 + ")$");
+    var VALID_VALUE_BASE_REGEX3 = /^[ -~]{0,255}[!-~]$/;
+    var INVALID_VALUE_COMMA_EQUAL_REGEX3 = /,|=/;
+    function validateKey3(key) {
+      return VALID_KEY_REGEX3.test(key);
     }
-    __name(validateKey2, "validateKey");
-    function validateValue2(value) {
-      return VALID_VALUE_BASE_REGEX2.test(value) && !INVALID_VALUE_COMMA_EQUAL_REGEX2.test(value);
+    __name(validateKey3, "validateKey");
+    function validateValue3(value) {
+      return VALID_VALUE_BASE_REGEX3.test(value) && !INVALID_VALUE_COMMA_EQUAL_REGEX3.test(value);
     }
-    __name(validateValue2, "validateValue");
-    var MAX_TRACE_STATE_ITEMS2 = 32;
-    var MAX_TRACE_STATE_LEN2 = 512;
-    var LIST_MEMBERS_SEPARATOR2 = ",";
-    var LIST_MEMBER_KEY_VALUE_SPLITTER2 = "=";
+    __name(validateValue3, "validateValue");
+    var MAX_TRACE_STATE_ITEMS3 = 32;
+    var MAX_TRACE_STATE_LEN3 = 512;
+    var LIST_MEMBERS_SEPARATOR3 = ",";
+    var LIST_MEMBER_KEY_VALUE_SPLITTER3 = "=";
     var TraceState = function() {
       function TraceState2(rawTraceState) {
         this._internalState = /* @__PURE__ */ new Map();
@@ -52480,28 +53824,28 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
       TraceState2.prototype.serialize = function() {
         var _this = this;
         return this._keys().reduce(function(agg, key) {
-          agg.push(key + LIST_MEMBER_KEY_VALUE_SPLITTER2 + _this.get(key));
+          agg.push(key + LIST_MEMBER_KEY_VALUE_SPLITTER3 + _this.get(key));
           return agg;
-        }, []).join(LIST_MEMBERS_SEPARATOR2);
+        }, []).join(LIST_MEMBERS_SEPARATOR3);
       };
       TraceState2.prototype._parse = function(rawTraceState) {
-        if (rawTraceState.length > MAX_TRACE_STATE_LEN2)
+        if (rawTraceState.length > MAX_TRACE_STATE_LEN3)
           return;
-        this._internalState = rawTraceState.split(LIST_MEMBERS_SEPARATOR2).reverse().reduce(function(agg, part) {
+        this._internalState = rawTraceState.split(LIST_MEMBERS_SEPARATOR3).reverse().reduce(function(agg, part) {
           var listMember = part.trim();
-          var i = listMember.indexOf(LIST_MEMBER_KEY_VALUE_SPLITTER2);
+          var i = listMember.indexOf(LIST_MEMBER_KEY_VALUE_SPLITTER3);
           if (i !== -1) {
             var key = listMember.slice(0, i);
             var value = listMember.slice(i + 1, part.length);
-            if (validateKey2(key) && validateValue2(value)) {
+            if (validateKey3(key) && validateValue3(value)) {
               agg.set(key, value);
             } else {
             }
           }
           return agg;
         }, /* @__PURE__ */ new Map());
-        if (this._internalState.size > MAX_TRACE_STATE_ITEMS2) {
-          this._internalState = new Map(Array.from(this._internalState.entries()).reverse().slice(0, MAX_TRACE_STATE_ITEMS2));
+        if (this._internalState.size > MAX_TRACE_STATE_ITEMS3) {
+          this._internalState = new Map(Array.from(this._internalState.entries()).reverse().slice(0, MAX_TRACE_STATE_ITEMS3));
         }
       };
       TraceState2.prototype._keys = function() {
@@ -52516,7 +53860,7 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
     }();
     var TRACE_PARENT_HEADER = "traceparent";
     var TRACE_STATE_HEADER = "tracestate";
-    var VERSION3 = "00";
+    var VERSION4 = "00";
     var VERSION_PART = "(?!ff)[\\da-f]{2}";
     var TRACE_ID_PART = "(?![0]{32})[\\da-f]{32}";
     var PARENT_ID_PART = "(?![0]{16})[\\da-f]{16}";
@@ -52539,74 +53883,74 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
       function W3CTraceContextPropagator2() {
       }
       __name(W3CTraceContextPropagator2, "W3CTraceContextPropagator");
-      W3CTraceContextPropagator2.prototype.inject = function(context3, carrier, setter) {
-        var spanContext = trace.getSpanContext(context3);
-        if (!spanContext || isTracingSuppressed(context3) || !isSpanContextValid(spanContext))
+      W3CTraceContextPropagator2.prototype.inject = function(context5, carrier, setter) {
+        var spanContext = trace2.getSpanContext(context5);
+        if (!spanContext || isTracingSuppressed(context5) || !isSpanContextValid2(spanContext))
           return;
-        var traceParent = VERSION3 + "-" + spanContext.traceId + "-" + spanContext.spanId + "-0" + Number(spanContext.traceFlags || TraceFlags.NONE).toString(16);
+        var traceParent = VERSION4 + "-" + spanContext.traceId + "-" + spanContext.spanId + "-0" + Number(spanContext.traceFlags || TraceFlags2.NONE).toString(16);
         setter.set(carrier, TRACE_PARENT_HEADER, traceParent);
         if (spanContext.traceState) {
           setter.set(carrier, TRACE_STATE_HEADER, spanContext.traceState.serialize());
         }
       };
-      W3CTraceContextPropagator2.prototype.extract = function(context3, carrier, getter) {
+      W3CTraceContextPropagator2.prototype.extract = function(context5, carrier, getter) {
         var traceParentHeader = getter.get(carrier, TRACE_PARENT_HEADER);
         if (!traceParentHeader)
-          return context3;
+          return context5;
         var traceParent = Array.isArray(traceParentHeader) ? traceParentHeader[0] : traceParentHeader;
         if (typeof traceParent !== "string")
-          return context3;
+          return context5;
         var spanContext = parseTraceParent(traceParent);
         if (!spanContext)
-          return context3;
+          return context5;
         spanContext.isRemote = true;
         var traceStateHeader = getter.get(carrier, TRACE_STATE_HEADER);
         if (traceStateHeader) {
           var state = Array.isArray(traceStateHeader) ? traceStateHeader.join(",") : traceStateHeader;
           spanContext.traceState = new TraceState(typeof state === "string" ? state : void 0);
         }
-        return trace.setSpanContext(context3, spanContext);
+        return trace2.setSpanContext(context5, spanContext);
       };
       W3CTraceContextPropagator2.prototype.fields = function() {
         return [TRACE_PARENT_HEADER, TRACE_STATE_HEADER];
       };
       return W3CTraceContextPropagator2;
     }();
-    var RPC_METADATA_KEY = createContextKey("OpenTelemetry SDK Context Key RPC_METADATA");
+    var RPC_METADATA_KEY = createContextKey2("OpenTelemetry SDK Context Key RPC_METADATA");
     var RPCType;
     (function(RPCType2) {
       RPCType2["HTTP"] = "http";
     })(RPCType || (RPCType = {}));
     var AlwaysOffSampler = function() {
-      function AlwaysOffSampler2() {
+      function AlwaysOffSampler3() {
       }
-      __name(AlwaysOffSampler2, "AlwaysOffSampler");
-      AlwaysOffSampler2.prototype.shouldSample = function() {
+      __name(AlwaysOffSampler3, "AlwaysOffSampler");
+      AlwaysOffSampler3.prototype.shouldSample = function() {
         return {
-          decision: SamplingDecision.NOT_RECORD
+          decision: SamplingDecision2.NOT_RECORD
         };
       };
-      AlwaysOffSampler2.prototype.toString = function() {
+      AlwaysOffSampler3.prototype.toString = function() {
         return "AlwaysOffSampler";
       };
-      return AlwaysOffSampler2;
+      return AlwaysOffSampler3;
     }();
     var AlwaysOnSampler = function() {
-      function AlwaysOnSampler2() {
+      function AlwaysOnSampler3() {
       }
-      __name(AlwaysOnSampler2, "AlwaysOnSampler");
-      AlwaysOnSampler2.prototype.shouldSample = function() {
+      __name(AlwaysOnSampler3, "AlwaysOnSampler");
+      AlwaysOnSampler3.prototype.shouldSample = function() {
         return {
-          decision: SamplingDecision.RECORD_AND_SAMPLED
+          decision: SamplingDecision2.RECORD_AND_SAMPLED
         };
       };
-      AlwaysOnSampler2.prototype.toString = function() {
+      AlwaysOnSampler3.prototype.toString = function() {
         return "AlwaysOnSampler";
       };
-      return AlwaysOnSampler2;
+      return AlwaysOnSampler3;
     }();
     var ParentBasedSampler = function() {
-      function ParentBasedSampler2(config2) {
+      function ParentBasedSampler3(config2) {
         var _a32, _b22, _c2, _d2;
         this._root = config2.root;
         if (!this._root) {
@@ -52618,30 +53962,30 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
         this._localParentSampled = (_c2 = config2.localParentSampled) !== null && _c2 !== void 0 ? _c2 : new AlwaysOnSampler();
         this._localParentNotSampled = (_d2 = config2.localParentNotSampled) !== null && _d2 !== void 0 ? _d2 : new AlwaysOffSampler();
       }
-      __name(ParentBasedSampler2, "ParentBasedSampler");
-      ParentBasedSampler2.prototype.shouldSample = function(context3, traceId, spanName, spanKind, attributes, links) {
-        var parentContext = trace.getSpanContext(context3);
-        if (!parentContext || !isSpanContextValid(parentContext)) {
-          return this._root.shouldSample(context3, traceId, spanName, spanKind, attributes, links);
+      __name(ParentBasedSampler3, "ParentBasedSampler");
+      ParentBasedSampler3.prototype.shouldSample = function(context5, traceId, spanName, spanKind, attributes, links) {
+        var parentContext = trace2.getSpanContext(context5);
+        if (!parentContext || !isSpanContextValid2(parentContext)) {
+          return this._root.shouldSample(context5, traceId, spanName, spanKind, attributes, links);
         }
         if (parentContext.isRemote) {
-          if (parentContext.traceFlags & TraceFlags.SAMPLED) {
-            return this._remoteParentSampled.shouldSample(context3, traceId, spanName, spanKind, attributes, links);
+          if (parentContext.traceFlags & TraceFlags2.SAMPLED) {
+            return this._remoteParentSampled.shouldSample(context5, traceId, spanName, spanKind, attributes, links);
           }
-          return this._remoteParentNotSampled.shouldSample(context3, traceId, spanName, spanKind, attributes, links);
+          return this._remoteParentNotSampled.shouldSample(context5, traceId, spanName, spanKind, attributes, links);
         }
-        if (parentContext.traceFlags & TraceFlags.SAMPLED) {
-          return this._localParentSampled.shouldSample(context3, traceId, spanName, spanKind, attributes, links);
+        if (parentContext.traceFlags & TraceFlags2.SAMPLED) {
+          return this._localParentSampled.shouldSample(context5, traceId, spanName, spanKind, attributes, links);
         }
-        return this._localParentNotSampled.shouldSample(context3, traceId, spanName, spanKind, attributes, links);
+        return this._localParentNotSampled.shouldSample(context5, traceId, spanName, spanKind, attributes, links);
       };
-      ParentBasedSampler2.prototype.toString = function() {
+      ParentBasedSampler3.prototype.toString = function() {
         return "ParentBased{root=" + this._root.toString() + ", remoteParentSampled=" + this._remoteParentSampled.toString() + ", remoteParentNotSampled=" + this._remoteParentNotSampled.toString() + ", localParentSampled=" + this._localParentSampled.toString() + ", localParentNotSampled=" + this._localParentNotSampled.toString() + "}";
       };
-      return ParentBasedSampler2;
+      return ParentBasedSampler3;
     }();
     var TraceIdRatioBasedSampler = function() {
-      function TraceIdRatioBasedSampler2(_ratio) {
+      function TraceIdRatioBasedSampler3(_ratio) {
         if (_ratio === void 0) {
           _ratio = 0;
         }
@@ -52649,21 +53993,21 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
         this._ratio = this._normalize(_ratio);
         this._upperBound = Math.floor(this._ratio * 4294967295);
       }
-      __name(TraceIdRatioBasedSampler2, "TraceIdRatioBasedSampler");
-      TraceIdRatioBasedSampler2.prototype.shouldSample = function(context3, traceId) {
+      __name(TraceIdRatioBasedSampler3, "TraceIdRatioBasedSampler");
+      TraceIdRatioBasedSampler3.prototype.shouldSample = function(context5, traceId) {
         return {
-          decision: isValidTraceId(traceId) && this._accumulate(traceId) < this._upperBound ? SamplingDecision.RECORD_AND_SAMPLED : SamplingDecision.NOT_RECORD
+          decision: isValidTraceId2(traceId) && this._accumulate(traceId) < this._upperBound ? SamplingDecision2.RECORD_AND_SAMPLED : SamplingDecision2.NOT_RECORD
         };
       };
-      TraceIdRatioBasedSampler2.prototype.toString = function() {
+      TraceIdRatioBasedSampler3.prototype.toString = function() {
         return "TraceIdRatioBased{" + this._ratio + "}";
       };
-      TraceIdRatioBasedSampler2.prototype._normalize = function(ratio) {
+      TraceIdRatioBasedSampler3.prototype._normalize = function(ratio) {
         if (typeof ratio !== "number" || isNaN(ratio))
           return 0;
         return ratio >= 1 ? 1 : ratio <= 0 ? 0 : ratio;
       };
-      TraceIdRatioBasedSampler2.prototype._accumulate = function(traceId) {
+      TraceIdRatioBasedSampler3.prototype._accumulate = function(traceId) {
         var accumulation = 0;
         for (var i = 0; i < traceId.length / 8; i++) {
           var pos = i * 8;
@@ -52672,7 +54016,7 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
         }
         return accumulation;
       };
-      return TraceIdRatioBasedSampler2;
+      return TraceIdRatioBasedSampler3;
     }();
     var objectTag = "[object Object]";
     var nullTag = "[object Null]";
@@ -52902,7 +54246,7 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
       }
       return ar;
     };
-    var __spreadArray3 = function(to, from, pack) {
+    var __spreadArray5 = function(to, from, pack) {
       if (pack || arguments.length === 2)
         for (var i = 0, l = from.length, ar; i < l; i++) {
           if (ar || !(i in from)) {
@@ -52945,7 +54289,7 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
         if (!this._isCalled) {
           this._isCalled = true;
           try {
-            Promise.resolve((_a32 = this._callback).call.apply(_a32, __spreadArray3([this._that], __read3(args), false))).then(function(val) {
+            Promise.resolve((_a32 = this._callback).call.apply(_a32, __spreadArray5([this._that], __read3(args), false))).then(function(val) {
               return _this._deferred.resolve(val);
             }, function(err) {
               return _this._deferred.reject(err);
@@ -52995,7 +54339,7 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
       return ar;
     };
     var Span = function() {
-      function Span3(parentTracer, context3, spanName, spanContext, kind, parentSpanId, links, startTime) {
+      function Span3(parentTracer, context5, spanName, spanContext, kind, parentSpanId, links, startTime) {
         if (links === void 0) {
           links = [];
         }
@@ -53006,7 +54350,7 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
         this.links = [];
         this.events = [];
         this.status = {
-          code: SpanStatusCode.UNSET
+          code: SpanStatusCode2.UNSET
         };
         this.endTime = [0, 0];
         this._ended = false;
@@ -53021,7 +54365,7 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
         this.instrumentationLibrary = parentTracer.instrumentationLibrary;
         this._spanLimits = parentTracer.getSpanLimits();
         this._spanProcessor = parentTracer.getActiveSpanProcessor();
-        this._spanProcessor.onStart(this, context3);
+        this._spanProcessor.onStart(this, context5);
         this._attributeValueLengthLimit = this._spanLimits.attributeValueLengthLimit || 0;
       }
       __name(Span3, "Span");
@@ -53032,11 +54376,11 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
         if (value == null || this._isSpanEnded())
           return this;
         if (key.length === 0) {
-          diag2.warn("Invalid attribute key: " + key);
+          diag4.warn("Invalid attribute key: " + key);
           return this;
         }
         if (!isAttributeValue(value)) {
-          diag2.warn("Invalid attribute value set for key: " + key);
+          diag4.warn("Invalid attribute value set for key: " + key);
           return this;
         }
         if (Object.keys(this.attributes).length >= this._spanLimits.attributeCountLimit && !Object.prototype.hasOwnProperty.call(this.attributes, key)) {
@@ -53069,11 +54413,11 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
         if (this._isSpanEnded())
           return this;
         if (this._spanLimits.eventCountLimit === 0) {
-          diag2.warn("No events allowed.");
+          diag4.warn("No events allowed.");
           return this;
         }
         if (this.events.length >= this._spanLimits.eventCountLimit) {
-          diag2.warn("Dropping extra events.");
+          diag4.warn("Dropping extra events.");
           this.events.shift();
         }
         if (isTimeInput(attributesOrStartTime)) {
@@ -53110,14 +54454,14 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
           endTime = hrTime();
         }
         if (this._isSpanEnded()) {
-          diag2.error("You can only call end() on a span once.");
+          diag4.error("You can only call end() on a span once.");
           return;
         }
         this._ended = true;
         this.endTime = timeInputToHrTime(endTime);
         this._duration = hrTimeDuration(this.startTime, this.endTime);
         if (this._duration[0] < 0) {
-          diag2.warn("Inconsistent start and end time, startTime > endTime", this.startTime, this.endTime);
+          diag4.warn("Inconsistent start and end time, startTime > endTime", this.startTime, this.endTime);
         }
         this._spanProcessor.onEnd(this);
       };
@@ -53147,7 +54491,7 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
         if (attributes[SemanticAttributes.EXCEPTION_TYPE] || attributes[SemanticAttributes.EXCEPTION_MESSAGE]) {
           this.addEvent(ExceptionEventName, attributes, time);
         } else {
-          diag2.warn("Failed to record an exception " + exception);
+          diag4.warn("Failed to record an exception " + exception);
         }
       };
       Object.defineProperty(Span3.prototype, "duration", {
@@ -53166,7 +54510,7 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
       });
       Span3.prototype._isSpanEnded = function() {
         if (this._ended) {
-          diag2.warn("Can not execute the operation on ended Span {traceId: " + this._spanContext.traceId + ", spanId: " + this._spanContext.spanId + "}");
+          diag4.warn("Can not execute the operation on ended Span {traceId: " + this._spanContext.traceId + ", spanId: " + this._spanContext.spanId + "}");
         }
         return this._ended;
       };
@@ -53180,7 +54524,7 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
         var _this = this;
         var limit = this._attributeValueLengthLimit;
         if (limit <= 0) {
-          diag2.warn("Attribute value limit must be positive, got " + limit);
+          diag4.warn("Attribute value limit must be positive, got " + limit);
           return value;
         }
         if (typeof value === "string") {
@@ -53195,64 +54539,170 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
       };
       return Span3;
     }();
+    var SamplingDecision3;
+    (function(SamplingDecision4) {
+      SamplingDecision4[SamplingDecision4["NOT_RECORD"] = 0] = "NOT_RECORD";
+      SamplingDecision4[SamplingDecision4["RECORD"] = 1] = "RECORD";
+      SamplingDecision4[SamplingDecision4["RECORD_AND_SAMPLED"] = 2] = "RECORD_AND_SAMPLED";
+    })(SamplingDecision3 || (SamplingDecision3 = {}));
+    var AlwaysOffSampler2 = function() {
+      function AlwaysOffSampler3() {
+      }
+      __name(AlwaysOffSampler3, "AlwaysOffSampler");
+      AlwaysOffSampler3.prototype.shouldSample = function() {
+        return {
+          decision: SamplingDecision3.NOT_RECORD
+        };
+      };
+      AlwaysOffSampler3.prototype.toString = function() {
+        return "AlwaysOffSampler";
+      };
+      return AlwaysOffSampler3;
+    }();
+    var AlwaysOnSampler2 = function() {
+      function AlwaysOnSampler3() {
+      }
+      __name(AlwaysOnSampler3, "AlwaysOnSampler");
+      AlwaysOnSampler3.prototype.shouldSample = function() {
+        return {
+          decision: SamplingDecision3.RECORD_AND_SAMPLED
+        };
+      };
+      AlwaysOnSampler3.prototype.toString = function() {
+        return "AlwaysOnSampler";
+      };
+      return AlwaysOnSampler3;
+    }();
+    var ParentBasedSampler2 = function() {
+      function ParentBasedSampler3(config2) {
+        var _a32, _b22, _c2, _d2;
+        this._root = config2.root;
+        if (!this._root) {
+          globalErrorHandler(new Error("ParentBasedSampler must have a root sampler configured"));
+          this._root = new AlwaysOnSampler2();
+        }
+        this._remoteParentSampled = (_a32 = config2.remoteParentSampled) !== null && _a32 !== void 0 ? _a32 : new AlwaysOnSampler2();
+        this._remoteParentNotSampled = (_b22 = config2.remoteParentNotSampled) !== null && _b22 !== void 0 ? _b22 : new AlwaysOffSampler2();
+        this._localParentSampled = (_c2 = config2.localParentSampled) !== null && _c2 !== void 0 ? _c2 : new AlwaysOnSampler2();
+        this._localParentNotSampled = (_d2 = config2.localParentNotSampled) !== null && _d2 !== void 0 ? _d2 : new AlwaysOffSampler2();
+      }
+      __name(ParentBasedSampler3, "ParentBasedSampler");
+      ParentBasedSampler3.prototype.shouldSample = function(context5, traceId, spanName, spanKind, attributes, links) {
+        var parentContext = trace2.getSpanContext(context5);
+        if (!parentContext || !isSpanContextValid2(parentContext)) {
+          return this._root.shouldSample(context5, traceId, spanName, spanKind, attributes, links);
+        }
+        if (parentContext.isRemote) {
+          if (parentContext.traceFlags & TraceFlags2.SAMPLED) {
+            return this._remoteParentSampled.shouldSample(context5, traceId, spanName, spanKind, attributes, links);
+          }
+          return this._remoteParentNotSampled.shouldSample(context5, traceId, spanName, spanKind, attributes, links);
+        }
+        if (parentContext.traceFlags & TraceFlags2.SAMPLED) {
+          return this._localParentSampled.shouldSample(context5, traceId, spanName, spanKind, attributes, links);
+        }
+        return this._localParentNotSampled.shouldSample(context5, traceId, spanName, spanKind, attributes, links);
+      };
+      ParentBasedSampler3.prototype.toString = function() {
+        return "ParentBased{root=" + this._root.toString() + ", remoteParentSampled=" + this._remoteParentSampled.toString() + ", remoteParentNotSampled=" + this._remoteParentNotSampled.toString() + ", localParentSampled=" + this._localParentSampled.toString() + ", localParentNotSampled=" + this._localParentNotSampled.toString() + "}";
+      };
+      return ParentBasedSampler3;
+    }();
+    var TraceIdRatioBasedSampler2 = function() {
+      function TraceIdRatioBasedSampler3(_ratio) {
+        if (_ratio === void 0) {
+          _ratio = 0;
+        }
+        this._ratio = _ratio;
+        this._ratio = this._normalize(_ratio);
+        this._upperBound = Math.floor(this._ratio * 4294967295);
+      }
+      __name(TraceIdRatioBasedSampler3, "TraceIdRatioBasedSampler");
+      TraceIdRatioBasedSampler3.prototype.shouldSample = function(context5, traceId) {
+        return {
+          decision: isValidTraceId2(traceId) && this._accumulate(traceId) < this._upperBound ? SamplingDecision3.RECORD_AND_SAMPLED : SamplingDecision3.NOT_RECORD
+        };
+      };
+      TraceIdRatioBasedSampler3.prototype.toString = function() {
+        return "TraceIdRatioBased{" + this._ratio + "}";
+      };
+      TraceIdRatioBasedSampler3.prototype._normalize = function(ratio) {
+        if (typeof ratio !== "number" || isNaN(ratio))
+          return 0;
+        return ratio >= 1 ? 1 : ratio <= 0 ? 0 : ratio;
+      };
+      TraceIdRatioBasedSampler3.prototype._accumulate = function(traceId) {
+        var accumulation = 0;
+        for (var i = 0; i < traceId.length / 8; i++) {
+          var pos = i * 8;
+          var part = parseInt(traceId.slice(pos, pos + 8), 16);
+          accumulation = (accumulation ^ part) >>> 0;
+        }
+        return accumulation;
+      };
+      return TraceIdRatioBasedSampler3;
+    }();
     var env = getEnv();
     var FALLBACK_OTEL_TRACES_SAMPLER = TracesSamplerValues.AlwaysOn;
     var DEFAULT_RATIO = 1;
-    var DEFAULT_CONFIG = {
-      sampler: buildSamplerFromEnv(env),
-      forceFlushTimeoutMillis: 3e4,
-      generalLimits: {
-        attributeValueLengthLimit: getEnv().OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT,
-        attributeCountLimit: getEnv().OTEL_ATTRIBUTE_COUNT_LIMIT
-      },
-      spanLimits: {
-        attributeValueLengthLimit: getEnv().OTEL_SPAN_ATTRIBUTE_VALUE_LENGTH_LIMIT,
-        attributeCountLimit: getEnv().OTEL_SPAN_ATTRIBUTE_COUNT_LIMIT,
-        linkCountLimit: getEnv().OTEL_SPAN_LINK_COUNT_LIMIT,
-        eventCountLimit: getEnv().OTEL_SPAN_EVENT_COUNT_LIMIT
-      }
-    };
+    function loadDefaultConfig() {
+      return {
+        sampler: buildSamplerFromEnv(env),
+        forceFlushTimeoutMillis: 3e4,
+        generalLimits: {
+          attributeValueLengthLimit: getEnv().OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT,
+          attributeCountLimit: getEnv().OTEL_ATTRIBUTE_COUNT_LIMIT
+        },
+        spanLimits: {
+          attributeValueLengthLimit: getEnv().OTEL_SPAN_ATTRIBUTE_VALUE_LENGTH_LIMIT,
+          attributeCountLimit: getEnv().OTEL_SPAN_ATTRIBUTE_COUNT_LIMIT,
+          linkCountLimit: getEnv().OTEL_SPAN_LINK_COUNT_LIMIT,
+          eventCountLimit: getEnv().OTEL_SPAN_EVENT_COUNT_LIMIT
+        }
+      };
+    }
+    __name(loadDefaultConfig, "loadDefaultConfig");
     function buildSamplerFromEnv(environment) {
       if (environment === void 0) {
         environment = getEnv();
       }
       switch (environment.OTEL_TRACES_SAMPLER) {
         case TracesSamplerValues.AlwaysOn:
-          return new AlwaysOnSampler();
+          return new AlwaysOnSampler2();
         case TracesSamplerValues.AlwaysOff:
-          return new AlwaysOffSampler();
+          return new AlwaysOffSampler2();
         case TracesSamplerValues.ParentBasedAlwaysOn:
-          return new ParentBasedSampler({
-            root: new AlwaysOnSampler()
+          return new ParentBasedSampler2({
+            root: new AlwaysOnSampler2()
           });
         case TracesSamplerValues.ParentBasedAlwaysOff:
-          return new ParentBasedSampler({
-            root: new AlwaysOffSampler()
+          return new ParentBasedSampler2({
+            root: new AlwaysOffSampler2()
           });
         case TracesSamplerValues.TraceIdRatio:
-          return new TraceIdRatioBasedSampler(getSamplerProbabilityFromEnv(environment));
+          return new TraceIdRatioBasedSampler2(getSamplerProbabilityFromEnv(environment));
         case TracesSamplerValues.ParentBasedTraceIdRatio:
-          return new ParentBasedSampler({
-            root: new TraceIdRatioBasedSampler(getSamplerProbabilityFromEnv(environment))
+          return new ParentBasedSampler2({
+            root: new TraceIdRatioBasedSampler2(getSamplerProbabilityFromEnv(environment))
           });
         default:
-          diag2.error('OTEL_TRACES_SAMPLER value "' + environment.OTEL_TRACES_SAMPLER + " invalid, defaulting to " + FALLBACK_OTEL_TRACES_SAMPLER + '".');
-          return new AlwaysOnSampler();
+          diag4.error('OTEL_TRACES_SAMPLER value "' + environment.OTEL_TRACES_SAMPLER + " invalid, defaulting to " + FALLBACK_OTEL_TRACES_SAMPLER + '".');
+          return new AlwaysOnSampler2();
       }
     }
     __name(buildSamplerFromEnv, "buildSamplerFromEnv");
     function getSamplerProbabilityFromEnv(environment) {
       if (environment.OTEL_TRACES_SAMPLER_ARG === void 0 || environment.OTEL_TRACES_SAMPLER_ARG === "") {
-        diag2.error("OTEL_TRACES_SAMPLER_ARG is blank, defaulting to " + DEFAULT_RATIO + ".");
+        diag4.error("OTEL_TRACES_SAMPLER_ARG is blank, defaulting to " + DEFAULT_RATIO + ".");
         return DEFAULT_RATIO;
       }
       var probability = Number(environment.OTEL_TRACES_SAMPLER_ARG);
       if (isNaN(probability)) {
-        diag2.error("OTEL_TRACES_SAMPLER_ARG=" + environment.OTEL_TRACES_SAMPLER_ARG + " was given, but it is invalid, defaulting to " + DEFAULT_RATIO + ".");
+        diag4.error("OTEL_TRACES_SAMPLER_ARG=" + environment.OTEL_TRACES_SAMPLER_ARG + " was given, but it is invalid, defaulting to " + DEFAULT_RATIO + ".");
         return DEFAULT_RATIO;
       }
       if (probability < 0 || probability > 1) {
-        diag2.error("OTEL_TRACES_SAMPLER_ARG=" + environment.OTEL_TRACES_SAMPLER_ARG + " was given, but it is out of range ([0..1]), defaulting to " + DEFAULT_RATIO + ".");
+        diag4.error("OTEL_TRACES_SAMPLER_ARG=" + environment.OTEL_TRACES_SAMPLER_ARG + " was given, but it is out of range ([0..1]), defaulting to " + DEFAULT_RATIO + ".");
         return DEFAULT_RATIO;
       }
       return probability;
@@ -53262,6 +54712,7 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
       var perInstanceDefaults = {
         sampler: buildSamplerFromEnv()
       };
+      var DEFAULT_CONFIG = loadDefaultConfig();
       var target = Object.assign({}, DEFAULT_CONFIG, perInstanceDefaults, userConfig);
       target.generalLimits = Object.assign({}, DEFAULT_CONFIG.generalLimits, userConfig.generalLimits || {});
       target.spanLimits = Object.assign({}, DEFAULT_CONFIG.spanLimits, userConfig.spanLimits || {});
@@ -53269,17 +54720,182 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
     }
     __name(mergeConfig, "mergeConfig");
     function reconfigureLimits(userConfig) {
-      var _a32, _b22;
+      var _a32, _b22, _c2, _d2, _e, _f, _g, _h, _j, _k, _l, _m;
       var spanLimits = Object.assign({}, userConfig.spanLimits);
-      if (spanLimits.attributeCountLimit == null && ((_a32 = userConfig.generalLimits) === null || _a32 === void 0 ? void 0 : _a32.attributeCountLimit) != null) {
-        spanLimits.attributeCountLimit = userConfig.generalLimits.attributeCountLimit;
-      }
-      if (spanLimits.attributeValueLengthLimit == null && ((_b22 = userConfig.generalLimits) === null || _b22 === void 0 ? void 0 : _b22.attributeValueLengthLimit) != null) {
-        spanLimits.attributeValueLengthLimit = userConfig.generalLimits.attributeValueLengthLimit;
-      }
+      var parsedEnvConfig = getEnvWithoutDefaults();
+      spanLimits.attributeCountLimit = (_f = (_e = (_d2 = (_b22 = (_a32 = userConfig.spanLimits) === null || _a32 === void 0 ? void 0 : _a32.attributeCountLimit) !== null && _b22 !== void 0 ? _b22 : (_c2 = userConfig.generalLimits) === null || _c2 === void 0 ? void 0 : _c2.attributeCountLimit) !== null && _d2 !== void 0 ? _d2 : parsedEnvConfig.OTEL_SPAN_ATTRIBUTE_COUNT_LIMIT) !== null && _e !== void 0 ? _e : parsedEnvConfig.OTEL_ATTRIBUTE_COUNT_LIMIT) !== null && _f !== void 0 ? _f : DEFAULT_ATTRIBUTE_COUNT_LIMIT;
+      spanLimits.attributeValueLengthLimit = (_m = (_l = (_k = (_h = (_g = userConfig.spanLimits) === null || _g === void 0 ? void 0 : _g.attributeValueLengthLimit) !== null && _h !== void 0 ? _h : (_j = userConfig.generalLimits) === null || _j === void 0 ? void 0 : _j.attributeValueLengthLimit) !== null && _k !== void 0 ? _k : parsedEnvConfig.OTEL_SPAN_ATTRIBUTE_VALUE_LENGTH_LIMIT) !== null && _l !== void 0 ? _l : parsedEnvConfig.OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT) !== null && _m !== void 0 ? _m : DEFAULT_ATTRIBUTE_VALUE_LENGTH_LIMIT;
       return Object.assign({}, userConfig, { spanLimits });
     }
     __name(reconfigureLimits, "reconfigureLimits");
+    var BatchSpanProcessorBase = function() {
+      function BatchSpanProcessorBase2(_exporter, config2) {
+        this._exporter = _exporter;
+        this._finishedSpans = [];
+        var env2 = getEnv();
+        this._maxExportBatchSize = typeof (config2 === null || config2 === void 0 ? void 0 : config2.maxExportBatchSize) === "number" ? config2.maxExportBatchSize : env2.OTEL_BSP_MAX_EXPORT_BATCH_SIZE;
+        this._maxQueueSize = typeof (config2 === null || config2 === void 0 ? void 0 : config2.maxQueueSize) === "number" ? config2.maxQueueSize : env2.OTEL_BSP_MAX_QUEUE_SIZE;
+        this._scheduledDelayMillis = typeof (config2 === null || config2 === void 0 ? void 0 : config2.scheduledDelayMillis) === "number" ? config2.scheduledDelayMillis : env2.OTEL_BSP_SCHEDULE_DELAY;
+        this._exportTimeoutMillis = typeof (config2 === null || config2 === void 0 ? void 0 : config2.exportTimeoutMillis) === "number" ? config2.exportTimeoutMillis : env2.OTEL_BSP_EXPORT_TIMEOUT;
+        this._shutdownOnce = new BindOnceFuture(this._shutdown, this);
+      }
+      __name(BatchSpanProcessorBase2, "BatchSpanProcessorBase");
+      BatchSpanProcessorBase2.prototype.forceFlush = function() {
+        if (this._shutdownOnce.isCalled) {
+          return this._shutdownOnce.promise;
+        }
+        return this._flushAll();
+      };
+      BatchSpanProcessorBase2.prototype.onStart = function(_span, _parentContext) {
+      };
+      BatchSpanProcessorBase2.prototype.onEnd = function(span) {
+        if (this._shutdownOnce.isCalled) {
+          return;
+        }
+        if ((span.spanContext().traceFlags & TraceFlags2.SAMPLED) === 0) {
+          return;
+        }
+        this._addToBuffer(span);
+      };
+      BatchSpanProcessorBase2.prototype.shutdown = function() {
+        return this._shutdownOnce.call();
+      };
+      BatchSpanProcessorBase2.prototype._shutdown = function() {
+        var _this = this;
+        return Promise.resolve().then(function() {
+          return _this.onShutdown();
+        }).then(function() {
+          return _this._flushAll();
+        }).then(function() {
+          return _this._exporter.shutdown();
+        });
+      };
+      BatchSpanProcessorBase2.prototype._addToBuffer = function(span) {
+        if (this._finishedSpans.length >= this._maxQueueSize) {
+          return;
+        }
+        this._finishedSpans.push(span);
+        this._maybeStartTimer();
+      };
+      BatchSpanProcessorBase2.prototype._flushAll = function() {
+        var _this = this;
+        return new Promise(function(resolve, reject) {
+          var promises = [];
+          var count2 = Math.ceil(_this._finishedSpans.length / _this._maxExportBatchSize);
+          for (var i = 0, j = count2; i < j; i++) {
+            promises.push(_this._flushOneBatch());
+          }
+          Promise.all(promises).then(function() {
+            resolve();
+          }).catch(reject);
+        });
+      };
+      BatchSpanProcessorBase2.prototype._flushOneBatch = function() {
+        var _this = this;
+        this._clearTimer();
+        if (this._finishedSpans.length === 0) {
+          return Promise.resolve();
+        }
+        return new Promise(function(resolve, reject) {
+          var timer = setTimeout(function() {
+            reject(new Error("Timeout"));
+          }, _this._exportTimeoutMillis);
+          context4.with(suppressTracing(context4.active()), function() {
+            _this._exporter.export(_this._finishedSpans.splice(0, _this._maxExportBatchSize), function(result) {
+              var _a32;
+              clearTimeout(timer);
+              if (result.code === ExportResultCode.SUCCESS) {
+                resolve();
+              } else {
+                reject((_a32 = result.error) !== null && _a32 !== void 0 ? _a32 : new Error("BatchSpanProcessor: span export failed"));
+              }
+            });
+          });
+        });
+      };
+      BatchSpanProcessorBase2.prototype._maybeStartTimer = function() {
+        var _this = this;
+        if (this._timer !== void 0)
+          return;
+        this._timer = setTimeout(function() {
+          _this._flushOneBatch().then(function() {
+            if (_this._finishedSpans.length > 0) {
+              _this._clearTimer();
+              _this._maybeStartTimer();
+            }
+          }).catch(function(e) {
+            globalErrorHandler(e);
+          });
+        }, this._scheduledDelayMillis);
+        unrefTimer(this._timer);
+      };
+      BatchSpanProcessorBase2.prototype._clearTimer = function() {
+        if (this._timer !== void 0) {
+          clearTimeout(this._timer);
+          this._timer = void 0;
+        }
+      };
+      return BatchSpanProcessorBase2;
+    }();
+    var __extends = function() {
+      var extendStatics = /* @__PURE__ */ __name(function(d, b) {
+        extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
+          d2.__proto__ = b2;
+        } || function(d2, b2) {
+          for (var p in b2)
+            if (Object.prototype.hasOwnProperty.call(b2, p))
+              d2[p] = b2[p];
+        };
+        return extendStatics(d, b);
+      }, "extendStatics");
+      return function(d, b) {
+        if (typeof b !== "function" && b !== null)
+          throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() {
+          this.constructor = d;
+        }
+        __name(__, "__");
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+      };
+    }();
+    var BatchSpanProcessor = function(_super) {
+      __extends(BatchSpanProcessor2, _super);
+      function BatchSpanProcessor2() {
+        return _super !== null && _super.apply(this, arguments) || this;
+      }
+      __name(BatchSpanProcessor2, "BatchSpanProcessor");
+      BatchSpanProcessor2.prototype.onShutdown = function() {
+      };
+      return BatchSpanProcessor2;
+    }(BatchSpanProcessorBase);
+    var SPAN_ID_BYTES2 = 8;
+    var TRACE_ID_BYTES2 = 16;
+    var RandomIdGenerator2 = function() {
+      function RandomIdGenerator3() {
+        this.generateTraceId = getIdGenerator2(TRACE_ID_BYTES2);
+        this.generateSpanId = getIdGenerator2(SPAN_ID_BYTES2);
+      }
+      __name(RandomIdGenerator3, "RandomIdGenerator");
+      return RandomIdGenerator3;
+    }();
+    var SHARED_BUFFER2 = Buffer.allocUnsafe(TRACE_ID_BYTES2);
+    function getIdGenerator2(bytes) {
+      return /* @__PURE__ */ __name(function generateId() {
+        for (var i = 0; i < bytes / 4; i++) {
+          SHARED_BUFFER2.writeUInt32BE(Math.random() * Math.pow(2, 32) >>> 0, i * 4);
+        }
+        for (var i = 0; i < bytes; i++) {
+          if (SHARED_BUFFER2[i] > 0) {
+            break;
+          } else if (i === bytes - 1) {
+            SHARED_BUFFER2[bytes - 1] = 1;
+          }
+        }
+        return SHARED_BUFFER2.toString("hex", 0, bytes);
+      }, "generateId");
+    }
+    __name(getIdGenerator2, "getIdGenerator");
     var Tracer = function() {
       function Tracer3(instrumentationLibrary, config2, _tracerProvider) {
         this._tracerProvider = _tracerProvider;
@@ -53287,39 +54903,39 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
         this._sampler = localConfig.sampler;
         this._generalLimits = localConfig.generalLimits;
         this._spanLimits = localConfig.spanLimits;
-        this._idGenerator = config2.idGenerator || new RandomIdGenerator();
+        this._idGenerator = config2.idGenerator || new RandomIdGenerator2();
         this.resource = _tracerProvider.resource;
         this.instrumentationLibrary = instrumentationLibrary;
       }
       __name(Tracer3, "Tracer");
-      Tracer3.prototype.startSpan = function(name, options, context3) {
+      Tracer3.prototype.startSpan = function(name, options, context5) {
         var _a32, _b22;
         if (options === void 0) {
           options = {};
         }
-        if (context3 === void 0) {
-          context3 = context2.active();
+        if (context5 === void 0) {
+          context5 = context4.active();
         }
-        if (isTracingSuppressed(context3)) {
-          diag2.debug("Instrumentation suppressed, returning Noop Span");
-          return trace.wrapSpanContext(INVALID_SPAN_CONTEXT);
+        if (isTracingSuppressed(context5)) {
+          diag4.debug("Instrumentation suppressed, returning Noop Span");
+          return trace2.wrapSpanContext(INVALID_SPAN_CONTEXT2);
         }
         if (options.root) {
-          context3 = trace.deleteSpan(context3);
+          context5 = trace2.deleteSpan(context5);
         }
-        var parentSpanContext = trace.getSpanContext(context3);
+        var parentSpanContext = trace2.getSpanContext(context5);
         var spanId = this._idGenerator.generateSpanId();
         var traceId;
         var traceState;
         var parentSpanId;
-        if (!parentSpanContext || !trace.isSpanContextValid(parentSpanContext)) {
+        if (!parentSpanContext || !trace2.isSpanContextValid(parentSpanContext)) {
           traceId = this._idGenerator.generateTraceId();
         } else {
           traceId = parentSpanContext.traceId;
           traceState = parentSpanContext.traceState;
           parentSpanId = parentSpanContext.spanId;
         }
-        var spanKind = (_a32 = options.kind) !== null && _a32 !== void 0 ? _a32 : SpanKind.INTERNAL;
+        var spanKind = (_a32 = options.kind) !== null && _a32 !== void 0 ? _a32 : SpanKind2.INTERNAL;
         var links = ((_b22 = options.links) !== null && _b22 !== void 0 ? _b22 : []).map(function(link) {
           return {
             context: link.context,
@@ -53327,14 +54943,14 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
           };
         });
         var attributes = sanitizeAttributes(options.attributes);
-        var samplingResult = this._sampler.shouldSample(context3, traceId, name, spanKind, attributes, links);
-        var traceFlags = samplingResult.decision === SamplingDecision.RECORD_AND_SAMPLED ? TraceFlags.SAMPLED : TraceFlags.NONE;
+        var samplingResult = this._sampler.shouldSample(context5, traceId, name, spanKind, attributes, links);
+        var traceFlags = samplingResult.decision === SamplingDecision2.RECORD_AND_SAMPLED ? TraceFlags2.SAMPLED : TraceFlags2.NONE;
         var spanContext = { traceId, spanId, traceFlags, traceState };
-        if (samplingResult.decision === SamplingDecision.NOT_RECORD) {
-          diag2.debug("Recording is off, propagating context in a non-recording span");
-          return trace.wrapSpanContext(spanContext);
+        if (samplingResult.decision === SamplingDecision2.NOT_RECORD) {
+          diag4.debug("Recording is off, propagating context in a non-recording span");
+          return trace2.wrapSpanContext(spanContext);
         }
-        var span = new Span(this, context3, name, spanContext, spanKind, parentSpanId, links, options.startTime);
+        var span = new Span(this, context5, name, spanContext, spanKind, parentSpanId, links, options.startTime);
         var initAttributes = sanitizeAttributes(Object.assign(attributes, samplingResult.attributes));
         span.setAttributes(initAttributes);
         return span;
@@ -53355,10 +54971,10 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
           ctx = arg3;
           fn = arg4;
         }
-        var parentContext = ctx !== null && ctx !== void 0 ? ctx : context2.active();
+        var parentContext = ctx !== null && ctx !== void 0 ? ctx : context4.active();
         var span = this.startSpan(name, opts, parentContext);
-        var contextWithSpanSet = trace.setSpan(parentContext, span);
-        return context2.with(contextWithSpanSet, fn, void 0, span);
+        var contextWithSpanSet = trace2.setSpan(parentContext, span);
+        return context4.with(contextWithSpanSet, fn, void 0, span);
       };
       Tracer3.prototype.getGeneralLimits = function() {
         return this._generalLimits;
@@ -53813,7 +55429,7 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
       };
       BrowserDetector2.prototype._getResourceAttributes = function(browserResource, _config) {
         if (browserResource[SemanticResourceAttributes.PROCESS_RUNTIME_VERSION] === "") {
-          diag2.debug("BrowserDetector failed: Unable to find required browser resources. ");
+          diag4.debug("BrowserDetector failed: Unable to find required browser resources. ");
           return Resource.empty();
         } else {
           return new Resource(__assign({}, browserResource));
@@ -53988,7 +55604,7 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
                 parsedAttributes = this._parseResourceAttributes(rawAttributes);
                 Object.assign(attributes, parsedAttributes);
               } catch (e) {
-                diag2.debug("EnvDetector failed: " + e.message);
+                diag4.debug("EnvDetector failed: " + e.message);
               }
             }
             if (serviceName) {
@@ -54193,7 +55809,7 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
       };
       ProcessDetector2.prototype._getResourceAttributes = function(processResource, _config) {
         if (processResource[SemanticResourceAttributes.PROCESS_EXECUTABLE_NAME] === "" || processResource[SemanticResourceAttributes.PROCESS_EXECUTABLE_PATH] === "" || processResource[SemanticResourceAttributes.PROCESS_COMMAND] === "" || processResource[SemanticResourceAttributes.PROCESS_COMMAND_LINE] === "" || processResource[SemanticResourceAttributes.PROCESS_RUNTIME_VERSION] === "") {
-          diag2.debug("ProcessDetector failed: Unable to find required process resources. ");
+          diag4.debug("ProcessDetector failed: Unable to find required process resources. ");
           return Resource.empty();
         } else {
           return new Resource(__assign2({}, processResource));
@@ -54249,12 +55865,12 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
           });
         });
       };
-      MultiSpanProcessor2.prototype.onStart = function(span, context3) {
+      MultiSpanProcessor2.prototype.onStart = function(span, context5) {
         var e_2, _a32;
         try {
           for (var _b22 = __values5(this._spanProcessors), _c2 = _b22.next(); !_c2.done; _c2 = _b22.next()) {
             var spanProcessor = _c2.value;
-            spanProcessor.onStart(span, context3);
+            spanProcessor.onStart(span, context5);
           }
         } catch (e_2_1) {
           e_2 = { error: e_2_1 };
@@ -54330,147 +55946,6 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
       };
       return NoopSpanProcessor2;
     }();
-    var BatchSpanProcessorBase = function() {
-      function BatchSpanProcessorBase2(_exporter, config2) {
-        this._exporter = _exporter;
-        this._finishedSpans = [];
-        var env2 = getEnv();
-        this._maxExportBatchSize = typeof (config2 === null || config2 === void 0 ? void 0 : config2.maxExportBatchSize) === "number" ? config2.maxExportBatchSize : env2.OTEL_BSP_MAX_EXPORT_BATCH_SIZE;
-        this._maxQueueSize = typeof (config2 === null || config2 === void 0 ? void 0 : config2.maxQueueSize) === "number" ? config2.maxQueueSize : env2.OTEL_BSP_MAX_QUEUE_SIZE;
-        this._scheduledDelayMillis = typeof (config2 === null || config2 === void 0 ? void 0 : config2.scheduledDelayMillis) === "number" ? config2.scheduledDelayMillis : env2.OTEL_BSP_SCHEDULE_DELAY;
-        this._exportTimeoutMillis = typeof (config2 === null || config2 === void 0 ? void 0 : config2.exportTimeoutMillis) === "number" ? config2.exportTimeoutMillis : env2.OTEL_BSP_EXPORT_TIMEOUT;
-        this._shutdownOnce = new BindOnceFuture(this._shutdown, this);
-      }
-      __name(BatchSpanProcessorBase2, "BatchSpanProcessorBase");
-      BatchSpanProcessorBase2.prototype.forceFlush = function() {
-        if (this._shutdownOnce.isCalled) {
-          return this._shutdownOnce.promise;
-        }
-        return this._flushAll();
-      };
-      BatchSpanProcessorBase2.prototype.onStart = function(_span, _parentContext) {
-      };
-      BatchSpanProcessorBase2.prototype.onEnd = function(span) {
-        if (this._shutdownOnce.isCalled) {
-          return;
-        }
-        if ((span.spanContext().traceFlags & TraceFlags.SAMPLED) === 0) {
-          return;
-        }
-        this._addToBuffer(span);
-      };
-      BatchSpanProcessorBase2.prototype.shutdown = function() {
-        return this._shutdownOnce.call();
-      };
-      BatchSpanProcessorBase2.prototype._shutdown = function() {
-        var _this = this;
-        return Promise.resolve().then(function() {
-          return _this.onShutdown();
-        }).then(function() {
-          return _this._flushAll();
-        }).then(function() {
-          return _this._exporter.shutdown();
-        });
-      };
-      BatchSpanProcessorBase2.prototype._addToBuffer = function(span) {
-        if (this._finishedSpans.length >= this._maxQueueSize) {
-          return;
-        }
-        this._finishedSpans.push(span);
-        this._maybeStartTimer();
-      };
-      BatchSpanProcessorBase2.prototype._flushAll = function() {
-        var _this = this;
-        return new Promise(function(resolve, reject) {
-          var promises = [];
-          var count2 = Math.ceil(_this._finishedSpans.length / _this._maxExportBatchSize);
-          for (var i = 0, j = count2; i < j; i++) {
-            promises.push(_this._flushOneBatch());
-          }
-          Promise.all(promises).then(function() {
-            resolve();
-          }).catch(reject);
-        });
-      };
-      BatchSpanProcessorBase2.prototype._flushOneBatch = function() {
-        var _this = this;
-        this._clearTimer();
-        if (this._finishedSpans.length === 0) {
-          return Promise.resolve();
-        }
-        return new Promise(function(resolve, reject) {
-          var timer = setTimeout(function() {
-            reject(new Error("Timeout"));
-          }, _this._exportTimeoutMillis);
-          context2.with(suppressTracing(context2.active()), function() {
-            _this._exporter.export(_this._finishedSpans.splice(0, _this._maxExportBatchSize), function(result) {
-              var _a32;
-              clearTimeout(timer);
-              if (result.code === ExportResultCode.SUCCESS) {
-                resolve();
-              } else {
-                reject((_a32 = result.error) !== null && _a32 !== void 0 ? _a32 : new Error("BatchSpanProcessor: span export failed"));
-              }
-            });
-          });
-        });
-      };
-      BatchSpanProcessorBase2.prototype._maybeStartTimer = function() {
-        var _this = this;
-        if (this._timer !== void 0)
-          return;
-        this._timer = setTimeout(function() {
-          _this._flushOneBatch().then(function() {
-            if (_this._finishedSpans.length > 0) {
-              _this._clearTimer();
-              _this._maybeStartTimer();
-            }
-          }).catch(function(e) {
-            globalErrorHandler(e);
-          });
-        }, this._scheduledDelayMillis);
-        unrefTimer(this._timer);
-      };
-      BatchSpanProcessorBase2.prototype._clearTimer = function() {
-        if (this._timer !== void 0) {
-          clearTimeout(this._timer);
-          this._timer = void 0;
-        }
-      };
-      return BatchSpanProcessorBase2;
-    }();
-    var __extends = function() {
-      var extendStatics = /* @__PURE__ */ __name(function(d, b) {
-        extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-          d2.__proto__ = b2;
-        } || function(d2, b2) {
-          for (var p in b2)
-            if (Object.prototype.hasOwnProperty.call(b2, p))
-              d2[p] = b2[p];
-        };
-        return extendStatics(d, b);
-      }, "extendStatics");
-      return function(d, b) {
-        if (typeof b !== "function" && b !== null)
-          throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() {
-          this.constructor = d;
-        }
-        __name(__, "__");
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-      };
-    }();
-    var BatchSpanProcessor = function(_super) {
-      __extends(BatchSpanProcessor2, _super);
-      function BatchSpanProcessor2() {
-        return _super !== null && _super.apply(this, arguments) || this;
-      }
-      __name(BatchSpanProcessor2, "BatchSpanProcessor");
-      BatchSpanProcessor2.prototype.onShutdown = function() {
-      };
-      return BatchSpanProcessor2;
-    }(BatchSpanProcessorBase);
     var ForceFlushState;
     (function(ForceFlushState2) {
       ForceFlushState2[ForceFlushState2["resolved"] = 0] = "resolved";
@@ -54486,7 +55961,7 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
         var _a32;
         this._registeredSpanProcessors = [];
         this._tracers = /* @__PURE__ */ new Map();
-        var mergedConfig = merge({}, DEFAULT_CONFIG, reconfigureLimits(config2));
+        var mergedConfig = merge({}, loadDefaultConfig(), reconfigureLimits(config2));
         this.resource = (_a32 = mergedConfig.resource) !== null && _a32 !== void 0 ? _a32 : Resource.empty();
         this.resource = Resource.default().merge(this.resource);
         this._config = Object.assign({}, mergedConfig, {
@@ -54511,7 +55986,7 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
       BasicTracerProvider2.prototype.addSpanProcessor = function(spanProcessor) {
         if (this._registeredSpanProcessors.length === 0) {
           this.activeSpanProcessor.shutdown().catch(function(err) {
-            return diag2.error("Error while trying to shutdown current span processor", err);
+            return diag4.error("Error while trying to shutdown current span processor", err);
           });
         }
         this._registeredSpanProcessors.push(spanProcessor);
@@ -54524,15 +55999,15 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
         if (config2 === void 0) {
           config2 = {};
         }
-        trace.setGlobalTracerProvider(this);
+        trace2.setGlobalTracerProvider(this);
         if (config2.propagator === void 0) {
           config2.propagator = this._buildPropagatorFromEnv();
         }
         if (config2.contextManager) {
-          context2.setGlobalContextManager(config2.contextManager);
+          context4.setGlobalContextManager(config2.contextManager);
         }
         if (config2.propagator) {
-          propagation.setGlobalPropagator(config2.propagator);
+          propagation2.setGlobalPropagator(config2.propagator);
         }
       };
       BasicTracerProvider2.prototype.forceFlush = function() {
@@ -54589,7 +56064,7 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
         var propagators = uniquePropagatorNames.map(function(name) {
           var propagator = _this._getPropagator(name);
           if (!propagator) {
-            diag2.warn('Propagator "' + name + '" requested through environment variable is unavailable.');
+            diag4.warn('Propagator "' + name + '" requested through environment variable is unavailable.');
           }
           return propagator;
         });
@@ -54615,7 +56090,7 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
           return;
         var exporter = this._getSpanExporter(exporterName);
         if (!exporter) {
-          diag2.error('Exporter "' + exporterName + '" requested through environment variable is unavailable.');
+          diag4.error('Exporter "' + exporterName + '" requested through environment variable is unavailable.');
         }
         return exporter;
       };
@@ -54715,7 +56190,7 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
       }
       return ar;
     };
-    var __spreadArray4 = function(to, from, pack) {
+    var __spreadArray6 = function(to, from, pack) {
       if (pack || arguments.length === 2)
         for (var i = 0, l = from.length, ar; i < l; i++) {
           if (ar || !(i in from)) {
@@ -54739,7 +56214,7 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
             code: ExportResultCode.FAILED,
             error: new Error("Exporter has been stopped")
           });
-        (_a32 = this._finishedSpans).push.apply(_a32, __spreadArray4([], __read6(spans), false));
+        (_a32 = this._finishedSpans).push.apply(_a32, __spreadArray6([], __read6(spans), false));
         setTimeout(function() {
           return resultCallback({ code: ExportResultCode.SUCCESS });
         }, 0);
@@ -54773,10 +56248,10 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
         if (this._shutdownOnce.isCalled) {
           return;
         }
-        if ((span.spanContext().traceFlags & TraceFlags.SAMPLED) === 0) {
+        if ((span.spanContext().traceFlags & TraceFlags2.SAMPLED) === 0) {
           return;
         }
-        context2.with(suppressTracing(context2.active()), function() {
+        context4.with(suppressTracing(context4.active()), function() {
           _this._exporter.export([span], function(result) {
             var _a32;
             if (result.code !== ExportResultCode.SUCCESS) {
@@ -54794,40 +56269,51 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
       return SimpleSpanProcessor2;
     }();
     async function createSpan(engineSpanEvent) {
-      var _a32;
       await new Promise((res) => setTimeout(res, 0));
-      const tracer = trace.getTracer("prisma");
-      const traceFlags = (_a32 = trace.getSpan(context2.active())) == null ? void 0 : _a32.spanContext().traceFlags;
+      const tracer = trace2.getTracer("prisma");
       engineSpanEvent.spans.forEach((engineSpan) => {
-        var _a42;
+        var _a32;
         const spanContext = {
           traceId: engineSpan.trace_id,
           spanId: engineSpan.span_id,
-          traceFlags: traceFlags != null ? traceFlags : TraceFlags.SAMPLED
+          traceFlags: TraceFlags2.SAMPLED
         };
-        const links = (_a42 = engineSpan.links) == null ? void 0 : _a42.map((link) => {
+        const links = (_a32 = engineSpan.links) == null ? void 0 : _a32.map((link) => {
           return {
             context: {
               traceId: link.trace_id,
               spanId: link.span_id,
-              traceFlags: traceFlags != null ? traceFlags : TraceFlags.SAMPLED
+              traceFlags: TraceFlags2.SAMPLED
             }
           };
         });
-        const span = new Span(tracer, ROOT_CONTEXT, engineSpan.name, spanContext, SpanKind.INTERNAL, engineSpan.parent_span_id, links, parseInt(engineSpan.start_time));
+        const span = new Span(
+          tracer,
+          ROOT_CONTEXT2,
+          engineSpan.name,
+          spanContext,
+          SpanKind2.INTERNAL,
+          engineSpan.parent_span_id,
+          links,
+          engineSpan.start_time
+        );
         if (engineSpan.attributes) {
           span.setAttributes(engineSpan.attributes);
         }
-        span.end(parseInt(engineSpan.end_time));
+        span.end(engineSpan.end_time);
       });
     }
     __name(createSpan, "createSpan");
-    function getTraceParent(context3) {
-      const span = trace.getSpanContext(context3 != null ? context3 : context2.active());
-      if ((span == null ? void 0 : span.traceFlags) === 1) {
-        return `00-${span.traceId}-${span.spanId}-01`;
+    function getTraceParent({
+      context: context5,
+      tracingConfig
+    }) {
+      const span = trace2.getSpanContext(context5 != null ? context5 : context4.active());
+      if ((tracingConfig == null ? void 0 : tracingConfig.enabled) && span) {
+        return `00-${span.traceId}-${span.spanId}-0${span.traceFlags}`;
+      } else {
+        return `00-10-10-00`;
       }
-      return void 0;
     }
     __name(getTraceParent, "getTraceParent");
     function getTracingConfig(previewFeatures) {
@@ -54846,19 +56332,19 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
       var _a32;
       if (options.enabled === false)
         return cb();
-      const tracer = trace.getTracer("prisma");
-      const context3 = (_a32 = options.context) != null ? _a32 : context2.active();
+      const tracer = trace2.getTracer("prisma");
+      const context5 = (_a32 = options.context) != null ? _a32 : context4.active();
       if (options.active === false) {
-        const span = tracer.startSpan(`prisma:client:${options.name}`, options, context3);
+        const span = tracer.startSpan(`prisma:client:${options.name}`, options, context5);
         try {
-          return await cb(span, context3);
+          return await cb(span, context5);
         } finally {
           span.end();
         }
       }
-      return tracer.startActiveSpan(`prisma:client:${options.name}`, options, context3, async (span) => {
+      return tracer.startActiveSpan(`prisma:client:${options.name}`, options, context5, async (span) => {
         try {
-          return await cb(span, context2.active());
+          return await cb(span, context4.active());
         } finally {
           span.end();
         }
@@ -54968,16 +56454,22 @@ ${(0, import_indent_string2.default)(printDatamodelObject(obj), 2)}
           if (this.startPromise) {
             await this.startPromise;
           }
+          if (error2 instanceof PrismaClientKnownRequestError) {
+            throw error2;
+          }
           this.throwAsyncErrorIfExists();
           if ((_a33 = this.currentRequestPromise) == null ? void 0 : _a33.isCanceled) {
             this.throwAsyncErrorIfExists();
           } else if (error2.code === "ECONNRESET" || error2.code === "ECONNREFUSED" || error2.code === "UND_ERR_CLOSED" || error2.code === "UND_ERR_SOCKET" || error2.code === "UND_ERR_DESTROYED" || error2.code === "UND_ERR_ABORTED" || error2.message.toLowerCase().includes("client is destroyed") || error2.message.toLowerCase().includes("other side closed") || error2.message.toLowerCase().includes("the client is closed")) {
             if (this.globalKillSignalReceived && !((_b22 = this.child) == null ? void 0 : _b22.connected)) {
-              throw new PrismaClientUnknownRequestError(`The Node.js process already received a ${this.globalKillSignalReceived} signal, therefore the Prisma query engine exited
+              throw new PrismaClientUnknownRequestError(
+                `The Node.js process already received a ${this.globalKillSignalReceived} signal, therefore the Prisma query engine exited
 and your request can't be processed.
 You probably have some open handle that prevents your process from exiting.
 It could be an open http server or stream that didn't close yet.
-We recommend using the \`wtfnode\` package to debug open handles.`, this.clientVersion);
+We recommend using the \`wtfnode\` package to debug open handles.`,
+                this.clientVersion
+              );
             }
             this.throwAsyncErrorIfExists();
             if (this.startCount > MAX_STARTS) {
@@ -55036,7 +56528,11 @@ Please look into the logs or turn on the env var DEBUG=* to debug the constantly
         ];
         const removedFlagsUsed = this.previewFeatures.filter((e) => removedFlags.includes(e));
         if (removedFlagsUsed.length > 0 && !process.env.PRISMA_HIDE_PREVIEW_FLAG_WARNINGS) {
-          console.log(`${import_chalk3.default.blueBright("info")} The preview flags \`${removedFlagsUsed.join("`, `")}\` were removed, you can now safely remove them from your schema.prisma.`);
+          console.log(
+            `${import_chalk3.default.blueBright("info")} The preview flags \`${removedFlagsUsed.join(
+              "`, `"
+            )}\` were removed, you can now safely remove them from your schema.prisma.`
+          );
         }
         this.previewFeatures = this.previewFeatures.filter((e) => !removedFlags.includes(e));
         this.engineEndpoint = engineEndpoint;
@@ -55046,8 +56542,15 @@ Please look into the logs or turn on the env var DEBUG=* to debug the constantly
         }
         if (this.platform) {
           if (!knownPlatforms.includes(this.platform) && !import_fs4.default.existsSync(this.platform)) {
-            throw new PrismaClientInitializationError(`Unknown ${import_chalk3.default.red("PRISMA_QUERY_ENGINE_BINARY")} ${import_chalk3.default.redBright.bold(this.platform)}. Possible binaryTargets: ${import_chalk3.default.greenBright(knownPlatforms.join(", "))} or a path to the query engine binary.
-You may have to run ${import_chalk3.default.greenBright("prisma generate")} for your changes to take effect.`, this.clientVersion);
+            throw new PrismaClientInitializationError(
+              `Unknown ${import_chalk3.default.red("PRISMA_QUERY_ENGINE_BINARY")} ${import_chalk3.default.redBright.bold(
+                this.platform
+              )}. Possible binaryTargets: ${import_chalk3.default.greenBright(
+                knownPlatforms.join(", ")
+              )} or a path to the query engine binary.
+You may have to run ${import_chalk3.default.greenBright("prisma generate")} for your changes to take effect.`,
+              this.clientVersion
+            );
           }
         } else {
           void this.getPlatform();
@@ -55062,19 +56565,25 @@ You may have to run ${import_chalk3.default.greenBright("prisma generate")} for 
         var _a32;
         if (isRustError(err)) {
           this.lastRustError = err;
-          this.logEmitter.emit("error", new PrismaClientRustError({
-            clientVersion: this.clientVersion,
-            error: err
-          }));
+          this.logEmitter.emit(
+            "error",
+            new PrismaClientRustError({
+              clientVersion: this.clientVersion,
+              error: err
+            })
+          );
           if (err.is_panic) {
             this.handlePanic();
           }
         } else if (isRustErrorLog(err)) {
           this.lastErrorLog = err;
-          this.logEmitter.emit("error", new PrismaClientRustError({
-            clientVersion: this.clientVersion,
-            log: err
-          }));
+          this.logEmitter.emit(
+            "error",
+            new PrismaClientRustError({
+              clientVersion: this.clientVersion,
+              log: err
+            })
+          );
           if (((_a32 = err.fields) == null ? void 0 : _a32.message) === "PANIC") {
             this.handlePanic();
           }
@@ -55086,7 +56595,9 @@ You may have to run ${import_chalk3.default.greenBright("prisma generate")} for 
         if (engines.length >= 10) {
           const runningEngines = engines.filter((e) => e.child);
           if (runningEngines.length === 10) {
-            console.warn(`${import_chalk3.default.yellow("warn(prisma-client)")} There are already 10 instances of Prisma Client actively running.`);
+            console.warn(
+              `${import_chalk3.default.yellow("warn(prisma-client)")} There are already 10 instances of Prisma Client actively running.`
+            );
           }
         }
       }
@@ -55180,7 +56691,9 @@ You may have to run ${import_chalk3.default.greenBright("prisma generate")} for 
           const pinnedStr = this.incorrectlyPinnedBinaryTarget ? `
 You incorrectly pinned it to ${import_chalk3.default.redBright.bold(`${this.incorrectlyPinnedBinaryTarget}`)}
 ` : "";
-          let errorText = `Query engine binary for current platform "${import_chalk3.default.bold(platform3)}" could not be found.${pinnedStr}
+          let errorText = `Query engine binary for current platform "${import_chalk3.default.bold(
+            platform3
+          )}" could not be found.${pinnedStr}
 This probably happens, because you built Prisma Client on a different platform.
 (Prisma Client looked in "${import_chalk3.default.underline(prismaPath)}")
 
@@ -55207,7 +56720,9 @@ Please create an issue at https://github.com/prisma/prisma/issues/new`;
             } else {
               errorText += `
 
-To solve this problem, add the platform "${this.platform}" to the "${import_chalk3.default.underline("binaryTargets")}" attribute in the "${import_chalk3.default.underline("generator")}" block in the "schema.prisma" file:
+To solve this problem, add the platform "${this.platform}" to the "${import_chalk3.default.underline(
+                "binaryTargets"
+              )}" attribute in the "${import_chalk3.default.underline("generator")}" block in the "schema.prisma" file:
 ${import_chalk3.default.greenBright(this.getFixedGenerator())}
 
 Then run "${import_chalk3.default.greenBright("prisma generate")}" for your changes to take effect.
@@ -55222,7 +56737,9 @@ Read more about deploying Prisma Client: https://pris.ly/d/client-generator
           throw new PrismaClientInitializationError(errorText, this.clientVersion);
         }
         if (this.incorrectlyPinnedBinaryTarget) {
-          console.error(`${import_chalk3.default.yellow("Warning:")} You pinned the platform ${import_chalk3.default.bold(this.incorrectlyPinnedBinaryTarget)}, but Prisma Client detects ${import_chalk3.default.bold(await this.getPlatform())}.
+          console.error(`${import_chalk3.default.yellow("Warning:")} You pinned the platform ${import_chalk3.default.bold(
+            this.incorrectlyPinnedBinaryTarget
+          )}, but Prisma Client detects ${import_chalk3.default.bold(await this.getPlatform())}.
 This means you should very likely pin the platform ${import_chalk3.default.greenBright(await this.getPlatform())} instead.
 ${import_chalk3.default.dim("In case we're mistaken, please report this to us \u{1F64F}.")}`);
         }
@@ -55255,7 +56772,10 @@ ${import_chalk3.default.dim("In case we're mistaken, please report this to us \u
           }
           await this.startPromise;
           if (!this.child && !this.engineEndpoint) {
-            throw new PrismaClientUnknownRequestError(`Can't perform request, as the Engine has already been stopped`, this.clientVersion);
+            throw new PrismaClientUnknownRequestError(
+              `Can't perform request, as the Engine has already been stopped`,
+              this.clientVersion
+            );
           }
         }, "startFn");
         const spanOptions = {
@@ -55327,10 +56847,6 @@ ${import_chalk3.default.dim("In case we're mistaken, please report this to us \u
             ];
             this.port = await this.getFreePort();
             flags.push("--port", String(this.port));
-            const tracingHeaders = {};
-            if (this.tracingConfig.enabled) {
-              tracingHeaders.traceparent = getTraceParent();
-            }
             debug4({ flags });
             const env2 = this.getEngineEnvVars();
             this.child = (0, import_child_process2.spawn)(prismaPath, flags, {
@@ -55408,12 +56924,18 @@ ${import_chalk3.default.dim("In case we're mistaken, please report this to us \u
                   msg = getMessage(this.lastErrorLog);
                 }
                 if (code !== null) {
-                  err = new PrismaClientInitializationError(`Query engine exited with code ${code}
-` + msg, this.clientVersion);
+                  err = new PrismaClientInitializationError(
+                    `Query engine exited with code ${code}
+` + msg,
+                    this.clientVersion
+                  );
                 } else if ((_a42 = this.child) == null ? void 0 : _a42.signalCode) {
-                  err = new PrismaClientInitializationError(`Query engine process killed with signal ${this.child.signalCode} for unknown reason.
+                  err = new PrismaClientInitializationError(
+                    `Query engine process killed with signal ${this.child.signalCode} for unknown reason.
 Make sure that the engine binary at ${prismaPath} is not corrupt.
-` + msg, this.clientVersion);
+` + msg,
+                    this.clientVersion
+                  );
                 } else {
                   err = new PrismaClientInitializationError(msg, this.clientVersion);
                 }
@@ -55449,10 +56971,18 @@ You very likely have the wrong "binaryTarget" defined in the schema.prisma file.
               var _a42;
               this.connection.close();
               if (code === null && signal === "SIGABRT" && this.child) {
-                const error2 = new PrismaClientRustPanicError(this.getErrorMessageWithLink("Panic in Query Engine with SIGABRT signal"), this.clientVersion);
+                const error2 = new PrismaClientRustPanicError(
+                  this.getErrorMessageWithLink("Panic in Query Engine with SIGABRT signal"),
+                  this.clientVersion
+                );
                 this.logEmitter.emit("error", error2);
               } else if (code === 255 && signal === null && ((_a42 = this.lastErrorLog) == null ? void 0 : _a42.fields.message) === "PANIC" && !this.lastPanic) {
-                const error2 = new PrismaClientRustPanicError(this.getErrorMessageWithLink(`${this.lastErrorLog.fields.message}: ${this.lastErrorLog.fields.reason} in ${this.lastErrorLog.fields.file}:${this.lastErrorLog.fields.line}:${this.lastErrorLog.fields.column}`), this.clientVersion);
+                const error2 = new PrismaClientRustPanicError(
+                  this.getErrorMessageWithLink(
+                    `${this.lastErrorLog.fields.message}: ${this.lastErrorLog.fields.reason} in ${this.lastErrorLog.fields.file}:${this.lastErrorLog.fields.line}:${this.lastErrorLog.fields.column}`
+                  ),
+                  this.clientVersion
+                );
                 this.setError(error2);
               }
             });
@@ -55501,7 +57031,6 @@ You very likely have the wrong "binaryTarget" defined in the schema.prisma file.
         return runInChildSpan(spanOptions, stopFn);
       }
       async _stop() {
-        var _a32;
         if (this.startPromise) {
           await this.startPromise;
         }
@@ -55515,17 +57044,21 @@ You very likely have the wrong "binaryTarget" defined in the schema.prisma file.
         this.getConfigPromise = void 0;
         let stopChildPromise;
         if (this.child) {
-          debug4(`Stopping Prisma engine4`);
+          debug4(`Stopping Prisma engine`);
           if (this.startPromise) {
             debug4(`Waiting for start promise`);
             await this.startPromise;
           }
           debug4(`Done waiting for start promise`);
-          stopChildPromise = new Promise((resolve, reject) => {
-            this.engineStopDeferred = { resolve, reject };
-          });
+          if (this.child.exitCode === null) {
+            stopChildPromise = new Promise((resolve, reject) => {
+              this.engineStopDeferred = { resolve, reject };
+            });
+          } else {
+            debug4("Child already exited with code", this.child.exitCode);
+          }
           this.connection.close();
-          (_a32 = this.child) == null ? void 0 : _a32.kill();
+          this.child.kill();
           this.child = void 0;
         }
         if (stopChildPromise) {
@@ -55622,9 +57155,6 @@ You very likely have the wrong "binaryTarget" defined in the schema.prisma file.
           return { data, elapsed };
         } catch (e) {
           logger("req - e", e);
-          if (e instanceof PrismaClientKnownRequestError) {
-            throw e;
-          }
           await this.handleRequestError(e, numTry <= MAX_REQUEST_RETRIES);
           if (numTry <= MAX_REQUEST_RETRIES) {
             logger("trying a retry now");
@@ -55633,11 +57163,12 @@ You very likely have the wrong "binaryTarget" defined in the schema.prisma file.
         }
         return null;
       }
-      async requestBatch(queries, headers = {}, transaction = false, numTry = 1) {
+      async requestBatch(queries, headers = {}, transaction, numTry = 1) {
         await this.start();
         const request2 = {
           batch: queries.map((query2) => ({ query: query2, variables: {} })),
-          transaction
+          transaction: Boolean(transaction),
+          isolationLevel: transaction == null ? void 0 : transaction.isolationLevel
         };
         this.lastQuery = JSON.stringify(request2);
         this.currentRequestPromise = this.connection.post("/", this.lastQuery, runtimeHeadersToHttpHeaders(headers));
@@ -55676,12 +57207,21 @@ You very likely have the wrong "binaryTarget" defined in the schema.prisma file.
             timeout: (_b22 = arg2 == null ? void 0 : arg2.timeout) != null ? _b22 : 5e3,
             isolation_level: arg2 == null ? void 0 : arg2.isolationLevel
           });
-          const result = await Connection.onHttpError(this.connection.post("/transaction/start", jsonOptions, runtimeHeadersToHttpHeaders(headers)), transactionHttpErrorHandler);
+          const result = await Connection.onHttpError(
+            this.connection.post("/transaction/start", jsonOptions, runtimeHeadersToHttpHeaders(headers)),
+            (result2) => this.transactionHttpErrorHandler(result2)
+          );
           return result.data;
         } else if (action === "commit") {
-          await Connection.onHttpError(this.connection.post(`/transaction/${arg2.id}/commit`), transactionHttpErrorHandler);
+          await Connection.onHttpError(
+            this.connection.post(`/transaction/${arg2.id}/commit`),
+            (result) => this.transactionHttpErrorHandler(result)
+          );
         } else if (action === "rollback") {
-          await Connection.onHttpError(this.connection.post(`/transaction/${arg2.id}/rollback`), transactionHttpErrorHandler);
+          await Connection.onHttpError(
+            this.connection.post(`/transaction/${arg2.id}/rollback`),
+            (result) => this.transactionHttpErrorHandler(result)
+          );
         }
         return void 0;
       }
@@ -55692,7 +57232,10 @@ You very likely have the wrong "binaryTarget" defined in the schema.prisma file.
         var _a32, _b22;
         logger("throwAsyncErrorIfExists", this.startCount, this.hasMaxRestarts);
         if (this.lastRustError) {
-          const err = new PrismaClientRustPanicError(this.getErrorMessageWithLink(getMessage(this.lastRustError)), this.clientVersion);
+          const err = new PrismaClientRustPanicError(
+            this.getErrorMessageWithLink(getMessage(this.lastRustError)),
+            this.clientVersion
+          );
           if (this.lastRustError.is_panic) {
             this.lastPanic = err;
           }
@@ -55701,7 +57244,10 @@ You very likely have the wrong "binaryTarget" defined in the schema.prisma file.
           }
         }
         if (this.lastErrorLog && isRustErrorLog(this.lastErrorLog)) {
-          const err = new PrismaClientUnknownRequestError(this.getErrorMessageWithLink(getMessage(this.lastErrorLog)), this.clientVersion);
+          const err = new PrismaClientUnknownRequestError(
+            this.getErrorMessageWithLink(getMessage(this.lastErrorLog)),
+            this.clientVersion
+          );
           if (((_b22 = (_a32 = this.lastErrorLog) == null ? void 0 : _a32.fields) == null ? void 0 : _b22.message) === "PANIC") {
             this.lastPanic = err;
           }
@@ -55723,8 +57269,22 @@ You very likely have the wrong "binaryTarget" defined in the schema.prisma file.
       async metrics({ format: format2, globalLabels }) {
         await this.start();
         const parseResponse = format2 === "json";
-        const response = await this.connection.post(`/metrics?format=${encodeURIComponent(format2)}`, JSON.stringify(globalLabels), null, parseResponse);
+        const response = await this.connection.post(
+          `/metrics?format=${encodeURIComponent(format2)}`,
+          JSON.stringify(globalLabels),
+          null,
+          parseResponse
+        );
         return response.data;
+      }
+      transactionHttpErrorHandler(result) {
+        const response = result.data;
+        throw new PrismaClientKnownRequestError(
+          response.message,
+          response.error_code,
+          this.clientVersion,
+          response.meta
+        );
       }
     };
     __name(BinaryEngine, "BinaryEngine");
@@ -55765,10 +57325,6 @@ You very likely have the wrong "binaryTarget" defined in the schema.prisma file.
       }
     }
     __name(initHooks, "initHooks");
-    function transactionHttpErrorHandler(result) {
-      throw result.data;
-    }
-    __name(transactionHttpErrorHandler, "transactionHttpErrorHandler");
     function runtimeHeadersToHttpHeaders(headers) {
       return Object.keys(headers).reduce((acc, runtimeHeaderKey) => {
         let httpHeaderKey = runtimeHeaderKey;
@@ -55840,8 +57396,14 @@ You very likely have the wrong "binaryTarget" defined in the schema.prisma file.
     __name(NotImplementedYetError, "NotImplementedYetError");
     var DataProxyAPIError = class extends DataProxyError {
       constructor(message, info2) {
+        var _a32;
         super(message, info2);
         this.response = info2.response;
+        const requestId = (_a32 = this.response.headers) == null ? void 0 : _a32["Prisma-Request-Id"];
+        if (requestId) {
+          const messageSuffix = `(The request id was: ${requestId})`;
+          this.message = this.message + " " + messageSuffix;
+        }
       }
     };
     __name(DataProxyAPIError, "DataProxyAPIError");
@@ -55974,17 +57536,17 @@ You very likely have the wrong "binaryTarget" defined in the schema.prisma file.
     }
     __name(backOff, "backOff");
     var devDependencies = {
-      "@prisma/debug": "workspace:4.2.1",
-      "@prisma/engines-version": "4.2.0-33.2920a97877e12e055c1333079b8d19cee7f33826",
-      "@prisma/fetch-engine": "workspace:4.2.1",
-      "@prisma/get-platform": "workspace:4.2.1",
-      "@swc/core": "1.2.197",
+      "@prisma/debug": "workspace:4.5.0",
+      "@prisma/engines-version": "4.5.0-43.0362da9eebca54d94c8ef5edd3b2e90af99ba452",
+      "@prisma/fetch-engine": "workspace:4.5.0",
+      "@prisma/get-platform": "workspace:4.5.0",
+      "@swc/core": "1.3.8",
       "@swc/jest": "0.2.22",
-      "@types/jest": "28.1.6",
-      "@types/node": "16.11.47",
+      "@types/jest": "28.1.8",
+      "@types/node": "16.11.65",
       execa: "5.1.1",
       jest: "28.1.3",
-      typescript: "4.7.3"
+      typescript: "4.8.4"
     };
     var RequestError = class extends DataProxyError {
       constructor(message, info2) {
@@ -56038,7 +57600,8 @@ ${message}`, setRetryable(info2, true));
         json: () => JSON.parse(Buffer.concat(incomingData).toString()),
         ok: response.statusCode >= 200 && response.statusCode <= 299,
         status: response.statusCode,
-        url: response.url
+        url: response.url,
+        headers: response.headers
       };
     }
     __name(buildResponse, "buildResponse");
@@ -56084,8 +57647,8 @@ ${message}`, setRetryable(info2, true));
       }
       if (suffix !== void 0 || clientVersion2 === "0.0.0") {
         const [version2] = (_c2 = engineVersion.split("-")) != null ? _c2 : [];
-        const [major2, minor, patch] = version2.split(".");
-        const pkgURL = prismaPkgURL(`<=${major2}.${minor}.${patch}`);
+        const [major3, minor, patch] = version2.split(".");
+        const pkgURL = prismaPkgURL(`<=${major3}.${minor}.${patch}`);
         const res = await request(pkgURL, { clientVersion: clientVersion2 });
         const bodyAsText = await res.text();
         debug5("length of body fetched from unpkg.com", bodyAsText.length);
@@ -56118,7 +57681,7 @@ ${message}`, setRetryable(info2, true));
     var debug6 = src_default("prisma:client:dataproxyEngine");
     var DataProxyEngine = class extends Engine {
       constructor(config2) {
-        var _a32, _b22, _c2, _d2, _e;
+        var _a32, _b22, _c2, _d2;
         super();
         this.config = config2;
         this.env = { ...this.config.env, ...process.env };
@@ -56134,11 +57697,6 @@ ${message}`, setRetryable(info2, true));
         this.headers = { Authorization: `Bearer ${apiKey}` };
         this.host = host;
         debug6("host", this.host);
-        if ((_e = this.config.previewFeatures) == null ? void 0 : _e.includes("tracing")) {
-          throw new NotImplementedYetError("Tracing is not yet supported for Data Proxy", {
-            clientVersion: this.clientVersion
-          });
-        }
       }
       version() {
         return "unknown";
@@ -56180,6 +57738,9 @@ ${message}`, setRetryable(info2, true));
           body: this.inlineSchema,
           clientVersion: this.clientVersion
         });
+        if (!response.ok) {
+          debug6("schema response status", response.status);
+        }
         const err = await responseToError(response, this.clientVersion);
         if (err) {
           this.logEmitter.emit("warn", { message: `Error while uploading schema: ${err.message}` });
@@ -56194,14 +57755,16 @@ ${message}`, setRetryable(info2, true));
         this.logEmitter.emit("query", { query: query2 });
         return this.requestInternal({ query: query2, variables: {} }, headers, attempt);
       }
-      async requestBatch(queries, headers, isTransaction = false, attempt = 0) {
+      async requestBatch(queries, headers, transaction, attempt = 0) {
+        const isTransaction = Boolean(transaction);
         this.logEmitter.emit("query", {
           query: `Batch${isTransaction ? " in transaction" : ""} (${queries.length}):
 ${queries.join("\n")}`
         });
         const body = {
           batch: queries.map((query2) => ({ query: query2, variables: {} })),
-          transaction: isTransaction
+          transaction: isTransaction,
+          isolationLevel: transaction == null ? void 0 : transaction.isolationLevel
         };
         const { batchResult } = await this.requestInternal(body, headers, attempt);
         return batchResult;
@@ -56218,6 +57781,9 @@ ${queries.join("\n")}`
             body: JSON.stringify(body),
             clientVersion: this.clientVersion
           });
+          if (!response.ok) {
+            debug6("graphql response status", response.status);
+          }
           const e = await responseToError(response, this.clientVersion);
           if (e instanceof SchemaMissingError) {
             await this.uploadSchema();
@@ -56314,15 +57880,21 @@ ${queries.join("\n")}`
           const envVar = datasource.url.fromEnvVar;
           const loadedEnvURL = this.env[envVar];
           if (loadedEnvURL === void 0) {
-            throw new InvalidDatasourceError(`Datasource "${name}" references an environment variable "${envVar}" that is not set`, {
-              clientVersion: this.clientVersion
-            });
+            throw new InvalidDatasourceError(
+              `Datasource "${name}" references an environment variable "${envVar}" that is not set`,
+              {
+                clientVersion: this.clientVersion
+              }
+            );
           }
           return loadedEnvURL;
         }
-        throw new InvalidDatasourceError(`Datasource "${name}" specification is invalid: both value and fromEnvVar are null`, {
-          clientVersion: this.clientVersion
-        });
+        throw new InvalidDatasourceError(
+          `Datasource "${name}" specification is invalid: both value and fromEnvVar are null`,
+          {
+            clientVersion: this.clientVersion
+          }
+        );
       }
       metrics(options) {
         throw new NotImplementedYetError("Metric are not yet supported for Data Proxy", {
@@ -56354,12 +57926,21 @@ ${queries.join("\n")}`
         } catch (e) {
           if (import_fs5.default.existsSync(this.libQueryEnginePath)) {
             if (this.libQueryEnginePath.endsWith(".node")) {
-              throw new PrismaClientInitializationError(`Unable to load Node-API Library from ${import_chalk4.default.dim(this.libQueryEnginePath)}, Library may be corrupt`, this.config.clientVersion);
+              throw new PrismaClientInitializationError(
+                `Unable to load Node-API Library from ${import_chalk4.default.dim(this.libQueryEnginePath)}, Library may be corrupt`,
+                this.config.clientVersion
+              );
             } else {
-              throw new PrismaClientInitializationError(`Expected an Node-API Library but received ${import_chalk4.default.dim(this.libQueryEnginePath)}`, this.config.clientVersion);
+              throw new PrismaClientInitializationError(
+                `Expected an Node-API Library but received ${import_chalk4.default.dim(this.libQueryEnginePath)}`,
+                this.config.clientVersion
+              );
             }
           } else {
-            throw new PrismaClientInitializationError(`Unable to load Node-API Library from ${import_chalk4.default.dim(this.libQueryEnginePath)}, It does not exist`, this.config.clientVersion);
+            throw new PrismaClientInitializationError(
+              `Unable to load Node-API Library from ${import_chalk4.default.dim(this.libQueryEnginePath)}, It does not exist`,
+              this.config.clientVersion
+            );
           }
         }
       }
@@ -56375,7 +57956,9 @@ ${queries.join("\n")}`
           const incorrectPinnedPlatformErrorStr = this.platform ? `
 You incorrectly pinned it to ${import_chalk4.default.redBright.bold(`${this.platform}`)}
 ` : "";
-          let errorText = `Query engine library for current platform "${import_chalk4.default.bold(this.platform)}" could not be found.${incorrectPinnedPlatformErrorStr}
+          let errorText = `Query engine library for current platform "${import_chalk4.default.bold(
+            this.platform
+          )}" could not be found.${incorrectPinnedPlatformErrorStr}
 This probably happens, because you built Prisma Client on a different platform.
 (Prisma Client looked in "${import_chalk4.default.underline(enginePath2)}")
 
@@ -56403,7 +57986,9 @@ Please create an issue at https://github.com/prisma/prisma/issues/new`;
             } else {
               errorText += `
 
-To solve this problem, add the platform "${this.platform}" to the "${import_chalk4.default.underline("binaryTargets")}" attribute in the "${import_chalk4.default.underline("generator")}" block in the "schema.prisma" file:
+To solve this problem, add the platform "${this.platform}" to the "${import_chalk4.default.underline(
+                "binaryTargets"
+              )}" attribute in the "${import_chalk4.default.underline("generator")}" block in the "schema.prisma" file:
 ${import_chalk4.default.greenBright(this.getFixedGenerator())}
 
 Then run "${import_chalk4.default.greenBright("prisma generate")}" for your changes to take effect.
@@ -56565,7 +58150,9 @@ Read more about deploying Prisma Client: https://pris.ly/d/client-generator
       }
       checkForTooManyEngines() {
         if (engineInstanceCount === 10) {
-          console.warn(`${import_chalk5.default.yellow("warn(prisma-client)")} There are already 10 instances of Prisma Client actively running.`);
+          console.warn(
+            `${import_chalk5.default.yellow("warn(prisma-client)")} There are already 10 instances of Prisma Client actively running.`
+          );
         }
       }
       async transaction(action, headers, arg2) {
@@ -56586,8 +58173,14 @@ Read more about deploying Prisma Client: https://pris.ly/d/client-generator
           result = await ((_e = this.engine) == null ? void 0 : _e.rollbackTransaction(arg2.id, headerStr));
         }
         const response = this.parseEngineResponse(result);
-        if (response.error_code)
-          throw response;
+        if (response.error_code) {
+          throw new PrismaClientKnownRequestError(
+            response.message,
+            response.error_code,
+            this.config.clientVersion,
+            response.meta
+          );
+        }
         return response;
       }
       async instantiateLibrary() {
@@ -56605,8 +58198,15 @@ Read more about deploying Prisma Client: https://pris.ly/d/client-generator
           return this.platform;
         const platform3 = await getPlatform();
         if (!knownPlatforms2.includes(platform3)) {
-          throw new PrismaClientInitializationError(`Unknown ${import_chalk5.default.red("PRISMA_QUERY_ENGINE_LIBRARY")} ${import_chalk5.default.redBright.bold(platform3)}. Possible binaryTargets: ${import_chalk5.default.greenBright(knownPlatforms2.join(", "))} or a path to the query engine library.
-You may have to run ${import_chalk5.default.greenBright("prisma generate")} for your changes to take effect.`, this.config.clientVersion);
+          throw new PrismaClientInitializationError(
+            `Unknown ${import_chalk5.default.red("PRISMA_QUERY_ENGINE_LIBRARY")} ${import_chalk5.default.redBright.bold(
+              platform3
+            )}. Possible binaryTargets: ${import_chalk5.default.greenBright(
+              knownPlatforms2.join(", ")
+            )} or a path to the query engine library.
+You may have to run ${import_chalk5.default.greenBright("prisma generate")} for your changes to take effect.`,
+            this.config.clientVersion
+          );
         }
         return platform3;
       }
@@ -56637,18 +58237,21 @@ You may have to run ${import_chalk5.default.greenBright("prisma generate")} for 
           }
           try {
             const weakThis = new WeakRef(this);
-            this.engine = new this.QueryEngineConstructor({
-              datamodel: this.datamodel,
-              env: process.env,
-              logQueries: (_a32 = this.config.logQueries) != null ? _a32 : false,
-              ignoreEnvVarErrors: false,
-              datasourceOverrides: this.datasourceOverrides,
-              logLevel: this.logLevel,
-              configDir: this.config.cwd
-            }, (log4) => {
-              var _a42;
-              (_a42 = weakThis.deref()) == null ? void 0 : _a42.logger(log4);
-            });
+            this.engine = new this.QueryEngineConstructor(
+              {
+                datamodel: this.datamodel,
+                env: process.env,
+                logQueries: (_a32 = this.config.logQueries) != null ? _a32 : false,
+                ignoreEnvVarErrors: false,
+                datasourceOverrides: this.datasourceOverrides,
+                logLevel: this.logLevel,
+                configDir: this.config.cwd
+              },
+              (log4) => {
+                var _a42;
+                (_a42 = weakThis.deref()) == null ? void 0 : _a42.logger(log4);
+              }
+            );
             engineInstanceCount++;
           } catch (_e) {
             const e = _e;
@@ -56682,7 +58285,12 @@ You may have to run ${import_chalk5.default.greenBright("prisma generate")} for 
             target: event.module_path
           });
         } else if (isPanicEvent(event)) {
-          this.loggerRustPanic = new PrismaClientRustPanicError(this.getErrorMessageWithLink(`${event.message}: ${event.reason} in ${event.file}:${event.line}:${event.column}`), this.config.clientVersion);
+          this.loggerRustPanic = new PrismaClientRustPanicError(
+            this.getErrorMessageWithLink(
+              `${event.message}: ${event.reason} in ${event.file}:${event.line}:${event.column}`
+            ),
+            this.config.clientVersion
+          );
           this.logEmitter.emit("error", this.loggerRustPanic);
         } else {
           this.logEmitter.emit(event.level, {
@@ -56741,7 +58349,7 @@ You may have to run ${import_chalk5.default.greenBright("prisma generate")} for 
           debug9("library starting");
           try {
             const headers = {
-              traceparent: getTraceParent()
+              traceparent: getTraceParent({ tracingConfig: this.config.tracingConfig })
             };
             await ((_a32 = this.engine) == null ? void 0 : _a32.connect(JSON.stringify(headers)));
             this.libraryStarted = true;
@@ -56779,7 +58387,7 @@ You may have to run ${import_chalk5.default.greenBright("prisma generate")} for 
           await new Promise((r) => setTimeout(r, 5));
           debug9("library stopping");
           const headers = {
-            traceparent: getTraceParent()
+            traceparent: getTraceParent({ tracingConfig: this.config.tracingConfig })
           };
           await ((_a32 = this.engine) == null ? void 0 : _a32.disconnect(JSON.stringify(headers)));
           this.libraryStarted = false;
@@ -56851,11 +58459,12 @@ ${error2.backtrace}`, this.config.clientVersion);
           }
         }
       }
-      async requestBatch(queries, headers = {}, transaction = false, numTry = 1) {
+      async requestBatch(queries, headers = {}, transaction) {
         debug9("requestBatch");
         const request2 = {
           batch: queries.map((query2) => ({ query: query2, variables: {} })),
-          transaction
+          transaction: Boolean(transaction),
+          isolationLevel: transaction == null ? void 0 : transaction.isolationLevel
         };
         await this.start();
         this.lastQuery = JSON.stringify(request2);
@@ -56889,7 +58498,10 @@ ${error2.backtrace}`, this.config.clientVersion);
       }
       buildQueryError(error2) {
         if (error2.user_facing_error.is_panic) {
-          return new PrismaClientRustPanicError(this.getErrorMessageWithLink(error2.user_facing_error.message), this.config.clientVersion);
+          return new PrismaClientRustPanicError(
+            this.getErrorMessageWithLink(error2.user_facing_error.message),
+            this.config.clientVersion
+          );
         }
         return prismaGraphQLToJSError(error2, this.config.clientVersion);
       }
@@ -56987,11 +58599,15 @@ ${error2.backtrace}`, this.config.clientVersion);
           const relativeRootEnvPath = import_path4.default.relative(process.cwd(), rootEnvInfo.path);
           const relativeEnvPath = import_path4.default.relative(process.cwd(), envPath);
           if (type === "error") {
-            const message = `There is a conflict between env var${conflicts.length > 1 ? "s" : ""} in ${import_chalk6.default.underline(relativeRootEnvPath)} and ${import_chalk6.default.underline(relativeEnvPath)}
+            const message = `There is a conflict between env var${conflicts.length > 1 ? "s" : ""} in ${import_chalk6.default.underline(
+              relativeRootEnvPath
+            )} and ${import_chalk6.default.underline(relativeEnvPath)}
 Conflicting env vars:
 ${conflicts.map((conflict) => `  ${import_chalk6.default.bold(conflict)}`).join("\n")}
 
-We suggest to move the contents of ${import_chalk6.default.underline(relativeEnvPath)} to ${import_chalk6.default.underline(relativeRootEnvPath)} to consolidate your env vars.
+We suggest to move the contents of ${import_chalk6.default.underline(relativeEnvPath)} to ${import_chalk6.default.underline(
+              relativeRootEnvPath
+            )} to consolidate your env vars.
 `;
             throw new Error(message);
           } else if (type === "warn") {
@@ -57008,10 +58624,12 @@ Env vars from ${import_chalk6.default.underline(relativeEnvPath)} overwrite the 
       if (exists3(envPath)) {
         debug10(`Environment variables loaded from ${envPath}`);
         return {
-          dotenvResult: dotenvExpand(import_dotenv.default.config({
-            path: envPath,
-            debug: process.env.DOTENV_CONFIG_DEBUG ? true : void 0
-          })),
+          dotenvResult: dotenvExpand(
+            import_dotenv.default.config({
+              path: envPath,
+              debug: process.env.DOTENV_CONFIG_DEBUG ? true : void 0
+            })
+          ),
           message: import_chalk6.default.dim(`Environment variables loaded from ${import_path4.default.relative(process.cwd(), envPath)}`),
           path: envPath
         };
@@ -57111,6 +58729,12 @@ Env vars from ${import_chalk6.default.underline(relativeEnvPath)} overwrite the 
       return (...args) => result != null ? result : result = fn(...args);
     }
     __name(callOnce, "callOnce");
+    var keyBy2 = /* @__PURE__ */ __name((collection, iteratee) => {
+      return collection.reduce((acc, curr) => {
+        acc[iteratee(curr)] = curr;
+        return acc;
+      }, {});
+    }, "keyBy");
     var alreadyWarned = /* @__PURE__ */ new Set();
     var warnOnce = /* @__PURE__ */ __name((key, message, ...args) => {
       if (!alreadyWarned.has(key)) {
@@ -57119,9 +58743,75 @@ Env vars from ${import_chalk6.default.underline(relativeEnvPath)} overwrite the 
       }
     }, "warnOnce");
     var import_async_hooks = require("async_hooks");
-    var import_fs8 = __toESM(require("fs"));
+    var import_fs9 = __toESM(require("fs"));
     var import_path5 = __toESM(require("path"));
-    var sqlTemplateTag = __toESM(require_dist());
+    var Sql = class {
+      constructor(rawStrings, rawValues) {
+        if (rawStrings.length - 1 !== rawValues.length) {
+          if (rawStrings.length === 0) {
+            throw new TypeError("Expected at least 1 string");
+          }
+          throw new TypeError(`Expected ${rawStrings.length} strings to have ${rawStrings.length - 1} values`);
+        }
+        const valuesLength = rawValues.reduce((len, value) => len + (value instanceof Sql ? value.values.length : 1), 0);
+        this.values = new Array(valuesLength);
+        this.strings = new Array(valuesLength + 1);
+        this.strings[0] = rawStrings[0];
+        let i = 0, pos = 0;
+        while (i < rawValues.length) {
+          const child = rawValues[i++];
+          const rawString = rawStrings[i];
+          if (child instanceof Sql) {
+            this.strings[pos] += child.strings[0];
+            let childIndex = 0;
+            while (childIndex < child.values.length) {
+              this.values[pos++] = child.values[childIndex++];
+              this.strings[pos] = child.strings[childIndex];
+            }
+            this.strings[pos] += rawString;
+          } else {
+            this.values[pos++] = child;
+            this.strings[pos] = rawString;
+          }
+        }
+      }
+      get text() {
+        let i = 1, value = this.strings[0];
+        while (i < this.strings.length)
+          value += `$${i}${this.strings[i++]}`;
+        return value;
+      }
+      get sql() {
+        let i = 1, value = this.strings[0];
+        while (i < this.strings.length)
+          value += `?${this.strings[i++]}`;
+        return value;
+      }
+      inspect() {
+        return {
+          text: this.text,
+          sql: this.sql,
+          values: this.values
+        };
+      }
+    };
+    __name(Sql, "Sql");
+    function join(values, separator = ",", prefix = "", suffix = "") {
+      if (values.length === 0) {
+        throw new TypeError("Expected `join([])` to be called with an array of multiple elements, but got an empty array");
+      }
+      return new Sql([prefix, ...Array(values.length - 1).fill(separator), suffix], values);
+    }
+    __name(join, "join");
+    function raw(value) {
+      return new Sql([value], []);
+    }
+    __name(raw, "raw");
+    var empty = raw("");
+    function sql(strings, ...values) {
+      return new Sql(strings, values);
+    }
+    __name(sql, "sql");
     var import_pluralize = __toESM(require_pluralize());
     function externalToInternalDmmf(document2) {
       return {
@@ -57165,6 +58855,11 @@ Env vars from ${import_chalk6.default.underline(relativeEnvPath)} overwrite the 
       return externalToInternalDmmf(dmmf);
     }
     __name(getPrismaClientDMMF, "getPrismaClientDMMF");
+    var import_chalk11 = __toESM(require_source());
+    var import_indent_string4 = __toESM(require_indent_string());
+    var import_strip_ansi3 = __toESM(require_strip_ansi());
+    var import_chalk9 = __toESM(require_source());
+    var import_indent_string3 = __toESM(require_indent_string());
     var clientOnlyActions = {
       findUniqueOrThrow: {
         wrappedAction: DMMF.ModelAction.findUnique
@@ -57184,588 +58879,15 @@ Env vars from ${import_chalk6.default.underline(relativeEnvPath)} overwrite the 
       return Object.prototype.hasOwnProperty.call(clientOnlyActions, action);
     }
     __name(isClientOnlyAction, "isClientOnlyAction");
-    var allClientModelActions = Object.keys(DMMF.ModelAction).concat(Object.keys(clientOnlyActions));
-    function createPrismaPromise(callback) {
-      let promise;
-      const _callback = /* @__PURE__ */ __name((txId, lock) => {
-        try {
-          return promise != null ? promise : promise = callback(txId, lock);
-        } catch (error2) {
-          return Promise.reject(error2);
-        }
-      }, "_callback");
-      return {
-        then(onFulfilled, onRejected, txId) {
-          return _callback(txId, void 0).then(onFulfilled, onRejected, txId);
-        },
-        catch(onRejected, txId) {
-          return _callback(txId, void 0).catch(onRejected, txId);
-        },
-        finally(onFinally, txId) {
-          return _callback(txId, void 0).finally(onFinally, txId);
-        },
-        requestTransaction(txId, lock) {
-          const promise2 = _callback(txId, lock);
-          if (promise2.requestTransaction) {
-            return promise2.requestTransaction(txId, lock);
-          }
-          return promise2;
-        },
-        [Symbol.toStringTag]: "PrismaPromise"
-      };
-    }
-    __name(createPrismaPromise, "createPrismaPromise");
-    function getCallSite(errorFormat) {
-      if (errorFormat === "minimal") {
-        return void 0;
-      }
-      return new Error().stack;
-    }
-    __name(getCallSite, "getCallSite");
-    var aggregateMap = {
-      _avg: true,
-      _count: true,
-      _sum: true,
-      _min: true,
-      _max: true
-    };
-    function desugarUserArgs(userArgs) {
-      const _userArgs = desugarCountInUserArgs(userArgs);
-      const userArgsEntries = Object.entries(_userArgs);
-      return userArgsEntries.reduce((aggregateArgs, [key, value]) => {
-        if (aggregateMap[key] !== void 0) {
-          aggregateArgs["select"][key] = { select: value };
-        } else {
-          aggregateArgs[key] = value;
-        }
-        return aggregateArgs;
-      }, { select: {} });
-    }
-    __name(desugarUserArgs, "desugarUserArgs");
-    function desugarCountInUserArgs(userArgs) {
-      if (typeof userArgs["_count"] === "boolean") {
-        return { ...userArgs, _count: { _all: userArgs["_count"] } };
-      }
-      return userArgs;
-    }
-    __name(desugarCountInUserArgs, "desugarCountInUserArgs");
-    function createUnpacker(userArgs) {
-      return (data) => {
-        if (typeof userArgs["_count"] === "boolean") {
-          data["_count"] = data["_count"]["_all"];
-        }
-        return data;
-      };
-    }
-    __name(createUnpacker, "createUnpacker");
-    function aggregate(client, userArgs, modelAction) {
-      const aggregateArgs = desugarUserArgs(userArgs != null ? userArgs : {});
-      const aggregateUnpacker = createUnpacker(userArgs != null ? userArgs : {});
-      return modelAction({
-        action: "aggregate",
-        unpacker: aggregateUnpacker
-      })(aggregateArgs);
-    }
-    __name(aggregate, "aggregate");
-    function count(client, userArgs, modelAction) {
-      const { select, ..._userArgs } = userArgs != null ? userArgs : {};
-      if (typeof select === "object") {
-        return aggregate(client, { ..._userArgs, _count: select }, (p) => modelAction({ ...p, action: "count", unpacker: (data) => {
-          var _a32;
-          return (_a32 = p.unpacker) == null ? void 0 : _a32.call(p, data)["_count"];
-        } }));
-      } else {
-        return aggregate(client, { ..._userArgs, _count: { _all: true } }, (p) => modelAction({ ...p, action: "count", unpacker: (data) => {
-          var _a32;
-          return (_a32 = p.unpacker) == null ? void 0 : _a32.call(p, data)["_count"]["_all"];
-        } }));
-      }
-    }
-    __name(count, "count");
-    function desugarUserArgs2(userArgs) {
-      const _userArgs = desugarUserArgs(userArgs);
-      if (Array.isArray(userArgs["by"])) {
-        for (const key of userArgs["by"]) {
-          if (typeof key === "string") {
-            _userArgs["select"][key] = true;
-          }
-        }
-      }
-      return _userArgs;
-    }
-    __name(desugarUserArgs2, "desugarUserArgs");
-    function createUnpacker2(userArgs) {
-      return (data) => {
-        if (typeof userArgs["_count"] === "boolean") {
-          data.forEach((row) => {
-            row["_count"] = row["_count"]["_all"];
-          });
-        }
-        return data;
-      };
-    }
-    __name(createUnpacker2, "createUnpacker");
-    function groupBy(client, userArgs, modelAction) {
-      const groupByArgs = desugarUserArgs2(userArgs != null ? userArgs : {});
-      const groupByUnpacker = createUnpacker2(userArgs != null ? userArgs : {});
-      return modelAction({
-        action: "groupBy",
-        unpacker: groupByUnpacker
-      })(groupByArgs);
-    }
-    __name(groupBy, "groupBy");
-    function applyAggregates(client, action, modelAction) {
-      if (action === "aggregate")
-        return (userArgs) => aggregate(client, userArgs, modelAction);
-      if (action === "count")
-        return (userArgs) => count(client, userArgs, modelAction);
-      if (action === "groupBy")
-        return (userArgs) => groupBy(client, userArgs, modelAction);
-      return void 0;
-    }
-    __name(applyAggregates, "applyAggregates");
-    var import_chalk11 = __toESM(require_source());
-    var import_indent_string3 = __toESM(require_indent_string());
-    var import_strip_ansi3 = __toESM(require_strip_ansi());
-    function isSpecificValue(val) {
-      return val instanceof Buffer || val instanceof Date || val instanceof RegExp ? true : false;
-    }
-    __name(isSpecificValue, "isSpecificValue");
-    function cloneSpecificValue(val) {
-      if (val instanceof Buffer) {
-        const x = Buffer.alloc ? Buffer.alloc(val.length) : new Buffer(val.length);
-        val.copy(x);
-        return x;
-      } else if (val instanceof Date) {
-        return new Date(val.getTime());
-      } else if (val instanceof RegExp) {
-        return new RegExp(val);
-      } else {
-        throw new Error("Unexpected situation");
-      }
-    }
-    __name(cloneSpecificValue, "cloneSpecificValue");
-    function deepCloneArray(arr) {
-      const clone2 = [];
-      arr.forEach(function(item, index) {
-        if (typeof item === "object" && item !== null) {
-          if (Array.isArray(item)) {
-            clone2[index] = deepCloneArray(item);
-          } else if (isSpecificValue(item)) {
-            clone2[index] = cloneSpecificValue(item);
-          } else {
-            clone2[index] = deepExtend({}, item);
-          }
-        } else {
-          clone2[index] = item;
-        }
-      });
-      return clone2;
-    }
-    __name(deepCloneArray, "deepCloneArray");
-    function safeGetProperty(object, property) {
-      return property === "__proto__" ? void 0 : object[property];
-    }
-    __name(safeGetProperty, "safeGetProperty");
-    var deepExtend = /* @__PURE__ */ __name(function(target, ...args) {
-      if (!target || typeof target !== "object") {
-        return false;
-      }
-      if (args.length === 0) {
-        return target;
-      }
-      let val, src;
-      for (const obj of args) {
-        if (typeof obj !== "object" || obj === null || Array.isArray(obj)) {
-          continue;
-        }
-        for (const key of Object.keys(obj)) {
-          src = safeGetProperty(target, key);
-          val = safeGetProperty(obj, key);
-          if (val === target) {
-            continue;
-          } else if (typeof val !== "object" || val === null) {
-            target[key] = val;
-            continue;
-          } else if (Array.isArray(val)) {
-            target[key] = deepCloneArray(val);
-            continue;
-          } else if (isSpecificValue(val)) {
-            target[key] = cloneSpecificValue(val);
-            continue;
-          } else if (typeof src !== "object" || src === null || Array.isArray(src)) {
-            target[key] = deepExtend({}, val);
-            continue;
-          } else {
-            target[key] = deepExtend(src, val);
-            continue;
-          }
-        }
-      }
-      return target;
-    }, "deepExtend");
-    var keys = /* @__PURE__ */ __name((ks) => Array.isArray(ks) ? ks : ks.split("."), "keys");
-    var deepGet = /* @__PURE__ */ __name((o, kp) => keys(kp).reduce((o2, k) => o2 && o2[k], o), "deepGet");
-    var deepSet = /* @__PURE__ */ __name((o, kp, v) => keys(kp).reduceRight((v2, k, i, ks) => Object.assign({}, deepGet(o, ks.slice(0, i)), { [k]: v2 }), v), "deepSet");
-    function filterObject(obj, cb) {
-      if (!obj || typeof obj !== "object" || typeof obj.hasOwnProperty !== "function") {
-        return obj;
-      }
-      const newObj = {};
-      for (const key in obj) {
-        const value = obj[key];
-        if (Object.hasOwnProperty.call(obj, key) && cb(key, value)) {
-          newObj[key] = value;
-        }
-      }
-      return newObj;
-    }
-    __name(filterObject, "filterObject");
-    function flatten(array) {
-      return Array.prototype.concat.apply([], array);
-    }
-    __name(flatten, "flatten");
-    function flatMap(array, callbackFn, thisArg) {
-      return flatten(array.map(callbackFn, thisArg));
-    }
-    __name(flatMap, "flatMap");
-    var notReallyObjects = {
-      "[object Date]": true,
-      "[object Uint8Array]": true,
-      "[object Decimal]": true
-    };
-    function isObject2(value) {
-      if (!value) {
-        return false;
-      }
-      return typeof value === "object" && !notReallyObjects[Object.prototype.toString.call(value)];
-    }
-    __name(isObject2, "isObject");
-    function omit2(object, path7) {
-      const result = {};
-      const paths = Array.isArray(path7) ? path7 : [path7];
-      for (const key in object) {
-        if (Object.hasOwnProperty.call(object, key) && !paths.includes(key)) {
-          result[key] = object[key];
-        }
-      }
-      return result;
-    }
-    __name(omit2, "omit");
+    var allClientModelActions = Object.keys(DMMF.ModelAction).concat(
+      Object.keys(clientOnlyActions)
+    );
+    var import_fs8 = __toESM(require("fs"));
     var import_chalk8 = __toESM(require_source());
-    var import_strip_ansi2 = __toESM(require_strip_ansi());
-    var isRegexp = require_is_regexp();
-    var isObj = require_is_obj();
-    var getOwnEnumPropSymbols = require_lib().default;
-    var stringifyObject = /* @__PURE__ */ __name((input, options, pad) => {
-      const seen = [];
-      return (/* @__PURE__ */ __name(function stringifyObject2(input2, options2 = {}, pad2 = "", path7 = []) {
-        options2.indent = options2.indent || "	";
-        let tokens;
-        if (options2.inlineCharacterLimit === void 0) {
-          tokens = {
-            newLine: "\n",
-            newLineOrSpace: "\n",
-            pad: pad2,
-            indent: pad2 + options2.indent
-          };
-        } else {
-          tokens = {
-            newLine: "@@__STRINGIFY_OBJECT_NEW_LINE__@@",
-            newLineOrSpace: "@@__STRINGIFY_OBJECT_NEW_LINE_OR_SPACE__@@",
-            pad: "@@__STRINGIFY_OBJECT_PAD__@@",
-            indent: "@@__STRINGIFY_OBJECT_INDENT__@@"
-          };
-        }
-        const expandWhiteSpace = /* @__PURE__ */ __name((string) => {
-          if (options2.inlineCharacterLimit === void 0) {
-            return string;
-          }
-          const oneLined = string.replace(new RegExp(tokens.newLine, "g"), "").replace(new RegExp(tokens.newLineOrSpace, "g"), " ").replace(new RegExp(tokens.pad + "|" + tokens.indent, "g"), "");
-          if (oneLined.length <= options2.inlineCharacterLimit) {
-            return oneLined;
-          }
-          return string.replace(new RegExp(tokens.newLine + "|" + tokens.newLineOrSpace, "g"), "\n").replace(new RegExp(tokens.pad, "g"), pad2).replace(new RegExp(tokens.indent, "g"), pad2 + options2.indent);
-        }, "expandWhiteSpace");
-        if (seen.indexOf(input2) !== -1) {
-          return '"[Circular]"';
-        }
-        if (Buffer.isBuffer(input2)) {
-          return `Buffer(${Buffer.length})`;
-        }
-        if (input2 === null || input2 === void 0 || typeof input2 === "number" || typeof input2 === "boolean" || typeof input2 === "function" || typeof input2 === "symbol" || input2 instanceof ObjectEnumValue || isRegexp(input2)) {
-          return String(input2);
-        }
-        if (input2 instanceof Date) {
-          return `new Date('${input2.toISOString()}')`;
-        }
-        if (Array.isArray(input2)) {
-          if (input2.length === 0) {
-            return "[]";
-          }
-          seen.push(input2);
-          const ret = "[" + tokens.newLine + input2.map((el, i) => {
-            const eol = input2.length - 1 === i ? tokens.newLine : "," + tokens.newLineOrSpace;
-            let value = stringifyObject2(el, options2, pad2 + options2.indent, [...path7, i]);
-            if (options2.transformValue) {
-              value = options2.transformValue(input2, i, value);
-            }
-            return tokens.indent + value + eol;
-          }).join("") + tokens.pad + "]";
-          seen.pop();
-          return expandWhiteSpace(ret);
-        }
-        if (isObj(input2)) {
-          let objKeys = Object.keys(input2).concat(getOwnEnumPropSymbols(input2));
-          if (options2.filter) {
-            objKeys = objKeys.filter((el) => options2.filter(input2, el));
-          }
-          if (objKeys.length === 0) {
-            return "{}";
-          }
-          seen.push(input2);
-          const ret = "{" + tokens.newLine + objKeys.map((el, i) => {
-            const eol = objKeys.length - 1 === i ? tokens.newLine : "," + tokens.newLineOrSpace;
-            const isSymbol = typeof el === "symbol";
-            const isClassic = !isSymbol && /^[a-z$_][a-z$_0-9]*$/i.test(el);
-            const key = isSymbol || isClassic ? el : stringifyObject2(el, options2, void 0, [...path7, el]);
-            let value = stringifyObject2(input2[el], options2, pad2 + options2.indent, [...path7, el]);
-            if (options2.transformValue) {
-              value = options2.transformValue(input2, el, value);
-            }
-            let line = tokens.indent + String(key) + ": " + value + eol;
-            if (options2.transformLine) {
-              line = options2.transformLine({
-                obj: input2,
-                indent: tokens.indent,
-                key,
-                stringifiedValue: value,
-                value: input2[el],
-                eol,
-                originalLine: line,
-                path: path7.concat(key)
-              });
-            }
-            return line;
-          }).join("") + tokens.pad + "}";
-          seen.pop();
-          return expandWhiteSpace(ret);
-        }
-        input2 = String(input2).replace(/[\r\n]/g, (x) => x === "\n" ? "\\n" : "\\r");
-        if (options2.singleQuotes === false) {
-          input2 = input2.replace(/"/g, '\\"');
-          return `"${input2}"`;
-        }
-        input2 = input2.replace(/\\?'/g, "\\'");
-        return `'${input2}'`;
-      }, "stringifyObject"))(input, options, pad);
-    }, "stringifyObject");
-    var stringifyObject_default = stringifyObject;
-    var DIM_TOKEN = "@@__DIM_POINTER__@@";
-    function printJsonWithErrors({ ast, keyPaths, valuePaths, missingItems }) {
-      let obj = ast;
-      for (const { path: path7, type } of missingItems) {
-        obj = deepSet(obj, path7, type);
-      }
-      return stringifyObject_default(obj, {
-        indent: "  ",
-        transformLine: ({ indent: indent4, key, value, stringifiedValue, eol, path: path7 }) => {
-          const dottedPath = path7.join(".");
-          const keyError = keyPaths.includes(dottedPath);
-          const valueError = valuePaths.includes(dottedPath);
-          const missingItem = missingItems.find((item) => item.path === dottedPath);
-          let valueStr = stringifiedValue;
-          if (missingItem) {
-            if (typeof value === "string") {
-              valueStr = valueStr.slice(1, valueStr.length - 1);
-            }
-            const isRequiredStr = missingItem.isRequired ? "" : "?";
-            const prefix = missingItem.isRequired ? "+" : "?";
-            const color = missingItem.isRequired ? import_chalk8.default.greenBright : import_chalk8.default.green;
-            let output = color(prefixLines(key + isRequiredStr + ": " + valueStr + eol, indent4, prefix));
-            if (!missingItem.isRequired) {
-              output = import_chalk8.default.dim(output);
-            }
-            return output;
-          } else {
-            const isOnMissingItemPath = missingItems.some((item) => dottedPath.startsWith(item.path));
-            const isOptional = key[key.length - 2] === "?";
-            if (isOptional) {
-              key = key.slice(1, key.length - 1);
-            }
-            if (isOptional && typeof value === "object" && value !== null) {
-              valueStr = valueStr.split("\n").map((line, index, arr) => index === arr.length - 1 ? line + DIM_TOKEN : line).join("\n");
-            }
-            if (isOnMissingItemPath && typeof value === "string") {
-              valueStr = valueStr.slice(1, valueStr.length - 1);
-              if (!isOptional) {
-                valueStr = import_chalk8.default.bold(valueStr);
-              }
-            }
-            if ((typeof value !== "object" || value === null) && !valueError && !isOnMissingItemPath) {
-              valueStr = import_chalk8.default.dim(valueStr);
-            }
-            const keyStr = keyError ? import_chalk8.default.redBright(key) : key;
-            valueStr = valueError ? import_chalk8.default.redBright(valueStr) : valueStr;
-            let output = indent4 + keyStr + ": " + valueStr + (isOnMissingItemPath ? eol : import_chalk8.default.dim(eol));
-            if (keyError || valueError) {
-              const lines = output.split("\n");
-              const keyLength = String(key).length;
-              const keyScribbles = keyError ? import_chalk8.default.redBright("~".repeat(keyLength)) : " ".repeat(keyLength);
-              const valueLength = valueError ? getValueLength(indent4, key, value, stringifiedValue) : 0;
-              const hideValueScribbles = valueError && isRenderedAsObject(value);
-              const valueScribbles = valueError ? "  " + import_chalk8.default.redBright("~".repeat(valueLength)) : "";
-              if (keyScribbles && keyScribbles.length > 0 && !hideValueScribbles) {
-                lines.splice(1, 0, indent4 + keyScribbles + valueScribbles);
-              }
-              if (keyScribbles && keyScribbles.length > 0 && hideValueScribbles) {
-                lines.splice(lines.length - 1, 0, indent4.slice(0, indent4.length - 2) + valueScribbles);
-              }
-              output = lines.join("\n");
-            }
-            return output;
-          }
-        }
-      });
-    }
-    __name(printJsonWithErrors, "printJsonWithErrors");
-    function getValueLength(indent4, key, value, stringifiedValue) {
-      if (value === null) {
-        return 4;
-      }
-      if (typeof value === "string") {
-        return value.length + 2;
-      }
-      if (isRenderedAsObject(value)) {
-        return Math.abs(getLongestLine(`${key}: ${(0, import_strip_ansi2.default)(stringifiedValue)}`) - indent4.length);
-      }
-      return String(value).length;
-    }
-    __name(getValueLength, "getValueLength");
-    function isRenderedAsObject(value) {
-      return typeof value === "object" && value !== null && !(value instanceof ObjectEnumValue);
-    }
-    __name(isRenderedAsObject, "isRenderedAsObject");
-    function getLongestLine(str) {
-      return str.split("\n").reduce((max2, curr) => curr.length > max2 ? curr.length : max2, 0);
-    }
-    __name(getLongestLine, "getLongestLine");
-    function prefixLines(str, indent4, prefix) {
-      return str.split("\n").map((line, index, arr) => index === 0 ? prefix + indent4.slice(1) + line : index < arr.length - 1 ? prefix + line.slice(1) : line).map((line) => {
-        return (0, import_strip_ansi2.default)(line).includes(DIM_TOKEN) ? import_chalk8.default.dim(line.replace(DIM_TOKEN, "")) : line.includes("?") ? import_chalk8.default.dim(line) : line;
-      }).join("\n");
-    }
-    __name(prefixLines, "prefixLines");
-    var import_chalk10 = __toESM(require_source());
-    var UNKNOWN_FUNCTION = "<unknown>";
-    function parse(stackString) {
-      var lines = stackString.split("\n");
-      return lines.reduce(function(stack, line) {
-        var parseResult = parseChrome(line) || parseWinjs(line) || parseGecko(line) || parseNode(line) || parseJSC(line);
-        if (parseResult) {
-          stack.push(parseResult);
-        }
-        return stack;
-      }, []);
-    }
-    __name(parse, "parse");
-    var chromeRe = /^\s*at (.*?) ?\(((?:file|https?|blob|chrome-extension|native|eval|webpack|<anonymous>|\/|[a-z]:\\|\\\\).*?)(?::(\d+))?(?::(\d+))?\)?\s*$/i;
-    var chromeEvalRe = /\((\S*)(?::(\d+))(?::(\d+))\)/;
-    function parseChrome(line) {
-      var parts = chromeRe.exec(line);
-      if (!parts) {
-        return null;
-      }
-      var isNative = parts[2] && parts[2].indexOf("native") === 0;
-      var isEval = parts[2] && parts[2].indexOf("eval") === 0;
-      var submatch = chromeEvalRe.exec(parts[2]);
-      if (isEval && submatch != null) {
-        parts[2] = submatch[1];
-        parts[3] = submatch[2];
-        parts[4] = submatch[3];
-      }
-      return {
-        file: !isNative ? parts[2] : null,
-        methodName: parts[1] || UNKNOWN_FUNCTION,
-        arguments: isNative ? [parts[2]] : [],
-        lineNumber: parts[3] ? +parts[3] : null,
-        column: parts[4] ? +parts[4] : null
-      };
-    }
-    __name(parseChrome, "parseChrome");
-    var winjsRe = /^\s*at (?:((?:\[object object\])?.+) )?\(?((?:file|ms-appx|https?|webpack|blob):.*?):(\d+)(?::(\d+))?\)?\s*$/i;
-    function parseWinjs(line) {
-      var parts = winjsRe.exec(line);
-      if (!parts) {
-        return null;
-      }
-      return {
-        file: parts[2],
-        methodName: parts[1] || UNKNOWN_FUNCTION,
-        arguments: [],
-        lineNumber: +parts[3],
-        column: parts[4] ? +parts[4] : null
-      };
-    }
-    __name(parseWinjs, "parseWinjs");
-    var geckoRe = /^\s*(.*?)(?:\((.*?)\))?(?:^|@)((?:file|https?|blob|chrome|webpack|resource|\[native).*?|[^@]*bundle)(?::(\d+))?(?::(\d+))?\s*$/i;
-    var geckoEvalRe = /(\S+) line (\d+)(?: > eval line \d+)* > eval/i;
-    function parseGecko(line) {
-      var parts = geckoRe.exec(line);
-      if (!parts) {
-        return null;
-      }
-      var isEval = parts[3] && parts[3].indexOf(" > eval") > -1;
-      var submatch = geckoEvalRe.exec(parts[3]);
-      if (isEval && submatch != null) {
-        parts[3] = submatch[1];
-        parts[4] = submatch[2];
-        parts[5] = null;
-      }
-      return {
-        file: parts[3],
-        methodName: parts[1] || UNKNOWN_FUNCTION,
-        arguments: parts[2] ? parts[2].split(",") : [],
-        lineNumber: parts[4] ? +parts[4] : null,
-        column: parts[5] ? +parts[5] : null
-      };
-    }
-    __name(parseGecko, "parseGecko");
-    var javaScriptCoreRe = /^\s*(?:([^@]*)(?:\((.*?)\))?@)?(\S.*?):(\d+)(?::(\d+))?\s*$/i;
-    function parseJSC(line) {
-      var parts = javaScriptCoreRe.exec(line);
-      if (!parts) {
-        return null;
-      }
-      return {
-        file: parts[3],
-        methodName: parts[1] || UNKNOWN_FUNCTION,
-        arguments: [],
-        lineNumber: +parts[4],
-        column: parts[5] ? +parts[5] : null
-      };
-    }
-    __name(parseJSC, "parseJSC");
-    var nodeRe = /^\s*at (?:((?:\[object object\])?[^\\/]+(?: \[as \S+\])?) )?\(?(.*?):(\d+)(?::(\d+))?\)?\s*$/i;
-    function parseNode(line) {
-      var parts = nodeRe.exec(line);
-      if (!parts) {
-        return null;
-      }
-      return {
-        file: parts[2],
-        methodName: parts[1] || UNKNOWN_FUNCTION,
-        arguments: [],
-        lineNumber: +parts[3],
-        column: parts[4] ? +parts[4] : null
-      };
-    }
-    __name(parseNode, "parseNode");
-    var import_chalk9 = __toESM(require_source());
-    var orange = import_chalk9.default.rgb(246, 145, 95);
-    var darkBrightBlue = import_chalk9.default.rgb(107, 139, 140);
-    var blue = import_chalk9.default.cyan;
-    var brightBlue = import_chalk9.default.rgb(127, 155, 155);
+    var orange = import_chalk8.default.rgb(246, 145, 95);
+    var darkBrightBlue = import_chalk8.default.rgb(107, 139, 140);
+    var blue = import_chalk8.default.cyan;
+    var brightBlue = import_chalk8.default.rgb(127, 155, 155);
     var identity = /* @__PURE__ */ __name((str) => str, "identity");
     var theme = {
       keyword: blue,
@@ -57775,10 +58897,10 @@ Env vars from ${import_chalk6.default.underline(relativeEnvPath)} overwrite the 
       directive: blue,
       function: blue,
       variable: brightBlue,
-      string: import_chalk9.default.greenBright,
+      string: import_chalk8.default.greenBright,
       boolean: orange,
-      number: import_chalk9.default.cyan,
-      comment: import_chalk9.default.grey
+      number: import_chalk8.default.cyan,
+      comment: import_chalk8.default.grey
     };
     var _self = {};
     var uniqueId = 0;
@@ -58145,15 +59267,139 @@ Env vars from ${import_chalk6.default.underline(relativeEnvPath)} overwrite the 
       return (0, import_strip_indent2.default)(str);
     }
     __name(dedent2, "dedent");
-    function renderN(n, max2) {
-      const wantedLetters = String(max2).length;
-      const hasLetters = String(n).length;
-      if (hasLetters >= wantedLetters) {
-        return String(n);
+    var SourceFileSlice = class {
+      static read(filePath) {
+        let content;
+        try {
+          content = import_fs8.default.readFileSync(filePath, "utf-8");
+        } catch (e) {
+          return null;
+        }
+        return SourceFileSlice.fromContent(content);
       }
-      return " ".repeat(wantedLetters - hasLetters) + n;
+      static fromContent(content) {
+        const lines = content.split(/\r?\n/);
+        return new SourceFileSlice(1, lines);
+      }
+      constructor(firstLine, lines) {
+        this.firstLineNumber = firstLine;
+        this.lines = lines;
+      }
+      get lastLineNumber() {
+        return this.firstLineNumber + this.lines.length - 1;
+      }
+      mapLineAt(lineNumber, mapFn) {
+        if (lineNumber < this.firstLineNumber || lineNumber > this.lines.length + this.firstLineNumber) {
+          return this;
+        }
+        const idx = lineNumber - this.firstLineNumber;
+        const newLines = [...this.lines];
+        newLines[idx] = mapFn(newLines[idx]);
+        return new SourceFileSlice(this.firstLineNumber, newLines);
+      }
+      mapLines(mapFn) {
+        return new SourceFileSlice(
+          this.firstLineNumber,
+          this.lines.map((line, i) => mapFn(line, this.firstLineNumber + i))
+        );
+      }
+      lineAt(lineNumber) {
+        return this.lines[lineNumber - this.firstLineNumber];
+      }
+      prependSymbolAt(atLine, str) {
+        return this.mapLines((line, lineNumber) => {
+          if (lineNumber === atLine) {
+            return `${str} ${line}`;
+          }
+          return `  ${line}`;
+        });
+      }
+      slice(fromLine, toLine) {
+        const slicedLines = this.lines.slice(fromLine - 1, toLine).join("\n");
+        return new SourceFileSlice(fromLine, dedent2(slicedLines).split("\n"));
+      }
+      highlight() {
+        const highlighted = highlightTS(this.toString());
+        return new SourceFileSlice(this.firstLineNumber, highlighted.split("\n"));
+      }
+      toString() {
+        return this.lines.join("\n");
+      }
+    };
+    __name(SourceFileSlice, "SourceFileSlice");
+    var colorsEnabled = {
+      red: (str) => import_chalk9.default.red(str),
+      gray: (str) => import_chalk9.default.gray(str),
+      dim: (str) => import_chalk9.default.dim(str),
+      bold: (str) => import_chalk9.default.bold(str),
+      underline: (str) => import_chalk9.default.underline(str),
+      highlightSource: (source) => source.highlight()
+    };
+    var colorsDisabled = {
+      red: (str) => str,
+      gray: (str) => str,
+      dim: (str) => str,
+      bold: (str) => str,
+      underline: (str) => str,
+      highlightSource: (source) => source
+    };
+    function getTemplateParameters({ callsite, message, originalMethod, isPanic, callArguments }, colors) {
+      var _a32;
+      const templateParameters = {
+        functionName: `prisma.${originalMethod}()`,
+        message,
+        isPanic: isPanic != null ? isPanic : false,
+        callArguments
+      };
+      if (!callsite || typeof window !== "undefined") {
+        return templateParameters;
+      }
+      if (process.env.NODE_ENV === "production") {
+        return templateParameters;
+      }
+      const callLocation = callsite.getLocation();
+      if (!callLocation || !callLocation.lineNumber || !callLocation.columnNumber) {
+        return templateParameters;
+      }
+      const contextFirstLine = Math.max(1, callLocation.lineNumber - 3);
+      let source = (_a32 = SourceFileSlice.read(callLocation.fileName)) == null ? void 0 : _a32.slice(contextFirstLine, callLocation.lineNumber);
+      const invocationLine = source == null ? void 0 : source.lineAt(callLocation.lineNumber);
+      if (source && invocationLine) {
+        const invocationLineIndent = getIndent(invocationLine);
+        const invocationCallCode = findPrismaActionCall(invocationLine);
+        if (!invocationCallCode) {
+          return templateParameters;
+        }
+        templateParameters.functionName = `${invocationCallCode.code})`;
+        templateParameters.location = callLocation;
+        if (!isPanic) {
+          source = source.mapLineAt(callLocation.lineNumber, (line) => line.slice(0, invocationCallCode.openingBraceIndex));
+        }
+        source = colors.highlightSource(source);
+        const numberColumnWidth = String(source.lastLineNumber).length;
+        templateParameters.contextLines = source.mapLines((line, lineNumber) => colors.gray(String(lineNumber).padStart(numberColumnWidth)) + " " + line).mapLines((line) => colors.dim(line)).prependSymbolAt(callLocation.lineNumber, colors.bold(colors.red("\u2192")));
+        if (callArguments) {
+          let indentValue = invocationLineIndent + numberColumnWidth + 1;
+          indentValue += 2;
+          templateParameters.callArguments = (0, import_indent_string3.default)(callArguments, indentValue).slice(indentValue);
+        }
+      }
+      return templateParameters;
     }
-    __name(renderN, "renderN");
+    __name(getTemplateParameters, "getTemplateParameters");
+    function findPrismaActionCall(str) {
+      const allActions = allClientModelActions.join("|");
+      const regexp = new RegExp(String.raw`\S+(${allActions})\(`);
+      const match = regexp.exec(str);
+      if (match) {
+        return {
+          code: match[0],
+          openingBraceIndex: match.index + match[0].length
+        };
+      }
+      return null;
+    }
+    __name(findPrismaActionCall, "findPrismaActionCall");
     function getIndent(line) {
       let spaceCount = 0;
       for (let i = 0; i < line.length; i++) {
@@ -58165,80 +59411,383 @@ Env vars from ${import_chalk6.default.underline(relativeEnvPath)} overwrite the 
       return spaceCount;
     }
     __name(getIndent, "getIndent");
-    function parseStack({
-      callsite,
-      renderPathRelative,
-      originalMethod,
-      onUs,
-      showColors,
-      isValidationError
-    }) {
-      const params = {
-        callsiteStr: ":",
-        prevLines: "\n",
-        functionName: `prisma.${originalMethod}()`,
-        afterLines: "",
-        indentValue: 0,
-        lastErrorHeight: 20
-      };
-      if (!callsite || typeof window !== "undefined") {
-        return params;
+    function stringifyErrorMessage({ functionName, location, message, isPanic, contextLines, callArguments }, colors) {
+      const lines = [""];
+      const introSuffix = location ? " in" : ":";
+      if (isPanic) {
+        lines.push(colors.red(`Oops, an unknown error occurred! This is ${colors.bold("on us")}, you did nothing wrong.`));
+        lines.push(colors.red(`It occurred in the ${colors.bold(`\`${functionName}\``)} invocation${introSuffix}`));
+      } else {
+        lines.push(colors.red(`Invalid ${colors.bold(`\`${functionName}\``)} invocation${introSuffix}`));
       }
-      const stack = parse(callsite);
-      const trace2 = stack.find((t) => {
-        return t.file && t.file !== "<anonymous>" && !t.file.includes("@prisma") && !t.file.includes("getPrismaClient") && !t.file.startsWith("internal/") && !t.methodName.includes("new ") && !t.methodName.includes("getCallSite") && !t.methodName.includes("Proxy.") && t.methodName.split(".").length < 4;
-      });
-      if (process.env.NODE_ENV !== "production" && trace2 && trace2.file && trace2.lineNumber && trace2.column) {
-        const lineNumber = trace2.lineNumber;
-        const printedFileName = renderPathRelative ? require("path").relative(process.cwd(), trace2.file) : trace2.file;
-        const start = Math.max(0, lineNumber - 4);
-        const fs10 = require("fs");
-        const exists4 = fs10.existsSync(trace2.file);
-        if (exists4) {
-          const file = fs10.readFileSync(trace2.file, "utf-8");
-          const slicedFile = file.split("\n").slice(start, lineNumber).map((line) => {
-            if (line.endsWith("\r")) {
-              return line.slice(0, -1);
-            }
-            return line;
-          }).join("\n");
-          const lines = dedent2(slicedFile).split("\n");
-          const theLine = lines[lines.length - 1];
-          if (!theLine || theLine.trim() === "") {
-            params.callsiteStr = ":";
+      if (location) {
+        lines.push(colors.underline(stringifyLocationInFile(location)));
+      }
+      if (contextLines) {
+        lines.push("");
+        const contextLineParts = [contextLines.toString()];
+        if (callArguments) {
+          contextLineParts.push(callArguments);
+          contextLineParts.push(colors.dim(")"));
+        }
+        lines.push(contextLineParts.join(""));
+        if (callArguments) {
+          lines.push("");
+        }
+      } else {
+        lines.push("");
+        if (callArguments) {
+          lines.push(callArguments);
+        }
+        lines.push("");
+      }
+      lines.push(message);
+      return lines.join("\n");
+    }
+    __name(stringifyErrorMessage, "stringifyErrorMessage");
+    function stringifyLocationInFile(location) {
+      const parts = [location.fileName];
+      if (location.lineNumber) {
+        parts.push(String(location.lineNumber));
+      }
+      if (location.columnNumber) {
+        parts.push(String(location.columnNumber));
+      }
+      return parts.join(":");
+    }
+    __name(stringifyLocationInFile, "stringifyLocationInFile");
+    function createErrorMessageWithContext(args) {
+      const colors = args.showColors ? colorsEnabled : colorsDisabled;
+      const templateParameters = getTemplateParameters(args, colors);
+      return stringifyErrorMessage(templateParameters, colors);
+    }
+    __name(createErrorMessageWithContext, "createErrorMessageWithContext");
+    function isSpecificValue(val) {
+      return val instanceof Buffer || val instanceof Date || val instanceof RegExp ? true : false;
+    }
+    __name(isSpecificValue, "isSpecificValue");
+    function cloneSpecificValue(val) {
+      if (val instanceof Buffer) {
+        const x = Buffer.alloc ? Buffer.alloc(val.length) : new Buffer(val.length);
+        val.copy(x);
+        return x;
+      } else if (val instanceof Date) {
+        return new Date(val.getTime());
+      } else if (val instanceof RegExp) {
+        return new RegExp(val);
+      } else {
+        throw new Error("Unexpected situation");
+      }
+    }
+    __name(cloneSpecificValue, "cloneSpecificValue");
+    function deepCloneArray(arr) {
+      const clone2 = [];
+      arr.forEach(function(item, index) {
+        if (typeof item === "object" && item !== null) {
+          if (Array.isArray(item)) {
+            clone2[index] = deepCloneArray(item);
+          } else if (isSpecificValue(item)) {
+            clone2[index] = cloneSpecificValue(item);
           } else {
-            const prismaClientRegex = /(\S+(create|createMany|updateMany|deleteMany|update|delete|findMany|findUnique|findFirst|findUniqueOrThrow|findFirstOrThrow)\()/;
-            const match = prismaClientRegex.exec(theLine);
-            if (!match) {
-              return params;
-            }
-            params.functionName = `${match[1]})`;
-            params.callsiteStr = ` in
-${import_chalk10.default.underline(`${printedFileName}:${trace2.lineNumber}:${trace2.column}`)}`;
-            const slicePoint = theLine.indexOf("{");
-            const linesToHighlight = lines.map((l, i, all) => !onUs && i === all.length - 1 ? l.slice(0, slicePoint > -1 ? slicePoint : l.length - 1) : l).join("\n");
-            const highlightedLines = showColors ? highlightTS(linesToHighlight).split("\n") : linesToHighlight.split("\n");
-            params.prevLines = "\n" + highlightedLines.map((l, i) => import_chalk10.default.grey(renderN(i + start + 1, lineNumber + start + 1) + " ") + import_chalk10.default.reset() + l).map((l, i, arr) => i === arr.length - 1 ? `${import_chalk10.default.red.bold("\u2192")} ${import_chalk10.default.dim(l)}` : import_chalk10.default.dim("  " + l)).join("\n");
-            if (!match && !isValidationError) {
-              params.prevLines += "\n\n";
-            }
-            params.afterLines = ")";
-            params.indentValue = String(lineNumber + start + 1).length + getIndent(theLine) + 1 + (match ? 2 : 0);
+            clone2[index] = deepExtend({}, item);
+          }
+        } else {
+          clone2[index] = item;
+        }
+      });
+      return clone2;
+    }
+    __name(deepCloneArray, "deepCloneArray");
+    function safeGetProperty(object, property) {
+      return property === "__proto__" ? void 0 : object[property];
+    }
+    __name(safeGetProperty, "safeGetProperty");
+    var deepExtend = /* @__PURE__ */ __name(function(target, ...args) {
+      if (!target || typeof target !== "object") {
+        return false;
+      }
+      if (args.length === 0) {
+        return target;
+      }
+      let val, src;
+      for (const obj of args) {
+        if (typeof obj !== "object" || obj === null || Array.isArray(obj)) {
+          continue;
+        }
+        for (const key of Object.keys(obj)) {
+          src = safeGetProperty(target, key);
+          val = safeGetProperty(obj, key);
+          if (val === target) {
+            continue;
+          } else if (typeof val !== "object" || val === null) {
+            target[key] = val;
+            continue;
+          } else if (Array.isArray(val)) {
+            target[key] = deepCloneArray(val);
+            continue;
+          } else if (isSpecificValue(val)) {
+            target[key] = cloneSpecificValue(val);
+            continue;
+          } else if (typeof src !== "object" || src === null || Array.isArray(src)) {
+            target[key] = deepExtend({}, val);
+            continue;
+          } else {
+            target[key] = deepExtend(src, val);
+            continue;
           }
         }
       }
-      return params;
+      return target;
+    }, "deepExtend");
+    var keys = /* @__PURE__ */ __name((ks) => Array.isArray(ks) ? ks : ks.split("."), "keys");
+    var deepGet = /* @__PURE__ */ __name((o, kp) => keys(kp).reduce((o2, k) => o2 && o2[k], o), "deepGet");
+    var deepSet = /* @__PURE__ */ __name((o, kp, v) => keys(kp).reduceRight((v2, k, i, ks) => Object.assign({}, deepGet(o, ks.slice(0, i)), { [k]: v2 }), v), "deepSet");
+    function filterObject(obj, cb) {
+      if (!obj || typeof obj !== "object" || typeof obj.hasOwnProperty !== "function") {
+        return obj;
+      }
+      const newObj = {};
+      for (const key in obj) {
+        const value = obj[key];
+        if (Object.hasOwnProperty.call(obj, key) && cb(key, value)) {
+          newObj[key] = value;
+        }
+      }
+      return newObj;
     }
-    __name(parseStack, "parseStack");
-    var printStack = /* @__PURE__ */ __name((args) => {
-      const { callsiteStr, prevLines, functionName, afterLines, indentValue, lastErrorHeight } = parseStack(args);
-      const introText = args.onUs ? import_chalk10.default.red(`Oops, an unknown error occured! This is ${import_chalk10.default.bold("on us")}, you did nothing wrong.
-It occured in the ${import_chalk10.default.bold(`\`${functionName}\``)} invocation${callsiteStr}`) : import_chalk10.default.red(`Invalid ${import_chalk10.default.bold(`\`${functionName}\``)} invocation${callsiteStr}`);
-      const stackStr = `
-${introText}
-${prevLines}${import_chalk10.default.reset()}`;
-      return { indent: indentValue, stack: stackStr, afterLines, lastErrorHeight };
-    }, "printStack");
+    __name(filterObject, "filterObject");
+    var notReallyObjects = {
+      "[object Date]": true,
+      "[object Uint8Array]": true,
+      "[object Decimal]": true
+    };
+    function isObject2(value) {
+      if (!value) {
+        return false;
+      }
+      return typeof value === "object" && !notReallyObjects[Object.prototype.toString.call(value)];
+    }
+    __name(isObject2, "isObject");
+    function omit2(object, path7) {
+      const result = {};
+      const paths = Array.isArray(path7) ? path7 : [path7];
+      for (const key in object) {
+        if (Object.hasOwnProperty.call(object, key) && !paths.includes(key)) {
+          result[key] = object[key];
+        }
+      }
+      return result;
+    }
+    __name(omit2, "omit");
+    var import_chalk10 = __toESM(require_source());
+    var import_strip_ansi2 = __toESM(require_strip_ansi());
+    var isRegexp = require_is_regexp();
+    var isObj = require_is_obj();
+    var getOwnEnumPropSymbols = require_lib().default;
+    var stringifyObject = /* @__PURE__ */ __name((input, options, pad) => {
+      const seen = [];
+      return (/* @__PURE__ */ __name(function stringifyObject2(input2, options2 = {}, pad2 = "", path7 = []) {
+        options2.indent = options2.indent || "	";
+        let tokens;
+        if (options2.inlineCharacterLimit === void 0) {
+          tokens = {
+            newLine: "\n",
+            newLineOrSpace: "\n",
+            pad: pad2,
+            indent: pad2 + options2.indent
+          };
+        } else {
+          tokens = {
+            newLine: "@@__STRINGIFY_OBJECT_NEW_LINE__@@",
+            newLineOrSpace: "@@__STRINGIFY_OBJECT_NEW_LINE_OR_SPACE__@@",
+            pad: "@@__STRINGIFY_OBJECT_PAD__@@",
+            indent: "@@__STRINGIFY_OBJECT_INDENT__@@"
+          };
+        }
+        const expandWhiteSpace = /* @__PURE__ */ __name((string) => {
+          if (options2.inlineCharacterLimit === void 0) {
+            return string;
+          }
+          const oneLined = string.replace(new RegExp(tokens.newLine, "g"), "").replace(new RegExp(tokens.newLineOrSpace, "g"), " ").replace(new RegExp(tokens.pad + "|" + tokens.indent, "g"), "");
+          if (oneLined.length <= options2.inlineCharacterLimit) {
+            return oneLined;
+          }
+          return string.replace(new RegExp(tokens.newLine + "|" + tokens.newLineOrSpace, "g"), "\n").replace(new RegExp(tokens.pad, "g"), pad2).replace(new RegExp(tokens.indent, "g"), pad2 + options2.indent);
+        }, "expandWhiteSpace");
+        if (seen.indexOf(input2) !== -1) {
+          return '"[Circular]"';
+        }
+        if (Buffer.isBuffer(input2)) {
+          return `Buffer(${Buffer.length})`;
+        }
+        if (input2 === null || input2 === void 0 || typeof input2 === "number" || typeof input2 === "boolean" || typeof input2 === "function" || typeof input2 === "symbol" || input2 instanceof ObjectEnumValue || isRegexp(input2)) {
+          return String(input2);
+        }
+        if (input2 instanceof Date) {
+          return `new Date('${input2.toISOString()}')`;
+        }
+        if (input2 instanceof FieldRefImpl) {
+          return `prisma.${lowerCase(input2.modelName)}.fields.${input2.name}`;
+        }
+        if (Array.isArray(input2)) {
+          if (input2.length === 0) {
+            return "[]";
+          }
+          seen.push(input2);
+          const ret = "[" + tokens.newLine + input2.map((el, i) => {
+            const eol = input2.length - 1 === i ? tokens.newLine : "," + tokens.newLineOrSpace;
+            let value = stringifyObject2(el, options2, pad2 + options2.indent, [...path7, i]);
+            if (options2.transformValue) {
+              value = options2.transformValue(input2, i, value);
+            }
+            return tokens.indent + value + eol;
+          }).join("") + tokens.pad + "]";
+          seen.pop();
+          return expandWhiteSpace(ret);
+        }
+        if (isObj(input2)) {
+          let objKeys = Object.keys(input2).concat(getOwnEnumPropSymbols(input2));
+          if (options2.filter) {
+            objKeys = objKeys.filter((el) => options2.filter(input2, el));
+          }
+          if (objKeys.length === 0) {
+            return "{}";
+          }
+          seen.push(input2);
+          const ret = "{" + tokens.newLine + objKeys.map((el, i) => {
+            const eol = objKeys.length - 1 === i ? tokens.newLine : "," + tokens.newLineOrSpace;
+            const isSymbol = typeof el === "symbol";
+            const isClassic = !isSymbol && /^[a-z$_][a-z$_0-9]*$/i.test(el);
+            const key = isSymbol || isClassic ? el : stringifyObject2(el, options2, void 0, [...path7, el]);
+            let value = stringifyObject2(input2[el], options2, pad2 + options2.indent, [...path7, el]);
+            if (options2.transformValue) {
+              value = options2.transformValue(input2, el, value);
+            }
+            let line = tokens.indent + String(key) + ": " + value + eol;
+            if (options2.transformLine) {
+              line = options2.transformLine({
+                obj: input2,
+                indent: tokens.indent,
+                key,
+                stringifiedValue: value,
+                value: input2[el],
+                eol,
+                originalLine: line,
+                path: path7.concat(key)
+              });
+            }
+            return line;
+          }).join("") + tokens.pad + "}";
+          seen.pop();
+          return expandWhiteSpace(ret);
+        }
+        input2 = String(input2).replace(/[\r\n]/g, (x) => x === "\n" ? "\\n" : "\\r");
+        if (options2.singleQuotes === false) {
+          input2 = input2.replace(/"/g, '\\"');
+          return `"${input2}"`;
+        }
+        input2 = input2.replace(/\\?'/g, "\\'");
+        return `'${input2}'`;
+      }, "stringifyObject"))(input, options, pad);
+    }, "stringifyObject");
+    var stringifyObject_default = stringifyObject;
+    var DIM_TOKEN = "@@__DIM_POINTER__@@";
+    function printJsonWithErrors({ ast, keyPaths, valuePaths, missingItems }) {
+      let obj = ast;
+      for (const { path: path7, type } of missingItems) {
+        obj = deepSet(obj, path7, type);
+      }
+      return stringifyObject_default(obj, {
+        indent: "  ",
+        transformLine: ({ indent: indent4, key, value, stringifiedValue, eol, path: path7 }) => {
+          const dottedPath = path7.join(".");
+          const keyError = keyPaths.includes(dottedPath);
+          const valueError = valuePaths.includes(dottedPath);
+          const missingItem = missingItems.find((item) => item.path === dottedPath);
+          let valueStr = stringifiedValue;
+          if (missingItem) {
+            if (typeof value === "string") {
+              valueStr = valueStr.slice(1, valueStr.length - 1);
+            }
+            const isRequiredStr = missingItem.isRequired ? "" : "?";
+            const prefix = missingItem.isRequired ? "+" : "?";
+            const color = missingItem.isRequired ? import_chalk10.default.greenBright : import_chalk10.default.green;
+            let output = color(prefixLines(key + isRequiredStr + ": " + valueStr + eol, indent4, prefix));
+            if (!missingItem.isRequired) {
+              output = import_chalk10.default.dim(output);
+            }
+            return output;
+          } else {
+            const isOnMissingItemPath = missingItems.some((item) => dottedPath.startsWith(item.path));
+            const isOptional = key[key.length - 2] === "?";
+            if (isOptional) {
+              key = key.slice(1, key.length - 1);
+            }
+            if (isOptional && typeof value === "object" && value !== null) {
+              valueStr = valueStr.split("\n").map((line, index, arr) => index === arr.length - 1 ? line + DIM_TOKEN : line).join("\n");
+            }
+            if (isOnMissingItemPath && typeof value === "string") {
+              valueStr = valueStr.slice(1, valueStr.length - 1);
+              if (!isOptional) {
+                valueStr = import_chalk10.default.bold(valueStr);
+              }
+            }
+            if ((typeof value !== "object" || value === null) && !valueError && !isOnMissingItemPath) {
+              valueStr = import_chalk10.default.dim(valueStr);
+            }
+            const keyStr = keyError ? import_chalk10.default.redBright(key) : key;
+            valueStr = valueError ? import_chalk10.default.redBright(valueStr) : valueStr;
+            let output = indent4 + keyStr + ": " + valueStr + (isOnMissingItemPath ? eol : import_chalk10.default.dim(eol));
+            if (keyError || valueError) {
+              const lines = output.split("\n");
+              const keyLength = String(key).length;
+              const keyScribbles = keyError ? import_chalk10.default.redBright("~".repeat(keyLength)) : " ".repeat(keyLength);
+              const valueLength = valueError ? getValueLength(indent4, key, value, stringifiedValue) : 0;
+              const hideValueScribbles = valueError && isRenderedAsObject(value);
+              const valueScribbles = valueError ? "  " + import_chalk10.default.redBright("~".repeat(valueLength)) : "";
+              if (keyScribbles && keyScribbles.length > 0 && !hideValueScribbles) {
+                lines.splice(1, 0, indent4 + keyScribbles + valueScribbles);
+              }
+              if (keyScribbles && keyScribbles.length > 0 && hideValueScribbles) {
+                lines.splice(lines.length - 1, 0, indent4.slice(0, indent4.length - 2) + valueScribbles);
+              }
+              output = lines.join("\n");
+            }
+            return output;
+          }
+        }
+      });
+    }
+    __name(printJsonWithErrors, "printJsonWithErrors");
+    function getValueLength(indent4, key, value, stringifiedValue) {
+      if (value === null) {
+        return 4;
+      }
+      if (typeof value === "string") {
+        return value.length + 2;
+      }
+      if (isRenderedAsObject(value)) {
+        return Math.abs(getLongestLine(`${key}: ${(0, import_strip_ansi2.default)(stringifiedValue)}`) - indent4.length);
+      }
+      return String(value).length;
+    }
+    __name(getValueLength, "getValueLength");
+    function isRenderedAsObject(value) {
+      return typeof value === "object" && value !== null && !(value instanceof ObjectEnumValue);
+    }
+    __name(isRenderedAsObject, "isRenderedAsObject");
+    function getLongestLine(str) {
+      return str.split("\n").reduce((max2, curr) => curr.length > max2 ? curr.length : max2, 0);
+    }
+    __name(getLongestLine, "getLongestLine");
+    function prefixLines(str, indent4, prefix) {
+      return str.split("\n").map(
+        (line, index, arr) => index === 0 ? prefix + indent4.slice(1) + line : index < arr.length - 1 ? prefix + line.slice(1) : line
+      ).map((line) => {
+        return (0, import_strip_ansi2.default)(line).includes(DIM_TOKEN) ? import_chalk10.default.dim(line.replace(DIM_TOKEN, "")) : line.includes("?") ? import_chalk10.default.dim(line) : line;
+      }).join("\n");
+    }
+    __name(prefixLines, "prefixLines");
     var tab = 2;
     var Document = class {
       constructor(type, children) {
@@ -58247,27 +59796,39 @@ ${prevLines}${import_chalk10.default.reset()}`;
         this.printFieldError = /* @__PURE__ */ __name(({ error: error2 }, missingItems, minimal) => {
           if (error2.type === "emptySelect") {
             const additional = minimal ? "" : ` Available options are listed in ${import_chalk11.default.greenBright.dim("green")}.`;
-            return `The ${import_chalk11.default.redBright("`select`")} statement for type ${import_chalk11.default.bold(getOutputTypeName(error2.field.outputType.type))} must not be empty.${additional}`;
+            return `The ${import_chalk11.default.redBright("`select`")} statement for type ${import_chalk11.default.bold(
+              getOutputTypeName(error2.field.outputType.type)
+            )} must not be empty.${additional}`;
           }
           if (error2.type === "emptyInclude") {
             if (missingItems.length === 0) {
-              return `${import_chalk11.default.bold(getOutputTypeName(error2.field.outputType.type))} does not have any relation and therefore can't have an ${import_chalk11.default.redBright("`include`")} statement.`;
+              return `${import_chalk11.default.bold(
+                getOutputTypeName(error2.field.outputType.type)
+              )} does not have any relation and therefore can't have an ${import_chalk11.default.redBright("`include`")} statement.`;
             }
             const additional = minimal ? "" : ` Available options are listed in ${import_chalk11.default.greenBright.dim("green")}.`;
-            return `The ${import_chalk11.default.redBright("`include`")} statement for type ${import_chalk11.default.bold(getOutputTypeName(error2.field.outputType.type))} must not be empty.${additional}`;
+            return `The ${import_chalk11.default.redBright("`include`")} statement for type ${import_chalk11.default.bold(
+              getOutputTypeName(error2.field.outputType.type)
+            )} must not be empty.${additional}`;
           }
           if (error2.type === "noTrueSelect") {
-            return `The ${import_chalk11.default.redBright("`select`")} statement for type ${import_chalk11.default.bold(getOutputTypeName(error2.field.outputType.type))} needs ${import_chalk11.default.bold("at least one truthy value")}.`;
+            return `The ${import_chalk11.default.redBright("`select`")} statement for type ${import_chalk11.default.bold(
+              getOutputTypeName(error2.field.outputType.type)
+            )} needs ${import_chalk11.default.bold("at least one truthy value")}.`;
           }
           if (error2.type === "includeAndSelect") {
-            return `Please ${import_chalk11.default.bold("either")} use ${import_chalk11.default.greenBright("`include`")} or ${import_chalk11.default.greenBright("`select`")}, but ${import_chalk11.default.redBright("not both")} at the same time.`;
+            return `Please ${import_chalk11.default.bold("either")} use ${import_chalk11.default.greenBright("`include`")} or ${import_chalk11.default.greenBright(
+              "`select`"
+            )}, but ${import_chalk11.default.redBright("not both")} at the same time.`;
           }
           if (error2.type === "invalidFieldName") {
             const statement = error2.isInclude ? "include" : "select";
             const wording = error2.isIncludeScalar ? "Invalid scalar" : "Unknown";
             const additional = minimal ? "" : error2.isInclude && missingItems.length === 0 ? `
 This model has no relations, so you can't use ${import_chalk11.default.redBright("include")} with it.` : ` Available options are listed in ${import_chalk11.default.greenBright.dim("green")}.`;
-            let str = `${wording} field ${import_chalk11.default.redBright(`\`${error2.providedName}\``)} for ${import_chalk11.default.bold(statement)} statement on model ${import_chalk11.default.bold.white(error2.modelName)}.${additional}`;
+            let str = `${wording} field ${import_chalk11.default.redBright(`\`${error2.providedName}\``)} for ${import_chalk11.default.bold(
+              statement
+            )} statement on model ${import_chalk11.default.bold.white(error2.modelName)}.${additional}`;
             if (error2.didYouMean) {
               str += ` Did you mean ${import_chalk11.default.greenBright(`\`${error2.didYouMean}\``)}?`;
             }
@@ -58278,17 +59839,27 @@ Note, that ${import_chalk11.default.bold("include")} statements only accept rela
             return str;
           }
           if (error2.type === "invalidFieldType") {
-            const str = `Invalid value ${import_chalk11.default.redBright(`${stringifyObject_default(error2.providedValue)}`)} of type ${import_chalk11.default.redBright(getGraphQLType(error2.providedValue, void 0))} for field ${import_chalk11.default.bold(`${error2.fieldName}`)} on model ${import_chalk11.default.bold.white(error2.modelName)}. Expected either ${import_chalk11.default.greenBright("true")} or ${import_chalk11.default.greenBright("false")}.`;
+            const str = `Invalid value ${import_chalk11.default.redBright(
+              `${stringifyObject_default(error2.providedValue)}`
+            )} of type ${import_chalk11.default.redBright(getGraphQLType(error2.providedValue, void 0))} for field ${import_chalk11.default.bold(
+              `${error2.fieldName}`
+            )} on model ${import_chalk11.default.bold.white(error2.modelName)}. Expected either ${import_chalk11.default.greenBright(
+              "true"
+            )} or ${import_chalk11.default.greenBright("false")}.`;
             return str;
           }
           return void 0;
         }, "printFieldError");
         this.printArgError = /* @__PURE__ */ __name(({ error: error2, path: path7, id }, hasMissingItems, minimal) => {
           if (error2.type === "invalidName") {
-            let str = `Unknown arg ${import_chalk11.default.redBright(`\`${error2.providedName}\``)} in ${import_chalk11.default.bold(path7.join("."))} for type ${import_chalk11.default.bold(error2.outputType ? error2.outputType.name : getInputTypeName(error2.originalType))}.`;
+            let str = `Unknown arg ${import_chalk11.default.redBright(`\`${error2.providedName}\``)} in ${import_chalk11.default.bold(
+              path7.join(".")
+            )} for type ${import_chalk11.default.bold(error2.outputType ? error2.outputType.name : getInputTypeName(error2.originalType))}.`;
             if (error2.didYouMeanField) {
               str += `
-\u2192 Did you forget to wrap it with \`${import_chalk11.default.greenBright("select")}\`? ${import_chalk11.default.dim("e.g. " + import_chalk11.default.greenBright(`{ select: { ${error2.providedName}: ${error2.providedValue} } }`))}`;
+\u2192 Did you forget to wrap it with \`${import_chalk11.default.greenBright("select")}\`? ${import_chalk11.default.dim(
+                "e.g. " + import_chalk11.default.greenBright(`{ select: { ${error2.providedName}: ${error2.providedValue} } }`)
+              )}`;
             } else if (error2.didYouMeanArg) {
               str += ` Did you mean \`${import_chalk11.default.greenBright(error2.didYouMeanArg)}\`?`;
               if (!hasMissingItems && !minimal) {
@@ -58315,20 +59886,31 @@ ${valueStr}
 `;
             }
             if (error2.requiredType.bestFittingType.location === "enumTypes") {
-              return `Argument ${import_chalk11.default.bold(error2.argName)}: Provided value ${import_chalk11.default.redBright(valueStr)}${multilineValue ? "" : " "}of type ${import_chalk11.default.redBright(getGraphQLType(error2.providedValue))} on ${import_chalk11.default.bold(`prisma.${this.children[0].name}`)} is not a ${import_chalk11.default.greenBright(wrapWithList(stringifyGraphQLType(error2.requiredType.bestFittingType.type), error2.requiredType.bestFittingType.isList))}.
+              return `Argument ${import_chalk11.default.bold(error2.argName)}: Provided value ${import_chalk11.default.redBright(valueStr)}${multilineValue ? "" : " "}of type ${import_chalk11.default.redBright(getGraphQLType(error2.providedValue))} on ${import_chalk11.default.bold(
+                `prisma.${this.children[0].name}`
+              )} is not a ${import_chalk11.default.greenBright(
+                wrapWithList(
+                  stringifyGraphQLType(error2.requiredType.bestFittingType.type),
+                  error2.requiredType.bestFittingType.isList
+                )
+              )}.
 \u2192 Possible values: ${error2.requiredType.bestFittingType.type.values.map((v) => import_chalk11.default.greenBright(`${stringifyGraphQLType(error2.requiredType.bestFittingType.type)}.${v}`)).join(", ")}`;
             }
             let typeStr = ".";
             if (isInputArgType(error2.requiredType.bestFittingType.type)) {
               typeStr = ":\n" + stringifyInputType(error2.requiredType.bestFittingType.type);
             }
-            let expected = `${error2.requiredType.inputType.map((t) => import_chalk11.default.greenBright(wrapWithList(stringifyGraphQLType(t.type), error2.requiredType.bestFittingType.isList))).join(" or ")}${typeStr}`;
+            let expected = `${error2.requiredType.inputType.map(
+              (t) => import_chalk11.default.greenBright(wrapWithList(stringifyGraphQLType(t.type), error2.requiredType.bestFittingType.isList))
+            ).join(" or ")}${typeStr}`;
             const inputType = error2.requiredType.inputType.length === 2 && error2.requiredType.inputType.find((t) => isInputArgType(t.type)) || null;
             if (inputType) {
               expected += `
 ` + stringifyInputType(inputType.type, true);
             }
-            return `Argument ${import_chalk11.default.bold(error2.argName)}: Got invalid value ${import_chalk11.default.redBright(valueStr)}${multilineValue ? "" : " "}on ${import_chalk11.default.bold(`prisma.${this.children[0].name}`)}. Provided ${import_chalk11.default.redBright(getGraphQLType(error2.providedValue))}, expected ${expected}`;
+            return `Argument ${import_chalk11.default.bold(error2.argName)}: Got invalid value ${import_chalk11.default.redBright(valueStr)}${multilineValue ? "" : " "}on ${import_chalk11.default.bold(`prisma.${this.children[0].name}`)}. Provided ${import_chalk11.default.redBright(
+              getGraphQLType(error2.providedValue)
+            )}, expected ${expected}`;
           }
           if (error2.type === "invalidNullArg") {
             const forStr = path7.length === 1 && path7[0] === error2.name ? "" : ` for ${import_chalk11.default.bold(`${path7.join(".")}`)}`;
@@ -58341,12 +59923,17 @@ ${valueStr}
           }
           if (error2.type === "atLeastOne") {
             const additional = minimal ? "" : ` Available args are listed in ${import_chalk11.default.dim.green("green")}.`;
-            return `Argument ${import_chalk11.default.bold(path7.join("."))} of type ${import_chalk11.default.bold(error2.inputType.name)} needs ${import_chalk11.default.greenBright("at least one")} argument.${additional}`;
+            const atLeastFieldsError = error2.atLeastFields ? ` and at least one argument for ${error2.atLeastFields.map((field) => import_chalk11.default.bold(field)).join(", or ")}` : "";
+            return `Argument ${import_chalk11.default.bold(path7.join("."))} of type ${import_chalk11.default.bold(
+              error2.inputType.name
+            )} needs ${import_chalk11.default.greenBright("at least one")} argument${import_chalk11.default.bold(atLeastFieldsError)}.${additional}`;
           }
           if (error2.type === "atMostOne") {
             const additional = minimal ? "" : ` Please choose one. ${import_chalk11.default.dim("Available args:")} 
 ${stringifyInputType(error2.inputType, true)}`;
-            return `Argument ${import_chalk11.default.bold(path7.join("."))} of type ${import_chalk11.default.bold(error2.inputType.name)} needs ${import_chalk11.default.greenBright("exactly one")} argument, but you provided ${error2.providedKeys.map((key) => import_chalk11.default.redBright(key)).join(" and ")}.${additional}`;
+            return `Argument ${import_chalk11.default.bold(path7.join("."))} of type ${import_chalk11.default.bold(
+              error2.inputType.name
+            )} needs ${import_chalk11.default.greenBright("exactly one")} argument, but you provided ${error2.providedKeys.map((key) => import_chalk11.default.redBright(key)).join(" and ")}.${additional}`;
           }
           return void 0;
         }, "printArgError");
@@ -58358,7 +59945,7 @@ ${stringifyInputType(error2.inputType, true)}`;
       }
       toString() {
         return `${this.type} {
-${(0, import_indent_string3.default)(this.children.map(String).join("\n"), tab)}
+${(0, import_indent_string4.default)(this.children.map(String).join("\n"), tab)}
 }`;
       }
       validate(select, isTopLevelQuery = false, originalMethod, errorFormat, validationCallsite) {
@@ -58375,14 +59962,18 @@ ${(0, import_indent_string3.default)(this.children.map(String).join("\n"), tab)}
         const prefix = select && select.select ? "select" : select.include ? "include" : void 0;
         for (const child of invalidChildren) {
           const errors = child.collectErrors(prefix);
-          fieldErrors.push(...errors.fieldErrors.map((e) => ({
-            ...e,
-            path: isTopLevelQuery ? e.path : e.path.slice(1)
-          })));
-          argErrors.push(...errors.argErrors.map((e) => ({
-            ...e,
-            path: isTopLevelQuery ? e.path : e.path.slice(1)
-          })));
+          fieldErrors.push(
+            ...errors.fieldErrors.map((e) => ({
+              ...e,
+              path: isTopLevelQuery ? e.path : e.path.slice(1)
+            }))
+          );
+          argErrors.push(
+            ...errors.argErrors.map((e) => ({
+              ...e,
+              path: isTopLevelQuery ? e.path : e.path.slice(1)
+            }))
+          );
         }
         const topLevelQueryName = this.children[0].name;
         const queryName = isTopLevelQuery ? this.type : topLevelQueryName;
@@ -58413,7 +60004,9 @@ ${(0, import_indent_string3.default)(this.children.map(String).join("\n"), tab)}
             const selectPathArray = this.normalizePath(fieldError.path, select);
             const selectPath = selectPathArray.slice(0, selectPathArray.length - 1).join(".");
             const fieldType = fieldError.error.field.outputType.type;
-            (_a32 = fieldType.fields) == null ? void 0 : _a32.filter((field) => fieldError.error.type === "emptyInclude" ? field.outputType.location === "outputObjectTypes" : true).forEach((field) => {
+            (_a32 = fieldType.fields) == null ? void 0 : _a32.filter(
+              (field) => fieldError.error.type === "emptyInclude" ? field.outputType.location === "outputObjectTypes" : true
+            ).forEach((field) => {
               missingItems.push({
                 path: `${selectPath}.${field.name}`,
                 type: "true",
@@ -58447,13 +60040,19 @@ ${(0, import_indent_string3.default)(this.children.map(String).join("\n"), tab)}
           }
         }
         const renderErrorStr = /* @__PURE__ */ __name((callsite) => {
-          const hasRequiredMissingArgsErrors = argErrors.some((e) => e.error.type === "missingArg" && e.error.missingArg.isRequired);
-          const hasOptionalMissingArgsErrors = Boolean(argErrors.find((e) => e.error.type === "missingArg" && !e.error.missingArg.isRequired));
+          const hasRequiredMissingArgsErrors = argErrors.some(
+            (e) => e.error.type === "missingArg" && e.error.missingArg.isRequired
+          );
+          const hasOptionalMissingArgsErrors = Boolean(
+            argErrors.find((e) => e.error.type === "missingArg" && !e.error.missingArg.isRequired)
+          );
           const hasMissingArgsErrors = hasOptionalMissingArgsErrors || hasRequiredMissingArgsErrors;
           let missingArgsLegend = "";
           if (hasRequiredMissingArgsErrors) {
             missingArgsLegend += `
-${import_chalk11.default.dim("Note: Lines with ")}${import_chalk11.default.reset.greenBright("+")} ${import_chalk11.default.dim("are required")}`;
+${import_chalk11.default.dim("Note: Lines with ")}${import_chalk11.default.reset.greenBright("+")} ${import_chalk11.default.dim(
+              "are required"
+            )}`;
           }
           if (hasOptionalMissingArgsErrors) {
             if (missingArgsLegend.length === 0) {
@@ -58473,16 +60072,6 @@ ${fieldErrors.map((e) => this.printFieldError(e, missingItems, errorFormat === "
           if (errorFormat === "minimal") {
             return (0, import_strip_ansi3.default)(errorMessages);
           }
-          const {
-            stack,
-            indent: indentValue,
-            afterLines
-          } = printStack({
-            callsite,
-            originalMethod: originalMethod || queryName,
-            showColors: errorFormat && errorFormat === "pretty",
-            isValidationError: true
-          });
           let printJsonArgs = {
             ast: isTopLevelQuery ? { [topLevelQueryName]: select } : select,
             keyPaths,
@@ -58492,10 +60081,14 @@ ${fieldErrors.map((e) => this.printFieldError(e, missingItems, errorFormat === "
           if (originalMethod == null ? void 0 : originalMethod.endsWith("aggregate")) {
             printJsonArgs = transformAggregatePrintJsonArgs(printJsonArgs);
           }
-          const errorStr = `${stack}${(0, import_indent_string3.default)(printJsonWithErrors(printJsonArgs), indentValue).slice(indentValue)}${import_chalk11.default.dim(afterLines)}
-
-${errorMessages}${missingArgsLegend}
-`;
+          const errorStr = createErrorMessageWithContext({
+            callsite,
+            originalMethod: originalMethod || queryName,
+            showColors: errorFormat && errorFormat === "pretty",
+            callArguments: printJsonWithErrors(printJsonArgs),
+            message: `${errorMessages}${missingArgsLegend}
+`
+          });
           if (process.env.NO_COLOR || errorFormat === "colorless") {
             return (0, import_strip_ansi3.default)(errorStr);
           }
@@ -58573,13 +60166,13 @@ Read more at https://pris.ly/d/client-constructor`);
             str += `(${this.args.toString()})`;
           } else {
             str += `(
-${(0, import_indent_string3.default)(this.args.toString(), tab)}
+${(0, import_indent_string4.default)(this.args.toString(), tab)}
 )`;
           }
         }
         if (this.children) {
           str += ` {
-${(0, import_indent_string3.default)(this.children.map(String).join("\n"), tab)}
+${(0, import_indent_string4.default)(this.children.map(String).join("\n"), tab)}
 }`;
         }
         return str;
@@ -58596,14 +60189,18 @@ ${(0, import_indent_string3.default)(this.children.map(String).join("\n"), tab)}
         if (this.children) {
           for (const child of this.children) {
             const errors = child.collectErrors(prefix);
-            fieldErrors.push(...errors.fieldErrors.map((e) => ({
-              ...e,
-              path: [this.name, prefix, ...e.path]
-            })));
-            argErrors.push(...errors.argErrors.map((e) => ({
-              ...e,
-              path: [this.name, prefix, ...e.path]
-            })));
+            fieldErrors.push(
+              ...errors.fieldErrors.map((e) => ({
+                ...e,
+                path: [this.name, prefix, ...e.path]
+              }))
+            );
+            argErrors.push(
+              ...errors.argErrors.map((e) => ({
+                ...e,
+                path: [this.name, prefix, ...e.path]
+              }))
+            );
           }
         }
         if (this.args) {
@@ -58634,13 +60231,16 @@ ${(0, import_indent_string3.default)(this.children.map(String).join("\n"), tab)}
         if (!this.hasInvalidArg) {
           return [];
         }
-        return flatMap(this.args, (arg2) => arg2.collectErrors());
+        return this.args.flatMap((arg2) => arg2.collectErrors());
       }
     };
     __name(Args, "Args");
     function stringify(value, inputType) {
       if (Buffer.isBuffer(value)) {
         return JSON.stringify(value.toString("base64"));
+      }
+      if (value instanceof FieldRefImpl) {
+        return `{ _ref: ${JSON.stringify(value.name)}}`;
       }
       if (Object.prototype.toString.call(value) === "[object BigInt]") {
         return value.toString();
@@ -58649,7 +60249,7 @@ ${(0, import_indent_string3.default)(this.children.map(String).join("\n"), tab)}
         if (value === null) {
           return "null";
         }
-        if (value && value.values && value.__prismaRawParamaters__) {
+        if (value && value.values && value.__prismaRawParameters__) {
           return JSON.stringify(value.values);
         }
         if ((inputType == null ? void 0 : inputType.isList) && Array.isArray(value)) {
@@ -58696,7 +60296,7 @@ ${(0, import_indent_string3.default)(this.children.map(String).join("\n"), tab)}
         }
         if (value instanceof Args) {
           return `${key}: {
-${(0, import_indent_string3.default)(value.toString(), 2)}
+${(0, import_indent_string4.default)(value.toString(), 2)}
 }`;
         }
         if (Array.isArray(value)) {
@@ -58704,14 +60304,17 @@ ${(0, import_indent_string3.default)(value.toString(), 2)}
             return `${key}: ${stringify(value, this.inputType)}`;
           }
           const isScalar = !value.some((v) => typeof v === "object");
-          return `${key}: [${isScalar ? "" : "\n"}${(0, import_indent_string3.default)(value.map((nestedValue) => {
-            if (nestedValue instanceof Args) {
-              return `{
-${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
+          return `${key}: [${isScalar ? "" : "\n"}${(0, import_indent_string4.default)(
+            value.map((nestedValue) => {
+              if (nestedValue instanceof Args) {
+                return `{
+${(0, import_indent_string4.default)(nestedValue.toString(), tab)}
 }`;
-            }
-            return stringify(nestedValue, this.inputType);
-          }).join(`,${isScalar ? " " : "\n"}`), isScalar ? 0 : tab)}${isScalar ? "" : "\n"}]`;
+              }
+              return stringify(nestedValue, this.inputType);
+            }).join(`,${isScalar ? " " : "\n"}`),
+            isScalar ? 0 : tab
+          )}${isScalar ? "" : "\n"}]`;
         }
         return `${key}: ${stringify(value, this.inputType)}`;
       }
@@ -58733,23 +60336,25 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
           });
         }
         if (Array.isArray(this.value)) {
-          errors.push(...flatMap(this.value, (val, index) => {
-            if (!(val == null ? void 0 : val.collectErrors)) {
-              return [];
-            }
-            return val.collectErrors().map((e) => {
-              return { ...e, path: [this.key, index, ...e.path] };
-            });
-          }));
+          return errors.concat(
+            this.value.flatMap((val, index) => {
+              if (!(val == null ? void 0 : val.collectErrors)) {
+                return [];
+              }
+              return val.collectErrors().map((e) => {
+                return { ...e, path: [this.key, index, ...e.path] };
+              });
+            })
+          );
         }
         if (this.value instanceof Args) {
-          errors.push(...this.value.collectErrors().map((e) => ({ ...e, path: [this.key, ...e.path] })));
+          return errors.concat(this.value.collectErrors().map((e) => ({ ...e, path: [this.key, ...e.path] })));
         }
         return errors;
       }
     };
     __name(Arg2, "Arg");
-    function makeDocument({ dmmf, rootTypeName, rootField, select }) {
+    function makeDocument({ dmmf, rootTypeName, rootField, select, modelName }) {
       if (!select) {
         select = {};
       }
@@ -58763,7 +60368,10 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
         },
         name: rootTypeName
       };
-      const children = selectionToFields(dmmf, { [rootField]: select }, fakeRootField, [rootTypeName]);
+      const context5 = {
+        modelName
+      };
+      const children = selectionToFields(dmmf, { [rootField]: select }, fakeRootField, [rootTypeName], context5);
       return new Document(rootTypeName, children);
     }
     __name(makeDocument, "makeDocument");
@@ -58771,35 +60379,42 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
       return document2;
     }
     __name(transformDocument, "transformDocument");
-    function selectionToFields(dmmf, selection, schemaField, path7) {
+    function selectionToFields(dmmf, selection, schemaField, path7, context5) {
       const outputType = schemaField.outputType.type;
       return Object.entries(selection).reduce((acc, [name, value]) => {
         const field = outputType.fieldMap ? outputType.fieldMap[name] : outputType.fields.find((f) => f.name === name);
         if (!field) {
-          acc.push(new Field({
-            name,
-            children: [],
-            error: {
-              type: "invalidFieldName",
-              modelName: outputType.name,
-              providedName: name,
-              didYouMean: getSuggestion(name, outputType.fields.map((f) => f.name)),
-              outputType
-            }
-          }));
+          acc.push(
+            new Field({
+              name,
+              children: [],
+              error: {
+                type: "invalidFieldName",
+                modelName: outputType.name,
+                providedName: name,
+                didYouMean: getSuggestion(
+                  name,
+                  outputType.fields.map((f) => f.name)
+                ),
+                outputType
+              }
+            })
+          );
           return acc;
         }
-        if (typeof value !== "boolean" && field.outputType.location === "scalar" && field.name !== "executeRaw" && field.name !== "queryRaw" && field.name !== "runCommandRaw" && outputType.name !== "Query" && !name.startsWith("aggregate") && field.name !== "count") {
-          acc.push(new Field({
-            name,
-            children: [],
-            error: {
-              type: "invalidFieldType",
-              modelName: outputType.name,
-              fieldName: name,
-              providedValue: value
-            }
-          }));
+        if (field.outputType.location === "scalar" && field.args.length === 0 && typeof value !== "boolean") {
+          acc.push(
+            new Field({
+              name,
+              children: [],
+              error: {
+                type: "invalidFieldType",
+                modelName: outputType.name,
+                fieldName: name,
+                providedValue: value
+              }
+            })
+          );
           return acc;
         }
         if (value === false) {
@@ -58814,39 +60429,49 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
           }
         };
         const argsWithoutIncludeAndSelect = typeof value === "object" ? omit2(value, ["include", "select"]) : void 0;
-        const args = argsWithoutIncludeAndSelect ? objectToArgs(argsWithoutIncludeAndSelect, transformedField, [], typeof field === "string" ? void 0 : field.outputType.type) : void 0;
+        const args = argsWithoutIncludeAndSelect ? objectToArgs(
+          argsWithoutIncludeAndSelect,
+          transformedField,
+          context5,
+          [],
+          typeof field === "string" ? void 0 : field.outputType.type
+        ) : void 0;
         const isRelation = field.outputType.location === "outputObjectTypes";
         if (value) {
           if (value.select && value.include) {
-            acc.push(new Field({
-              name,
-              children: [
-                new Field({
-                  name: "include",
-                  args: new Args(),
-                  error: {
-                    type: "includeAndSelect",
-                    field
-                  }
-                })
-              ]
-            }));
-          } else if (value.include) {
-            const keys2 = Object.keys(value.include);
-            if (keys2.length === 0) {
-              acc.push(new Field({
+            acc.push(
+              new Field({
                 name,
                 children: [
                   new Field({
                     name: "include",
                     args: new Args(),
                     error: {
-                      type: "emptyInclude",
+                      type: "includeAndSelect",
                       field
                     }
                   })
                 ]
-              }));
+              })
+            );
+          } else if (value.include) {
+            const keys2 = Object.keys(value.include);
+            if (keys2.length === 0) {
+              acc.push(
+                new Field({
+                  name,
+                  children: [
+                    new Field({
+                      name: "include",
+                      args: new Args(),
+                      error: {
+                        type: "emptyInclude",
+                        field
+                      }
+                    })
+                  ]
+                })
+              );
               return acc;
             }
             if (field.outputType.location === "outputObjectTypes") {
@@ -58854,60 +60479,68 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
               const allowedKeys = fieldOutputType.fields.filter((f) => f.outputType.location === "outputObjectTypes").map((f) => f.name);
               const invalidKeys = keys2.filter((key) => !allowedKeys.includes(key));
               if (invalidKeys.length > 0) {
-                acc.push(...invalidKeys.map((invalidKey) => new Field({
-                  name: invalidKey,
-                  children: [
-                    new Field({
+                acc.push(
+                  ...invalidKeys.map(
+                    (invalidKey) => new Field({
                       name: invalidKey,
-                      args: new Args(),
-                      error: {
-                        type: "invalidFieldName",
-                        modelName: fieldOutputType.name,
-                        outputType: fieldOutputType,
-                        providedName: invalidKey,
-                        didYouMean: getSuggestion(invalidKey, allowedKeys) || void 0,
-                        isInclude: true,
-                        isIncludeScalar: fieldOutputType.fields.some((f) => f.name === invalidKey)
-                      }
+                      children: [
+                        new Field({
+                          name: invalidKey,
+                          args: new Args(),
+                          error: {
+                            type: "invalidFieldName",
+                            modelName: fieldOutputType.name,
+                            outputType: fieldOutputType,
+                            providedName: invalidKey,
+                            didYouMean: getSuggestion(invalidKey, allowedKeys) || void 0,
+                            isInclude: true,
+                            isIncludeScalar: fieldOutputType.fields.some((f) => f.name === invalidKey)
+                          }
+                        })
+                      ]
                     })
-                  ]
-                })));
+                  )
+                );
                 return acc;
               }
             }
           } else if (value.select) {
             const values = Object.values(value.select);
             if (values.length === 0) {
-              acc.push(new Field({
-                name,
-                children: [
-                  new Field({
-                    name: "select",
-                    args: new Args(),
-                    error: {
-                      type: "emptySelect",
-                      field
-                    }
-                  })
-                ]
-              }));
+              acc.push(
+                new Field({
+                  name,
+                  children: [
+                    new Field({
+                      name: "select",
+                      args: new Args(),
+                      error: {
+                        type: "emptySelect",
+                        field
+                      }
+                    })
+                  ]
+                })
+              );
               return acc;
             }
             const truthyValues = values.filter((v) => v);
             if (truthyValues.length === 0) {
-              acc.push(new Field({
-                name,
-                children: [
-                  new Field({
-                    name: "select",
-                    args: new Args(),
-                    error: {
-                      type: "noTrueSelect",
-                      field
-                    }
-                  })
-                ]
-              }));
+              acc.push(
+                new Field({
+                  name,
+                  children: [
+                    new Field({
+                      name: "select",
+                      args: new Args(),
+                      error: {
+                        type: "noTrueSelect",
+                        field
+                      }
+                    })
+                  ]
+                })
+              );
               return acc;
             }
           }
@@ -58923,7 +60556,7 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
             select = byToSelect(value.by);
           }
         }
-        const children = select !== false && isRelation ? selectionToFields(dmmf, select, field, [...path7, name]) : void 0;
+        const children = select !== false && isRelation ? selectionToFields(dmmf, select, field, [...path7, name], context5) : void 0;
         acc.push(new Field({ name, args, children, schemaField: field }));
         return acc;
       }, []);
@@ -58969,9 +60602,9 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
       return arrg;
     }
     __name(getInvalidTypeArg, "getInvalidTypeArg");
-    function hasCorrectScalarType(value, arg2, inputType) {
-      const { type, isList } = inputType;
-      const expectedType = wrapWithList(stringifyGraphQLType(type), isList);
+    function hasCorrectScalarType(value, inputType, context5) {
+      const { isList } = inputType;
+      const expectedType = getExpectedType(inputType, context5);
       const graphQLType = getGraphQLType(value, inputType);
       if (graphQLType === expectedType) {
         return true;
@@ -58979,61 +60612,28 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
       if (isList && graphQLType === "List<>") {
         return true;
       }
-      if (expectedType === "Json" && graphQLType !== "Symbol" && !(value instanceof ObjectEnumValue)) {
+      if (expectedType === "Json" && graphQLType !== "Symbol" && !(value instanceof ObjectEnumValue) && !(value instanceof FieldRefImpl)) {
         return true;
       }
       if (graphQLType === "Int" && expectedType === "BigInt") {
         return true;
       }
-      if (graphQLType === "List<Int>" && expectedType === "List<BigInt>") {
-        return true;
-      }
-      if (graphQLType === "List<BigInt | Int>" && expectedType === "List<BigInt>") {
-        return true;
-      }
-      if (graphQLType === "List<Int | BigInt>" && expectedType === "List<BigInt>") {
-        return true;
-      }
       if ((graphQLType === "Int" || graphQLType === "Float") && expectedType === "Decimal") {
-        return true;
-      }
-      if (isValidDecimalListInput(graphQLType, value) && expectedType === "List<Decimal>") {
         return true;
       }
       if (graphQLType === "DateTime" && expectedType === "String") {
         return true;
       }
-      if (graphQLType === "List<DateTime>" && expectedType === "List<String>") {
-        return true;
-      }
       if (graphQLType === "UUID" && expectedType === "String") {
-        return true;
-      }
-      if (graphQLType === "List<UUID>" && expectedType === "List<String>") {
         return true;
       }
       if (graphQLType === "String" && expectedType === "ID") {
         return true;
       }
-      if (graphQLType === "List<String>" && expectedType === "List<ID>") {
-        return true;
-      }
-      if (graphQLType === "List<String>" && expectedType === "List<Json>") {
-        return true;
-      }
-      if (expectedType === "List<String>" && (graphQLType === "List<String | UUID>" || graphQLType === "List<UUID | String>")) {
-        return true;
-      }
       if (graphQLType === "Int" && expectedType === "Float") {
         return true;
       }
-      if (graphQLType === "List<Int>" && expectedType === "List<Float>") {
-        return true;
-      }
       if (graphQLType === "Int" && expectedType === "Long") {
-        return true;
-      }
-      if (graphQLType === "List<Int>" && expectedType === "List<Long>") {
         return true;
       }
       if (graphQLType === "String" && expectedType === "Decimal" && isDecimalString(value)) {
@@ -59042,23 +60642,30 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
       if (value === null) {
         return true;
       }
+      if (inputType.isList && Array.isArray(value)) {
+        return value.every((v) => hasCorrectScalarType(v, { ...inputType, isList: false }, context5));
+      }
       return false;
     }
     __name(hasCorrectScalarType, "hasCorrectScalarType");
-    var cleanObject = /* @__PURE__ */ __name((obj) => filterObject(obj, (k, v) => v !== void 0), "cleanObject");
-    function isValidDecimalListInput(graphQLType, value) {
-      return graphQLType === "List<Int>" || graphQLType === "List<Float>" || graphQLType === "List<String>" && value.every(isDecimalString);
+    function getExpectedType(inputType, context5, isList = inputType.isList) {
+      let type = stringifyGraphQLType(inputType.type);
+      if (inputType.location === "fieldRefTypes" && context5.modelName) {
+        type += `<${context5.modelName}>`;
+      }
+      return wrapWithList(type, isList);
     }
-    __name(isValidDecimalListInput, "isValidDecimalListInput");
+    __name(getExpectedType, "getExpectedType");
+    var cleanObject = /* @__PURE__ */ __name((obj) => filterObject(obj, (k, v) => v !== void 0), "cleanObject");
     function isDecimalString(value) {
       return /^\-?(\d+(\.\d*)?|\.\d+)(e[+-]?\d+)?$/i.test(value);
     }
     __name(isDecimalString, "isDecimalString");
-    function valueToArg(key, value, arg2) {
+    function valueToArg(key, value, arg2, context5) {
       let maybeArg = null;
       const argsWithErrors = [];
       for (const inputType of arg2.inputTypes) {
-        maybeArg = tryInferArgs(key, value, arg2, inputType);
+        maybeArg = tryInferArgs(key, value, arg2, inputType, context5);
         if ((maybeArg == null ? void 0 : maybeArg.collectErrors().length) === 0) {
           return maybeArg;
         }
@@ -59124,8 +60731,8 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
       return n.reduce((acc, curr) => acc + curr, 0);
     }
     __name(sum2, "sum");
-    function tryInferArgs(key, value, arg2, inputType) {
-      var _a32, _b22, _c2, _d2;
+    function tryInferArgs(key, value, arg2, inputType, context5) {
+      var _a32, _b22, _c2, _d2, _e;
       if (typeof value === "undefined") {
         if (!arg2.isRequired) {
           return null;
@@ -59172,11 +60779,12 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
             let error2;
             const keys2 = Object.keys(val || {});
             const numKeys = keys2.length;
-            if (numKeys === 0 && typeof inputType.type.constraints.minNumFields === "number" && inputType.type.constraints.minNumFields > 0) {
+            if (numKeys === 0 && typeof inputType.type.constraints.minNumFields === "number" && inputType.type.constraints.minNumFields > 0 || ((_a32 = inputType.type.constraints.fields) == null ? void 0 : _a32.some((field) => keys2.includes(field))) === false) {
               error2 = {
                 type: "atLeastOne",
                 key,
-                inputType: inputType.type
+                inputType: inputType.type,
+                atLeastFields: inputType.type.constraints.fields
               };
             } else if (numKeys > 1 && typeof inputType.type.constraints.maxNumFields === "number" && inputType.type.constraints.maxNumFields < 2) {
               error2 = {
@@ -59188,7 +60796,7 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
             }
             return new Arg2({
               key,
-              value: val === null ? null : objectToArgs(val, inputType.type, arg2.inputTypes),
+              value: val === null ? null : objectToArgs(val, inputType.type, context5, arg2.inputTypes),
               isEnum: inputType.location === "enumTypes",
               error: error2,
               inputType,
@@ -59196,7 +60804,7 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
             });
           }
         } else {
-          return scalarToArg(key, value, arg2, inputType);
+          return scalarToArg(key, value, arg2, inputType, context5);
         }
       }
       if (!Array.isArray(value) && inputType.isList) {
@@ -59205,17 +60813,17 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
         }
       }
       if (inputType.location === "enumTypes" || inputType.location === "scalar") {
-        return scalarToArg(key, value, arg2, inputType);
+        return scalarToArg(key, value, arg2, inputType, context5);
       }
       const argInputType = inputType.type;
-      const hasAtLeastOneError = typeof ((_a32 = argInputType.constraints) == null ? void 0 : _a32.minNumFields) === "number" && ((_b22 = argInputType.constraints) == null ? void 0 : _b22.minNumFields) > 0 ? Array.isArray(value) && value.some((v) => !v || Object.keys(cleanObject(v)).length === 0) : false;
+      const hasAtLeastOneError = typeof ((_b22 = argInputType.constraints) == null ? void 0 : _b22.minNumFields) === "number" && ((_c2 = argInputType.constraints) == null ? void 0 : _c2.minNumFields) > 0 ? Array.isArray(value) && value.some((v) => !v || Object.keys(cleanObject(v)).length === 0) : false;
       let err = hasAtLeastOneError ? {
         inputType: argInputType,
         key,
         type: "atLeastOne"
       } : void 0;
       if (!err) {
-        const hasOneOfError = typeof ((_c2 = argInputType.constraints) == null ? void 0 : _c2.maxNumFields) === "number" && ((_d2 = argInputType.constraints) == null ? void 0 : _d2.maxNumFields) < 2 ? Array.isArray(value) && value.find((v) => !v || Object.keys(cleanObject(v)).length !== 1) : false;
+        const hasOneOfError = typeof ((_d2 = argInputType.constraints) == null ? void 0 : _d2.maxNumFields) === "number" && ((_e = argInputType.constraints) == null ? void 0 : _e.maxNumFields) < 2 ? Array.isArray(value) && value.find((v) => !v || Object.keys(cleanObject(v)).length !== 1) : false;
         if (hasOneOfError) {
           err = {
             inputType: argInputType,
@@ -59227,7 +60835,7 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
       }
       if (!Array.isArray(value)) {
         for (const nestedArgInputType of arg2.inputTypes) {
-          const args = objectToArgs(value, nestedArgInputType.type);
+          const args = objectToArgs(value, nestedArgInputType.type, context5);
           if (args.collectErrors().length === 0) {
             return new Arg2({
               key,
@@ -59248,7 +60856,7 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
           if (typeof v !== "object" || !value) {
             return getInvalidTypeArg(key, v, arg2, inputType);
           }
-          return objectToArgs(v, argInputType);
+          return objectToArgs(v, argInputType, context5);
         }),
         isEnum: false,
         inputType,
@@ -59267,8 +60875,8 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
       return true;
     }
     __name(isInputArgType, "isInputArgType");
-    function scalarToArg(key, value, arg2, inputType) {
-      if (hasCorrectScalarType(value, arg2, inputType)) {
+    function scalarToArg(key, value, arg2, inputType, context5) {
+      if (hasCorrectScalarType(value, inputType, context5)) {
         return new Arg2({
           key,
           value,
@@ -59280,7 +60888,11 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
       return getInvalidTypeArg(key, value, arg2, inputType);
     }
     __name(scalarToArg, "scalarToArg");
-    function objectToArgs(initialObj, inputType, possibilities, outputType) {
+    function objectToArgs(initialObj, inputType, context5, possibilities, outputType) {
+      var _a32;
+      if ((_a32 = inputType.meta) == null ? void 0 : _a32.source) {
+        context5 = { modelName: inputType.meta.source };
+      }
       const obj = cleanObject(initialObj);
       const { fields: args, fieldMap } = inputType;
       const requiredArgs = args.map((arg2) => [arg2.name, void 0]);
@@ -59290,49 +60902,55 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
         const schemaArg = fieldMap ? fieldMap[argName] : args.find((a) => a.name === argName);
         if (!schemaArg) {
           const didYouMeanField = typeof value === "boolean" && outputType && outputType.fields.some((f) => f.name === argName) ? argName : null;
-          acc.push(new Arg2({
-            key: argName,
-            value,
-            error: {
-              type: "invalidName",
-              providedName: argName,
-              providedValue: value,
-              didYouMeanField,
-              didYouMeanArg: !didYouMeanField && getSuggestion(argName, [...args.map((a) => a.name), "select"]) || void 0,
-              originalType: inputType,
-              possibilities,
-              outputType
-            }
-          }));
+          acc.push(
+            new Arg2({
+              key: argName,
+              value,
+              error: {
+                type: "invalidName",
+                providedName: argName,
+                providedValue: value,
+                didYouMeanField,
+                didYouMeanArg: !didYouMeanField && getSuggestion(argName, [...args.map((a) => a.name), "select"]) || void 0,
+                originalType: inputType,
+                possibilities,
+                outputType
+              }
+            })
+          );
           return acc;
         }
-        const arg2 = valueToArg(argName, value, schemaArg);
+        const arg2 = valueToArg(argName, value, schemaArg, context5);
         if (arg2) {
           acc.push(arg2);
         }
         return acc;
       }, []);
       if (typeof inputType.constraints.minNumFields === "number" && objEntries.length < inputType.constraints.minNumFields || argsList.find((arg2) => {
-        var _a32, _b22;
-        return ((_a32 = arg2.error) == null ? void 0 : _a32.type) === "missingArg" || ((_b22 = arg2.error) == null ? void 0 : _b22.type) === "atLeastOne";
+        var _a42, _b22;
+        return ((_a42 = arg2.error) == null ? void 0 : _a42.type) === "missingArg" || ((_b22 = arg2.error) == null ? void 0 : _b22.type) === "atLeastOne";
       })) {
-        const optionalMissingArgs = inputType.fields.filter((field) => !field.isRequired && obj && (typeof obj[field.name] === "undefined" || obj[field.name] === null));
-        argsList.push(...optionalMissingArgs.map((arg2) => {
-          const argInputType = arg2.inputTypes[0];
-          return new Arg2({
-            key: arg2.name,
-            value: void 0,
-            isEnum: argInputType.location === "enumTypes",
-            error: {
-              type: "missingArg",
-              missingName: arg2.name,
-              missingArg: arg2,
-              atLeastOne: Boolean(inputType.constraints.minNumFields) || false,
-              atMostOne: inputType.constraints.maxNumFields === 1 || false
-            },
-            inputType: argInputType
-          });
-        }));
+        const optionalMissingArgs = inputType.fields.filter(
+          (field) => !field.isRequired && obj && (typeof obj[field.name] === "undefined" || obj[field.name] === null)
+        );
+        argsList.push(
+          ...optionalMissingArgs.map((arg2) => {
+            const argInputType = arg2.inputTypes[0];
+            return new Arg2({
+              key: arg2.name,
+              value: void 0,
+              isEnum: argInputType.location === "enumTypes",
+              error: {
+                type: "missingArg",
+                missingName: arg2.name,
+                missingArg: arg2,
+                atLeastOne: Boolean(inputType.constraints.minNumFields) || false,
+                atMostOne: inputType.constraints.maxNumFields === 1 || false
+              },
+              inputType: argInputType
+            });
+          })
+        );
       }
       return new Args(argsList);
     }
@@ -59467,6 +61085,317 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
       };
     }
     __name(transformAggregatePrintJsonArgs, "transformAggregatePrintJsonArgs");
+    function $extends(extension) {
+      if (!this._hasPreviewFlag("clientExtensions")) {
+        throw new PrismaClientValidationError("Extensions are not yet available");
+      }
+      return Object.create(this, {
+        _extensions: {
+          get: () => {
+            if (typeof extension === "function") {
+              return this._extensions.concat(extension());
+            }
+            return this._extensions.concat(extension);
+          }
+        }
+      });
+    }
+    __name($extends, "$extends");
+    var UNKNOWN_FUNCTION = "<unknown>";
+    function parse(stackString) {
+      var lines = stackString.split("\n");
+      return lines.reduce(function(stack, line) {
+        var parseResult = parseChrome(line) || parseWinjs(line) || parseGecko(line) || parseNode(line) || parseJSC(line);
+        if (parseResult) {
+          stack.push(parseResult);
+        }
+        return stack;
+      }, []);
+    }
+    __name(parse, "parse");
+    var chromeRe = /^\s*at (.*?) ?\(((?:file|https?|blob|chrome-extension|native|eval|webpack|<anonymous>|\/|[a-z]:\\|\\\\).*?)(?::(\d+))?(?::(\d+))?\)?\s*$/i;
+    var chromeEvalRe = /\((\S*)(?::(\d+))(?::(\d+))\)/;
+    function parseChrome(line) {
+      var parts = chromeRe.exec(line);
+      if (!parts) {
+        return null;
+      }
+      var isNative = parts[2] && parts[2].indexOf("native") === 0;
+      var isEval = parts[2] && parts[2].indexOf("eval") === 0;
+      var submatch = chromeEvalRe.exec(parts[2]);
+      if (isEval && submatch != null) {
+        parts[2] = submatch[1];
+        parts[3] = submatch[2];
+        parts[4] = submatch[3];
+      }
+      return {
+        file: !isNative ? parts[2] : null,
+        methodName: parts[1] || UNKNOWN_FUNCTION,
+        arguments: isNative ? [parts[2]] : [],
+        lineNumber: parts[3] ? +parts[3] : null,
+        column: parts[4] ? +parts[4] : null
+      };
+    }
+    __name(parseChrome, "parseChrome");
+    var winjsRe = /^\s*at (?:((?:\[object object\])?.+) )?\(?((?:file|ms-appx|https?|webpack|blob):.*?):(\d+)(?::(\d+))?\)?\s*$/i;
+    function parseWinjs(line) {
+      var parts = winjsRe.exec(line);
+      if (!parts) {
+        return null;
+      }
+      return {
+        file: parts[2],
+        methodName: parts[1] || UNKNOWN_FUNCTION,
+        arguments: [],
+        lineNumber: +parts[3],
+        column: parts[4] ? +parts[4] : null
+      };
+    }
+    __name(parseWinjs, "parseWinjs");
+    var geckoRe = /^\s*(.*?)(?:\((.*?)\))?(?:^|@)((?:file|https?|blob|chrome|webpack|resource|\[native).*?|[^@]*bundle)(?::(\d+))?(?::(\d+))?\s*$/i;
+    var geckoEvalRe = /(\S+) line (\d+)(?: > eval line \d+)* > eval/i;
+    function parseGecko(line) {
+      var parts = geckoRe.exec(line);
+      if (!parts) {
+        return null;
+      }
+      var isEval = parts[3] && parts[3].indexOf(" > eval") > -1;
+      var submatch = geckoEvalRe.exec(parts[3]);
+      if (isEval && submatch != null) {
+        parts[3] = submatch[1];
+        parts[4] = submatch[2];
+        parts[5] = null;
+      }
+      return {
+        file: parts[3],
+        methodName: parts[1] || UNKNOWN_FUNCTION,
+        arguments: parts[2] ? parts[2].split(",") : [],
+        lineNumber: parts[4] ? +parts[4] : null,
+        column: parts[5] ? +parts[5] : null
+      };
+    }
+    __name(parseGecko, "parseGecko");
+    var javaScriptCoreRe = /^\s*(?:([^@]*)(?:\((.*?)\))?@)?(\S.*?):(\d+)(?::(\d+))?\s*$/i;
+    function parseJSC(line) {
+      var parts = javaScriptCoreRe.exec(line);
+      if (!parts) {
+        return null;
+      }
+      return {
+        file: parts[3],
+        methodName: parts[1] || UNKNOWN_FUNCTION,
+        arguments: [],
+        lineNumber: +parts[4],
+        column: parts[5] ? +parts[5] : null
+      };
+    }
+    __name(parseJSC, "parseJSC");
+    var nodeRe = /^\s*at (?:((?:\[object object\])?[^\\/]+(?: \[as \S+\])?) )?\(?(.*?):(\d+)(?::(\d+))?\)?\s*$/i;
+    function parseNode(line) {
+      var parts = nodeRe.exec(line);
+      if (!parts) {
+        return null;
+      }
+      return {
+        file: parts[2],
+        methodName: parts[1] || UNKNOWN_FUNCTION,
+        arguments: [],
+        lineNumber: +parts[3],
+        column: parts[4] ? +parts[4] : null
+      };
+    }
+    __name(parseNode, "parseNode");
+    var DisabledCallSite = class {
+      getLocation() {
+        return null;
+      }
+    };
+    __name(DisabledCallSite, "DisabledCallSite");
+    var EnabledCallSite = class {
+      constructor() {
+        this._error = new Error();
+      }
+      getLocation() {
+        const stack = this._error.stack;
+        if (!stack) {
+          return null;
+        }
+        const stackFrames = parse(stack);
+        const frame = stackFrames.find((t) => {
+          return t.file && t.file !== "<anonymous>" && !t.file.includes("@prisma") && !t.file.includes("getPrismaClient") && !t.file.startsWith("internal/") && !t.methodName.includes("new ") && !t.methodName.includes("getCallSite") && !t.methodName.includes("Proxy.") && t.methodName.split(".").length < 4;
+        });
+        if (!frame || !frame.file) {
+          return null;
+        }
+        return {
+          fileName: frame.file,
+          lineNumber: frame.lineNumber,
+          columnNumber: frame.column
+        };
+      }
+    };
+    __name(EnabledCallSite, "EnabledCallSite");
+    function getCallSite(errorFormat) {
+      if (errorFormat === "minimal") {
+        return new DisabledCallSite();
+      }
+      return new EnabledCallSite();
+    }
+    __name(getCallSite, "getCallSite");
+    function createPrismaPromise(callback) {
+      let promise;
+      const _callback = /* @__PURE__ */ __name((transaction, lock, cached = true) => {
+        try {
+          if (cached === true) {
+            return promise != null ? promise : promise = callback(transaction, lock);
+          }
+          return callback(transaction, lock);
+        } catch (error2) {
+          return Promise.reject(error2);
+        }
+      }, "_callback");
+      return {
+        then(onFulfilled, onRejected, transaction) {
+          return _callback(createItx(transaction), void 0).then(onFulfilled, onRejected, transaction);
+        },
+        catch(onRejected, transaction) {
+          return _callback(createItx(transaction), void 0).catch(onRejected, transaction);
+        },
+        finally(onFinally, transaction) {
+          return _callback(createItx(transaction), void 0).finally(onFinally, transaction);
+        },
+        requestTransaction(transactionOptions, lock) {
+          const transaction = { kind: "batch", ...transactionOptions };
+          const promise2 = _callback(transaction, lock, false);
+          if (promise2.requestTransaction) {
+            return promise2.requestTransaction(transaction, lock);
+          }
+          return promise2;
+        },
+        [Symbol.toStringTag]: "PrismaPromise"
+      };
+    }
+    __name(createPrismaPromise, "createPrismaPromise");
+    function createItx(transaction) {
+      if (transaction) {
+        return { kind: "itx", ...transaction };
+      }
+      return void 0;
+    }
+    __name(createItx, "createItx");
+    var aggregateMap = {
+      _avg: true,
+      _count: true,
+      _sum: true,
+      _min: true,
+      _max: true
+    };
+    function desugarUserArgs(userArgs) {
+      const _userArgs = desugarCountInUserArgs(userArgs);
+      const userArgsEntries = Object.entries(_userArgs);
+      return userArgsEntries.reduce(
+        (aggregateArgs, [key, value]) => {
+          if (aggregateMap[key] !== void 0) {
+            aggregateArgs["select"][key] = { select: value };
+          } else {
+            aggregateArgs[key] = value;
+          }
+          return aggregateArgs;
+        },
+        { select: {} }
+      );
+    }
+    __name(desugarUserArgs, "desugarUserArgs");
+    function desugarCountInUserArgs(userArgs) {
+      if (typeof userArgs["_count"] === "boolean") {
+        return { ...userArgs, _count: { _all: userArgs["_count"] } };
+      }
+      return userArgs;
+    }
+    __name(desugarCountInUserArgs, "desugarCountInUserArgs");
+    function createUnpacker(userArgs) {
+      return (data) => {
+        if (typeof userArgs["_count"] === "boolean") {
+          data["_count"] = data["_count"]["_all"];
+        }
+        return data;
+      };
+    }
+    __name(createUnpacker, "createUnpacker");
+    function aggregate(client, userArgs, modelAction) {
+      const aggregateArgs = desugarUserArgs(userArgs != null ? userArgs : {});
+      const aggregateUnpacker = createUnpacker(userArgs != null ? userArgs : {});
+      return modelAction({
+        action: "aggregate",
+        unpacker: aggregateUnpacker
+      })(aggregateArgs);
+    }
+    __name(aggregate, "aggregate");
+    function count(client, userArgs, modelAction) {
+      const { select, ..._userArgs } = userArgs != null ? userArgs : {};
+      if (typeof select === "object") {
+        return aggregate(
+          client,
+          { ..._userArgs, _count: select },
+          (p) => modelAction({ ...p, action: "count", unpacker: (data) => {
+            var _a32;
+            return (_a32 = p.unpacker) == null ? void 0 : _a32.call(p, data)["_count"];
+          } })
+        );
+      } else {
+        return aggregate(
+          client,
+          { ..._userArgs, _count: { _all: true } },
+          (p) => modelAction({ ...p, action: "count", unpacker: (data) => {
+            var _a32;
+            return (_a32 = p.unpacker) == null ? void 0 : _a32.call(p, data)["_count"]["_all"];
+          } })
+        );
+      }
+    }
+    __name(count, "count");
+    function desugarUserArgs2(userArgs) {
+      const _userArgs = desugarUserArgs(userArgs);
+      if (Array.isArray(userArgs["by"])) {
+        for (const key of userArgs["by"]) {
+          if (typeof key === "string") {
+            _userArgs["select"][key] = true;
+          }
+        }
+      }
+      return _userArgs;
+    }
+    __name(desugarUserArgs2, "desugarUserArgs");
+    function createUnpacker2(userArgs) {
+      return (data) => {
+        if (typeof userArgs["_count"] === "boolean") {
+          data.forEach((row) => {
+            row["_count"] = row["_count"]["_all"];
+          });
+        }
+        return data;
+      };
+    }
+    __name(createUnpacker2, "createUnpacker");
+    function groupBy(client, userArgs, modelAction) {
+      const groupByArgs = desugarUserArgs2(userArgs != null ? userArgs : {});
+      const groupByUnpacker = createUnpacker2(userArgs != null ? userArgs : {});
+      return modelAction({
+        action: "groupBy",
+        unpacker: groupByUnpacker
+      })(groupByArgs);
+    }
+    __name(groupBy, "groupBy");
+    function applyAggregates(client, action, modelAction) {
+      if (action === "aggregate")
+        return (userArgs) => aggregate(client, userArgs, modelAction);
+      if (action === "count")
+        return (userArgs) => count(client, userArgs, modelAction);
+      if (action === "groupBy")
+        return (userArgs) => groupBy(client, userArgs, modelAction);
+      return void 0;
+    }
+    __name(applyAggregates, "applyAggregates");
     var NotFoundError2 = class extends Error {
       constructor(message) {
         super(message);
@@ -59522,12 +61451,12 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
     function applyOrThrowWrapper(dmmfModelName, requestCallback) {
       return async (requestParams) => {
         if ("rejectOnNotFound" in requestParams.args) {
-          const { stack } = printStack({
+          const message = createErrorMessageWithContext({
             originalMethod: requestParams.clientMethod,
-            callsite: requestParams.callsite
+            callsite: requestParams.callsite,
+            message: "'rejectOnNotFound' option is not supported"
           });
-          throw new PrismaClientValidationError(`${stack}
-'rejectOnNotFound' option is not supported`);
+          throw new PrismaClientValidationError(message);
         }
         const result = await requestCallback(requestParams);
         if (result === null || result === void 0) {
@@ -59554,6 +61483,27 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
       };
     }
     __name(defaultProxyHandlers, "defaultProxyHandlers");
+    function applyFieldsProxy(model) {
+      const scalarFieldsList = model.fields.filter((field) => !field.relationName);
+      const scalarFields = keyBy2(scalarFieldsList, (field) => field.name);
+      return new Proxy(
+        {},
+        {
+          get(target, prop) {
+            if (prop in target || typeof prop === "symbol") {
+              return target[prop];
+            }
+            const dmmfField = scalarFields[prop];
+            if (dmmfField) {
+              return new FieldRefImpl(model.name, prop, dmmfField.type, dmmfField.isList);
+            }
+            return void 0;
+          },
+          ...defaultProxyHandlers(Object.keys(scalarFields))
+        }
+      );
+    }
+    __name(applyFieldsProxy, "applyFieldsProxy");
     function getNextDataPath(fluentPropName, prevDataPath) {
       if (fluentPropName === void 0 || prevDataPath === void 0)
         return [];
@@ -59568,7 +61518,10 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
     __name(getNextUserArgs, "getNextUserArgs");
     function applyFluent(client, dmmfModelName, modelAction, fluentPropName, prevDataPath, prevUserArgs) {
       const dmmfModel = client._baseDmmf.modelMap[dmmfModelName];
-      const dmmfModelFieldMap = dmmfModel.fields.reduce((acc, field) => ({ ...acc, [field.name]: field }), {});
+      const dmmfModelFieldMap = dmmfModel.fields.reduce(
+        (acc, field) => ({ ...acc, [field.name]: field }),
+        {}
+      );
       return (userArgs) => {
         const callsite = getCallSite(client._errorFormat);
         const nextDataPath = getNextDataPath(fluentPropName, prevDataPath);
@@ -59600,13 +61553,20 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
     var fluentProps = ["findUnique", "findFirst", "create", "update", "upsert", "delete"];
     var aggregateProps = ["aggregate", "count", "groupBy"];
     function applyModel(client, dmmfModelName) {
+      var _a32;
       const jsModelName = dmmfToJSModelName(dmmfModelName);
+      const model = client._baseDmmf.modelMap[dmmfModelName];
+      const fieldsProxyEnabled = (_a32 = client._engineConfig.previewFeatures) == null ? void 0 : _a32.includes("fieldReference");
       const ownKeys = getOwnKeys2(client, dmmfModelName);
       const baseObject = {};
+      let fieldsProxy;
       return new Proxy(baseObject, {
         get(target, prop) {
           if (prop in target || typeof prop === "symbol")
             return target[prop];
+          if (prop === "fields" && fieldsProxyEnabled) {
+            return fieldsProxy != null ? fieldsProxy : fieldsProxy = applyFieldsProxy(model);
+          }
           if (!isValidActionName(client, dmmfModelName, prop))
             return void 0;
           const dmmfActionName = getDmmfActionName(prop);
@@ -59616,13 +61576,18 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
           }
           const action = /* @__PURE__ */ __name((paramOverrides) => (userArgs) => {
             const callSite = getCallSite(client._errorFormat);
-            return createPrismaPromise((txId, lock) => {
-              const data = { args: userArgs, dataPath: [] };
-              const action2 = { action: dmmfActionName, model: dmmfModelName };
-              const method = { clientMethod: `${jsModelName}.${prop}`, jsModelName };
-              const tx = { runInTransaction: !!txId, transactionId: txId, lock };
-              const trace2 = { callsite: callSite };
-              const params = { ...data, ...action2, ...method, ...tx, ...trace2 };
+            return createPrismaPromise((transaction, lock) => {
+              const params = {
+                args: userArgs,
+                dataPath: [],
+                action: dmmfActionName,
+                model: dmmfModelName,
+                clientMethod: `${jsModelName}.${prop}`,
+                jsModelName,
+                transaction,
+                lock,
+                callsite: callSite
+              };
               return requestFn({ ...params, ...paramOverrides });
             });
           }, "action");
@@ -59639,7 +61604,9 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
     }
     __name(applyModel, "applyModel");
     function getOwnKeys2(client, dmmfModelName) {
-      return [...Object.keys(client._baseDmmf.mappingsMap[dmmfModelName]), "count"].filter((key) => !["model", "plural"].includes(key));
+      return [...Object.keys(client._baseDmmf.mappingsMap[dmmfModelName]), "count"].filter(
+        (key) => !["model", "plural"].includes(key)
+      );
     }
     __name(getOwnKeys2, "getOwnKeys");
     function isValidActionName(client, dmmfModelName, action) {
@@ -59839,17 +61806,19 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
     var debug11 = src_default("prisma:client:request_handler");
     function getRequestInfo(request2) {
       var _a32;
-      const txId = request2.transactionId;
-      const inTx = request2.runInTransaction;
+      const transaction = request2.transaction;
       const headers = (_a32 = request2.headers) != null ? _a32 : {};
-      const traceparent = getTraceParent();
-      const _inTx = typeof txId === "number" && inTx ? true : void 0;
-      const _txId = typeof txId === "string" && inTx ? txId : void 0;
-      if (_txId !== void 0)
-        headers.transactionId = _txId;
-      if (traceparent !== void 0)
+      const traceparent = getTraceParent({ tracingConfig: request2.tracingConfig });
+      if ((transaction == null ? void 0 : transaction.kind) === "itx") {
+        headers.transactionId = transaction.id;
+      }
+      if (traceparent !== void 0) {
         headers.traceparent = traceparent;
-      return { inTx: _inTx, headers };
+      }
+      return {
+        batchTransaction: (transaction == null ? void 0 : transaction.kind) === "batch" ? transaction : void 0,
+        headers
+      };
     }
     __name(getRequestInfo, "getRequestInfo");
     var RequestHandler = class {
@@ -59860,10 +61829,10 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
           batchLoader: (requests) => {
             const info2 = getRequestInfo(requests[0]);
             const queries = requests.map((r) => String(r.document));
-            const traceparent = getTraceParent(requests[0].otelParentCtx);
+            const traceparent = getTraceParent({ context: requests[0].otelParentCtx, tracingConfig: client._tracingConfig });
             if (traceparent)
               info2.headers.traceparent = traceparent;
-            return this.client._engine.requestBatch(queries, info2.headers, info2.inTx);
+            return this.client._engine.requestBatch(queries, info2.headers, info2.batchTransaction);
           },
           singleLoader: (request2) => {
             const info2 = getRequestInfo(request2);
@@ -59871,8 +61840,9 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
             return this.client._engine.request(query2, info2.headers);
           },
           batchBy: (request2) => {
-            if (request2.transactionId) {
-              return `transaction-${request2.transactionId}`;
+            var _a32;
+            if ((_a32 = request2.transaction) == null ? void 0 : _a32.id) {
+              return `transaction-${request2.transaction.id}`;
             }
             return batchFindUniqueBy(request2);
           }
@@ -59887,11 +61857,10 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
         callsite,
         rejectOnNotFound,
         clientMethod,
-        runInTransaction,
         engineHook,
         args,
         headers,
-        transactionId,
+        transaction,
         unpacker,
         otelParentCtx,
         otelChildCtx
@@ -59912,20 +61881,25 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
         try {
           let data, elapsed;
           if (engineHook) {
-            const result = await engineHook({
-              document: document2,
-              runInTransaction
-            }, (params) => this.dataloader.request(params));
+            const result = await engineHook(
+              {
+                document: document2,
+                runInTransaction: Boolean(transaction)
+              },
+              (params) => {
+                return this.dataloader.request({ ...params, tracingConfig: this.client._tracingConfig });
+              }
+            );
             data = result.data;
             elapsed = result.elapsed;
           } else {
             const result = await this.dataloader.request({
               document: document2,
-              runInTransaction,
               headers,
-              transactionId,
+              transaction,
               otelParentCtx,
-              otelChildCtx
+              otelChildCtx,
+              tracingConfig: this.client._tracingConfig
             });
             data = result == null ? void 0 : result.data;
             elapsed = result == null ? void 0 : result.elapsed;
@@ -59944,14 +61918,13 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
         debug11(error2);
         let message = error2.message;
         if (callsite) {
-          const { stack } = printStack({
+          message = createErrorMessageWithContext({
             callsite,
             originalMethod: clientMethod,
-            onUs: error2.isPanic,
-            showColors: this.client._errorFormat === "pretty"
+            isPanic: error2.isPanic,
+            showColors: this.client._errorFormat === "pretty",
+            message
           });
-          message = `${stack}
-  ${error2.message}`;
         }
         message = this.sanitizeMessage(message);
         if (error2.code) {
@@ -60142,26 +62115,36 @@ ${(0, import_indent_string3.default)(nestedValue.toString(), tab)}
           return;
         }
         if (typeof options !== "object" || Array.isArray(options)) {
-          throw new PrismaClientConstructorValidationError(`Invalid value ${JSON.stringify(options)} for "datasources" provided to PrismaClient constructor`);
+          throw new PrismaClientConstructorValidationError(
+            `Invalid value ${JSON.stringify(options)} for "datasources" provided to PrismaClient constructor`
+          );
         }
         for (const [key, value] of Object.entries(options)) {
           if (!datasourceNames.includes(key)) {
             const didYouMean = getDidYouMean(key, datasourceNames) || `Available datasources: ${datasourceNames.join(", ")}`;
-            throw new PrismaClientConstructorValidationError(`Unknown datasource ${key} provided to PrismaClient constructor.${didYouMean}`);
+            throw new PrismaClientConstructorValidationError(
+              `Unknown datasource ${key} provided to PrismaClient constructor.${didYouMean}`
+            );
           }
           if (typeof value !== "object" || Array.isArray(value)) {
-            throw new PrismaClientConstructorValidationError(`Invalid value ${JSON.stringify(options)} for datasource "${key}" provided to PrismaClient constructor.
-It should have this form: { url: "CONNECTION_STRING" }`);
+            throw new PrismaClientConstructorValidationError(
+              `Invalid value ${JSON.stringify(options)} for datasource "${key}" provided to PrismaClient constructor.
+It should have this form: { url: "CONNECTION_STRING" }`
+            );
           }
           if (value && typeof value === "object") {
             for (const [key1, value1] of Object.entries(value)) {
               if (key1 !== "url") {
-                throw new PrismaClientConstructorValidationError(`Invalid value ${JSON.stringify(options)} for datasource "${key}" provided to PrismaClient constructor.
-It should have this form: { url: "CONNECTION_STRING" }`);
+                throw new PrismaClientConstructorValidationError(
+                  `Invalid value ${JSON.stringify(options)} for datasource "${key}" provided to PrismaClient constructor.
+It should have this form: { url: "CONNECTION_STRING" }`
+                );
               }
               if (typeof value1 !== "string") {
-                throw new PrismaClientConstructorValidationError(`Invalid value ${JSON.stringify(value1)} for datasource "${key}" provided to PrismaClient constructor.
-It should have this form: { url: "CONNECTION_STRING" }`);
+                throw new PrismaClientConstructorValidationError(
+                  `Invalid value ${JSON.stringify(value1)} for datasource "${key}" provided to PrismaClient constructor.
+It should have this form: { url: "CONNECTION_STRING" }`
+                );
               }
             }
           }
@@ -60172,11 +62155,15 @@ It should have this form: { url: "CONNECTION_STRING" }`);
           return;
         }
         if (typeof options !== "string") {
-          throw new PrismaClientConstructorValidationError(`Invalid value ${JSON.stringify(options)} for "errorFormat" provided to PrismaClient constructor.`);
+          throw new PrismaClientConstructorValidationError(
+            `Invalid value ${JSON.stringify(options)} for "errorFormat" provided to PrismaClient constructor.`
+          );
         }
         if (!errorFormats.includes(options)) {
           const didYouMean = getDidYouMean(options, errorFormats);
-          throw new PrismaClientConstructorValidationError(`Invalid errorFormat ${options} provided to PrismaClient constructor.${didYouMean}`);
+          throw new PrismaClientConstructorValidationError(
+            `Invalid errorFormat ${options} provided to PrismaClient constructor.${didYouMean}`
+          );
         }
       },
       log: (options) => {
@@ -60184,13 +62171,17 @@ It should have this form: { url: "CONNECTION_STRING" }`);
           return;
         }
         if (!Array.isArray(options)) {
-          throw new PrismaClientConstructorValidationError(`Invalid value ${JSON.stringify(options)} for "log" provided to PrismaClient constructor.`);
+          throw new PrismaClientConstructorValidationError(
+            `Invalid value ${JSON.stringify(options)} for "log" provided to PrismaClient constructor.`
+          );
         }
         function validateLogLevel(level) {
           if (typeof level === "string") {
             if (!logLevels.includes(level)) {
               const didYouMean = getDidYouMean(level, logLevels);
-              throw new PrismaClientConstructorValidationError(`Invalid log level "${level}" provided to PrismaClient constructor.${didYouMean}`);
+              throw new PrismaClientConstructorValidationError(
+                `Invalid log level "${level}" provided to PrismaClient constructor.${didYouMean}`
+              );
             }
           }
         }
@@ -60203,7 +62194,11 @@ It should have this form: { url: "CONNECTION_STRING" }`);
               const emits = ["stdout", "event"];
               if (!emits.includes(value)) {
                 const didYouMean = getDidYouMean(value, emits);
-                throw new PrismaClientConstructorValidationError(`Invalid value ${JSON.stringify(value)} for "emit" in logLevel provided to PrismaClient constructor.${didYouMean}`);
+                throw new PrismaClientConstructorValidationError(
+                  `Invalid value ${JSON.stringify(
+                    value
+                  )} for "emit" in logLevel provided to PrismaClient constructor.${didYouMean}`
+                );
               }
             }
           };
@@ -60212,7 +62207,9 @@ It should have this form: { url: "CONNECTION_STRING" }`);
               if (logValidators[key]) {
                 logValidators[key](value);
               } else {
-                throw new PrismaClientConstructorValidationError(`Invalid property ${key} for "log" provided to PrismaClient constructor`);
+                throw new PrismaClientConstructorValidationError(
+                  `Invalid property ${key} for "log" provided to PrismaClient constructor`
+                );
               }
             }
           }
@@ -60224,12 +62221,16 @@ It should have this form: { url: "CONNECTION_STRING" }`);
         }
         const knownKeys = ["debug", "hooks", "engine", "measurePerformance"];
         if (typeof value !== "object") {
-          throw new PrismaClientConstructorValidationError(`Invalid value ${JSON.stringify(value)} for "__internal" to PrismaClient constructor`);
+          throw new PrismaClientConstructorValidationError(
+            `Invalid value ${JSON.stringify(value)} for "__internal" to PrismaClient constructor`
+          );
         }
         for (const [key] of Object.entries(value)) {
           if (!knownKeys.includes(key)) {
             const didYouMean = getDidYouMean(key, knownKeys);
-            throw new PrismaClientConstructorValidationError(`Invalid property ${JSON.stringify(key)} for "__internal" provided to PrismaClient constructor.${didYouMean}`);
+            throw new PrismaClientConstructorValidationError(
+              `Invalid property ${JSON.stringify(key)} for "__internal" provided to PrismaClient constructor.${didYouMean}`
+            );
           }
         }
       },
@@ -60240,14 +62241,20 @@ It should have this form: { url: "CONNECTION_STRING" }`);
         if (isError(value) || typeof value === "boolean" || typeof value === "object" || typeof value === "function") {
           return value;
         }
-        throw new PrismaClientConstructorValidationError(`Invalid rejectOnNotFound expected a boolean/Error/{[modelName: Error | boolean]} but received ${JSON.stringify(value)}`);
+        throw new PrismaClientConstructorValidationError(
+          `Invalid rejectOnNotFound expected a boolean/Error/{[modelName: Error | boolean]} but received ${JSON.stringify(
+            value
+          )}`
+        );
       }
     };
     function validatePrismaClientOptions(options, datasourceNames) {
       for (const [key, value] of Object.entries(options)) {
         if (!knownProperties.includes(key)) {
           const didYouMean = getDidYouMean(key, knownProperties);
-          throw new PrismaClientConstructorValidationError(`Unknown property ${key} provided to PrismaClient constructor.${didYouMean}`);
+          throw new PrismaClientConstructorValidationError(
+            `Unknown property ${key} provided to PrismaClient constructor.${didYouMean}`
+          );
         }
         validators[key](value, datasourceNames);
       }
@@ -60339,10 +62346,12 @@ More Information: https://pris.ly/d/execute-raw
               this._fetcher.handleRequestError({ ...params, error: error2 });
             }
           });
+          this.$extends = $extends;
           var _a32, _b22, _c2, _d2, _e, _f, _g, _h, _i;
           if (optionsArg) {
             validatePrismaClientOptions(optionsArg, config2.datasourceNames);
           }
+          this._extensions = [];
           this._previewFeatures = (_b22 = (_a32 = config2.generator) == null ? void 0 : _a32.previewFeatures) != null ? _b22 : [];
           this._rejectOnNotFound = optionsArg == null ? void 0 : optionsArg.rejectOnNotFound;
           this._clientVersion = (_c2 = config2.clientVersion) != null ? _c2 : clientVersion;
@@ -60366,7 +62375,7 @@ More Information: https://pris.ly/d/execute-raw
               this._hooks = internal.hooks;
             }
             let cwd = import_path5.default.resolve(config2.dirname, config2.relativePath);
-            if (!import_fs8.default.existsSync(cwd)) {
+            if (!import_fs9.default.existsSync(cwd)) {
               cwd = config2.dirname;
             }
             debug12("dirname", config2.dirname);
@@ -60407,7 +62416,9 @@ More Information: https://pris.ly/d/execute-raw
               generator: config2.generator,
               showColors: this._errorFormat === "pretty",
               logLevel: options.log && getLogLevel(options.log),
-              logQueries: options.log && Boolean(typeof options.log === "string" ? options.log === "query" : options.log.find((o) => typeof o === "string" ? o === "query" : o.level === "query")),
+              logQueries: options.log && Boolean(
+                typeof options.log === "string" ? options.log === "query" : options.log.find((o) => typeof o === "string" ? o === "query" : o.level === "query")
+              ),
               env: (_i = (_h = loadedEnv == null ? void 0 : loadedEnv.parsed) != null ? _h : (_g = config2.injectableEdgeEnv) == null ? void 0 : _g.parsed) != null ? _i : {},
               flags: [],
               clientVersion: config2.clientVersion,
@@ -60528,36 +62539,36 @@ More Information: https://pris.ly/d/execute-raw
           } catch (e) {
           }
         }
-        $executeRawInternal(txId, lock, query2, ...values) {
+        $executeRawInternal(transaction, lock, query2, ...values) {
           let queryString = "";
           let parameters = void 0;
           if (typeof query2 === "string") {
             queryString = query2;
             parameters = {
               values: serializeRawParameters(values || []),
-              __prismaRawParamaters__: true
+              __prismaRawParameters__: true
             };
             checkAlter(queryString, values, "prisma.$executeRawUnsafe(<SQL>, [...values])");
           } else if (isReadonlyArray(query2)) {
             switch (this._activeProvider) {
               case "sqlite":
               case "mysql": {
-                const queryInstance = sqlTemplateTag.sqltag(query2, ...values);
+                const queryInstance = new Sql(query2, values);
                 queryString = queryInstance.sql;
                 parameters = {
                   values: serializeRawParameters(queryInstance.values),
-                  __prismaRawParamaters__: true
+                  __prismaRawParameters__: true
                 };
                 break;
               }
               case "cockroachdb":
               case "postgresql": {
-                const queryInstance = sqlTemplateTag.sqltag(query2, ...values);
+                const queryInstance = new Sql(query2, values);
                 queryString = queryInstance.text;
                 checkAlter(queryString, queryInstance.values, "prisma.$executeRaw`<SQL>`");
                 parameters = {
                   values: serializeRawParameters(queryInstance.values),
-                  __prismaRawParamaters__: true
+                  __prismaRawParameters__: true
                 };
                 break;
               }
@@ -60565,7 +62576,7 @@ More Information: https://pris.ly/d/execute-raw
                 queryString = mssqlPreparedStatement(query2);
                 parameters = {
                   values: serializeRawParameters(values),
-                  __prismaRawParamaters__: true
+                  __prismaRawParameters__: true
                 };
                 break;
               }
@@ -60592,7 +62603,7 @@ More Information: https://pris.ly/d/execute-raw
             }
             parameters = {
               values: serializeRawParameters(query2.values),
-              __prismaRawParamaters__: true
+              __prismaRawParameters__: true
             };
           }
           if (parameters == null ? void 0 : parameters.values) {
@@ -60608,15 +62619,14 @@ More Information: https://pris.ly/d/execute-raw
             dataPath: [],
             action: "executeRaw",
             callsite: getCallSite(this._errorFormat),
-            runInTransaction: !!txId,
-            transactionId: txId,
+            transaction,
             lock
           });
         }
         $executeRaw(query2, ...values) {
-          return createPrismaPromise((txId, lock) => {
+          return createPrismaPromise((transaction, lock) => {
             if (query2.raw !== void 0 || query2.sql !== void 0) {
-              return this.$executeRawInternal(txId, lock, query2, ...values);
+              return this.$executeRawInternal(transaction, lock, query2, ...values);
             }
             throw new PrismaClientValidationError(`\`$executeRaw\` is a tag function, please use it like the following:
 \`\`\`
@@ -60628,64 +62638,65 @@ Or read our docs at https://www.prisma.io/docs/concepts/components/prisma-client
           });
         }
         $executeRawUnsafe(query2, ...values) {
-          return createPrismaPromise((txId, lock) => {
-            return this.$executeRawInternal(txId, lock, query2, ...values);
+          return createPrismaPromise((transaction, lock) => {
+            return this.$executeRawInternal(transaction, lock, query2, ...values);
           });
         }
         $runCommandRaw(command) {
           if (config2.activeProvider !== "mongodb") {
-            throw new PrismaClientValidationError(`The ${config2.activeProvider} provider does not support $runCommandRaw. Use the mongodb provider.`);
+            throw new PrismaClientValidationError(
+              `The ${config2.activeProvider} provider does not support $runCommandRaw. Use the mongodb provider.`
+            );
           }
-          return createPrismaPromise((txId, lock) => {
+          return createPrismaPromise((transaction, lock) => {
             return this._request({
               args: { command },
               clientMethod: "$runCommandRaw",
               dataPath: [],
               action: "runCommandRaw",
               callsite: getCallSite(this._errorFormat),
-              runInTransaction: !!txId,
-              transactionId: txId,
+              transaction,
               lock
             });
           });
         }
-        $queryRawInternal(txId, lock, query2, ...values) {
+        async $queryRawInternal(transaction, lock, query2, ...values) {
           let queryString = "";
           let parameters = void 0;
           if (typeof query2 === "string") {
             queryString = query2;
             parameters = {
               values: serializeRawParameters(values || []),
-              __prismaRawParamaters__: true
+              __prismaRawParameters__: true
             };
           } else if (isReadonlyArray(query2)) {
             switch (this._activeProvider) {
               case "sqlite":
               case "mysql": {
-                const queryInstance = sqlTemplateTag.sqltag(query2, ...values);
+                const queryInstance = new Sql(query2, values);
                 queryString = queryInstance.sql;
                 parameters = {
                   values: serializeRawParameters(queryInstance.values),
-                  __prismaRawParamaters__: true
+                  __prismaRawParameters__: true
                 };
                 break;
               }
               case "cockroachdb":
               case "postgresql": {
-                const queryInstance = sqlTemplateTag.sqltag(query2, ...values);
+                const queryInstance = new Sql(query2, values);
                 queryString = queryInstance.text;
                 parameters = {
                   values: serializeRawParameters(queryInstance.values),
-                  __prismaRawParamaters__: true
+                  __prismaRawParameters__: true
                 };
                 break;
               }
               case "sqlserver": {
-                const queryInstance = sqlTemplateTag.sqltag(query2, ...values);
+                const queryInstance = new Sql(query2, values);
                 queryString = mssqlPreparedStatement(queryInstance.strings);
                 parameters = {
                   values: serializeRawParameters(queryInstance.values),
-                  __prismaRawParamaters__: true
+                  __prismaRawParameters__: true
                 };
                 break;
               }
@@ -60712,7 +62723,7 @@ Or read our docs at https://www.prisma.io/docs/concepts/components/prisma-client
             }
             parameters = {
               values: serializeRawParameters(query2.values),
-              __prismaRawParamaters__: true
+              __prismaRawParameters__: true
             };
           }
           if (parameters == null ? void 0 : parameters.values) {
@@ -60728,8 +62739,7 @@ Or read our docs at https://www.prisma.io/docs/concepts/components/prisma-client
             dataPath: [],
             action: "queryRaw",
             callsite: getCallSite(this._errorFormat),
-            runInTransaction: !!txId,
-            transactionId: txId,
+            transaction,
             lock
           }).then(deserializeRawResults);
         }
@@ -60772,20 +62782,24 @@ new PrismaClient({
             },
             clientMethod: "queryRaw",
             dataPath: [],
-            runInTransaction: false,
             headers,
             callsite: getCallSite(this._errorFormat)
           });
         }
-        _transactionWithArray(promises) {
+        _transactionWithArray({
+          promises,
+          options
+        }) {
           const txId = this._transactionId++;
           const lock = getLockCountPromise(promises.length);
           const requests = promises.map((request2) => {
             var _a32;
             if ((request2 == null ? void 0 : request2[Symbol.toStringTag]) !== "PrismaPromise") {
-              throw new Error(`All elements of the array need to be Prisma Client promises. Hint: Please make sure you are not awaiting the Prisma client calls you intended to pass in the $transaction function.`);
+              throw new Error(
+                `All elements of the array need to be Prisma Client promises. Hint: Please make sure you are not awaiting the Prisma client calls you intended to pass in the $transaction function.`
+              );
             }
-            return (_a32 = request2.requestTransaction) == null ? void 0 : _a32.call(request2, txId, lock);
+            return (_a32 = request2.requestTransaction) == null ? void 0 : _a32.call(request2, { id: txId, isolationLevel: options == null ? void 0 : options.isolationLevel }, lock);
           });
           return Promise.all(requests);
         }
@@ -60793,16 +62807,15 @@ new PrismaClient({
           callback,
           options
         }) {
-          const headers = { traceparent: getTraceParent() };
+          const headers = { traceparent: getTraceParent({ tracingConfig: this._tracingConfig }) };
           const info2 = await this._engine.transaction("start", headers, options);
           let result;
           try {
-            result = await callback(transactionProxy(this, info2.id));
+            result = await callback(transactionProxy(this, { id: info2.id }));
             await this._engine.transaction("commit", headers, info2);
           } catch (e) {
             await this._engine.transaction("rollback", headers, info2).catch(() => {
             });
-            e.clientVersion = this._clientVersion;
             throw e;
           }
           return result;
@@ -60812,7 +62825,7 @@ new PrismaClient({
           if (typeof input === "function" && this._hasPreviewFlag("interactiveTransactions")) {
             callback = /* @__PURE__ */ __name(() => this._transactionWithCallback({ callback: input, options }), "callback");
           } else {
-            callback = /* @__PURE__ */ __name(() => this._transactionWithArray(input), "callback");
+            callback = /* @__PURE__ */ __name(() => this._transactionWithArray({ promises: input, options }), "callback");
           }
           const spanOptions = {
             name: "transaction",
@@ -60827,7 +62840,7 @@ new PrismaClient({
             const params = {
               args: internalParams.args,
               dataPath: internalParams.dataPath,
-              runInTransaction: internalParams.runInTransaction,
+              runInTransaction: Boolean(internalParams.transaction),
               action: internalParams.action,
               model: internalParams.model
             };
@@ -60849,14 +62862,22 @@ new PrismaClient({
               }
             };
             let index = -1;
-            const consumer = /* @__PURE__ */ __name((changedParams) => {
+            const consumer = /* @__PURE__ */ __name((changedMiddlewareParams) => {
               const nextMiddleware = this._middlewares.query.get(++index);
               if (nextMiddleware) {
                 return runInChildSpan(spanOptions.middleware, async (span) => {
-                  return nextMiddleware(changedParams, (p) => (span == null ? void 0 : span.end(), consumer(p)));
+                  return nextMiddleware(changedMiddlewareParams, (p) => (span == null ? void 0 : span.end(), consumer(p)));
                 });
               }
-              return this._executeRequest({ ...internalParams, ...changedParams });
+              const { runInTransaction, ...changedRequestParams } = changedMiddlewareParams;
+              const requestParams = {
+                ...internalParams,
+                ...changedRequestParams
+              };
+              if (!runInTransaction) {
+                requestParams.transaction = void 0;
+              }
+              return this._executeRequest(requestParams);
             }, "consumer");
             return await runInChildSpan(spanOptions.operation, () => {
               if (true) {
@@ -60876,11 +62897,10 @@ new PrismaClient({
           jsModelName,
           dataPath,
           callsite,
-          runInTransaction,
           action,
           model,
           headers,
-          transactionId,
+          transaction,
           lock,
           unpacker,
           otelParentCtx
@@ -60907,7 +62927,9 @@ new PrismaClient({
           }
           const field = (_b22 = this._dmmf) == null ? void 0 : _b22.rootFieldMap[rootField];
           if (field === void 0) {
-            throw new Error(`Could not find rootField ${rootField} for action ${action} for model ${model} on rootType ${operation}`);
+            throw new Error(
+              `Could not find rootField ${rootField} for action ${action} for model ${model} on rootType ${operation}`
+            );
           }
           const { isList } = field.outputType;
           const typeName = getOutputTypeName(field.outputType.type);
@@ -60918,7 +62940,8 @@ new PrismaClient({
               dmmf: this._dmmf,
               rootField,
               rootTypeName: operation,
-              select: args
+              select: args,
+              modelName: model
             });
             document3.validate(args, false, clientMethod, this._errorFormat, callsite);
             return transformDocument(document3);
@@ -60931,12 +62954,14 @@ new PrismaClient({
           if (src_default.enabled("prisma:client")) {
             const query2 = String(document2);
             debug12(`Prisma Client call:`);
-            debug12(`prisma.${clientMethod}(${printJsonWithErrors({
-              ast: args,
-              keyPaths: [],
-              valuePaths: [],
-              missingItems: []
-            })})`);
+            debug12(
+              `prisma.${clientMethod}(${printJsonWithErrors({
+                ast: args,
+                keyPaths: [],
+                valuePaths: [],
+                missingItems: []
+              })})`
+            );
             debug12(`Generated request:`);
             debug12(query2 + "\n");
           }
@@ -60952,9 +62977,8 @@ new PrismaClient({
             callsite,
             args,
             engineHook: this._middlewares.engine.get(0),
-            runInTransaction,
             headers,
-            transactionId,
+            transaction,
             unpacker,
             otelParentCtx,
             otelChildCtx: context2.active()
@@ -60962,7 +62986,9 @@ new PrismaClient({
         }
         get $metrics() {
           if (!this._hasPreviewFlag("metrics")) {
-            throw new PrismaClientValidationError("`metrics` preview feature must be enabled in order to access metrics API");
+            throw new PrismaClientValidationError(
+              "`metrics` preview feature must be enabled in order to access metrics API"
+            );
           }
           return this._metrics;
         }
@@ -60975,8 +63001,8 @@ new PrismaClient({
       return PrismaClient2;
     }
     __name(getPrismaClient, "getPrismaClient");
-    var forbidden = ["$connect", "$disconnect", "$on", "$transaction", "$use"];
-    function transactionProxy(thing, txId) {
+    var forbidden = ["$connect", "$disconnect", "$on", "$transaction", "$use", "$extends"];
+    function transactionProxy(thing, transaction) {
       if (typeof thing !== "object")
         return thing;
       return new Proxy(thing, {
@@ -60984,19 +63010,19 @@ new PrismaClient({
           if (forbidden.includes(prop))
             return void 0;
           if (prop === TX_ID)
-            return txId;
+            return transaction == null ? void 0 : transaction.id;
           if (typeof target[prop] === "function") {
             return (...args) => {
               if (prop === "then")
-                return target[prop](args[0], args[1], txId);
+                return target[prop](args[0], args[1], transaction);
               if (prop === "catch")
-                return target[prop](args[0], txId);
+                return target[prop](args[0], transaction);
               if (prop === "finally")
-                return target[prop](args[0], txId);
-              return transactionProxy(target[prop](...args), txId);
+                return target[prop](args[0], transaction);
+              return transactionProxy(target[prop](...args), transaction);
             };
           }
-          return transactionProxy(target[prop], txId);
+          return transactionProxy(target[prop], transaction);
         }
       });
     }
@@ -61010,7 +63036,10 @@ new PrismaClient({
         const replacementAction = rejectOnNotFoundReplacements[action];
         const replacementCall = model ? `prisma.${model}.${replacementAction}` : `prisma.${replacementAction}`;
         const key = `rejectOnNotFound.${model != null ? model : ""}.${action}`;
-        warnOnce(key, `\`rejectOnNotFound\` option is deprecated and will be removed in Prisma 5. Please use \`${replacementCall}\` method instead`);
+        warnOnce(
+          key,
+          `\`rejectOnNotFound\` option is deprecated and will be removed in Prisma 5. Please use \`${replacementCall}\` method instead`
+        );
       }
     }
     __name(warnAboutRejectOnNotFound, "warnAboutRejectOnNotFound");
@@ -61036,15 +63065,15 @@ new PrismaClient({
       });
     }
     __name(makeStrictEnum, "makeStrictEnum");
-    var import_fs9 = __toESM(require("fs"));
+    var import_fs10 = __toESM(require("fs"));
     var import_path6 = __toESM(require("path"));
     var import_util7 = require("util");
-    var readdirAsync = (0, import_util7.promisify)(import_fs9.default.readdir);
-    var realpathAsync = (0, import_util7.promisify)(import_fs9.default.realpath);
-    var statAsync = (0, import_util7.promisify)(import_fs9.default.stat);
-    var readdirSync = import_fs9.default.readdirSync;
-    var realpathSync = import_fs9.default.realpathSync;
-    var statSync = import_fs9.default.statSync;
+    var readdirAsync = (0, import_util7.promisify)(import_fs10.default.readdir);
+    var realpathAsync = (0, import_util7.promisify)(import_fs10.default.realpath);
+    var statAsync = (0, import_util7.promisify)(import_fs10.default.stat);
+    var readdirSync = import_fs10.default.readdirSync;
+    var realpathSync = import_fs10.default.realpathSync;
+    var statSync = import_fs10.default.statSync;
     function direntToType(dirent) {
       return dirent.isFile() ? "f" : dirent.isDirectory() ? "d" : dirent.isSymbolicLink() ? "l" : void 0;
     }
@@ -61103,7 +63132,6 @@ new PrismaClient({
       tryLoadEnvs(envPaths, { conflictCheck: "warn" });
     }
     __name(warnEnvConflicts, "warnEnvConflicts");
-    var import_sql_template_tag = __toESM(require_dist());
     var decompressFromBase642 = lzString.decompressFromBase64;
   }
 });
@@ -61133,8 +63161,8 @@ var require_client3 = __commonJS2({
     var Prisma = {};
     exports2.Prisma = Prisma;
     Prisma.prismaVersion = {
-      client: "4.2.1",
-      engine: "2920a97877e12e055c1333079b8d19cee7f33826"
+      client: "4.5.0",
+      engine: "0362da9eebca54d94c8ef5edd3b2e90af99ba452"
     };
     Prisma.PrismaClientKnownRequestError = PrismaClientKnownRequestError2;
     Prisma.PrismaClientUnknownRequestError = PrismaClientUnknownRequestError2;
@@ -61210,8 +63238,8 @@ var require_client3 = __commonJS2({
         "schemaEnvPath": "../../../.env"
       },
       "relativePath": "../../../prisma",
-      "clientVersion": "4.2.1",
-      "engineVersion": "2920a97877e12e055c1333079b8d19cee7f33826",
+      "clientVersion": "4.5.0",
+      "engineVersion": "0362da9eebca54d94c8ef5edd3b2e90af99ba452",
       "datasourceNames": [
         "db"
       ],
@@ -61934,7 +63962,7 @@ var require_words = __commonJS2({
 });
 
 // node_modules/random-word-slugs/dist/index.js
-var require_dist5 = __commonJS2({
+var require_dist3 = __commonJS2({
   "node_modules/random-word-slugs/dist/index.js"(exports2) {
     "use strict";
     var __assign3 = exports2 && exports2.__assign || function() {
@@ -62030,7 +64058,7 @@ var import_express = __toESM2(require_express2());
 var import_http = __toESM2(require("http"));
 
 // node_modules/socket.io/wrapper.mjs
-var import_dist = __toESM2(require_dist4(), 1);
+var import_dist = __toESM2(require_dist2(), 1);
 var { Server, Namespace, Socket } = import_dist.default;
 
 // index.ts
@@ -62149,7 +64177,7 @@ var processAllChanges = (sortedChanges, initial) => {
 };
 
 // index.ts
-var import_random_word_slugs = __toESM2(require_dist5());
+var import_random_word_slugs = __toESM2(require_dist3());
 
 // ../lib/constants.ts
 var _a4;
@@ -62267,6 +64295,13 @@ object-assign
 (c) Sindre Sorhus
 @license MIT
 */
+/*!
+ *  decimal.js v10.4.2
+ *  An arbitrary-precision Decimal type for JavaScript.
+ *  https://github.com/MikeMcl/decimal.js
+ *  Copyright (c) 2022 Michael Mclaughlin <M8ch88l@gmail.com>
+ *  MIT Licence
+ */
 /*!
  * @description Recursive object extending
  * @author Viacheslav Lotsmanov <lotsmanov89@gmail.com>

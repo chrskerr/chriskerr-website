@@ -28,7 +28,7 @@ export const renderer = ({
 	if (!canvas || !ctx) return;
 
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	ctx.font = "16px 'IBM Plex Mono'";
+	ctx.font = "400 16px 'IBM Plex Mono'";
 
 	const isSelecting = selectedTextStart && selectedTextEnd;
 

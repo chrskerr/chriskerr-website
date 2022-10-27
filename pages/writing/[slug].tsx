@@ -76,22 +76,18 @@ export default function AsyncFunctionSerialiser(blog: Blog): ReactElement {
 						);
 					})}
 			</Head>
-			<div className="flex flex-col items-center w-full">
-				<h1 className="mb-6 text-2xl font-bold text-center sm:text-3xl display-width">
-					{title}
-				</h1>
-				<p className="text-lg text-center display-width narrower">
-					{description}
-				</p>
+			<div className="flex flex-col w-full">
+				<h1 className="mb-4 text-4xl display-width">{title}</h1>
+				<p className="mb-2 text-lg display-width">{description}</p>
+				<div className="display-width">
+					<p className="text-gray-600 sm:text-sm">
+						Written: {publishedAtString}
+					</p>
+				</div>
 				<div
 					className="w-full prose divider-before"
 					dangerouslySetInnerHTML={{ __html: htmlContent }}
 				/>
-				<div className="flex flex-col flex-wrap items-end w-full mt-8 display-width">
-					<p className="text-gray-600 sm:text-sm font-heading">
-						Written: {publishedAtString}
-					</p>
-				</div>
 			</div>
 		</>
 	);

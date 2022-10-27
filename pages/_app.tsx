@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react';
 import type { AppProps } from 'next/app';
 import Link from 'next/link';
-import Image from 'next/future/image';
+import Image from 'next/image';
 import Router from 'next/router';
 import nProgress from 'nprogress';
 
@@ -33,14 +33,15 @@ export default function App({ Component, pageProps }: AppProps): ReactElement {
 					],
 				}}
 			/>
-			<div className="relative flex flex-col w-full min-h-screen">
+			<div className="relative flex flex-col w-full min-h-screen font-mono">
 				<div className="sticky top-0 z-[51] w-full pb-0 before:absolute before:inset-0 nav-gradient before:blur mb-16 sm:mb-24">
 					<nav className="flex justify-center w-full bg-white blur-0">
-						<div className="flex items-center w-full p-3 px-10 lg:px-24 sm:p-6">
-							<Link href="/" passHref>
-								<a className="text-3xl font-extrabold uppercase transition sm:text-4xl font-heading hover:text-brand">
-									Chris Kerr
-								</a>
+						<div className="flex items-center py-3 display-width">
+							<Link
+								href="/"
+								className="text-3xl transition sm:text-4xl hover:text-brand"
+							>
+								Chris Kerr
 							</Link>
 						</div>
 					</nav>
@@ -49,15 +50,13 @@ export default function App({ Component, pageProps }: AppProps): ReactElement {
 					<Component {...pageProps} />
 				</div>
 				<footer className="flex flex-col items-center pb-12 mx-auto sm:flex-row sm:justify-between display-width divider-before">
-					<Link href="/uncopyright" passHref>
-						<a className="mb-4 sm:mb-0">
-							<Image
-								src="/images/uncopyrighted-black_1@2x.png"
-								width={(50 * 1296) / 392}
-								height={50}
-								alt="Uncopywrited notice"
-							/>
-						</a>
+					<Link href="/uncopyright" className="mb-4 sm:mb-0">
+						<Image
+							src="/images/uncopyrighted-black_1@2x.png"
+							width={(50 * 1296) / 392}
+							height={50}
+							alt="Uncopywrited notice"
+						/>
 					</Link>
 					<div className="mb-8 sm:mb-0">
 						<Image

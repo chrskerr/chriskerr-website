@@ -34,19 +34,7 @@ export default function Document(): ReactElement {
 				/>
 
 				<link
-					href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap"
-					rel="stylesheet"
-				/>
-				<link
-					href="https://fonts.googleapis.com/css2?family=Passion+One&display=swap"
-					rel="stylesheet"
-				/>
-				<link
-					href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap"
-					rel="stylesheet"
-				/>
-				<link
-					href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap"
+					href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&display=swap"
 					rel="stylesheet"
 				/>
 			</Head>

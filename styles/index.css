@@ -27,98 +27,12 @@ body {
 
 * {
 	-webkit-font-smoothing: antialiased;
+	@apply font-mono;
 }
 
 .nav-gradient:before {
 	background-image: var(--rainbow-gradient);
 	content: ' ';
-}
-
-.prose pre {
-	word-wrap: break-word;
-	line-break: loose;
-	@apply p-0 bg-transparent;
-}
-
-.prose pre code {
-	background-color: rgb(246, 248, 250);
-	@apply font-mono rounded-lg;
-}
-
-.prose a {
-	@apply text-brand;
-}
-
-.prose b,
-.prose strong,
-.prose i,
-.prose em {
-	@apply text-brand-secondary;
-}
-
-.prose {
-	@apply max-w-4xl px-10 mx-auto;
-}
-
-.prose .callout,
-.prose .quote {
-	@apply relative block py-4 mx-auto text-2xl italic text-center text-brand-dark font-heading;
-	max-width: 80%;
-}
-
-.prose .quote::before,
-.prose .quote::after {
-	@apply absolute -translate-y-1/2 text-8xl top-1/2 font-special;
-}
-
-.prose .quote::before {
-	content: '“';
-	left: -0.8em;
-}
-
-.prose .quote::after {
-	content: '”';
-	right: -0.5em;
-}
-
-@media (max-width: 640px) {
-	.prose .quote {
-		@apply pt-10;
-	}
-
-	.prose .quote::before {
-		@apply -translate-x-1/2 translate-y-0 left-1/2;
-		top: -0.2em;
-	}
-
-	.prose .quote::after {
-		content: '';
-	}
-}
-
-.prose .quote-attr {
-	@apply block pb-4 mx-auto -mt-4 text-center text-brand-dark font-heading;
-	max-width: 70%;
-}
-
-/* https://ui.glass/generator/ */
-.glass {
-	backdrop-filter: blur(8px) saturate(180%);
-	background-color: rgba(255, 255, 255, 0.8);
-}
-
-@media (max-width: 640px) {
-	.glass {
-		backdrop-filter: blur(16px) saturate(180%);
-		background-color: rgba(255, 255, 255, 0.85);
-	}
-}
-.no-scroll {
-	@apply fixed h-screen;
-	touch-action: none;
-	-webkit-overflow-scrolling: none;
-	overflow: hidden;
-	overscroll-behaviour: none;
 }
 
 .display-width {
@@ -137,7 +51,7 @@ body {
 .divider-before::before {
 	position: absolute;
 	content: ' ';
-	height: 4px;
+	height: 2px;
 	width: 50%;
 	background-image: var(--rainbow-gradient);
 	left: 50%;
@@ -149,28 +63,6 @@ body {
 	.divider-before::before {
 		top: -5rem;
 	}
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-	@apply font-heading;
-}
-
-.prose h1,
-.prose h2,
-.prose h3,
-.prose h4,
-.prose h5,
-.prose h6 {
-	@apply font-sans;
-}
-
-.prose img {
-	@apply mx-auto;
 }
 
 button.button {
@@ -194,6 +86,35 @@ input[type='radio']:checked {
 	@apply bg-brand;
 }
 
+/* PROSE */
+
+.prose {
+	@apply max-w-5xl px-10 mx-auto font-mono;
+}
+
+.prose pre {
+	word-wrap: break-word;
+	line-break: loose;
+	@apply p-0 bg-transparent;
+}
+
+.prose pre code {
+	background-color: rgb(246, 248, 250);
+	@apply rounded-lg;
+}
+
+.prose a {
+	@apply text-brand;
+}
+
+.prose b,
+.prose strong,
+.prose i,
+.prose em {
+	@apply text-brand-secondary;
+}
+
+/* ICONS */
 @font-face {
 	font-family: 'icomoon';
 	src: url('fonts/icomoon.ttf?e7n5cv') format('truetype'),
@@ -243,11 +164,11 @@ input[type='radio']:checked {
 	-moz-transform: translate3d(0, 0, 0);
 }
 
-/* Make clicks pass-through */
+/* LOADER */
 #nprogress {
 	pointer-events: none;
 }
-  
+
 #nprogress .bar {
 	background: var(--brand-blue);
 
@@ -268,7 +189,7 @@ input[type='radio']:checked {
 	width: 100px;
 	height: 100%;
 	box-shadow: 0 0 10px var(--brand-blue), 0 0 5px var(--brand-blue);
-	opacity: 1.0;
+	opacity: 1;
 
 	-webkit-transform: rotate(3deg) translate(0px, -4px);
 	-ms-transform: rotate(3deg) translate(0px, -4px);
