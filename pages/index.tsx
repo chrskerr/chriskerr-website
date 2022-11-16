@@ -13,6 +13,7 @@ const links: [string, string][] = [
 	['/editor', 'Collaborative Markdown Editor'],
 	['https://tasks.chriskerr.dev', 'Minimal Tasks / Reminders List'],
 	['/leo', 'Low Earth Orbit'],
+	['/emdr', 'EMDR Dot'],
 	[
 		`/writing/${BlogPostSlugs.ASYNC_FUNCTIONS}`,
 		BlogPostTitles.ASYNC_FUNCTIONS,
