@@ -64,7 +64,7 @@ export default function EMDR(): ReactElement {
 				</label>
 			</div>
 			<div className="display-width divider-before" />
-			<div className="relative flex items-center flex-1 w-full px-12">
+			<div className="relative flex flex-col flex-1 w-full px-12">
 				<div className="absolute text-lg top-4 right-16">
 					{formatDuration(timeOnPageMs)}
 				</div>
@@ -79,23 +79,29 @@ const EMDRDot = memo(function EMDRDot({
 }: {
 	durationSec: number | string;
 }): ReactElement {
-	const [isMovingRight, setIsMovingRight] = useState(false);
+	const [step, setStep] = useState(0);
 
 	function handleTransitionEnd() {
-		setIsMovingRight(state => !state);
+		setStep(state => state + 1);
 	}
 
 	useEffect(() => {
 		setTimeout(() => {
-			setIsMovingRight(true);
+			setStep(1);
 		}, 200);
 	}, []);
 
+	const className = `w-full flex-1 flex transition-transform will-change-transform ease-[cubic-bezier(0.37,0,0.63,1)] ${
+		step % 4 === 1 ? 'translate-x-[calc(100%-50px)] translate-y-[15%]' : ''
+	} ${step % 4 === 2 ? 'translate-y-[calc(85%-50px)]' : ''} ${
+		step % 4 === 3
+			? 'translate-x-[calc(100%-50px)] translate-y-[calc(85%-50px)]'
+			: ''
+	} ${step % 4 === 0 ? 'translate-y-[15%]' : ''}`;
+
 	return (
 		<div
-			className={`w-full flex transition-transform will-change-transform ease-[cubic-bezier(0.37,0,0.63,1)] ${
-				isMovingRight ? 'translate-x-[calc(100%-50px)]' : ''
-			}`}
+			className={className}
 			style={{
 				transitionDuration: `${durationSec || 2}s`,
 			}}
