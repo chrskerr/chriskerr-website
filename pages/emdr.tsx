@@ -94,7 +94,7 @@ const EMDRDot = memo(function EMDRDot({
 	return (
 		<div
 			className={`w-full flex transition-transform will-change-transform ease-[cubic-bezier(0.37,0,0.63,1)] ${
-				isMovingRight ? 'translate-x-[calc(100%-100px)]' : ''
+				isMovingRight ? 'translate-x-[calc(100%-50px)]' : ''
 			}`}
 			style={{
 				transitionDuration: `${durationSec || 2}s`,
