@@ -1,10 +1,17 @@
-interface CoreBlog {
-	slug: string;
-
+export interface BlogData {
 	title: string;
 	description: string;
 
 	tags: string[];
+	markdown: string;
+
+	createdAt: Date;
+	modifiedAt: Date;
+}
+
+export interface BlogDataWithDates
+	extends Omit<BlogData, 'createdAt' | 'modifiedAt'> {
+	slug: string;
 
 	publishedAtISO: string;
 	modifiedAtISO: string;
@@ -13,19 +20,7 @@ interface CoreBlog {
 	modifiedAtString: string;
 }
 
-export interface BlogData extends CoreBlog {
-	markdown: string;
-}
-
-export interface Blog extends CoreBlog {
+export interface Blog extends Omit<BlogDataWithDates, 'markdown'> {
 	htmlContent: string;
 	url: string;
-}
-
-export enum BlogPostSlugs {
-	ASYNC_FUNCTIONS = 'serialising-async-functions',
-}
-
-export enum BlogPostTitles {
-	ASYNC_FUNCTIONS = 'Serialising Async Functions',
 }

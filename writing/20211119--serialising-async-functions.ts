@@ -1,8 +1,4 @@
-import { BlogPostTitles, BlogPostSlugs, BlogData } from 'types/writing';
-import { formatISO, format } from 'date-fns';
-
-const createdAt = new Date(2021, 11, 19);
-const modifiedAt = new Date(2021, 11, 24);
+import { BlogData } from 'types/writing';
 
 const markdown = `
 So it turns out that I am way less versed in Javascript packages than I thought that I was, and didn't realise that [Async](https://www.npmjs.com/package/async) existed...
@@ -52,18 +48,14 @@ function serialise<InputType, ResultType>(
 `;
 
 export const serialisingAsyncFunctions: BlogData = {
-	title: BlogPostTitles.ASYNC_FUNCTIONS,
+	title: 'Serialising Async Functions',
 	description:
 		'How to create a serialised async function in Javascript / Typescript.',
-	slug: BlogPostSlugs.ASYNC_FUNCTIONS,
 
 	tags: ['javascript', 'typescript', 'async', 'serial', 'queue'],
 
 	markdown,
 
-	publishedAtISO: formatISO(createdAt),
-	modifiedAtISO: formatISO(modifiedAt),
-
-	publishedAtString: format(createdAt, 'dd MMMM yyyy'),
-	modifiedAtString: format(modifiedAt, 'dd MMMM yyyy'),
+	createdAt: new Date(2021, 11, 19),
+	modifiedAt: new Date(2021, 11, 24),
 };
