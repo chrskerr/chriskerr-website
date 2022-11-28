@@ -18,6 +18,8 @@ export interface BlogDataWithDates
 
 	publishedAtString: string;
 	modifiedAtString: string;
+
+	shortPublishedAtString: string;
 }
 
 export interface Blog extends Omit<BlogDataWithDates, 'markdown'> {

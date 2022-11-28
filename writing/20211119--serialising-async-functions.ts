@@ -56,6 +56,6 @@ export const serialisingAsyncFunctions: BlogData = {
 
 	markdown,
 
-	createdAt: new Date(2021, 11, 19),
-	modifiedAt: new Date(2021, 11, 24),
+	createdAt: new Date('2021-12-19'),
+	modifiedAt: new Date('2021-12-24'),
 };

@@ -33,7 +33,7 @@ export default function App({ Component, pageProps }: AppProps): ReactElement {
 					],
 				}}
 			/>
-			<div className="relative flex flex-col w-full min-h-screen font-mono">
+			<div className="flex flex-col w-full min-h-screen font-mono">
 				<div className="sticky top-0 z-[51] w-full pb-0 before:absolute before:inset-0 nav-gradient before:blur mb-16 sm:mb-24">
 					<nav className="flex justify-center w-full bg-white blur-0">
 						<div className="flex items-center py-3 display-width">

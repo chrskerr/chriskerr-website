@@ -21,9 +21,9 @@ const stuffLinkData: LinkData = [
 ];
 
 const writingLinkData: LinkData = allWriting.map(
-	({ slug, title, publishedAtString }) => [
+	({ slug, title, shortPublishedAtString }) => [
 		`/writing/${slug}`,
-		`${title} - ${publishedAtString}`,
+		`${title} - ${shortPublishedAtString}`,
 	],
 );
 
