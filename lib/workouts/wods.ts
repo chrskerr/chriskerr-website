@@ -8,7 +8,6 @@ const allWodsMarkdown: Array<{ id: string; markdown: string }> = [
 
 - 10x over-speed^ two handed (28kg) or single handed kettlebell swings (20kg)
 - 10x over-speed^ push ups
-- 10x dumbbell curls
 
 ^ make the lowering phase as fast as possible, push down if you can
 `,
@@ -86,6 +85,13 @@ Every minute on the minute, 10 sets of 10 double kettlebell cleans
 		id: '11',
 		markdown: `
 Spend 15 minutes working on handstands
+`,
+	},
+	{
+		id: '12',
+		markdown: `
+- 7 minutes of curls
+- 7 minutes of incline bench
 `,
 	},
 ];

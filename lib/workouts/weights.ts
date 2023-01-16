@@ -16,6 +16,18 @@ Deadlift, bench press & supinated lat pulldown:
 	{
 		id: '2',
 		markdown: `
+Deadlift, bench press & supinated lat pulldown:
+
+- keep the weight the same across all sets, but do the prescribed reps below
+- add 2.5kg each session on success
+- deload by 10% at failure or almost-failure
+- deadlift: 5, 3, 2 reps
+- bench & supinated lat pulldown: 7, 4, 3 reps
+`,
+	},
+	{
+		id: '3',
+		markdown: `
 Total tension complex, presses:
 
 - pick a kettlebell you can strictly press 6-8 times after a clean
@@ -27,7 +39,7 @@ Total tension complex, presses:
 `,
 	},
 	{
-		id: '3',
+		id: '4',
 		markdown: `
 Total tension complex, squat:
 

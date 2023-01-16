@@ -32,7 +32,7 @@ export const getServerSideProps: GetServerSideProps = async context => {
 
 	return {
 		redirect: {
-			destination: `/workout/${weightsId}/${wodId}`,
+			destination: `${process.env.NEXT_PUBLIC_URL_BASE}/workout/${weightsId}/${wodId}`,
 			permanent: false,
 		},
 	};
