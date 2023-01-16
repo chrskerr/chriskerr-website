@@ -18,6 +18,7 @@ const stuffLinkData: LinkData = [
 	['/emdr', 'EMDR Dot'],
 	['/javascript-randomness', 'Javascript Random Number Generation'],
 	['/quick-and-dead', 'Quick & Dead Generator'],
+	['/workout', 'Random Workout'],
 ];
 
 const writingLinkData: LinkData = allWriting.map(

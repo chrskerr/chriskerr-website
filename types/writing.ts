@@ -10,8 +10,9 @@ export interface BlogData {
 }
 
 export interface BlogDataWithDates
-	extends Omit<BlogData, 'createdAt' | 'modifiedAt'> {
+	extends Omit<BlogData, 'createdAt' | 'modifiedAt' | 'markdown'> {
 	slug: string;
+	htmlContent: string;
 
 	publishedAtISO: string;
 	modifiedAtISO: string;
@@ -22,7 +23,6 @@ export interface BlogDataWithDates
 	shortPublishedAtString: string;
 }
 
-export interface Blog extends Omit<BlogDataWithDates, 'markdown'> {
-	htmlContent: string;
+export interface Blog extends BlogDataWithDates {
 	url: string;
 }

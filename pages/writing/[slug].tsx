@@ -4,8 +4,6 @@ import type { Blog } from 'types/writing';
 import { ReactElement, useMemo } from 'react';
 import Head from 'next/head';
 import { NextSeo, ArticleJsonLd } from 'next-seo';
-import { marked } from 'marked';
-import hljs from 'highlight.js';
 
 import { defaultTitle } from 'pages/_app';
 import allWriting from 'writing';
@@ -102,20 +100,9 @@ export const getStaticProps: GetStaticProps = context => {
 		};
 	}
 
-	const { markdown, ...rest } = post;
-
-	const htmlContent = marked.parse(markdown, {
-		highlight: (code, lang) => {
-			const language = hljs.getLanguage(lang) ? lang : 'plaintext';
-			return hljs.highlight(code, { language }).value;
-		},
-		langPrefix: 'hljs language-',
-	});
-
 	const props: Blog = {
-		...rest,
-		url: `${process.env.NEXT_PUBLIC_URL_BASE}/writing/${rest.slug}`,
-		htmlContent,
+		...post,
+		url: `${process.env.NEXT_PUBLIC_URL_BASE}/writing/${post.slug}`,
 	};
 
 	return { props };

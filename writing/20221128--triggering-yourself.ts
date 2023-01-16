@@ -34,6 +34,6 @@ export const triggeringYourself: BlogData = {
 
 	markdown,
 
-	createdAt: new Date('2022-11-28'),
-	modifiedAt: new Date('2022-11-28'),
+	createdAt: new Date('2022-11-29'),
+	modifiedAt: new Date('2022-11-29'),
 };
