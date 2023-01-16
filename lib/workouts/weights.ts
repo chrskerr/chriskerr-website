@@ -41,7 +41,7 @@ Total tension complex, squat:
 	},
 ];
 
-export const allWeights = allWeightsMarkdown.map((workout, i) => ({
+export const allWeights = allWeightsMarkdown.map(workout => ({
 	id: workout.id,
 	html: marked.parse(workout.markdown),
 }));
