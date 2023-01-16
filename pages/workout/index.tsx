@@ -1,18 +1,34 @@
 import { ReactElement } from 'react';
 import sample from 'lodash/sample';
-import { allWorkouts } from 'lib/workouts';
+import { allWeights, allWods } from 'lib/workouts';
 import { GetServerSideProps } from 'next';
 
 export default function Workout(): ReactElement {
 	return <div />;
 }
 
-const ids = allWorkouts.map(({ id }) => id);
+const weights = allWeights.map(({ id }) => id.toString());
+const wods = allWods.map(({ id }) => id.toString());
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export type LastVisit = {
+	lastWeights?: string;
+	lastWod?: string;
+};
+
+export const cookieName = 'workout';
+
+export const getServerSideProps: GetServerSideProps = async context => {
+	const lastVisitJson = context.req.cookies[cookieName];
+	const lastVisit: LastVisit = lastVisitJson ? JSON.parse(lastVisitJson) : {};
+
+	const weightsId = sample(
+		weights.filter(id => id !== lastVisit.lastWeights),
+	);
+	const wodId = sample(wods.filter(id => id !== lastVisit.lastWod));
+
 	return {
 		redirect: {
-			destination: `/workout/${sample(ids)}`,
+			destination: `/workout/${weightsId}/${wodId}`,
 			permanent: false,
 		},
 	};
