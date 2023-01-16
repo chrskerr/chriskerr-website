@@ -1,8 +1,8 @@
 import { marked } from 'marked';
 
-const allWeightsMarkdown: Array<{ id: number; markdown: string }> = [
+const allWeightsMarkdown: Array<{ id: string; markdown: string }> = [
 	{
-		id: 1,
+		id: '1',
 		markdown: `
 Deadlift, bench press & supinated lat pulldown:
 
@@ -14,7 +14,7 @@ Deadlift, bench press & supinated lat pulldown:
 `,
 	},
 	{
-		id: 2,
+		id: '2',
 		markdown: `
 Total tension complex, presses:
 
@@ -27,7 +27,7 @@ Total tension complex, presses:
 `,
 	},
 	{
-		id: 3,
+		id: '3',
 		markdown: `
 Total tension complex, squat:
 
@@ -41,7 +41,16 @@ Total tension complex, squat:
 	},
 ];
 
-export const allWeights = allWeightsMarkdown.map(workout => ({
+export const allWeights = allWeightsMarkdown.map((workout, i) => ({
 	id: workout.id,
 	html: marked.parse(workout.markdown),
 }));
+
+const seenIds = new Set<string>();
+for (const { id } of allWeightsMarkdown) {
+	if (seenIds.has(id)) {
+		throw new Error('Duplicate id!');
+	}
+
+	seenIds.add(id);
+}

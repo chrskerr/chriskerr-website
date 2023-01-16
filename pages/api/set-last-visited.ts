@@ -1,6 +1,10 @@
 import { NextApiHandler } from 'next';
 import { cookieName, LastVisit } from 'pages/workout';
 
+export const config = {
+	runtime: 'edge',
+};
+
 const handler: NextApiHandler = async (req, res) => {
 	if (req.method !== 'POST') {
 		res.status(500).send('Method should be POST');

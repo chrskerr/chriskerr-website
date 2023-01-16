@@ -3,12 +3,16 @@ import sample from 'lodash/sample';
 import { allWeights, allWods } from 'lib/workouts';
 import { GetServerSideProps } from 'next';
 
+export const config = {
+	runtime: 'experimental-edge',
+};
+
 export default function Workout(): ReactElement {
 	return <div />;
 }
 
-const weights = allWeights.map(({ id }) => id.toString());
-const wods = allWods.map(({ id }) => id.toString());
+const weights = allWeights.map(({ id }) => id);
+const wods = allWods.map(({ id }) => id);
 
 export type LastVisit = {
 	lastWeights?: string;
