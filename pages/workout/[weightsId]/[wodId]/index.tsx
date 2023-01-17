@@ -1,8 +1,9 @@
 import { allWeights, allWods } from 'lib/workouts';
+import { padStart } from 'lodash';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Link from 'next/link';
 import { LastVisit } from 'pages/workout';
-import { ReactElement, useEffect } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 
 type Props = {
 	weightsId: string;
@@ -18,6 +19,8 @@ export default function Workout({
 	weightsHtml,
 	wodHtml,
 }: Props): ReactElement {
+	const [workoutStartedAt] = useState(new Date());
+
 	useEffect(() => {
 		const body: LastVisit = {
 			lastWeights: weightsId,
@@ -34,20 +37,18 @@ export default function Workout({
 
 	return (
 		<div className="prose display-width">
+			<Timer timeFrom={workoutStartedAt} />
+			<hr />
 			<h4>Part A:</h4>
-			<div
-				className="mb-12"
-				dangerouslySetInnerHTML={{ __html: weightsHtml }}
-			/>
+			<div dangerouslySetInnerHTML={{ __html: weightsHtml }} />
+			<Counter />
 			<hr />
 			<h4>Part B:</h4>
-			<div
-				className="mb-12"
-				dangerouslySetInnerHTML={{ __html: wodHtml }}
-			/>
+			<div dangerouslySetInnerHTML={{ __html: wodHtml }} />
+			<Counter />
 			<hr />
 			<h4>Finisher (optional):</h4>
-			<div className="mb-12">
+			<div>
 				<p>5+ minutes of working on things from the following:</p>
 				<ul>
 					<li>Handstands practise</li>
@@ -58,6 +59,7 @@ export default function Workout({
 					<li>Something else</li>
 				</ul>
 			</div>
+			<Counter />
 			<hr />
 			<Link href="/workout">Get another?</Link>
 		</div>
@@ -117,3 +119,63 @@ export const getStaticPaths: GetStaticPaths = async () => {
 		fallback: false,
 	};
 };
+
+function Timer({ timeFrom }: { timeFrom: Date | undefined }) {
+	const [currTime, setCurrTime] = useState(new Date());
+
+	useEffect(() => {
+		const ref = window.setInterval(() => {
+			setCurrTime(new Date());
+		}, 500);
+
+		return () => {
+			window.clearInterval(ref);
+		};
+	}, []);
+
+	const differenceInSeconds = timeFrom
+		? Math.floor(currTime.valueOf() / 1_000) -
+		  Math.floor(timeFrom.valueOf() / 1_000)
+		: 0;
+
+	const seconds = padStart(String(differenceInSeconds % 60), 2, '0');
+	const minutes = Math.floor(differenceInSeconds / 60);
+
+	const timeString = timeFrom ? `${minutes}:${seconds}` : 'Not started';
+
+	return <div>{timeString || '0 seconds'}</div>;
+}
+
+function Counter() {
+	const [lastSetAt, setLastSetAt] = useState<Date | undefined>();
+	const [count, setCount] = useState(0);
+
+	function decrement() {
+		setCount(c => Math.max(c - 1, 0));
+		setLastSetAt(new Date());
+	}
+
+	function increment() {
+		setCount(c => c + 1);
+		setLastSetAt(new Date());
+	}
+
+	return (
+		<div className="flex items-center pt-6">
+			<button
+				className="w-[28px] text-white rounded aspect-square bg-brand hover:bg-brand-dark"
+				onClick={decrement}
+			>
+				-
+			</button>
+			<p className="mx-3 my-0">Count: {count}</p>
+			<button
+				className="w-[28px] text-white mr-8 rounded aspect-square bg-brand hover:bg-brand-dark"
+				onClick={increment}
+			>
+				+
+			</button>
+			<Timer timeFrom={lastSetAt} />
+		</div>
+	);
+}

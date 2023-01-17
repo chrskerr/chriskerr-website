@@ -43,7 +43,7 @@ Any cycle based cardio machine, 8 rounds of:
 	{
 		id: '5',
 		markdown: `
-15 minutes run or cycle, indoors or outdoors.
+15 minutes cycle, aerobic
 `,
 	},
 	{
