@@ -121,22 +121,25 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 function Timer({ timeFrom }: { timeFrom: Date | undefined }) {
-	const [currTime, setCurrTime] = useState(new Date());
+	const [currTime, setCurrTime] = useState(Date.now());
 
 	useEffect(() => {
 		const ref = window.setInterval(() => {
-			setCurrTime(new Date());
-		}, 500);
+			setCurrTime(Date.now());
+		}, 200);
 
 		return () => {
 			window.clearInterval(ref);
 		};
 	}, []);
 
-	const differenceInSeconds = timeFrom
-		? Math.floor(currTime.valueOf() / 1_000) -
-		  Math.floor(timeFrom.valueOf() / 1_000)
-		: 0;
+	const differenceInSeconds = Math.max(
+		timeFrom
+			? Math.floor(currTime / 1_000) -
+					Math.floor(timeFrom.valueOf() / 1_000)
+			: 0,
+		0,
+	);
 
 	const seconds = padStart(String(differenceInSeconds % 60), 2, '0');
 	const minutes = Math.floor(differenceInSeconds / 60);
@@ -161,20 +164,22 @@ function Counter() {
 	}
 
 	return (
-		<div className="flex items-center pt-6">
-			<button
-				className="w-[28px] text-white rounded aspect-square bg-brand hover:bg-brand-dark"
-				onClick={decrement}
-			>
-				-
-			</button>
-			<p className="mx-3 my-0">Count: {count}</p>
-			<button
-				className="w-[28px] text-white mr-8 rounded aspect-square bg-brand hover:bg-brand-dark"
-				onClick={increment}
-			>
-				+
-			</button>
+		<div className="flex flex-col items-center pt-6 sm:flex-row">
+			<div className="flex items-center mb-2 sm:mr-8">
+				<button
+					className="w-[28px] text-white rounded aspect-square bg-brand hover:bg-brand-dark"
+					onClick={decrement}
+				>
+					-
+				</button>
+				<p className="mx-6 my-0">Count: {count}</p>
+				<button
+					className="w-[28px] text-white rounded aspect-square bg-brand hover:bg-brand-dark"
+					onClick={increment}
+				>
+					+
+				</button>
+			</div>
 			<Timer timeFrom={lastSetAt} />
 		</div>
 	);
