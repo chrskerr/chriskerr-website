@@ -1,4 +1,4 @@
-import { allWeights, allWods } from 'lib/workouts';
+import { allFinishers, allWeights, allWods } from 'lib/workouts';
 import { padStart } from 'lodash';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Link from 'next/link';
@@ -7,17 +7,22 @@ import { ReactElement, useEffect, useState } from 'react';
 
 type Props = {
 	weightsId: string;
-	wodId: string;
-
 	weightsHtml: string;
-	wodHtml: string;
+
+	wodId: string | null;
+	wodHtml: string | null;
+
+	finisherId: string | null;
+	finisherHtml: string | null;
 };
 
 export default function Workout({
 	weightsId,
-	wodId,
 	weightsHtml,
+	wodId,
 	wodHtml,
+	finisherId,
+	finisherHtml,
 }: Props): ReactElement {
 	const [workoutStartedAt] = useState(new Date());
 
@@ -25,6 +30,7 @@ export default function Workout({
 		const body: LastVisit = {
 			lastWeights: weightsId,
 			lastWod: wodId,
+			lastFinisher: finisherId,
 		};
 		fetch('/api/set-last-visited', {
 			method: 'post',
@@ -43,23 +49,22 @@ export default function Workout({
 			<div dangerouslySetInnerHTML={{ __html: weightsHtml }} />
 			<Counter />
 			<hr />
-			<h4>Part B:</h4>
-			<div dangerouslySetInnerHTML={{ __html: wodHtml }} />
-			<Counter />
-			<hr />
-			<h4>Finisher (optional):</h4>
-			<div>
-				<p>5+ minutes of working on things from the following:</p>
-				<ul>
-					<li>Handstands practise</li>
-					<li>Pistol squat practise</li>
-					<li>L-sit leg raise/hold, v-ups</li>
-					<li>Some sort of curl</li>
-					<li>Incline bench, flys</li>
-					<li>Something else</li>
-				</ul>
-			</div>
-			<Counter />
+			{wodHtml && (
+				<>
+					<h4>Part B:</h4>
+					<div dangerouslySetInnerHTML={{ __html: wodHtml }} />
+					<Counter />
+					<hr />
+				</>
+			)}
+			{finisherHtml && (
+				<>
+					<h4>Finisher (optional):</h4>
+					<div dangerouslySetInnerHTML={{ __html: finisherHtml }} />
+					<Counter />
+					<hr />
+				</>
+			)}
 			<hr />
 			<Link href="/workout">Get another?</Link>
 		</div>
@@ -74,30 +79,35 @@ const redirectObj = {
 };
 
 export const getStaticProps: GetStaticProps<Props> = async context => {
-	const maybeWeightsId = context.params?.weightsId;
-	const maybeWodId = context.params?.wodId;
+	const ids = context.params?.ids;
 
-	if (!maybeWeightsId || !maybeWodId) {
+	if (!ids || !Array.isArray(ids)) {
 		return redirectObj;
 	}
 
-	if (Array.isArray(maybeWeightsId) || Array.isArray(maybeWodId)) {
+	const [weightsId, wodId, finisherId] = ids;
+	if (!weightsId) {
 		return redirectObj;
 	}
 
-	const weights = allWeights.find(({ id }) => id === maybeWeightsId);
-	const wod = allWods.find(({ id }) => id === maybeWodId);
-	if (!weights || !wod) {
+	const weights = allWeights.find(({ id }) => id === weightsId);
+	if (!weights) {
 		return redirectObj;
 	}
+
+	const wod = allWods.find(({ id }) => id === wodId);
+	const finisher = allFinishers.find(({ id }) => id === finisherId);
 
 	return {
 		props: {
 			weightsId: weights.id,
-			wodId: wod.id,
-
 			weightsHtml: weights.html,
-			wodHtml: wod.html,
+
+			wodId: wod?.id ?? null,
+			wodHtml: wod?.html ?? null,
+
+			finisherId: finisher?.id ?? null,
+			finisherHtml: finisher?.html ?? null,
 		},
 	};
 };
@@ -105,12 +115,19 @@ export const getStaticProps: GetStaticProps<Props> = async context => {
 export const getStaticPaths: GetStaticPaths = async () => {
 	const weights = allWeights.map(({ id }) => id);
 	const wods = allWods.map(({ id }) => id);
+	const finishers = allFinishers.map(({ id }) => id);
 
-	const paths: Array<{ params: { weightsId: string; wodId: string } }> = [];
+	const paths: Array<{
+		params: { ids: [string] | [string, string] | [string, string, string] };
+	}> = [];
 
 	for (const weightsId of weights) {
+		paths.push({ params: { ids: [weightsId] } });
 		for (const wodId of wods) {
-			paths.push({ params: { weightsId, wodId } });
+			paths.push({ params: { ids: [weightsId, wodId] } });
+			for (const finisherId of finishers) {
+				paths.push({ params: { ids: [weightsId, wodId, finisherId] } });
+			}
 		}
 	}
 

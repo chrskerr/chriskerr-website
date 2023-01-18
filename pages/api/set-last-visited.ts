@@ -12,6 +12,7 @@ const handler: NextApiHandler = async (req, res) => {
 		const newCookie: LastVisit = {
 			lastWeights: body.lastWeights,
 			lastWod: body.lastWod,
+			lastFinisher: body.lastFinisher,
 		};
 
 		const expiry = new Date();
