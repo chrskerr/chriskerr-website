@@ -25,8 +25,10 @@ const allFinishersMarkdown: Array<{ id: string; markdown: string }> = [
 	{
 		id: '4',
 		markdown: `
-- 3 sets of incline bench
-- 3 sets of curls. Focus on form, TuT and contraction, not weight and reps
+- 3x10 incline bench, 22.5kg dumbbells
+- 3x RPE9 decline curls, 8kg dumbbells, 60deg bench. 
+
+Focus on form, TuT and contraction, not weight and reps
 `,
 	},
 	{

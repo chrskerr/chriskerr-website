@@ -30,7 +30,7 @@ Deadlift, bench press & supinated lat pulldown:
 		markdown: `
 Total tension complex, presses:
 
-- pick a paid of kettlebell you can strictly press 6-8 times after a clean (last 16kg)
+- pick a paid of kettlebell you can strictly press 6-8 times after a clean (suggested: 16kg)
 - if below 32kg, consider using a heavier kettlebell for support when doing renegade row
 - add one rep to press each set until you can no longer go up without compromising form, then go back down instead
 - rest 90 seconds between sets
@@ -43,7 +43,7 @@ Total tension complex, presses:
 		markdown: `
 Total tension complex, squat:
 
-- pick a paid of kettlebell you can strictly press 6-8 times after a clean (last 16kg)
+- pick a paid of kettlebell you can strictly press 6-8 times after a clean (suggested: 20kg)
 - if below 32kg, consider using a heavier kettlebell for support when doing renegade row
 - add one rep to press each set until you can no longer go up without compromising form, then go back down instead
 - rest 90 seconds between sets

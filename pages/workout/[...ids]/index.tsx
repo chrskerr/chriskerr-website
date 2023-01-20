@@ -3,7 +3,7 @@ import { padStart } from 'lodash';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Link from 'next/link';
 import { LastVisit } from 'pages/workout';
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useEffect, useRef, useState } from 'react';
 
 type Props = {
 	weightsId: string;
@@ -43,7 +43,7 @@ export default function Workout({
 
 	return (
 		<div className="prose display-width">
-			<Timer timeFrom={workoutStartedAt} />
+			<Timer timeFrom={workoutStartedAt} shouldReadTime={undefined} />
 			<hr />
 			<h4>Part A:</h4>
 			<div dangerouslySetInnerHTML={{ __html: weightsHtml }} />
@@ -137,18 +137,34 @@ export const getStaticPaths: GetStaticPaths = async () => {
 	};
 };
 
-function Timer({ timeFrom }: { timeFrom: Date | undefined }) {
+function Timer({
+	timeFrom,
+	shouldReadTime,
+}: {
+	timeFrom: Date | undefined;
+	shouldReadTime: ((elapsedSeconds: number) => boolean) | undefined;
+}) {
 	const [currTime, setCurrTime] = useState(Date.now());
+	const timerRef = useRef<number | undefined>();
 
 	useEffect(() => {
-		const ref = window.setInterval(() => {
+		timerRef.current = window.setInterval(() => {
 			setCurrTime(Date.now());
 		}, 200);
 
 		return () => {
-			window.clearInterval(ref);
+			window.clearInterval(timerRef.current);
 		};
 	}, []);
+
+	useEffect(() => {
+		if (!timerRef.current) {
+			timerRef.current = window.setInterval(() => {
+				setCurrTime(Date.now());
+			}, 200);
+			setCurrTime(Date.now());
+		}
+	}, [timeFrom]);
 
 	const differenceInSeconds = Math.max(
 		timeFrom
@@ -158,12 +174,56 @@ function Timer({ timeFrom }: { timeFrom: Date | undefined }) {
 		0,
 	);
 
-	const seconds = padStart(String(differenceInSeconds % 60), 2, '0');
+	const seconds = differenceInSeconds % 60;
 	const minutes = Math.floor(differenceInSeconds / 60);
 
-	const timeString = timeFrom ? `${minutes}:${seconds}` : 'Not started';
+	const timeString = timeFrom
+		? `${minutes}:${padStart(String(seconds), 2, '0')}`
+		: 'Not started';
 
-	return <div>{timeString || '0 seconds'}</div>;
+	if (
+		timeFrom &&
+		typeof window !== 'undefined' &&
+		!window.speechSynthesis.speaking &&
+		shouldReadTime?.(differenceInSeconds)
+	) {
+		const minutesString = minutes
+			? `${minutes} ${minutes > 1 ? 'minutes ' : 'minute '} `
+			: '';
+
+		const andString = minutes && seconds ? 'and ' : '';
+
+		const secondsString = seconds
+			? `${seconds} ${seconds > 1 ? 'seconds ' : 'second '} `
+			: '';
+
+		const toReadString =
+			minutesString + andString + secondsString + 'elapsed';
+
+		window.speechSynthesis.speak(
+			new SpeechSynthesisUtterance(toReadString),
+		);
+	}
+
+	function stopTimer() {
+		window.clearInterval(timerRef.current);
+		timerRef.current = undefined;
+		setCurrTime(Date.now());
+	}
+
+	return (
+		<div className="flex items-center">
+			<p>{timeString || '0 seconds'}</p>
+			{timerRef.current && (
+				<button
+					className="ml-4 w-[28px] text-white rounded aspect-square bg-brand hover:bg-brand-dark"
+					onClick={stopTimer}
+				>
+					x
+				</button>
+			)}
+		</div>
+	);
 }
 
 function Counter() {
@@ -182,7 +242,7 @@ function Counter() {
 
 	return (
 		<div className="flex flex-col items-center pt-6 sm:flex-row">
-			<div className="flex items-center mb-2 sm:mr-8">
+			<div className="flex items-center mb-2 sm:mb-0 sm:mr-8">
 				<button
 					className="w-[28px] text-white rounded aspect-square bg-brand hover:bg-brand-dark"
 					onClick={decrement}
@@ -197,7 +257,12 @@ function Counter() {
 					+
 				</button>
 			</div>
-			<Timer timeFrom={lastSetAt} />
+			<Timer
+				timeFrom={lastSetAt}
+				shouldReadTime={elapsedSeconds =>
+					elapsedSeconds > 0 && elapsedSeconds % 30 === 0
+				}
+			/>
 		</div>
 	);
 }
