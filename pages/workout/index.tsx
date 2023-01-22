@@ -38,14 +38,10 @@ export const getServerSideProps: GetServerSideProps = async context => {
 	const wodId = getId(wods, lastVisit.lastWod);
 	const finisherId = getId(finishers, lastVisit.lastFinisher);
 
-	// return {
-	// 	redirect: {
-	// 		destination: `${process.env.NEXT_PUBLIC_URL_BASE}/workout/${weightsId}/${wodId}/${finisherId}`,
-	// 		permanent: false,
-	// 	},
-	// };
-
 	return {
-		props: {},
+		redirect: {
+			destination: `${process.env.NEXT_PUBLIC_URL_BASE}/workout/${weightsId}/${wodId}/${finisherId}`,
+			permanent: false,
+		},
 	};
 };

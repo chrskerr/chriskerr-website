@@ -47,14 +47,10 @@ export const getServerSideProps: GetServerSideProps = async context => {
 			? getId(running, lastVisit.lastRunning)
 			: getId(weights, lastVisit.lastWeights);
 
-	// return {
-	// 	redirect: {
-	// 		destination: `${process.env.NEXT_PUBLIC_URL_BASE}/fit-pickle/${mode}/${id}`,
-	// 		permanent: false,
-	// 	},
-	// };
-
 	return {
-		props: {},
+		redirect: {
+			destination: `${process.env.NEXT_PUBLIC_URL_BASE}/fit-pickle/${mode}/${id}`,
+			permanent: false,
+		},
 	};
 };
