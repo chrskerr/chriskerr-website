@@ -65,7 +65,6 @@ export default function Workout({
 					<hr />
 				</>
 			)}
-			<hr />
 			<Link href="/workout">Get another?</Link>
 		</div>
 	);
