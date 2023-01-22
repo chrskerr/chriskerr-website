@@ -1,133 +1,105 @@
-import { allFinishers, allWeights, allWods } from 'lib/workouts';
+import { allWeights, allRunning } from 'lib/fit-pickle';
+import capitalize from 'lodash/capitalize';
 import padStart from 'lodash/padStart';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Link from 'next/link';
-import { LastVisit } from 'pages/workout';
 import { ReactElement, useEffect, useRef, useState } from 'react';
+import { LastPickleVisit } from '..';
 
 type Props = {
-	weightsId: string;
-	weightsHtml: string;
-
-	wodId: string | null;
-	wodHtml: string | null;
-
-	finisherId: string | null;
-	finisherHtml: string | null;
+	workoutId: string;
+	workoutHtml: string;
+	mode: 'running' | 'gym';
 };
 
 export default function Workout({
-	weightsId,
-	weightsHtml,
-	wodId,
-	wodHtml,
-	finisherId,
-	finisherHtml,
+	workoutId,
+	workoutHtml,
+	mode,
 }: Props): ReactElement {
 	const [workoutStartedAt] = useState(new Date());
 
 	useEffect(() => {
-		const body: LastVisit = {
-			lastWeights: weightsId,
-			lastWod: wodId,
-			lastFinisher: finisherId,
-		};
-		fetch('/api/set-last-visited', {
+		const body: LastPickleVisit =
+			mode === 'running'
+				? {
+						lastRunning: workoutId,
+				  }
+				: { lastWeights: workoutId };
+		fetch('/api/set-last-pickle-visited', {
 			method: 'post',
 			headers: {
 				'content-type': 'application/json',
 			},
 			body: JSON.stringify(body),
 		}).catch(e => console.log(e));
-	}, [weightsId, wodId]);
+	}, [workoutId, mode]);
 
 	return (
 		<div className="prose display-width">
 			<Timer timeFrom={workoutStartedAt} shouldReadTime={undefined} />
 			<hr />
-			<h4>Part A:</h4>
-			<div dangerouslySetInnerHTML={{ __html: weightsHtml }} />
+			<h4>
+				{capitalize(mode)} {workoutId}:
+			</h4>
+			<div dangerouslySetInnerHTML={{ __html: workoutHtml }} />
 			<Counter />
 			<hr />
-			{wodHtml && (
-				<>
-					<h4>Part B:</h4>
-					<div dangerouslySetInnerHTML={{ __html: wodHtml }} />
-					<Counter />
-					<hr />
-				</>
-			)}
-			{finisherHtml && (
-				<>
-					<h4>Finisher (optional):</h4>
-					<div dangerouslySetInnerHTML={{ __html: finisherHtml }} />
-					<Counter />
-					<hr />
-				</>
-			)}
-			<hr />
-			<Link href="/workout">Get another?</Link>
+			<Link href={`/fit-pickle/${mode}`}>Get another?</Link>
 		</div>
 	);
 }
 
 export const getStaticProps: GetStaticProps<Props> = async context => {
-	const ids = context.params?.ids;
+	const mode = context.params?.mode;
 
-	if (!ids || !Array.isArray(ids)) {
+	if (mode !== 'running' && mode !== 'gym') {
 		return {
 			notFound: true,
 		};
 	}
 
-	const [weightsId, wodId, finisherId] = ids;
-	if (!weightsId) {
+	const paramsId = context.params?.id;
+
+	if (!paramsId || Array.isArray(paramsId)) {
 		return {
 			notFound: true,
 		};
 	}
 
-	const weights = allWeights.find(({ id }) => id === weightsId);
-	if (!weights) {
+	const workout =
+		mode === 'running'
+			? allRunning.find(({ id }) => id === paramsId)
+			: allWeights.find(({ id }) => id === paramsId);
+	if (!workout) {
 		return {
 			notFound: true,
 		};
 	}
-
-	const wod = allWods.find(({ id }) => id === wodId);
-	const finisher = allFinishers.find(({ id }) => id === finisherId);
 
 	return {
 		props: {
-			weightsId: weights.id,
-			weightsHtml: weights.html,
-
-			wodId: wod?.id ?? null,
-			wodHtml: wod?.html ?? null,
-
-			finisherId: finisher?.id ?? null,
-			finisherHtml: finisher?.html ?? null,
+			workoutId: workout.id,
+			workoutHtml: workout.html,
+			mode,
 		},
 	};
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
 	const weights = allWeights.map(({ id }) => id);
-	const wods = allWods.map(({ id }) => id);
-	const finishers = allFinishers.map(({ id }) => id);
+	const running = allRunning.map(({ id }) => id);
 
 	const paths: Array<{
-		params: { ids: [string] | [string, string] | [string, string, string] };
+		params: { mode: 'running' | 'gym'; id: string };
 	}> = [];
 
-	for (const weightsId of weights) {
-		paths.push({ params: { ids: [weightsId] } });
-		for (const wodId of wods) {
-			paths.push({ params: { ids: [weightsId, wodId] } });
-			for (const finisherId of finishers) {
-				paths.push({ params: { ids: [weightsId, wodId, finisherId] } });
-			}
-		}
+	for (const id of weights) {
+		paths.push({ params: { mode: 'gym', id } });
+	}
+
+	for (const id of running) {
+		paths.push({ params: { mode: 'running', id } });
 	}
 
 	return {

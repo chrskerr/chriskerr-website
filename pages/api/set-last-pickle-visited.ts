@@ -1,32 +1,27 @@
 import { NextApiHandler } from 'next';
-import { cookieName, LastVisit } from 'pages/workout';
+import { LastPickleVisit, cookieName } from 'pages/fit-pickle/[mode]';
 
 const handler: NextApiHandler = async (req, res) => {
 	if (req.method !== 'POST') {
 		res.status(500).send('Method should be POST');
 	}
 
-	const body = req.body as LastVisit;
-
+	const body = req.body as LastPickleVisit;
 	if (typeof body !== 'object') {
 		res.status(500).send('Invalid body');
 	}
 
 	const existingCookieJson = req.cookies[cookieName];
 	const cookie = existingCookieJson
-		? (JSON.parse(existingCookieJson) as LastVisit)
+		? (JSON.parse(existingCookieJson) as LastPickleVisit)
 		: {};
 
 	if (body.lastWeights) {
 		cookie.lastWeights = body.lastWeights;
 	}
 
-	if (body.lastWod) {
-		cookie.lastWod = body.lastWod;
-	}
-
-	if (body.lastFinisher) {
-		cookie.lastFinisher = body.lastFinisher;
+	if (body.lastRunning) {
+		cookie.lastRunning = body.lastRunning;
 	}
 
 	const expiry = new Date();
