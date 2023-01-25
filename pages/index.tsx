@@ -3,7 +3,7 @@ import { ReactElement } from 'react';
 import { NextSeo, SocialProfileJsonLd } from 'next-seo';
 import { defaultTitle } from 'pages/_app';
 import Link from 'next/link';
-import allWriting from 'writing';
+// import allWriting from 'writing';
 
 export const description =
 	"My site features a handful of hobby projects where I play around with some technologies & tools that I'm interested to learn.";
@@ -20,16 +20,16 @@ const stuffLinkData: LinkData = [
 	['/quick-and-dead', 'Quick & Dead Generator'],
 ];
 
-const writingLinkData: LinkData = allWriting.map(
-	({ slug, title, shortPublishedAtString }) => [
-		`/writing/${slug}`,
-		`${title} - ${shortPublishedAtString}`,
-	],
-);
+// const writingLinkData: LinkData = allWriting.map(
+// // 	({ slug, title, shortPublishedAtString }) => [
+// // 		`/writing/${slug}`,
+// // 		`${title} - ${shortPublishedAtString}`,
+// // 	],
+// // );
 
 const joinedLinkData: [string, LinkData][] = [
 	['Apps & tools', stuffLinkData],
-	['Text', writingLinkData],
+	// ['Text', writingLinkData],
 ];
 
 export default function Landing(): ReactElement {
