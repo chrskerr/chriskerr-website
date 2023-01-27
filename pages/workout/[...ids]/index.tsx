@@ -211,7 +211,7 @@ function Timer({
 
 	return (
 		<div className="flex items-center">
-			<p>{timeString || '0 seconds'}</p>
+			<p className="text-3xl sm:text-base">{timeString || '0 seconds'}</p>
 			{timerRef.current && (
 				<button
 					className="ml-4 w-[28px] text-white rounded aspect-square bg-brand hover:bg-brand-dark"
