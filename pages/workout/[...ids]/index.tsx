@@ -247,7 +247,10 @@ function Counter() {
 				>
 					-
 				</button>
-				<p className="mx-6 my-0">Count: {count}</p>
+				<p className="mx-6 my-0">
+					Count:{' '}
+					<span className="text-3xl sm:text-base">{count}</span>
+				</p>
 				<button
 					className="w-[28px] text-white rounded aspect-square bg-brand hover:bg-brand-dark"
 					onClick={increment}
