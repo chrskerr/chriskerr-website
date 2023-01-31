@@ -17,15 +17,22 @@ const finishers = allFinishers.map(({ id }) => id);
 
 function getId(
 	array: string[],
-	filter: string | undefined | null,
+	filter: StringTuple | undefined | null,
 ): string | undefined {
-	return sample(array.filter(id => id !== filter));
+	const filteredArray = filter
+		? array.filter(el =>
+				Array.isArray(filter) ? !filter.includes(el) : el !== filter,
+		  )
+		: array;
+	return sample(filteredArray);
 }
 
+type StringTuple = string | [string] | [string, string];
+
 export type LastVisit = {
-	lastWeights?: string;
-	lastWod?: string | null;
-	lastFinisher?: string | null;
+	lastWeights?: StringTuple;
+	lastWod?: StringTuple | null;
+	lastFinisher?: StringTuple | null;
 };
 
 export const cookieName = 'workout';

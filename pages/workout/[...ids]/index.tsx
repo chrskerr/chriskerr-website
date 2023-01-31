@@ -2,7 +2,7 @@ import { allFinishers, allWeights, allWods } from 'lib/workouts';
 import padStart from 'lodash/padStart';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Link from 'next/link';
-import { LastVisit } from 'pages/workout';
+import { SetLastVisitedBody } from 'pages/api/set-last-visited';
 import { ReactElement, useEffect, useRef, useState } from 'react';
 
 type Props = {
@@ -27,7 +27,7 @@ export default function Workout({
 	const [workoutStartedAt] = useState(new Date());
 
 	useEffect(() => {
-		const body: LastVisit = {
+		const body: SetLastVisitedBody = {
 			lastWeights: weightsId,
 			lastWod: wodId,
 			lastFinisher: finisherId,
@@ -37,6 +37,7 @@ export default function Workout({
 			headers: {
 				'content-type': 'application/json',
 			},
+			credentials: 'include',
 			body: JSON.stringify(body),
 		}).catch(e => console.log(e));
 	}, [weightsId, wodId]);
