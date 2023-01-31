@@ -72,7 +72,7 @@ Every minute on the minute, 10 sets of 10 heavy kettlebell swings (32kg+)
 	{
 		id: '9',
 		markdown: `
-Every 2 minutes on the minute, 5 sets of 20 heavy kettlebell swings (32kg+)
+Every 2 minutes on the minute, 5 sets of 20 heavy kettlebell swings (16kg per hand)
 `,
 	},
 	{
