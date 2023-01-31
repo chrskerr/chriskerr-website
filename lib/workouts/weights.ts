@@ -51,6 +51,18 @@ Total tension complex, squat:
 1 clean + 1 press + *x squats* + 1 renegade row per arm
 `,
 	},
+	{
+		id: '5',
+		markdown: `
+Deadlift, bench press & supinated lat pulldown:
+
+- keep the weight the same across all sets, but do the prescribed reps below
+- add 2.5kg each session on success
+- deload by 10% at failure or almost-failure
+- deadlift: 5, 3, 2 reps
+- bench & supinated lat pulldown: 7, 4, 3 reps
+`,
+	},
 ];
 
 export const allWeights = allWeightsMarkdown.map(workout => ({
