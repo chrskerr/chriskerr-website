@@ -90,8 +90,8 @@ Spend 15 minutes working on handstands
 	{
 		id: '12',
 		markdown: `
-- 3 sets of 8 reps incline bench, 1 minute rest
-- 3 sets of 12 reps curls (any type), 1 minute rest
+- 3 sets of incline bench, 25kg dumbbells 
+- 3 sets of curls (any type), 1 minute rest
 `,
 	},
 ];
