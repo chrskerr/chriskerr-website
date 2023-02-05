@@ -25,7 +25,7 @@ const allFinishersMarkdown: Array<{ id: string; markdown: string }> = [
 	{
 		id: '4',
 		markdown: `
-- 3x10 incline bench, 22.5kg dumbbells
+- 3x10 incline bench, 25kg dumbbells
 - 3x RPE9 decline curls, 8kg dumbbells, 60deg bench. 
 
 Focus on form, TuT and contraction, not weight and reps

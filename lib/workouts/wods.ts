@@ -49,8 +49,8 @@ Any cycle based cardio machine, 8 rounds of:
 	{
 		id: '6',
 		markdown: `
-- 7 minutes of turkish get ups, practise but at a moderate weight
-- 7 minutes of max rep snatches, 16kg
+- 4 sets of 2 reps each hand turkish get ups, 16kg
+- 14 sets 30seconds interval, 5 snatches 20kg kettlebell alternating hands
 `,
 	},
 	{
