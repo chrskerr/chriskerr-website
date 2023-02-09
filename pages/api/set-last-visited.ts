@@ -43,7 +43,7 @@ const handler: NextApiHandler = async (req, res) => {
 
 		if (Array.isArray(existingData)) {
 			if (existingData[0] !== newData) {
-				cookie[key] = [newData, existingData[0]];
+				cookie[key] = [newData, ...existingData].slice(0, 10);
 			}
 		} else {
 			cookie[key] = [newData];

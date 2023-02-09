@@ -1,7 +1,7 @@
 import { ReactElement } from 'react';
-import sample from 'lodash/sample';
 import { allWeights, allRunning } from 'lib/fit-pickle';
 import { GetServerSideProps } from 'next';
+import { getId } from 'pages/workout';
 
 export const config = {
 	runtime: 'experimental-edge',
@@ -14,16 +14,9 @@ export default function Workout(): ReactElement {
 const weights = allWeights.map(({ id }) => id);
 const running = allRunning.map(({ id }) => id);
 
-function getId(
-	array: string[],
-	filter: string | undefined | null,
-): string | undefined {
-	return sample(array.filter(id => id !== filter));
-}
-
 export type LastPickleVisit = {
-	lastWeights?: string;
-	lastRunning?: string;
+	lastWeights?: string | string[] | null;
+	lastRunning?: string | string[] | null;
 };
 
 export const cookieName = 'fit-pickle';

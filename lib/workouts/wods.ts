@@ -4,10 +4,10 @@ const allWodsMarkdown: Array<{ id: string; markdown: string }> = [
 	{
 		id: '1',
 		markdown: `
-8 rounds, every 2 minutes on the minute
+8 rounds, every 90seconds
 
-- 10x over-speed^ two handed (28kg) or single handed kettlebell swings (20kg)
-- 10x over-speed^ push ups
+- 10x over-speed^ two handed (28kg) or single handed kettlebell swings (24kg)
+- 10x over-speed^ push ups with black band over shoulders
 
 ^ make the lowering phase as fast as possible, push down if you can
 `,

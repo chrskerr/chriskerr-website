@@ -15,24 +15,42 @@ const weights = allWeights.map(({ id }) => id);
 const wods = allWods.map(({ id }) => id);
 const finishers = allFinishers.map(({ id }) => id);
 
-function getId(
+export function getId(
 	array: string[],
-	filter: StringTuple | undefined | null,
+	filter: string | string[] | undefined | null,
 ): string | undefined {
-	const filteredArray = filter
-		? array.filter(el =>
-				Array.isArray(filter) ? !filter.includes(el) : el !== filter,
-		  )
-		: array;
-	return sample(filteredArray);
+	if (!filter) return sample(array);
+
+	const weights: Record<string, number> = {};
+	const defaultWeight = Array.isArray(filter) ? filter.length : 2;
+	for (const el of array) {
+		weights[el] = defaultWeight;
+	}
+
+	if (Array.isArray(filter)) {
+		for (let i = 0; i < filter.length; i++) {
+			const filterItem = filter[i];
+			weights[filterItem] =
+				(weights[filterItem] ?? defaultWeight) - (filter.length - i);
+		}
+	}
+
+	const filledArray: string[] = [];
+	for (const entry of Object.entries(weights)) {
+		if (entry[1] > 0) {
+			for (let i = 0; i < entry[1]; i++) {
+				filledArray.push(entry[0]);
+			}
+		}
+	}
+
+	return sample(filledArray);
 }
 
-type StringTuple = string | [string] | [string, string];
-
 export type LastVisit = {
-	lastWeights?: StringTuple;
-	lastWod?: StringTuple | null;
-	lastFinisher?: StringTuple | null;
+	lastWeights?: string | string[];
+	lastWod?: string | string[] | null;
+	lastFinisher?: string | string[] | null;
 };
 
 export const cookieName = 'workout';
