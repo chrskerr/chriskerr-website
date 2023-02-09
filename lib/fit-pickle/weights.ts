@@ -4,21 +4,21 @@ const allWeightsMarkdown: Array<{ id: string; markdown: string }> = [
 	{
 		id: '1',
 		markdown: `
-1. 5x10 swings
+1. 10x10 KB swings
 2. 5x5 Bench
 3. 3x12 Incline bench
 
-Optionals: 3x20 single leg calf raises, 3x20 elevated single leg bridging
+Optionals: 3x20 single leg calf raises, 3x12 Poloquin step ups, 3x20 elevated single leg bridging
 `,
 	},
 	{
 		id: '2',
 		markdown: `
-1. 5x5 e/s snatches
+1. KB snatches
 2. 5x5 Chin-ups
-3. 3x8 Dips
+3. 3x12 Dips
 
-Optionals: 3x8 dead hang leg raises, 3x20 weighted calf rasies
+Optionals: 3x10 dead hang leg raises, 3x20 weighted calf rasies, 3x30 tibialis raises
 `,
 	},
 	{
@@ -28,17 +28,17 @@ Optionals: 3x8 dead hang leg raises, 3x20 weighted calf rasies
 2. 5x5 Handstand push-ups
 3. 3x12 Single leg hamstring deadlift
 
-Optionals: 3x20 single leg calf raises, 3x20 elevated single leg bridging
+Optionals: 3x20 single leg calf raises, 3x12 Poloquin step ups, 3x20 elevated single leg bridging
 `,
 	},
 	{
 		id: '4',
 		markdown: `
 1. 5x5 Pull-ups
-2. 3x12 Curls
-3. 3x40sec Handstand holds
+2. 3x12 step-ups
+3. 3x12 Curls
 
-Optionals: 3x20 Deadbugs, 3x10 supermans
+Optionals: 3x40sec Handstand holds, 3x20 Deadbugs, 3x10 supermans
 `,
 	},
 	{
@@ -46,9 +46,9 @@ Optionals: 3x20 Deadbugs, 3x10 supermans
 		markdown: `
 1. 3x8 DB Cossack squats
 2. 3x8 DB overhead press
-3. 3x12 DB lateral raises
+3. 3x8 DB rows
 
-Optionals: 3x20 Deadbugs, 3x10 supermans
+Optionals: 3x12 DB lateral raises, 3x20 Deadbugs, 3x10 supermans
 `,
 	},
 	{
@@ -58,7 +58,7 @@ Optionals: 3x20 Deadbugs, 3x10 supermans
 2. 3x12 Decline pushups
 3. EMOM assault bike x 7 effort mins
 
-Optionals: 3x20 weighted calf rasies, handstand skills practice
+Optionals: 3x20 weighted calf rasies, 3x30 tibialis raises, handstand skills practice
 `,
 	},
 ];
