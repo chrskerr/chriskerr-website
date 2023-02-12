@@ -1,3 +1,4 @@
+import { allFinishers, allWeights, allWods } from 'lib/workouts';
 import { NextApiHandler } from 'next';
 import { cookieName, LastVisit } from 'pages/workout';
 
@@ -5,6 +6,13 @@ export type SetLastVisitedBody = {
 	lastWeights: string;
 	lastWod: string | null;
 	lastFinisher: string | null;
+};
+
+const keys: (keyof LastVisit)[] = ['lastWeights', 'lastWod', 'lastFinisher'];
+const maxLengths: Record<keyof LastVisit, number> = {
+	lastWeights: allWeights.length,
+	lastWod: allWods.length,
+	lastFinisher: allFinishers.length,
 };
 
 const handler: NextApiHandler = async (req, res) => {
@@ -29,12 +37,6 @@ const handler: NextApiHandler = async (req, res) => {
 		lastFinisher: parsedCookie.lastFinisher ?? null,
 	};
 
-	const keys: (keyof LastVisit)[] = [
-		'lastWeights',
-		'lastWod',
-		'lastFinisher',
-	];
-
 	for (const key of keys) {
 		const newData = body[key];
 		if (!newData) continue;
@@ -43,7 +45,10 @@ const handler: NextApiHandler = async (req, res) => {
 
 		if (Array.isArray(existingData)) {
 			if (existingData[0] !== newData) {
-				cookie[key] = [newData, ...existingData].slice(0, 10);
+				cookie[key] = [newData, ...existingData].slice(
+					0,
+					maxLengths[key],
+				);
 			}
 		} else {
 			cookie[key] = [newData];

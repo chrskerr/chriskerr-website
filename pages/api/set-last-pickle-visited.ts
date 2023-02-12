@@ -1,9 +1,16 @@
+import { allRunning, allWeights } from 'lib/fit-pickle';
 import { NextApiHandler } from 'next';
 import { LastPickleVisit, cookieName } from 'pages/fit-pickle/[mode]';
 
 export type SetLastVisitedBody = {
 	lastWeights: string;
 	lastRunning: string | null;
+};
+
+const keys: (keyof LastPickleVisit)[] = ['lastWeights', 'lastRunning'];
+const maxLengths: Record<keyof LastPickleVisit, number> = {
+	lastRunning: allRunning.length,
+	lastWeights: allWeights.length,
 };
 
 const handler: NextApiHandler = async (req, res) => {
@@ -27,8 +34,6 @@ const handler: NextApiHandler = async (req, res) => {
 		lastRunning: parsedCookie.lastRunning ?? null,
 	};
 
-	const keys: (keyof LastPickleVisit)[] = ['lastWeights', 'lastRunning'];
-
 	for (const key of keys) {
 		const newData = body[key];
 		if (!newData) continue;
@@ -37,7 +42,10 @@ const handler: NextApiHandler = async (req, res) => {
 
 		if (Array.isArray(existingData)) {
 			if (existingData[0] !== newData) {
-				cookie[key] = [newData, ...existingData].slice(0, 10);
+				cookie[key] = [newData, ...existingData].slice(
+					0,
+					maxLengths[key],
+				);
 			}
 		} else {
 			cookie[key] = [newData];
