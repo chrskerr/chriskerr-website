@@ -2,7 +2,7 @@ import type { ReactElement } from 'react';
 import type { AppProps } from 'next/app';
 import Link from 'next/link';
 import Image from 'next/image';
-import Router from 'next/router';
+import Router, { useRouter } from 'next/router';
 import nProgress from 'nprogress';
 
 Router.events.on('routeChangeStart', () => nProgress.start());
@@ -17,6 +17,8 @@ import '../styles/index.css';
 export const defaultTitle = 'Chris Kerr';
 
 export default function App({ Component, pageProps }: AppProps): ReactElement {
+	const router = useRouter();
+
 	return (
 		<>
 			<DefaultSeo
@@ -41,7 +43,9 @@ export default function App({ Component, pageProps }: AppProps): ReactElement {
 								href="/"
 								className="text-3xl transition sm:text-4xl hover:text-brand"
 							>
-								Chris Kerr
+								{router.pathname.includes('fit-pickle')
+									? 'Ms Pickle'
+									: 'Chris Kerr'}
 							</Link>
 						</div>
 					</nav>
