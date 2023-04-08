@@ -32,10 +32,17 @@ export default function EMDR(): ReactElement {
 			/>
 			<div className="display-width">
 				<h2 className="mb-4 text-3xl">{title}</h2>
+				<ul className="ml-4 list-disc">
+					<li>5 reps @ next weight</li>
+					<li>5 reps @ 90%</li>
+					<li>Increase weight by 2.5kg if easy</li>
+					<li>Reduce weight by 7.5kg when hard or tired</li>
+				</ul>
 			</div>
 			<div className="display-width divider-before" />
 			<div className="display-width">
-				<h3 className="mb-4 text-2xl">Deadlift</h3>
+				<h3 className="mb-2 text-2xl">Deadlift</h3>
+				<p className="mb-4">tempo 0030</p>
 				<div className="flex items-end justify-center gap-4 mb-4">
 					<button
 						className="button"
@@ -46,7 +53,12 @@ export default function EMDR(): ReactElement {
 						-7.5
 					</button>
 					<label>
-						<input disabled type="text" value={deadlift} />
+						<input
+							disabled
+							className="w-[120px]"
+							type="text"
+							value={deadlift}
+						/>
 					</label>
 					<button
 						className="button"
