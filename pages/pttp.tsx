@@ -20,7 +20,7 @@ export default function EMDR(): ReactElement {
 		}
 	}, [deadlift]);
 
-	const nextDeadlift = Math.ceil((Number(deadlift) + 0.0001) / 2.5) * 2.5;
+	const nextDeadlift = Number(deadlift) + 2.5;
 
 	return (
 		<>
@@ -80,7 +80,7 @@ export default function EMDR(): ReactElement {
 							className="ml-[10px]"
 							type="text"
 							disabled
-							value={Math.floor(nextDeadlift * 0.9 * 2) / 2}
+							value={to2dot5(nextDeadlift * 0.9)}
 						/>
 					</label>
 					<label>
@@ -89,11 +89,15 @@ export default function EMDR(): ReactElement {
 							className="ml-[10px]"
 							type="text"
 							disabled
-							value={Math.floor(nextDeadlift * 0.8 * 2) / 2}
+							value={to2dot5(nextDeadlift * 0.8)}
 						/>
 					</label>
 				</div>
 			</div>
 		</>
 	);
+}
+
+function to2dot5(input: number): number {
+	return (Math.round((input * 4) / 10) / 4) * 10;
 }
