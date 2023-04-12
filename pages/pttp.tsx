@@ -20,7 +20,7 @@ export default function EMDR(): ReactElement {
 		}
 	}, [deadlift]);
 
-	const nextDeadlift = Number(deadlift) + 2.5;
+	const nextDeadlift = Number(deadlift);
 
 	return (
 		<>
@@ -43,33 +43,7 @@ export default function EMDR(): ReactElement {
 			<div className="display-width">
 				<h3 className="mb-2 text-2xl">Deadlift</h3>
 				<p className="mb-4">tempo 0030</p>
-				<div className="flex items-end justify-center gap-4 mb-4">
-					<button
-						className="button"
-						onClick={() =>
-							setDeadlift(d => String(Number(d) - 7.5))
-						}
-					>
-						-7.5
-					</button>
-					<label>
-						<input
-							disabled
-							className="w-[120px]"
-							type="text"
-							value={deadlift}
-						/>
-					</label>
-					<button
-						className="button"
-						onClick={() =>
-							setDeadlift(d => String(Number(d) + 2.5))
-						}
-					>
-						+2.5
-					</button>
-				</div>
-				<div className="flex flex-col gap-1">
+				<div className="flex flex-col items-start gap-4 mb-4">
 					<label>
 						Next:{' '}
 						<input type="text" disabled value={nextDeadlift} />
@@ -92,6 +66,22 @@ export default function EMDR(): ReactElement {
 							value={to2dot5(nextDeadlift * 0.8)}
 						/>
 					</label>
+					<button
+						className="button"
+						onClick={() =>
+							setDeadlift(d => String(Number(d) + 2.5))
+						}
+					>
+						Progress (+2.5kg)
+					</button>
+					<button
+						className="button"
+						onClick={() =>
+							setDeadlift(d => String(Number(d) - 7.5))
+						}
+					>
+						Deload (-7.5kg)
+					</button>
 				</div>
 			</div>
 		</>
