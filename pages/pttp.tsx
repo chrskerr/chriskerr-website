@@ -5,23 +5,6 @@ import { NextSeo } from 'next-seo';
 const title = 'PTTP tracker';
 
 export default function EMDR(): ReactElement {
-	const [deadlift, setDeadlift] = useState('');
-
-	useEffect(() => {
-		const newDeadlift = localStorage.getItem('deadlift');
-		if (newDeadlift && !isNaN(Number(newDeadlift))) {
-			setDeadlift(newDeadlift);
-		}
-	}, []);
-
-	useEffect(() => {
-		if (deadlift) {
-			localStorage.setItem('deadlift', deadlift);
-		}
-	}, [deadlift]);
-
-	const nextDeadlift = Number(deadlift);
-
 	return (
 		<>
 			<NextSeo
@@ -40,51 +23,84 @@ export default function EMDR(): ReactElement {
 				</ul>
 			</div>
 			<div className="display-width divider-before" />
-			<div className="display-width">
-				<h3 className="mb-2 text-2xl">Deadlift</h3>
-				<p className="mb-4">tempo 0030</p>
-				<div className="flex flex-col items-start gap-4 mb-4">
-					<label>
-						Next:{' '}
-						<input type="text" disabled value={nextDeadlift} />
-					</label>
-					<label>
-						90%:{' '}
-						<input
-							className="ml-[10px]"
-							type="text"
-							disabled
-							value={to2dot5(nextDeadlift * 0.9)}
-						/>
-					</label>
-					<label>
-						80%:{' '}
-						<input
-							className="ml-[10px]"
-							type="text"
-							disabled
-							value={to2dot5(nextDeadlift * 0.8)}
-						/>
-					</label>
-					<button
-						className="button"
-						onClick={() =>
-							setDeadlift(d => String(Number(d) + 2.5))
-						}
-					>
-						Progress (+2.5kg)
-					</button>
-					<button
-						className="button"
-						onClick={() =>
-							setDeadlift(d => String(Number(d) - 7.5))
-						}
-					>
-						Deload (-7.5kg)
-					</button>
-				</div>
-			</div>
+
+			<ExerciseBlock
+				label="Deadlift"
+				storageKey="deadlift"
+				tempo="0030"
+				className="mb-8"
+			/>
+			<ExerciseBlock label="Bench" storageKey="bench" tempo="3030" />
 		</>
+	);
+}
+
+function ExerciseBlock({
+	label,
+	tempo,
+	storageKey,
+	className,
+}: {
+	label: string;
+	tempo: string;
+	storageKey: string;
+	className?: string;
+}) {
+	const [value, setValue] = useState(0);
+
+	useEffect(() => {
+		const newValue = localStorage.getItem(storageKey);
+		if (newValue && !isNaN(Number(newValue))) {
+			setValue(Number(newValue));
+		}
+	}, []);
+
+	useEffect(() => {
+		if (value) {
+			localStorage.setItem(storageKey, String(value));
+		}
+	}, [value]);
+
+	return (
+		<div className={`${className || ''} display-width`}>
+			<h3 className="mb-2 text-2xl">{label}</h3>
+			<p className="mb-4">tempo {tempo}</p>
+			<div className="flex flex-col items-start gap-4 mb-4">
+				<label>
+					Next: <input type="text" disabled value={value} />
+				</label>
+				<label>
+					90%:{' '}
+					<input
+						className="ml-[10px]"
+						type="text"
+						disabled
+						value={to2dot5(value * 0.9)}
+					/>
+				</label>
+				<label>
+					80%:{' '}
+					<input
+						className="ml-[10px]"
+						type="text"
+						disabled
+						value={to2dot5(value * 0.8)}
+					/>
+				</label>
+				<button
+					className="button"
+					onClick={() => setValue(d => d + 2.5)}
+				>
+					Progress (+2.5kg)
+				</button>
+				<button
+					className="button"
+					onClick={() => setValue(d => d - 7.5)}
+				>
+					Deload (-7.5kg)
+				</button>
+			</div>
+		</div>
 	);
 }
 
