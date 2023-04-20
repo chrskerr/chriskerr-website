@@ -1,6 +1,7 @@
 import { ReactElement, useEffect, useState } from 'react';
 
 import { NextSeo } from 'next-seo';
+import padStart from 'lodash/padStart';
 
 const title = 'PTTP tracker';
 
@@ -100,6 +101,64 @@ function ExerciseBlock({
 					Deload (-7.5kg)
 				</button>
 			</div>
+			<Timer />
+		</div>
+	);
+}
+
+function Timer() {
+	const [timeElapsed, setTimeElapsed] = useState(0);
+	const [intervalData, setIntervalData] = useState<number | undefined>(
+		undefined,
+	);
+
+	function start() {
+		const startedAt = Date.now();
+		const timerCallback = () => {
+			setTimeElapsed(Math.floor((Date.now() - startedAt) / 1000));
+		};
+		setIntervalData(window.setInterval(timerCallback, 250));
+	}
+
+	function stop() {
+		setTimeElapsed(0);
+		window.clearInterval(intervalData);
+		setIntervalData(undefined);
+	}
+
+	function startStop() {
+		if (intervalData) {
+			stop();
+		} else {
+			start();
+		}
+	}
+
+	function restart() {
+		stop();
+		start();
+	}
+
+	const seconds = timeElapsed % 60;
+	const minutes = Math.floor(timeElapsed / 60);
+
+	const timeString = timeElapsed
+		? `${minutes}:${padStart(String(seconds), 2, '0')}`
+		: '0:00';
+
+	return (
+		<div>
+			<time className="mr-4 text-xl">{timeString}</time>
+			<button className="mr-4 button" onClick={startStop}>
+				{intervalData ? 'Stop' : 'Start'}
+			</button>
+			<button
+				className="button"
+				onClick={restart}
+				disabled={!intervalData}
+			>
+				Restart
+			</button>
 		</div>
 	);
 }
