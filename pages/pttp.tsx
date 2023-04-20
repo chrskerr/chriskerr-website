@@ -67,27 +67,36 @@ function ExerciseBlock({
 			<h3 className="mb-2 text-2xl">{label}</h3>
 			<p className="mb-4">tempo {tempo}</p>
 			<div className="flex flex-col items-start gap-4 mb-4">
-				<label>
-					Next: <input type="text" disabled value={value} />
-				</label>
-				<label>
-					90%:{' '}
-					<input
-						className="ml-[10px]"
-						type="text"
-						disabled
-						value={to2dot5(value * 0.9)}
-					/>
-				</label>
-				<label>
-					80%:{' '}
-					<input
-						className="ml-[10px]"
-						type="text"
-						disabled
-						value={to2dot5(value * 0.8)}
-					/>
-				</label>
+				<div>
+					<label>
+						Next: <input type="text" disabled value={value} />
+					</label>
+					<p>Plates: {createPlatesString(value)}</p>
+				</div>
+				<div>
+					<label>
+						90%:{' '}
+						<input
+							className="ml-[10px]"
+							type="text"
+							disabled
+							value={to2dot5(value * 0.9)}
+						/>
+					</label>
+					<p>Plates: {createPlatesString(to2dot5(value * 0.9))}</p>
+				</div>
+				<div>
+					<label>
+						80%:{' '}
+						<input
+							className="ml-[10px]"
+							type="text"
+							disabled
+							value={to2dot5(value * 0.8)}
+						/>
+					</label>
+					<p>Plates: {createPlatesString(to2dot5(value * 0.8))}</p>
+				</div>
 				<button
 					className="button"
 					onClick={() => setValue(d => d + 2.5)}
@@ -161,6 +170,37 @@ function Timer() {
 			</button>
 		</div>
 	);
+}
+
+function createPlatesString(weight: number): string {
+	let remainingWeight = weight - 20;
+	let str = '';
+
+	while (remainingWeight > 0) {
+		if (remainingWeight >= 40) {
+			str += ' 20';
+			remainingWeight -= 40;
+		} else if (remainingWeight >= 30) {
+			str += ' 15';
+			remainingWeight -= 30;
+		} else if (remainingWeight >= 20) {
+			str += ' 10';
+			remainingWeight -= 20;
+		} else if (remainingWeight >= 10) {
+			str += ' 5';
+			remainingWeight -= 10;
+		} else if (remainingWeight >= 5) {
+			str += ' 2.5';
+			remainingWeight -= 5;
+		} else if (remainingWeight >= 2.5) {
+			str += ' 1.25';
+			remainingWeight -= 2.5;
+		} else {
+			remainingWeight = 0;
+		}
+	}
+
+	return str;
 }
 
 function to2dot5(input: number): number {
