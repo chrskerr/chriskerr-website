@@ -66,35 +66,29 @@ function ExerciseBlock({
 		<div className={`${className || ''} display-width`}>
 			<h3 className="mb-2 text-2xl">{label}</h3>
 			<p className="mb-4">tempo {tempo}</p>
-			<div className="flex flex-col items-start gap-4 mb-4">
+			<div className="flex flex-col items-start gap-4 mb-4 whitespace-pre">
 				<div>
-					<label>
-						Next: <input type="text" disabled value={value} />
-					</label>
+					<p>
+						100%: <span className="font-bold">{value}kg</span>
+					</p>
 					<p>Plates: {createPlatesString(value)}</p>
 				</div>
 				<div>
-					<label>
-						90%:{' '}
-						<input
-							className="ml-[10px]"
-							type="text"
-							disabled
-							value={to2dot5(value * 0.9)}
-						/>
-					</label>
+					<p>
+						90%:{'  '}
+						<span className="font-bold">
+							{to2dot5(value * 0.9)}kg
+						</span>
+					</p>
 					<p>Plates: {createPlatesString(to2dot5(value * 0.9))}</p>
 				</div>
 				<div>
-					<label>
-						80%:{' '}
-						<input
-							className="ml-[10px]"
-							type="text"
-							disabled
-							value={to2dot5(value * 0.8)}
-						/>
-					</label>
+					<p>
+						80%:{'  '}
+						<span className="font-bold">
+							{to2dot5(value * 0.8)}kg
+						</span>
+					</p>
 					<p>Plates: {createPlatesString(to2dot5(value * 0.8))}</p>
 				</div>
 				<button
@@ -200,7 +194,7 @@ function createPlatesString(weight: number): string {
 		}
 	}
 
-	return str;
+	return str.trim();
 }
 
 function to2dot5(input: number): number {
