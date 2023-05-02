@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useEffect, useMemo, useState } from 'react';
 
 import { NextSeo } from 'next-seo';
 import padStart from 'lodash/padStart';
@@ -62,34 +62,34 @@ function ExerciseBlock({
 		}
 	}, [value]);
 
+	const weightsData = useMemo(() => createWeightsData(value), [value]);
+
 	return (
 		<div className={`${className || ''} display-width`}>
 			<h3 className="mb-2 text-2xl">{label}</h3>
 			<p className="mb-4">tempo {tempo}</p>
 			<div className="flex flex-col items-start gap-4 mb-4 whitespace-pre">
 				<div>
+					<p>Plates:</p>
+					<p>{weightsData.plates}</p>
+				</div>
+				<div>
 					<p>
-						100%: <span className="font-bold">{value}kg</span>
+						100%:{' '}
+						<span className="font-bold">{weightsData['100%']}</span>
 					</p>
-					<p>Plates: {createPlatesString(value)}</p>
 				</div>
 				<div>
 					<p>
 						90%:{'  '}
-						<span className="font-bold">
-							{to2dot5(value * 0.9)}kg
-						</span>
+						<span className="font-bold">{weightsData['90%']}</span>
 					</p>
-					<p>Plates: {createPlatesString(to2dot5(value * 0.9))}</p>
 				</div>
 				<div>
 					<p>
 						80%:{'  '}
-						<span className="font-bold">
-							{to2dot5(value * 0.8)}kg
-						</span>
+						<span className="font-bold">{weightsData['80%']}</span>
 					</p>
-					<p>Plates: {createPlatesString(to2dot5(value * 0.8))}</p>
 				</div>
 				<button
 					className="button"
@@ -166,11 +166,15 @@ function Timer() {
 	);
 }
 
-function createPlatesString(weight: number): string {
-	let remainingWeight = weight - 20;
+function getPlatesString(weight: number, includesBar = true): string {
+	let remainingWeight = weight - (includesBar ? 20 : 0);
 	let str = '';
 
 	while (remainingWeight > 0) {
+		if (str) {
+			str += ',';
+		}
+
 		if (remainingWeight >= 40) {
 			str += ' 20';
 			remainingWeight -= 40;
@@ -195,6 +199,33 @@ function createPlatesString(weight: number): string {
 	}
 
 	return str.trim();
+}
+
+function createWeightsData(weight: number): {
+	plates: string;
+	'100%': string;
+	'90%': string;
+	'80%': string;
+} {
+	const eightyPercent = to2dot5(weight * 0.8);
+	const ninetyPercent = to2dot5(weight * 0.9);
+
+	let str = ' 80%:    ';
+
+	str += getPlatesString(eightyPercent);
+	str += '\n 90%:  + ';
+
+	str += getPlatesString(ninetyPercent - eightyPercent, false);
+	str += '\n 100%: + ';
+
+	str += getPlatesString(weight - ninetyPercent, false);
+
+	return {
+		'100%': `${weight}kg`,
+		'90%': `${ninetyPercent}kg`,
+		'80%': `${eightyPercent}kg`,
+		plates: str,
+	};
 }
 
 function to2dot5(input: number): number {
