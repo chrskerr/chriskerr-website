@@ -1,7 +1,15 @@
-import { ReactElement, useEffect, useMemo, useState } from 'react';
+import {
+	Dispatch,
+	ReactElement,
+	SetStateAction,
+	useEffect,
+	useMemo,
+	useState,
+} from 'react';
 
 import { NextSeo } from 'next-seo';
 import padStart from 'lodash/padStart';
+import padEnd from 'lodash/padEnd';
 
 const title = 'PTTP tracker';
 
@@ -16,38 +24,44 @@ export default function EMDR(): ReactElement {
 			/>
 			<div className="display-width">
 				<h2 className="mb-4 text-3xl">{title}</h2>
-				<ul className="ml-4 list-disc">
-					<li>5 reps @ next weight</li>
-					<li>5 reps @ 90%</li>
-					<li>Increase weight by 2.5kg if easy</li>
-					<li>Reduce weight by 7.5kg when hard or tired</li>
-				</ul>
+				<Timer showControls={false} />
 			</div>
 			<div className="display-width divider-before" />
 
-			<ExerciseBlock
+			<KettlebellExerciseBlock
+				label="TGU"
+				storageKey="turkish-get-up"
+				scheme="1 rep, 10 rounds EMOM"
+				className="mb-8"
+			/>
+			<KettlebellExerciseBlock
+				label="Swings"
+				storageKey="kettlebell-swing"
+				scheme="10 reps, 10 rounds EMOM"
+				className="mb-8"
+			/>
+			<BarbellExerciseBlock
+				label="Bench"
+				storageKey="bench"
+				tempo="3030"
+				className="mb-8"
+				steps={[0.8, 0.9, 1]}
+			/>
+			<BarbellExerciseBlock
 				label="Deadlift"
 				storageKey="deadlift"
 				tempo="0030"
-				className="mb-8"
+				steps={[0.9, 1]}
 			/>
-			<ExerciseBlock label="Bench" storageKey="bench" tempo="3030" />
 		</>
 	);
 }
 
-function ExerciseBlock({
-	label,
-	tempo,
-	storageKey,
-	className,
-}: {
-	label: string;
-	tempo: string;
-	storageKey: string;
-	className?: string;
-}) {
-	const [value, setValue] = useState(0);
+function useLocalStorageState(
+	storageKey: string,
+	falbackValue: number,
+): [number, Dispatch<SetStateAction<number>>] {
+	const [value, setValue] = useState(falbackValue);
 
 	useEffect(() => {
 		const newValue = localStorage.getItem(storageKey);
@@ -62,7 +76,22 @@ function ExerciseBlock({
 		}
 	}, [value]);
 
-	const weightsData = useMemo(() => createWeightsData(value), [value]);
+	return [value, setValue];
+}
+
+type BarbellExerciseProps = {
+	label: string;
+	tempo: string;
+	storageKey: string;
+	steps: number[];
+	className?: string;
+};
+
+function BarbellExerciseBlock(props: BarbellExerciseProps) {
+	const { label, tempo, storageKey, steps, className } = props;
+
+	const [value, setValue] = useLocalStorageState(storageKey, 0);
+	const weightsData = useMemo(() => createWeightsData(value, steps), [value]);
 
 	return (
 		<div className={`${className || ''} display-width`}>
@@ -73,24 +102,16 @@ function ExerciseBlock({
 					<p>Plates:</p>
 					<p>{weightsData.plates}</p>
 				</div>
-				<div>
-					<p>
-						100%:{' '}
-						<span className="font-bold">{weightsData['100%']}</span>
-					</p>
-				</div>
-				<div>
-					<p>
-						90%:{'  '}
-						<span className="font-bold">{weightsData['90%']}</span>
-					</p>
-				</div>
-				<div>
-					<p>
-						80%:{'  '}
-						<span className="font-bold">{weightsData['80%']}</span>
-					</p>
-				</div>
+
+				{weightsData.weights.map(weight => (
+					<div key={weight.label}>
+						<p>
+							{weight.label}:{' '}
+							<span className="font-bold">{weight.value}</span>
+						</p>
+					</div>
+				))}
+
 				<button
 					className="button"
 					onClick={() => setValue(d => d + 2.5)}
@@ -109,7 +130,57 @@ function ExerciseBlock({
 	);
 }
 
-function Timer() {
+type KettlebellExerciseProps = {
+	label: string;
+	storageKey: string;
+	scheme: string;
+	className?: string;
+};
+
+// TODO update this list
+const availableKettlebells = [16, 20, 24, 28, 32, 40];
+
+function KettlebellExerciseBlock(props: KettlebellExerciseProps) {
+	const { label, storageKey, scheme, className } = props;
+
+	const [value, setValue] = useLocalStorageState(storageKey, 0);
+
+	function progress() {
+		setValue(d => {
+			return availableKettlebells.find(val => val > d) ?? d;
+		});
+	}
+
+	function deload() {
+		setValue(d => {
+			return (
+				[...availableKettlebells].reverse().find(val => val < d) ?? d
+			);
+		});
+	}
+
+	return (
+		<div className={`${className || ''} display-width`}>
+			<h3 className="mb-2 text-2xl">{label}</h3>
+			<p className="mb-4">{scheme}</p>
+
+			<div className="flex flex-col items-start gap-4 mb-4 whitespace-pre">
+				<div>
+					<p>Weight:</p>
+					<p>{value}kg</p>
+				</div>
+
+				<button className="button" onClick={progress}>
+					Progress
+				</button>
+				<button className="button" onClick={deload}>
+					Deload
+				</button>
+			</div>
+		</div>
+	);
+}
+function Timer({ showControls = true }: { showControls?: boolean }) {
 	const [timeElapsed, setTimeElapsed] = useState(0);
 	const [intervalData, setIntervalData] = useState<number | undefined>(
 		undefined,
@@ -149,19 +220,27 @@ function Timer() {
 		? `${minutes}:${padStart(String(seconds), 2, '0')}`
 		: '0:00';
 
+	useEffect(() => {
+		if (!showControls && !intervalData) start();
+	}, [showControls]);
+
 	return (
-		<div>
-			<time className="mr-4 text-xl">{timeString}</time>
-			<button className="mr-4 button" onClick={startStop}>
-				{intervalData ? 'Stop' : 'Start'}
-			</button>
-			<button
-				className="button"
-				onClick={restart}
-				disabled={!intervalData}
-			>
-				Restart
-			</button>
+		<div className="flex items-center">
+			<time className="mr-4 text-3xl">{timeString}</time>
+			{showControls && (
+				<>
+					<button className="mr-4 button" onClick={startStop}>
+						{intervalData ? 'Stop' : 'Start'}
+					</button>
+					<button
+						className="button"
+						onClick={restart}
+						disabled={!intervalData}
+					>
+						Restart
+					</button>
+				</>
+			)}
 		</div>
 	);
 }
@@ -201,29 +280,41 @@ function getPlatesString(weight: number, includesBar = true): string {
 	return str.trim();
 }
 
-function createWeightsData(weight: number): {
+type WeightsData = {
 	plates: string;
-	'100%': string;
-	'90%': string;
-	'80%': string;
-} {
-	const eightyPercent = to2dot5(weight * 0.8);
-	const ninetyPercent = to2dot5(weight * 0.9);
+	weights: { label: string; value: string }[];
+};
 
-	let str = ' 80%:    ';
+function createWeightsData(weight: number, steps: number[]): WeightsData {
+	const stepWeights = steps.sort().map(step => to2dot5(weight * step));
 
-	str += getPlatesString(eightyPercent);
-	str += '\n 90%:  + ';
+	let str = '';
 
-	str += getPlatesString(ninetyPercent - eightyPercent, false);
-	str += '\n 100%: + ';
+	for (let i = 0; i < stepWeights.length; i++) {
+		const step = steps[i];
+		const stepWeight = stepWeights[i];
+		const prevWeight = stepWeights[i - 1];
+		if (step && stepWeight) {
+			if (i === 0) {
+				str += padEnd(` ${step * 100}%:`, 9, ' ');
+			} else {
+				str += '\n';
+				str += padEnd(` ${step * 100}%:`, 7, ' ') + '+ ';
+			}
 
-	str += getPlatesString(weight - ninetyPercent, false);
+			str += prevWeight
+				? getPlatesString(stepWeight - prevWeight, false)
+				: getPlatesString(stepWeight);
+		}
+	}
 
 	return {
-		'100%': `${weight}kg`,
-		'90%': `${ninetyPercent}kg`,
-		'80%': `${eightyPercent}kg`,
+		weights: stepWeights
+			.map((weight, i) => ({
+				label: `${(steps[i] ?? 0) * 100}%`,
+				value: `${weight}kg`,
+			}))
+			.reverse(),
 		plates: str,
 	};
 }
