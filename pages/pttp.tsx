@@ -9,7 +9,7 @@ import {
 	Timer,
 	TurkishGetUp,
 	Warmup,
-} from 'components/pttp/components';
+} from 'components/pttp';
 
 const title = 'PTTP tracker';
 

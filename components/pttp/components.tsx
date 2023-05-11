@@ -1,105 +1,11 @@
-import {
-	Dispatch,
-	ReactElement,
-	SetStateAction,
-	useEffect,
-	useMemo,
-	useState,
-} from 'react';
+import { ReactElement, useMemo } from 'react';
 
-import padStart from 'lodash/padStart';
-import padEnd from 'lodash/padEnd';
+import { useLocalStorageState } from './hooks';
+import { Timer } from './timing';
+import { createWeightsData } from './createWeightsData';
+import { availableKettlebells } from './availableKettlebells';
 
-export function Deadlift() {
-	return (
-		<BarbellExerciseBlock
-			label="Deadlift"
-			storageKey="deadlift"
-			tempo="0030"
-			steps={[0.9, 1]}
-		/>
-	);
-}
-
-export function Bench() {
-	return (
-		<BarbellExerciseBlock
-			label="Bench"
-			notes={['Ensure elbow lockout at top of press', 'Super-set curls.']}
-			storageKey="bench"
-			tempo="3030"
-			steps={[0.8, 0.9, 1]}
-		/>
-	);
-}
-
-export function TurkishGetUp() {
-	return (
-		<KettlebellExerciseBlock
-			label="TGU"
-			storageKey="turkish-get-up"
-			scheme="1 rep, 10 rounds EMOM"
-		/>
-	);
-}
-
-export function Swings() {
-	const [isOneHanded] = useState(new Date().getDate() % 2 === 0);
-	if (isOneHanded) {
-		return (
-			<KettlebellExerciseBlock
-				label="One handed swings"
-				storageKey="one-handed-kettlebell-swing"
-				scheme="10 reps, 10 rounds EMOM"
-			/>
-		);
-	}
-
-	return (
-		<KettlebellExerciseBlock
-			label="Swings"
-			storageKey="kettlebell-swing"
-			scheme="10 reps, 10 rounds EMOM"
-		/>
-	);
-}
-
-export function Warmup() {
-	return (
-		<Container label="Warmup">
-			<p>Ideas:</p>
-			<ul className="mt-2 ml-6 list-disc">
-				{' '}
-				<li>Deep squats with KB to pry open thighs</li>
-				<li>Def write some more...</li>
-			</ul>
-		</Container>
-	);
-}
-
-function useLocalStorageState(
-	storageKey: string,
-	falbackValue: number,
-): [number, Dispatch<SetStateAction<number>>] {
-	const [value, setValue] = useState(falbackValue);
-
-	useEffect(() => {
-		const newValue = localStorage.getItem(storageKey);
-		if (newValue && !isNaN(Number(newValue))) {
-			setValue(Number(newValue));
-		}
-	}, []);
-
-	useEffect(() => {
-		if (value) {
-			localStorage.setItem(storageKey, String(value));
-		}
-	}, [value]);
-
-	return [value, setValue];
-}
-
-function Container({
+export function Container({
 	label,
 	children,
 }: {
@@ -122,7 +28,7 @@ type BarbellExerciseProps = {
 	steps: number[];
 };
 
-function BarbellExerciseBlock(props: BarbellExerciseProps) {
+export function BarbellExerciseBlock(props: BarbellExerciseProps) {
 	const { label, notes, tempo, storageKey, steps } = props;
 
 	const [value, setValue] = useLocalStorageState(storageKey, 20);
@@ -179,21 +85,7 @@ type KettlebellExerciseProps = {
 	scheme: string;
 };
 
-type Kettlebell = {
-	weight: number;
-	colour: `#${string}`;
-};
-
-const availableKettlebells: Record<string, `#${string}`> = {
-	'16': '#F0B700',
-	'20': '#2461E5',
-	'24': '#00B44D',
-	'28': '#DE1008',
-	'32': '#3D2F8F',
-	'40': '#14140D',
-};
-
-function KettlebellExerciseBlock(props: KettlebellExerciseProps) {
+export function KettlebellExerciseBlock(props: KettlebellExerciseProps) {
 	const { label, storageKey, scheme } = props;
 
 	const [value, setValue] = useLocalStorageState(storageKey, 16);
@@ -246,151 +138,4 @@ function KettlebellExerciseBlock(props: KettlebellExerciseProps) {
 			</div>
 		</Container>
 	);
-}
-
-export function Timer({ showControls = false }: { showControls?: boolean }) {
-	const [timeElapsed, setTimeElapsed] = useState(0);
-	const [intervalData, setIntervalData] = useState<number | undefined>(
-		undefined,
-	);
-
-	function start() {
-		const startedAt = Date.now();
-		const timerCallback = () => {
-			setTimeElapsed(Math.floor((Date.now() - startedAt) / 1000));
-		};
-		setIntervalData(window.setInterval(timerCallback, 250));
-	}
-
-	function stop() {
-		setTimeElapsed(0);
-		window.clearInterval(intervalData);
-		setIntervalData(undefined);
-	}
-
-	function startStop() {
-		if (intervalData) {
-			stop();
-		} else {
-			start();
-		}
-	}
-
-	function restart() {
-		stop();
-		start();
-	}
-
-	const seconds = timeElapsed % 60;
-	const minutes = Math.floor(timeElapsed / 60);
-
-	const timeString = timeElapsed
-		? `${minutes}:${padStart(String(seconds), 2, '0')}`
-		: '0:00';
-
-	useEffect(() => {
-		if (!showControls && !intervalData) start();
-	}, [showControls]);
-
-	return (
-		<div className="flex items-center">
-			<time className="mr-4 text-3xl">{timeString}</time>
-			{showControls && (
-				<>
-					<button className="mr-4 button" onClick={startStop}>
-						{intervalData ? 'Stop' : 'Start'}
-					</button>
-					<button
-						className="button"
-						onClick={restart}
-						disabled={!intervalData}
-					>
-						Restart
-					</button>
-				</>
-			)}
-		</div>
-	);
-}
-
-function getPlatesString(weight: number, includesBar = true): string {
-	let remainingWeight = weight - (includesBar ? 20 : 0);
-	let str = '';
-
-	while (remainingWeight > 0) {
-		if (str) {
-			str += ',';
-		}
-
-		if (remainingWeight >= 40) {
-			str += ' 20';
-			remainingWeight -= 40;
-		} else if (remainingWeight >= 30) {
-			str += ' 15';
-			remainingWeight -= 30;
-		} else if (remainingWeight >= 20) {
-			str += ' 10';
-			remainingWeight -= 20;
-		} else if (remainingWeight >= 10) {
-			str += ' 5';
-			remainingWeight -= 10;
-		} else if (remainingWeight >= 5) {
-			str += ' 2.5';
-			remainingWeight -= 5;
-		} else if (remainingWeight >= 2.5) {
-			str += ' 1.25';
-			remainingWeight -= 2.5;
-		} else {
-			remainingWeight = 0;
-		}
-	}
-
-	return str.trim();
-}
-
-type WeightsData = {
-	plates: string;
-	weights: { label: string; value: string }[];
-};
-
-function createWeightsData(weight: number, steps: number[]): WeightsData {
-	const stepWeights = steps
-		.sort()
-		.map(step => Math.max(to2dot5(weight * step), 20));
-
-	let str = '';
-
-	for (let i = 0; i < stepWeights.length; i++) {
-		const step = steps[i];
-		const stepWeight = stepWeights[i];
-		const prevWeight = stepWeights[i - 1];
-		if (step && stepWeight) {
-			if (i === 0) {
-				str += padEnd(` ${step * 100}%:`, 9, ' ');
-			} else {
-				str += '\n';
-				str += padEnd(` ${step * 100}%:`, 7, ' ') + '+ ';
-			}
-
-			const newStr = prevWeight
-				? getPlatesString(stepWeight - prevWeight, false)
-				: getPlatesString(stepWeight);
-
-			str += newStr;
-		}
-	}
-
-	return {
-		weights: stepWeights
-			.map((weight, i) => ({
-				label: `${(steps[i] ?? 0) * 100}%`,
-				value: `${weight}kg`,
-			}))
-			.reverse(),
-		plates: str,
-	};
-}
-
-function to2dot5(input: number): number {
-	return (Math.round((input * 4) / 10) / 4) * 10;
 }
