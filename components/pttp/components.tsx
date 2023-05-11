@@ -53,6 +53,19 @@ export function Swings() {
 	);
 }
 
+export function Warmup() {
+	return (
+		<Container label="Warmup">
+			<p>Ideas:</p>
+			<ul className="mt-2 ml-6 list-disc">
+				{' '}
+				<li>Deep squats with KB to pry open thighs</li>
+				<li>Def write some more...</li>
+			</ul>
+		</Container>
+	);
+}
+
 function useLocalStorageState(
 	storageKey: string,
 	falbackValue: number,
@@ -205,6 +218,7 @@ function KettlebellExerciseBlock(props: KettlebellExerciseProps) {
 						<div
 							style={{ backgroundColor }}
 							className="w-[24px] mr-2 aspect-square border rounded"
+							aria-label={`Kettlebell colour indicator ${backgroundColor}`}
 						/>
 						<p>{value}kg</p>
 					</div>

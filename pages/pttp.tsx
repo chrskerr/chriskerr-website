@@ -8,6 +8,7 @@ import {
 	Swings,
 	Timer,
 	TurkishGetUp,
+	Warmup,
 } from 'components/pttp/components';
 
 const title = 'PTTP tracker';
@@ -27,6 +28,7 @@ export default function Pttp(): ReactElement {
 			</div>
 			<div className="display-width divider-before" />
 
+			<Warmup />
 			<Deadlift />
 			<TurkishGetUp />
 			<Swings />
