@@ -184,14 +184,14 @@ type Kettlebell = {
 	colour: `#${string}`;
 };
 
-const availableKettlebells: Kettlebell[] = [
-	{ weight: 16, colour: '#F0B700' },
-	{ weight: 20, colour: '#2461E5' },
-	{ weight: 24, colour: '#00B44D' },
-	{ weight: 28, colour: '#DE1008' },
-	{ weight: 32, colour: '#3D2F8F' },
-	{ weight: 40, colour: '#14140D' },
-];
+const availableKettlebells: Record<string, `#${string}`> = {
+	'16': '#F0B700',
+	'20': '#2461E5',
+	'24': '#00B44D',
+	'28': '#DE1008',
+	'32': '#3D2F8F',
+	'40': '#14140D',
+};
 
 function KettlebellExerciseBlock(props: KettlebellExerciseProps) {
 	const { label, storageKey, scheme } = props;
@@ -200,23 +200,25 @@ function KettlebellExerciseBlock(props: KettlebellExerciseProps) {
 
 	function progress() {
 		setValue(d => {
-			return (
-				availableKettlebells.find(val => val.weight > d)?.weight ?? d
+			const weights = Object.keys(availableKettlebells).sort((a, b) =>
+				a.localeCompare(b),
 			);
+			const nextKb = weights.find(weight => Number(weight) > d);
+			return nextKb ? Number(nextKb) : d;
 		});
 	}
 
 	function deload() {
 		setValue(d => {
-			return (
-				[...availableKettlebells].reverse().find(val => val.weight < d)
-					?.weight ?? d
+			const weights = Object.keys(availableKettlebells).sort((a, b) =>
+				b.localeCompare(a),
 			);
+			const prevKb = weights.find(weight => Number(weight) < d);
+			return prevKb ? Number(prevKb) : d;
 		});
 	}
 
-	const backgroundColor =
-		availableKettlebells.find(kb => kb.weight === value)?.colour ?? '#000';
+	const backgroundColor = availableKettlebells[String(value)] ?? '#000';
 
 	return (
 		<Container label={label}>
