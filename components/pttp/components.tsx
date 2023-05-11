@@ -44,6 +44,17 @@ export function TurkishGetUp() {
 }
 
 export function Swings() {
+	const [isOneHanded] = useState(new Date().getDate() % 2 === 0);
+	if (isOneHanded) {
+		return (
+			<KettlebellExerciseBlock
+				label="One handed swings"
+				storageKey="one-handed-kettlebell-swing"
+				scheme="10 reps, 10 rounds EMOM"
+			/>
+		);
+	}
+
 	return (
 		<KettlebellExerciseBlock
 			label="Swings"
