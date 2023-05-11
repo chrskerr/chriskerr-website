@@ -114,7 +114,7 @@ type BarbellExerciseProps = {
 function BarbellExerciseBlock(props: BarbellExerciseProps) {
 	const { label, notes, tempo, storageKey, steps } = props;
 
-	const [value, setValue] = useLocalStorageState(storageKey, 0);
+	const [value, setValue] = useLocalStorageState(storageKey, 20);
 	const weightsData = useMemo(() => createWeightsData(value, steps), [value]);
 
 	return (
@@ -152,7 +152,7 @@ function BarbellExerciseBlock(props: BarbellExerciseProps) {
 				</button>
 				<button
 					className="button"
-					onClick={() => setValue(d => d - 7.5)}
+					onClick={() => setValue(d => Math.max(d - 7.5, 20))}
 				>
 					Deload (-7.5kg)
 				</button>
@@ -341,7 +341,9 @@ type WeightsData = {
 };
 
 function createWeightsData(weight: number, steps: number[]): WeightsData {
-	const stepWeights = steps.sort().map(step => to2dot5(weight * step));
+	const stepWeights = steps
+		.sort()
+		.map(step => Math.max(to2dot5(weight * step), 20));
 
 	let str = '';
 
@@ -357,9 +359,11 @@ function createWeightsData(weight: number, steps: number[]): WeightsData {
 				str += padEnd(` ${step * 100}%:`, 7, ' ') + '+ ';
 			}
 
-			str += prevWeight
+			const newStr = prevWeight
 				? getPlatesString(stepWeight - prevWeight, false)
 				: getPlatesString(stepWeight);
+
+			str += newStr;
 		}
 	}
 
