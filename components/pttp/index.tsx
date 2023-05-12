@@ -1,2 +1,2 @@
 export * from './prefabs';
-export { Timer } from './timing';
+export * from './timing';

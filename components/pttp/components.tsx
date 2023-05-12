@@ -1,9 +1,9 @@
 import { ReactElement, useMemo } from 'react';
 
 import { useLocalStorageState } from './hooks';
-import { Timer } from './timing';
-import { createWeightsData } from './createWeightsData';
-import { availableKettlebells } from './availableKettlebells';
+import { Interval, Timer } from './timing';
+import { createWeightsData } from './helpers/createWeightsData';
+import { availableKettlebells } from './helpers/availableKettlebells';
 
 export function Container({
 	label,
@@ -135,6 +135,8 @@ export function KettlebellExerciseBlock(props: KettlebellExerciseProps) {
 				<button className="button" onClick={deload}>
 					Deload
 				</button>
+
+				<Interval />
 			</div>
 		</Container>
 	);
