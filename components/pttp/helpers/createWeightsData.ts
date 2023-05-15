@@ -1,6 +1,6 @@
 import padEnd from 'lodash/padEnd';
 
-function getPlatesString(weight: number, includesBar = true): string {
+export function getPlatesString(weight: number, includesBar = true): string {
 	let remainingWeight = weight - (includesBar ? 20 : 0);
 	let str = '';
 
@@ -9,7 +9,10 @@ function getPlatesString(weight: number, includesBar = true): string {
 			str += ',';
 		}
 
-		if (remainingWeight >= 40) {
+		if (remainingWeight >= 50) {
+			str += ' 25';
+			remainingWeight -= 50;
+		} else if (remainingWeight >= 40) {
 			str += ' 20';
 			remainingWeight -= 40;
 		} else if (remainingWeight >= 30) {
@@ -81,6 +84,6 @@ export function createWeightsData(
 	};
 }
 
-function to2dot5(input: number): number {
+export function to2dot5(input: number): number {
 	return (Math.round((input * 4) / 10) / 4) * 10;
 }

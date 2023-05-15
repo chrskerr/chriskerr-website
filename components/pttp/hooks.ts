@@ -132,3 +132,39 @@ export function useInterval(
 		intervalsRemaining,
 	};
 }
+
+async function getCodePointSum(salt?: string): Promise<number> {
+	const hashBuffer = await crypto.subtle?.digest(
+		'SHA-256',
+		Buffer.from(`${new Date().toDateString()}-${salt ?? ''}`),
+	);
+
+	if (!hashBuffer) return 0;
+
+	let codePointSum = 0;
+	if (hashBuffer) {
+		const hashArray = Array.from(new Uint8Array(hashBuffer));
+		const hashHex = hashArray
+			.map(b => b.toString(16).padStart(2, '0'))
+			.join('');
+
+		for (const char of hashHex) {
+			codePointSum += char.codePointAt(0) ?? 0;
+		}
+	}
+
+	return codePointSum;
+}
+
+export function useDeterministicRange<T>(array: [T, ...T[]], salt?: string): T {
+	const [el, setEl] = useState<T>(array[0]);
+
+	useEffect(() => {
+		(async () => {
+			const codePointSum = await getCodePointSum(salt);
+			setEl(array[codePointSum % array.length]);
+		})();
+	}, [salt, array]);
+
+	return el;
+}
