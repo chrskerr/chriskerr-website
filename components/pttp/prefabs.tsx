@@ -5,6 +5,9 @@ import {
 	Container,
 	KettlebellExerciseBlock,
 } from './components';
+import { Reps } from './helpers/estimateRepsAdjustedWeight';
+
+const deadliftReps: [Reps, ...Reps[]] = [3, 4, 5, 6, 8, 12];
 
 export function Deadlift() {
 	return (
@@ -12,10 +15,12 @@ export function Deadlift() {
 			label="Deadlift"
 			storageKey="deadlift"
 			tempo="0030"
-			steps={[0.9, 1]}
+			potentialReps={deadliftReps}
 		/>
 	);
 }
+
+const benchReps: [Reps, ...Reps[]] = [3, 4, 5, 5, 6, 8, 15, 20];
 
 export function Bench() {
 	return (
@@ -24,7 +29,7 @@ export function Bench() {
 			notes={['Ensure elbow lockout at top of press', 'Super-set curls.']}
 			storageKey="bench"
 			tempo="3030"
-			steps={[0.8, 0.9, 1]}
+			potentialReps={benchReps}
 		/>
 	);
 }

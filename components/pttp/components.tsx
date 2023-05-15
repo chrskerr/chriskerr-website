@@ -8,6 +8,7 @@ import {
 	Reps,
 	estimateRepsAdjustedWeight,
 } from './helpers/estimateRepsAdjustedWeight';
+import { createWeightsData } from './helpers/createWeightsData';
 
 export function Container({
 	label,
@@ -29,13 +30,12 @@ type BarbellExerciseProps = {
 	notes?: string[];
 	tempo: string;
 	storageKey: string;
-	steps: number[];
 };
 
-const potentialReps: [Reps, ...Reps[]] = [3, 4, 5, 6, 8, 15, 20];
-
-export function BarbellExerciseBlock(props: BarbellExerciseProps) {
-	const { label, notes, tempo, storageKey } = props;
+export function BarbellExerciseBlock(
+	props: BarbellExerciseProps & { potentialReps: [Reps, ...Reps[]] },
+) {
+	const { label, notes, tempo, storageKey, potentialReps } = props;
 
 	const [value, setValue] = useLocalStorageState(storageKey, 20);
 
@@ -97,6 +97,71 @@ export function BarbellExerciseBlock(props: BarbellExerciseProps) {
 					onClick={() => setValue(d => Math.max(d - 5, 20))}
 				>
 					Deload (-5kg)
+				</button>
+			</div>
+			<Timer showControls />
+		</Container>
+	);
+}
+
+// TODO revert this to previous version
+export function BarbellExercisePttpBlock(
+	props: BarbellExerciseProps & { steps: number[] },
+) {
+	const { label, notes, tempo, storageKey, steps } = props;
+
+	const [value, setValue] = useLocalStorageState(storageKey, 20);
+
+	const weightsData = useMemo(() => createWeightsData(value, steps), [value]);
+
+	return (
+		<Container label={label}>
+			<p>Structure:</p>
+			<ul className="mt-2 mb-4 ml-6 list-disc">
+				<li className="mb-1">1x5 reps at 100%</li>
+				<li className="mb-1">1x5 reps at 90%</li>
+				<li className="mb-1">5 reps at 80% until fatigue</li>
+
+				<li className="mb-1">Tempo: {tempo}</li>
+			</ul>
+
+			{!!notes && (
+				<>
+					<p>Notes:</p>
+					<ul className="mt-2 mb-4 ml-6 list-disc">
+						{notes.map((note, i) => (
+							<li key={i} className="mb-1">
+								{note}
+							</li>
+						))}
+					</ul>
+				</>
+			)}
+
+			<div className="flex flex-col items-start gap-4 mb-4">
+				<div>
+					<p>Plates:</p>
+					<p>{weightsData.plates}</p>
+				</div>
+				{weightsData.weights.map(weight => (
+					<div key={weight.label}>
+						<p>
+							{weight.label}:{' '}
+							<span className="font-bold">{weight.value}</span>
+						</p>
+					</div>
+				))}
+				<button
+					className="button"
+					onClick={() => setValue(d => d + 2.5)}
+				>
+					Progress (+2.5kg)
+				</button>
+				<button
+					className="button"
+					onClick={() => setValue(d => Math.max(d - 7.5, 20))}
+				>
+					Deload (-7.5kg)
 				</button>
 			</div>
 			<Timer showControls />
