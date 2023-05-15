@@ -1,6 +1,6 @@
 import padEnd from 'lodash/padEnd';
 
-export function getPlatesString(weight: number, includesBar = true): string {
+function getPlatesString(weight: number, includesBar = true): string {
 	let remainingWeight = weight - (includesBar ? 20 : 0);
 	let str = '';
 

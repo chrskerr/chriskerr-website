@@ -2,10 +2,7 @@ import { ReactElement, useMemo } from 'react';
 
 import { useDeterministicRange, useLocalStorageState } from './hooks';
 import { Interval, Timer } from './timing';
-import {
-	createWeightsData,
-	getPlatesString,
-} from './helpers/createWeightsData';
+
 import { availableKettlebells } from './helpers/availableKettlebells';
 import {
 	Reps,
@@ -45,23 +42,21 @@ export function BarbellExerciseBlock(props: BarbellExerciseProps) {
 	const reps = useDeterministicRange(potentialReps, storageKey);
 	const adjustedWeight = estimateRepsAdjustedWeight(value, reps);
 
-	const platesString = useMemo(
-		() => getPlatesString(adjustedWeight),
-		[adjustedWeight],
-	);
-
 	return (
 		<Container label={label}>
 			<p>Structure:</p>
 			<ul className="mt-2 mb-4 ml-6 list-disc">
-				<li className="mb-1">Todays rep count: {reps}</li>
 				<li className="mb-1">
 					Work up to daily max (a weight which is the best non-grind
-					value you can lift today)
+					value you can lift today, and will always exceed daily min)
 				</li>
 				<li className="mb-1">Do 1 set here</li>
 				<li className="mb-1">
 					Drop the weight by 10-20%, then do back-off sets until tired
+				</li>
+				<li className="mb-1">
+					Increase daily min when confident that the new one will
+					always be achievable
 				</li>
 				<li className="mb-1">Tempo: {tempo}</li>
 			</ul>
@@ -79,24 +74,21 @@ export function BarbellExerciseBlock(props: BarbellExerciseProps) {
 				</>
 			)}
 
-			<div className="flex flex-col items-start gap-4 mb-4 whitespace-pre">
+			<div className="flex flex-col items-start gap-4 mb-4">
 				<div>
-					<p>Plates: {platesString}</p>
-				</div>
+					<p>
+						Reps: <span className="font-bold">{reps}</span>
+					</p>
 
-				<div>
 					<p>
 						Daily min: <span className="font-bold">{value}kg</span>
 					</p>
-				</div>
 
-				<div>
 					<p>
-						Adjusted min:{' '}
+						{reps} rep min:{' '}
 						<span className="font-bold">{adjustedWeight}kg</span>
 					</p>
 				</div>
-
 				<button className="button" onClick={() => setValue(d => d + 5)}>
 					Progress (+5kg)
 				</button>
