@@ -15,9 +15,7 @@ export function useLocalStorageState(
 	}, []);
 
 	useEffect(() => {
-		if (value) {
-			localStorage.setItem(storageKey, String(value));
-		}
+		localStorage.setItem(storageKey, String(value));
 	}, [value]);
 
 	return [value, setValue];

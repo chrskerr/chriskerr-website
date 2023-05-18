@@ -1,4 +1,4 @@
-import { ReactElement, useMemo } from 'react';
+import { ReactElement, useMemo, useState } from 'react';
 
 import { useDeterministicRange, useLocalStorageState } from './hooks';
 import { Interval, Timer } from './timing';
@@ -37,10 +37,35 @@ export function BarbellExerciseBlock(
 ) {
 	const { label, notes, tempo, storageKey, potentialReps } = props;
 
-	const [value, setValue] = useLocalStorageState(storageKey, 20);
+	const [dailyMin, setDailyMin] = useLocalStorageState(storageKey, 20);
+	const [comfortablyHitDailyMinCount, setComfortablyHitDailyMinCount] =
+		useLocalStorageState(`${storageKey}-count`, 0);
+	const [hasPressedButton, setHasPressedButton] = useState(false);
+
+	const handleYes = () => {
+		setHasPressedButton(true);
+		const newCount = comfortablyHitDailyMinCount + 1;
+		if (newCount >= 5) {
+			setDailyMin(currentDailyMin => currentDailyMin + 5);
+			setComfortablyHitDailyMinCount(0);
+		} else {
+			setComfortablyHitDailyMinCount(newCount);
+		}
+	};
+
+	const handleNo = () => {
+		setHasPressedButton(true);
+		setComfortablyHitDailyMinCount(0);
+	};
+
+	const handleDeload = () => {
+		setHasPressedButton(true);
+		setComfortablyHitDailyMinCount(0);
+		setDailyMin(currentDailyMin => Math.max(currentDailyMin - 5, 20));
+	};
 
 	const reps = useDeterministicRange(potentialReps, storageKey);
-	const adjustedWeight = estimateRepsAdjustedWeight(value, reps);
+	const adjustedWeight = estimateRepsAdjustedWeight(dailyMin, reps);
 
 	return (
 		<Container label={label}>
@@ -81,7 +106,8 @@ export function BarbellExerciseBlock(
 					</p>
 
 					<p>
-						Daily min: <span className="font-bold">{value}kg</span>
+						Daily min:{' '}
+						<span className="font-bold">{dailyMin}kg</span>
 					</p>
 
 					<p>
@@ -89,12 +115,30 @@ export function BarbellExerciseBlock(
 						<span className="font-bold">{adjustedWeight}kg</span>
 					</p>
 				</div>
-				<button className="button" onClick={() => setValue(d => d + 5)}>
-					Progress (+5kg)
-				</button>
+				<p>
+					Did you hit daily min comfortably? (current count:{' '}
+					{comfortablyHitDailyMinCount})
+				</p>
+				<div className="grid grid-cols-2 gap-4">
+					<button
+						className="button"
+						onClick={handleYes}
+						disabled={hasPressedButton}
+					>
+						Yes
+					</button>
+					<button
+						className="button"
+						onClick={handleNo}
+						disabled={hasPressedButton}
+					>
+						No
+					</button>
+				</div>
 				<button
 					className="button"
-					onClick={() => setValue(d => Math.max(d - 5, 20))}
+					onClick={handleDeload}
+					disabled={hasPressedButton}
 				>
 					Deload (-5kg)
 				</button>
@@ -104,14 +148,11 @@ export function BarbellExerciseBlock(
 	);
 }
 
-// TODO revert this to previous version
 export function BarbellExercisePttpBlock(
 	props: BarbellExerciseProps & { steps: number[] },
 ) {
 	const { label, notes, tempo, storageKey, steps } = props;
-
 	const [value, setValue] = useLocalStorageState(storageKey, 20);
-
 	const weightsData = useMemo(() => createWeightsData(value, steps), [value]);
 
 	return (

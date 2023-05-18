@@ -1,11 +1,10 @@
-import { useState } from 'react';
-
 import {
 	BarbellExerciseBlock,
 	Container,
 	KettlebellExerciseBlock,
 } from './components';
 import { Reps } from './helpers/estimateRepsAdjustedWeight';
+import { useDeterministicRange } from './hooks';
 
 const deadliftReps: [Reps, ...Reps[]] = [3, 4, 5, 6, 8, 12];
 
@@ -45,7 +44,7 @@ export function TurkishGetUp() {
 }
 
 export function Swings() {
-	const [isOneHanded] = useState(new Date().getDate() % 2 === 0);
+	const isOneHanded = useDeterministicRange([true, false], 'swings');
 	if (isOneHanded) {
 		return (
 			<KettlebellExerciseBlock
