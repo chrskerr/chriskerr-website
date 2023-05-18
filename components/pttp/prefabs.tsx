@@ -1,8 +1,6 @@
-import {
-	BarbellExerciseBlock,
-	Container,
-	KettlebellExerciseBlock,
-} from './components';
+import { BarbellExerciseBlock } from './components/barbell';
+import { Container } from './components/container';
+import { KettlebellExerciseBlock } from './components/kettlebell';
 import { Reps } from './helpers/estimateRepsAdjustedWeight';
 import { useDeterministicRange } from './hooks';
 
