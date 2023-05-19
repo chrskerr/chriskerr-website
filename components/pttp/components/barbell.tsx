@@ -28,7 +28,7 @@ export function BarbellBasicBlock(
 	const [hasPressedButton, setHasPressedButton] = useState(false);
 
 	const handleProgress = () => {
-		setHasPressedButton(true);
+		// setHasPressedButton(true);
 		setWeight(currentDailyMin => currentDailyMin + 2.5);
 	};
 
