@@ -1,4 +1,4 @@
-import { BarbellExerciseBlock } from './components/barbell';
+import { BarbellBasicBlock, BarbellDUPBlock } from './components/barbell';
 import { Container } from './components/container';
 import { KettlebellExerciseBlock } from './components/kettlebell';
 import { Reps } from './helpers/estimateRepsAdjustedWeight';
@@ -8,7 +8,7 @@ const deadliftReps: [Reps, ...Reps[]] = [3, 4, 5, 6, 8, 12];
 
 export function Deadlift() {
 	return (
-		<BarbellExerciseBlock
+		<BarbellDUPBlock
 			label="Deadlift"
 			storageKey="deadlift"
 			tempo="0030"
@@ -21,7 +21,7 @@ const benchReps: [Reps, ...Reps[]] = [3, 4, 5, 5, 6, 8, 15, 20];
 
 export function Bench() {
 	return (
-		<BarbellExerciseBlock
+		<BarbellDUPBlock
 			label="Bench"
 			notes={['Ensure elbow lockout at top of press', 'Super-set curls.']}
 			storageKey="bench"
@@ -72,5 +72,71 @@ export function Warmup() {
 				<li>Def write some more...</li>
 			</ul>
 		</Container>
+	);
+}
+
+type Combo = { reps: number; tempo: string };
+const availableRehabCombos: [Combo, ...Combo[]] = [
+	{
+		reps: 10,
+		tempo: '3030',
+	},
+	{
+		reps: 5,
+		tempo: '6060',
+	},
+	{
+		reps: 7,
+		tempo: '4040',
+	},
+	{
+		reps: 3,
+		tempo: '10-0-10-0',
+	},
+];
+
+export function RdlRehab() {
+	const key = 'rdl-rehab';
+	const { reps, tempo } = useDeterministicRange(availableRehabCombos, key);
+
+	return (
+		<BarbellBasicBlock
+			label="Romanian Deadlift"
+			storageKey={key}
+			sets={2}
+			tempo={tempo}
+			reps={reps}
+		/>
+	);
+}
+
+export function GoodmorningRehab() {
+	const key = 'goodmorning-rehab';
+	const { reps, tempo } = useDeterministicRange(availableRehabCombos, key);
+
+	return (
+		<BarbellBasicBlock
+			label="Goodmorning"
+			storageKey={key}
+			sets={2}
+			tempo={tempo}
+			reps={reps}
+		/>
+	);
+}
+
+export function GluteHamRaiseRehab() {
+	const key = 'glute-ham-raise-rehab';
+	const { reps, tempo } = useDeterministicRange(availableRehabCombos, key);
+
+	return (
+		<BarbellBasicBlock
+			label="Glute Ham Raises"
+			storageKey={key}
+			sets={2}
+			tempo={tempo}
+			reps={reps}
+			min={0}
+		/>
 	);
 }

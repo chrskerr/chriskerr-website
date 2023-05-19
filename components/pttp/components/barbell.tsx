@@ -15,9 +15,72 @@ type BarbellExerciseProps = {
 	notes?: string[];
 	tempo: string;
 	storageKey: string;
+	min?: number;
+	sets?: number;
 };
 
-export function BarbellExerciseBlock(
+export function BarbellBasicBlock(
+	props: BarbellExerciseProps & { reps: number },
+) {
+	const { label, notes, tempo, storageKey, reps, min = 20, sets } = props;
+
+	const [weight, setWeight] = useLocalStorageState(storageKey, 20);
+	const [hasPressedButton, setHasPressedButton] = useState(false);
+
+	const handleProgress = () => {
+		setHasPressedButton(true);
+		setWeight(currentDailyMin => currentDailyMin + 2.5);
+	};
+
+	const handleDeload = () => {
+		setHasPressedButton(true);
+		setWeight(currentDailyMin => Math.max(currentDailyMin - 2.5, min));
+	};
+
+	return (
+		<Container label={label}>
+			<p>Structure:</p>
+			<ul className="mt-2 mb-4 ml-6 list-disc">
+				<li className="mb-1">
+					{sets} sets x {reps} reps @ {tempo}
+				</li>
+				<li className="mb-1">Weight: {weight}kg</li>
+			</ul>
+
+			{!!notes && (
+				<>
+					<p>Notes:</p>
+					<ul className="mt-2 mb-4 ml-6 list-disc">
+						{notes.map((note, i) => (
+							<li key={i} className="mb-1">
+								{note}
+							</li>
+						))}
+					</ul>
+				</>
+			)}
+
+			<div className="flex flex-col items-start gap-4 mb-4">
+				<button
+					className="button"
+					onClick={handleProgress}
+					disabled={hasPressedButton}
+				>
+					Progress (+2.5kg)
+				</button>
+				<button
+					className="button"
+					onClick={handleDeload}
+					disabled={hasPressedButton}
+				>
+					Deload (-2.5kg)
+				</button>
+			</div>
+			<Timer showControls />
+		</Container>
+	);
+}
+export function BarbellDUPBlock(
 	props: BarbellExerciseProps & { potentialReps: [Reps, ...Reps[]] },
 ) {
 	const { label, notes, tempo, storageKey, potentialReps } = props;

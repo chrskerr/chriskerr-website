@@ -43,7 +43,7 @@ export default function App({ Component, pageProps }: AppProps): ReactElement {
 								href="/"
 								className="text-3xl transition sm:text-4xl hover:text-brand"
 							>
-								{router.pathname.includes('fit-pickle')
+								{router.pathname.includes('pickle')
 									? 'Ms Pickle'
 									: 'Chris Kerr'}
 							</Link>

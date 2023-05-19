@@ -3,15 +3,13 @@ import { ReactElement } from 'react';
 import { NextSeo } from 'next-seo';
 
 import {
-	Bench,
-	Deadlift,
-	Swings,
+	GluteHamRaiseRehab,
+	GoodmorningRehab,
+	RdlRehab,
 	Timer,
-	TurkishGetUp,
-	Warmup,
 } from 'components/pttp';
 
-const title = 'Training tracker';
+const title = 'Strong 🥒';
 
 export default function Pttp(): ReactElement {
 	return (
@@ -19,7 +17,7 @@ export default function Pttp(): ReactElement {
 			<NextSeo
 				title={title}
 				description={title}
-				canonical="https://www.chriskerr.dev/pttp"
+				canonical="https://www.chriskerr.dev/strong-pickle"
 				noindex
 			/>
 			<div className="-mb-8 display-width">
@@ -28,11 +26,9 @@ export default function Pttp(): ReactElement {
 			</div>
 			<div className="display-width divider-before" />
 
-			<Warmup />
-			<Deadlift />
-			<TurkishGetUp />
-			<Swings />
-			<Bench />
+			<RdlRehab />
+			<GoodmorningRehab />
+			<GluteHamRaiseRehab />
 		</>
 	);
 }
