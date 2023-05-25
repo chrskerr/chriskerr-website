@@ -113,7 +113,11 @@ export function BarbellDUPBlock(
 		setDailyMin(currentDailyMin => Math.max(currentDailyMin - 5, 20));
 	};
 
-	const reps = useDeterministicRange(potentialReps, storageKey);
+	const reps = useDeterministicRange(
+		potentialReps,
+		storageKey,
+		potentialReps[0],
+	);
 	const adjustedWeight = estimateRepsAdjustedWeight(dailyMin, reps);
 
 	return (

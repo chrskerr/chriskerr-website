@@ -154,8 +154,12 @@ async function getCodePointSum(salt?: string): Promise<number> {
 	return codePointSum;
 }
 
-export function useDeterministicRange<T>(array: [T, ...T[]], salt: string): T {
-	const [el, setEl] = useState<T>(array[0]);
+export function useDeterministicRange<T>(
+	array: [T, ...T[]],
+	salt: string,
+	initial: T,
+): T {
+	const [el, setEl] = useState<T>(initial);
 
 	useEffect(() => {
 		(async () => {

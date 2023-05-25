@@ -15,7 +15,7 @@ import { useDeterministicSample } from 'components/pttp/hooks';
 
 const title = 'Training tracker';
 
-const options: [typeof Deadlift, ...(typeof Deadlift)[]] = [
+const options: [typeof Swings, ...(typeof Swings)[]] = [
 	Deadlift,
 	TurkishGetUp,
 	Swings,

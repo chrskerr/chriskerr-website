@@ -55,8 +55,17 @@ export function TurkishGetUp() {
 	);
 }
 
+const noChoice = Symbol();
+
 export function Swings() {
-	const isOneHanded = useDeterministicRange([true, false], 'swings');
+	const isOneHanded = useDeterministicRange<boolean | typeof noChoice>(
+		[true, false],
+		'swings',
+		noChoice,
+	);
+
+	if (isOneHanded === noChoice) return null;
+
 	if (isOneHanded) {
 		return (
 			<KettlebellExerciseBlock
@@ -111,7 +120,11 @@ const availableRehabCombos: [Combo, ...Combo[]] = [
 
 export function RdlRehab() {
 	const key = 'rdl-rehab';
-	const { reps, tempo } = useDeterministicRange(availableRehabCombos, key);
+	const { reps, tempo } = useDeterministicRange(
+		availableRehabCombos,
+		key,
+		availableRehabCombos[0],
+	);
 
 	return (
 		<BarbellBasicBlock
@@ -126,7 +139,11 @@ export function RdlRehab() {
 
 export function GoodmorningRehab() {
 	const key = 'goodmorning-rehab';
-	const { reps, tempo } = useDeterministicRange(availableRehabCombos, key);
+	const { reps, tempo } = useDeterministicRange(
+		availableRehabCombos,
+		key,
+		availableRehabCombos[0],
+	);
 
 	return (
 		<BarbellBasicBlock
@@ -141,7 +158,11 @@ export function GoodmorningRehab() {
 
 export function GluteHamRaiseRehab() {
 	const key = 'glute-ham-raise-rehab';
-	const { reps, tempo } = useDeterministicRange(availableRehabCombos, key);
+	const { reps, tempo } = useDeterministicRange(
+		availableRehabCombos,
+		key,
+		availableRehabCombos[0],
+	);
 
 	return (
 		<BarbellBasicBlock
