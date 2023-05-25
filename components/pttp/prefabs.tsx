@@ -1,12 +1,16 @@
+import { ReactElement } from 'react';
 import { BarbellBasicBlock, BarbellDUPBlock } from './components/barbell';
 import { Container } from './components/container';
+import { HIITExerciseBlock } from './components/hiit';
 import { KettlebellExerciseBlock } from './components/kettlebell';
 import { Reps } from './helpers/estimateRepsAdjustedWeight';
 import { useDeterministicRange } from './hooks';
 
+// Chris
+
 const deadliftReps: [Reps, ...Reps[]] = [3, 4, 5, 6, 8, 12];
 
-export function Deadlift() {
+export function Deadlift(): ReactElement {
 	return (
 		<BarbellDUPBlock
 			label="Deadlift"
@@ -19,7 +23,7 @@ export function Deadlift() {
 
 const benchReps: [Reps, ...Reps[]] = [3, 4, 5, 5, 6, 8, 15, 20];
 
-export function Bench() {
+export function Bench(): ReactElement {
 	return (
 		<BarbellDUPBlock
 			label="Bench"
@@ -33,7 +37,7 @@ export function Bench() {
 
 const curlsReps: [Reps, ...Reps[]] = [6, 8, 12, 15];
 
-export function Curls() {
+export function Curls(): ReactElement {
 	return (
 		<BarbellDUPBlock
 			label="Dumbbell curls"
@@ -45,7 +49,7 @@ export function Curls() {
 	);
 }
 
-export function TurkishGetUp() {
+export function TurkishGetUp(): ReactElement {
 	return (
 		<KettlebellExerciseBlock
 			label="TGU"
@@ -55,16 +59,8 @@ export function TurkishGetUp() {
 	);
 }
 
-const noChoice = Symbol();
-
-export function Swings() {
-	const isOneHanded = useDeterministicRange<boolean | typeof noChoice>(
-		[true, false],
-		'swings',
-		noChoice,
-	);
-
-	if (isOneHanded === noChoice) return null;
+export function Swings(): ReactElement {
+	const isOneHanded = useDeterministicRange([true, false], 'swings');
 
 	if (isOneHanded) {
 		return (
@@ -85,7 +81,7 @@ export function Swings() {
 	);
 }
 
-export function Warmup() {
+export function Warmup(): ReactElement {
 	return (
 		<Container label="Warmup">
 			<p>Ideas:</p>
@@ -97,6 +93,30 @@ export function Warmup() {
 		</Container>
 	);
 }
+
+export function AssaultBike(): ReactElement {
+	return (
+		<HIITExerciseBlock
+			instructions="1 minute work, 1 minute rest, 16 minutes. Hard effort when pushing."
+			label="Assault bike intervals"
+			intervalCount={16}
+			intervalDurationSeconds={60}
+			leftRightLabels={['work', 'rest']}
+		/>
+	);
+}
+
+export function Rowing(): ReactElement {
+	return (
+		<HIITExerciseBlock
+			instructions="20 seconds work, 40 minute rest, 10 minutes. Work out rough calories in 20 seconds and then update this to be calorie target & EMOM instead"
+			label="Rowing intervals"
+			leftRightLabels={null}
+		/>
+	);
+}
+
+// Kate
 
 type Combo = { reps: number; tempo: string };
 const availableRehabCombos: [Combo, ...Combo[]] = [
@@ -118,13 +138,9 @@ const availableRehabCombos: [Combo, ...Combo[]] = [
 	},
 ];
 
-export function RdlRehab() {
+export function RdlRehab(): ReactElement {
 	const key = 'rdl-rehab';
-	const { reps, tempo } = useDeterministicRange(
-		availableRehabCombos,
-		key,
-		availableRehabCombos[0],
-	);
+	const { reps, tempo } = useDeterministicRange(availableRehabCombos, key);
 
 	return (
 		<BarbellBasicBlock
@@ -137,13 +153,9 @@ export function RdlRehab() {
 	);
 }
 
-export function GoodmorningRehab() {
+export function GoodmorningRehab(): ReactElement {
 	const key = 'goodmorning-rehab';
-	const { reps, tempo } = useDeterministicRange(
-		availableRehabCombos,
-		key,
-		availableRehabCombos[0],
-	);
+	const { reps, tempo } = useDeterministicRange(availableRehabCombos, key);
 
 	return (
 		<BarbellBasicBlock
@@ -156,13 +168,9 @@ export function GoodmorningRehab() {
 	);
 }
 
-export function GluteHamRaiseRehab() {
+export function GluteHamRaiseRehab(): ReactElement {
 	const key = 'glute-ham-raise-rehab';
-	const { reps, tempo } = useDeterministicRange(
-		availableRehabCombos,
-		key,
-		availableRehabCombos[0],
-	);
+	const { reps, tempo } = useDeterministicRange(availableRehabCombos, key);
 
 	return (
 		<BarbellBasicBlock

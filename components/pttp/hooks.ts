@@ -1,11 +1,12 @@
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { createTimeString } from './helpers/createTimeString';
+import { seedFunc, oneOf, sequence } from 'aimless.js';
 
 export function useLocalStorageState(
 	storageKey: string,
-	falbackValue: number,
+	fallbackValue: number,
 ): [number, Dispatch<SetStateAction<number>>] {
-	const [value, setValue] = useState(falbackValue);
+	const [value, setValue] = useState(fallbackValue);
 
 	useEffect(() => {
 		const newValue = localStorage.getItem(storageKey);
@@ -79,8 +80,8 @@ type IntervalData = {
 };
 
 export function useInterval(
-	totalIntervals = 10,
-	intervalDuration = 60,
+	totalIntervals: number,
+	intervalDuration: number,
 ): IntervalData {
 	const [timeElapsed, setTimeElapsed] = useState(0);
 	const [intervalData, setIntervalData] = useState<number | undefined>(
@@ -131,42 +132,31 @@ export function useInterval(
 	};
 }
 
-async function getCodePointSum(salt?: string): Promise<number> {
-	const hashBuffer = await crypto.subtle?.digest(
-		'SHA-256',
-		Buffer.from(`${new Date().toDateString()}-${salt ?? ''}`),
-	);
-
-	if (!hashBuffer) return 0;
-
-	let codePointSum = 0;
-	if (hashBuffer) {
-		const hashArray = Array.from(new Uint8Array(hashBuffer));
-		const hashHex = hashArray
-			.map(b => b.toString(16).padStart(2, '0'))
-			.join('');
-
-		for (const char of hashHex) {
-			codePointSum += char.codePointAt(0) ?? 0;
-		}
-	}
-
-	return codePointSum;
+function getCodePointSum(str: string): number {
+	return str
+		.split('')
+		.reduce<number>((acc, curr) => acc + (curr.codePointAt(0) ?? 0), 0);
 }
 
-export function useDeterministicRange<T>(
-	array: [T, ...T[]],
-	salt: string,
-	initial: T,
-): T {
-	const [el, setEl] = useState<T>(initial);
+function getSeedFunc(salt: string): () => number {
+	const seedString = new Date().toISOString().split('T')[0] + '-' + salt;
+	return seedFunc(getCodePointSum(seedString));
+}
+
+function getOne<T>(array: [T, ...T[]], salt: string): T {
+	return oneOf(array, getSeedFunc(salt));
+}
+
+function getMany<T>(array: [T, ...T[]], count: number, salt: string): T[] {
+	return sequence(array, getSeedFunc(salt)).splice(0, count);
+}
+
+export function useDeterministicRange<T>(array: [T, ...T[]], salt: string): T {
+	const [el, setEl] = useState<T>(getOne(array, salt));
 
 	useEffect(() => {
-		(async () => {
-			const codePointSum = await getCodePointSum(salt);
-			setEl(array[codePointSum % array.length]);
-		})();
-	}, [salt, array]);
+		setEl(getOne(array, salt));
+	}, [array, salt]);
 
 	return el;
 }
@@ -175,22 +165,11 @@ export function useDeterministicSample<T>(
 	array: [T, ...T[]],
 	count: number,
 	salt: string,
-): T[] | null {
-	const [els, setEls] = useState<T[] | null>(null);
+): T[] {
+	const [els, setEls] = useState<T[]>(getMany(array, count, salt));
 
 	useEffect(() => {
-		(async () => {
-			const mutableArray = [...array];
-			const result: T[] = [];
-
-			for (let i = 0; i < count; i++) {
-				const arrayIndex =
-					(await getCodePointSum(salt)) % mutableArray.length;
-				result.push(mutableArray.splice(arrayIndex, 1)[0]);
-			}
-
-			setEls(result);
-		})();
+		setEls(getMany(array, count, salt));
 	}, [salt, count, array]);
 
 	return els;

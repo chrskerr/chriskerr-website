@@ -6,21 +6,21 @@ import {
 	Bench,
 	Curls,
 	Deadlift,
-	Swings,
 	Timer,
 	TurkishGetUp,
 	Warmup,
+	AssaultBike,
 } from 'components/pttp';
 import { useDeterministicSample } from 'components/pttp/hooks';
 
 const title = 'Training tracker';
 
-const options: [typeof Swings, ...(typeof Swings)[]] = [
+const options: [() => ReactElement, ...(() => ReactElement)[]] = [
 	Deadlift,
 	TurkishGetUp,
-	Swings,
 	Bench,
 	Curls,
+	AssaultBike,
 ];
 
 export default function Pttp(): ReactElement {
@@ -42,8 +42,9 @@ export default function Pttp(): ReactElement {
 
 			<Warmup />
 
-			{!!exercises &&
-				exercises.map((Exercise, i) => <Exercise key={i} />)}
+			{exercises.map((Exercise, i) => (
+				<Exercise key={i} />
+			))}
 		</>
 	);
 }

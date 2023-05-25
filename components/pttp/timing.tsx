@@ -34,18 +34,33 @@ export function Timer({ showControls = false }: TimerProps) {
 	);
 }
 
+interface IntervalProps {
+	leftRightLabels?: [string, string] | null;
+
+	/**
+	 * length of each interval in seconds
+	 * @default 60
+	 * */
+	durationSeconds?: number;
+	/**
+	 * number of intervals to perform
+	 * @default 10
+	 * */
+	count?: number;
+}
+
 export function Interval({
-	showLeftRight = true,
-}: {
-	showLeftRight?: boolean;
-}) {
+	leftRightLabels = ['left', 'right'],
+	durationSeconds = 60,
+	count = 10,
+}: IntervalProps) {
 	const { timeString, isRunning, intervalsRemaining, startStop } =
-		useInterval();
+		useInterval(count, durationSeconds);
 
 	return (
 		<div>
-			{showLeftRight && (
-				<p>Next: {intervalsRemaining % 2 === 0 ? 'Left' : 'Right'}</p>
+			{!!leftRightLabels && (
+				<p>Next: {leftRightLabels[intervalsRemaining % 2]}</p>
 			)}
 			<p>{intervalsRemaining} rounds remaining</p>
 			<div className="flex items-center">
