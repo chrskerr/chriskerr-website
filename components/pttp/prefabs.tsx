@@ -23,10 +23,24 @@ export function Bench() {
 	return (
 		<BarbellDUPBlock
 			label="Bench"
-			notes={['Ensure elbow lockout at top of press', 'Super-set curls.']}
+			notes={['Ensure elbow lockout at top of press']}
 			storageKey="bench"
 			tempo="3030"
 			potentialReps={benchReps}
+		/>
+	);
+}
+
+const curlsReps: [Reps, ...Reps[]] = [6, 8, 12, 15];
+
+export function Curls() {
+	return (
+		<BarbellDUPBlock
+			label="Dumbbell curls"
+			notes={['Weight per db']}
+			storageKey="dumbbell-curl"
+			tempo="3030"
+			potentialReps={curlsReps}
 		/>
 	);
 }

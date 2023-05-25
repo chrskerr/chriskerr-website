@@ -80,6 +80,7 @@ export function BarbellBasicBlock(
 		</Container>
 	);
 }
+
 export function BarbellDUPBlock(
 	props: BarbellExerciseProps & { potentialReps: [Reps, ...Reps[]] },
 ) {

@@ -4,16 +4,28 @@ import { NextSeo } from 'next-seo';
 
 import {
 	Bench,
+	Curls,
 	Deadlift,
 	Swings,
 	Timer,
 	TurkishGetUp,
 	Warmup,
 } from 'components/pttp';
+import { useDeterministicSample } from 'components/pttp/hooks';
 
 const title = 'Training tracker';
 
+const options: [typeof Deadlift, ...(typeof Deadlift)[]] = [
+	Deadlift,
+	TurkishGetUp,
+	Swings,
+	Bench,
+	Curls,
+];
+
 export default function Pttp(): ReactElement {
+	const exercises = useDeterministicSample(options, 4, 'pttp');
+
 	return (
 		<>
 			<NextSeo
@@ -29,10 +41,9 @@ export default function Pttp(): ReactElement {
 			<div className="display-width divider-before" />
 
 			<Warmup />
-			<Deadlift />
-			<TurkishGetUp />
-			<Swings />
-			<Bench />
+
+			{!!exercises &&
+				exercises.map((Exercise, i) => <Exercise key={i} />)}
 		</>
 	);
 }
