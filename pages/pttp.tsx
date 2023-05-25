@@ -10,6 +10,7 @@ import {
 	TurkishGetUp,
 	Warmup,
 	AssaultBike,
+	Rowing,
 } from 'components/pttp';
 import { useDeterministicSample } from 'components/pttp/hooks';
 
@@ -21,6 +22,7 @@ const options: [() => ReactElement, ...(() => ReactElement)[]] = [
 	Bench,
 	Curls,
 	AssaultBike,
+	Rowing,
 ];
 
 export default function Pttp(): ReactElement {
