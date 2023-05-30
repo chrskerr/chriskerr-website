@@ -1,5 +1,12 @@
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import {
+	Dispatch,
+	ReactElement,
+	SetStateAction,
+	useEffect,
+	useState,
+} from 'react';
 import { createTimeString } from './helpers/createTimeString';
+import { NotEmpty, WithWeight } from './types';
 
 export function useLocalStorageState(
 	storageKey: string,
@@ -144,22 +151,42 @@ function getSeed(salt: string): number {
 	);
 }
 
-function getOne<T>(array: [T, ...T[]], salt: string): T {
+function getOne<T>(array: NotEmpty<T>, salt: string): T {
 	return array[getSeed(salt) % array.length];
 }
 
-function getMany<T>(array: [T, ...T[]], count: number, salt: string): T[] {
-	const tmpArray = [...array];
+function getMany<T extends { weight: number; key: string }>(
+	array: NotEmpty<T>,
+	maxWeight: number,
+	salt: string,
+): T[] {
+	let tmpArray = [...array];
 	const result: T[] = [];
 
-	for (let i = 0; i < count; i++) {
-		result.push(tmpArray.splice(getSeed(salt) % tmpArray.length, 1)[0]);
+	let allocatedWeight = 0;
+
+	while (allocatedWeight < maxWeight) {
+		const remainingWeight = maxWeight - allocatedWeight;
+		if (remainingWeight <= 0) break;
+
+		const possibleExercises = tmpArray.filter(
+			curr => curr.weight <= remainingWeight,
+		);
+		if (!possibleExercises.length) break;
+
+		const chosenExercise =
+			possibleExercises[getSeed(salt) % tmpArray.length];
+		if (!chosenExercise) break;
+
+		result.push(chosenExercise);
+		tmpArray = tmpArray.filter(curr => curr.key !== chosenExercise.key);
+		allocatedWeight += chosenExercise.weight;
 	}
 
 	return result;
 }
 
-export function useDeterministicRange<T>(array: [T, ...T[]], salt: string): T {
+export function useDeterministicRange<T>(array: NotEmpty<T>, salt: string): T {
 	const [el, setEl] = useState<T>(getOne(array, salt));
 
 	useEffect(() => {
@@ -169,16 +196,18 @@ export function useDeterministicRange<T>(array: [T, ...T[]], salt: string): T {
 	return el;
 }
 
-export function useDeterministicSample<T>(
-	array: [T, ...T[]],
-	count: number,
+export function useDeterministicSample<T extends () => ReactElement>(
+	array: NotEmpty<WithWeight<T>>,
+	maxWeight: number,
 	salt: string,
-): T[] {
-	const [els, setEls] = useState<T[]>(getMany(array, count, salt));
+): WithWeight<T>[] {
+	const [els, setEls] = useState<WithWeight<T>[]>(
+		getMany(array, maxWeight, salt),
+	);
 
 	useEffect(() => {
-		setEls(getMany(array, count, salt));
-	}, [salt, count, array]);
+		setEls(getMany(array, maxWeight, salt));
+	}, [salt, maxWeight, array]);
 
 	return els;
 }

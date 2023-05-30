@@ -13,20 +13,21 @@ import {
 	Rowing,
 } from 'components/pttp';
 import { useDeterministicSample } from 'components/pttp/hooks';
+import { NotEmpty, WithWeight } from 'components/pttp/types';
 
 const title = 'Training tracker';
 
-const options: [() => ReactElement, ...(() => ReactElement)[]] = [
-	Deadlift,
-	TurkishGetUp,
-	Bench,
-	Curls,
-	AssaultBike,
-	Rowing,
+const options: NotEmpty<WithWeight<() => ReactElement>> = [
+	{ key: 'deadlift', weight: 20, component: Deadlift },
+	{ key: 'tgu', weight: 10, component: TurkishGetUp },
+	{ key: 'bench', weight: 15, component: Bench },
+	{ key: 'curls', weight: 10, component: Curls },
+	{ key: 'assault-bike', weight: 20, component: AssaultBike },
+	{ key: 'rowing', weight: 10, component: Rowing },
 ];
 
 export default function Pttp(): ReactElement {
-	const exercises = useDeterministicSample(options, 4, 'pttp');
+	const exercises = useDeterministicSample(options, 55, 'pttp');
 
 	return (
 		<>
@@ -45,7 +46,7 @@ export default function Pttp(): ReactElement {
 			<Warmup />
 
 			{exercises.map((Exercise, i) => (
-				<Exercise key={i} />
+				<Exercise.component key={i} />
 			))}
 		</>
 	);

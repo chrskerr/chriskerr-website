@@ -9,6 +9,7 @@ import {
 } from '../helpers/estimateRepsAdjustedWeight';
 import { createWeightsData } from '../helpers/createWeightsData';
 import { Container } from './container';
+import { NotEmpty } from '../types';
 
 type BarbellExerciseProps = {
 	label: string;
@@ -82,7 +83,7 @@ export function BarbellBasicBlock(
 }
 
 export function BarbellDUPBlock(
-	props: BarbellExerciseProps & { potentialReps: [Reps, ...Reps[]] },
+	props: BarbellExerciseProps & { potentialReps: NotEmpty<Reps> },
 ) {
 	const { label, notes, tempo, storageKey, potentialReps, min = 20 } = props;
 

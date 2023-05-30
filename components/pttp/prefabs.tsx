@@ -5,10 +5,11 @@ import { HIITExerciseBlock } from './components/hiit';
 import { KettlebellExerciseBlock } from './components/kettlebell';
 import { Reps } from './helpers/estimateRepsAdjustedWeight';
 import { useDeterministicRange } from './hooks';
+import { NotEmpty } from './types';
 
 // Chris
 
-const deadliftReps: [Reps, ...Reps[]] = [3, 4, 5, 6, 8, 12];
+const deadliftReps: NotEmpty<Reps> = [3, 4, 5, 6, 8, 12];
 
 export function Deadlift(): ReactElement {
 	return (
@@ -21,7 +22,7 @@ export function Deadlift(): ReactElement {
 	);
 }
 
-const benchReps: [Reps, ...Reps[]] = [3, 4, 5, 5, 6, 8, 15, 20];
+const benchReps: NotEmpty<Reps> = [3, 4, 5, 5, 6, 8, 15, 20];
 
 export function Bench(): ReactElement {
 	return (
@@ -35,7 +36,7 @@ export function Bench(): ReactElement {
 	);
 }
 
-const curlsReps: [Reps, ...Reps[]] = [6, 8, 12, 15];
+const curlsReps: NotEmpty<Reps> = [6, 8, 12, 15];
 
 export function Curls(): ReactElement {
 	return (
@@ -121,7 +122,7 @@ export function Rowing(): ReactElement {
 // Kate
 
 type Combo = { reps: number; tempo: string };
-const availableRehabCombos: [Combo, ...Combo[]] = [
+const availableRehabCombos: NotEmpty<Combo> = [
 	{
 		reps: 10,
 		tempo: '3030',
