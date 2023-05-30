@@ -45,6 +45,7 @@ export function Curls(): ReactElement {
 			storageKey="dumbbell-curl"
 			tempo="3030"
 			potentialReps={curlsReps}
+			min={5}
 		/>
 	);
 }

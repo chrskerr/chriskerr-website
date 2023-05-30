@@ -84,9 +84,9 @@ export function BarbellBasicBlock(
 export function BarbellDUPBlock(
 	props: BarbellExerciseProps & { potentialReps: [Reps, ...Reps[]] },
 ) {
-	const { label, notes, tempo, storageKey, potentialReps } = props;
+	const { label, notes, tempo, storageKey, potentialReps, min = 20 } = props;
 
-	const [dailyMin, setDailyMin] = useLocalStorageState(storageKey, 20);
+	const [dailyMin, setDailyMin] = useLocalStorageState(storageKey, min);
 	const [comfortablyHitDailyMinCount, setComfortablyHitDailyMinCount] =
 		useLocalStorageState(`${storageKey}-count`, 0);
 	const [hasPressedButton, setHasPressedButton] = useState(false);
@@ -110,7 +110,7 @@ export function BarbellDUPBlock(
 	const handleDeload = () => {
 		setHasPressedButton(true);
 		setComfortablyHitDailyMinCount(0);
-		setDailyMin(currentDailyMin => Math.max(currentDailyMin - 5, 20));
+		setDailyMin(currentDailyMin => Math.max(currentDailyMin - 5, min));
 	};
 
 	const reps = useDeterministicRange(potentialReps, storageKey);

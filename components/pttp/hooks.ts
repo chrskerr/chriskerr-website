@@ -1,6 +1,5 @@
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { createTimeString } from './helpers/createTimeString';
-import { seedFunc, oneOf, sequence } from 'aimless.js';
 
 export function useLocalStorageState(
 	storageKey: string,
@@ -132,23 +131,32 @@ export function useInterval(
 	};
 }
 
-function getCodePointSum(str: string): number {
+function getCodePointProduct(str: string): number {
 	return str
 		.split('')
-		.reduce<number>((acc, curr) => acc + (curr.codePointAt(0) ?? 0), 0);
+		.reduce<number>((acc, curr) => acc * (curr.codePointAt(0) ?? 0), 1);
 }
 
-function getSeedFunc(salt: string): () => number {
-	const seedString = new Date().toISOString().split('T')[0] + '-' + salt;
-	return seedFunc(getCodePointSum(seedString));
+function getSeed(salt: string): number {
+	return (
+		Math.floor((Date.now() + 36_000_000) / 86_400_000) *
+		getCodePointProduct(salt)
+	);
 }
 
 function getOne<T>(array: [T, ...T[]], salt: string): T {
-	return oneOf(array, getSeedFunc(salt));
+	return array[getSeed(salt) % array.length];
 }
 
 function getMany<T>(array: [T, ...T[]], count: number, salt: string): T[] {
-	return sequence(array, getSeedFunc(salt)).splice(0, count);
+	const tmpArray = [...array];
+	const result: T[] = [];
+
+	for (let i = 0; i < count; i++) {
+		result.push(tmpArray.splice(getSeed(salt) % tmpArray.length, 1)[0]);
+	}
+
+	return result;
 }
 
 export function useDeterministicRange<T>(array: [T, ...T[]], salt: string): T {
