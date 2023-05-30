@@ -138,27 +138,27 @@ export function useInterval(
 	};
 }
 
-function getCodePointProduct(str: string): number {
+function getCodePointProduct(str: Readonly<string>): number {
 	return str
 		.split('')
 		.reduce<number>((acc, curr) => acc * (curr.codePointAt(0) ?? 0), 1);
 }
 
-function getSeed(salt: string): number {
+function getSeed(salt: Readonly<string>): number {
 	return (
 		Math.floor((Date.now() + 36_000_000) / 86_400_000) *
 		getCodePointProduct(salt)
 	);
 }
 
-function getOne<T>(array: NotEmpty<T>, salt: string): T {
+function getOne<T>(array: Readonly<NotEmpty<T>>, salt: string): T {
 	return array[getSeed(salt) % array.length];
 }
 
-function getMany<T extends { weight: number; key: string }>(
-	array: NotEmpty<T>,
-	maxWeight: number,
-	salt: string,
+function getMany<T extends { weight: number }>(
+	array: Readonly<NotEmpty<Readonly<T>>>,
+	maxWeight: Readonly<number>,
+	salt: Readonly<string>,
 ): T[] {
 	let tmpArray = [...array];
 	const result: T[] = [];
@@ -169,24 +169,26 @@ function getMany<T extends { weight: number; key: string }>(
 		const remainingWeight = maxWeight - allocatedWeight;
 		if (remainingWeight <= 0) break;
 
-		const possibleExercises = tmpArray.filter(
-			curr => curr.weight <= remainingWeight,
-		);
-		if (!possibleExercises.length) break;
+		tmpArray = tmpArray.filter(curr => curr.weight <= remainingWeight);
+		if (!tmpArray.length) break;
 
-		const chosenExercise =
-			possibleExercises[getSeed(salt) % tmpArray.length];
+		const chosenExercise = tmpArray.splice(
+			getSeed(salt) % tmpArray.length,
+			1,
+		)[0];
 		if (!chosenExercise) break;
 
 		result.push(chosenExercise);
-		tmpArray = tmpArray.filter(curr => curr.key !== chosenExercise.key);
 		allocatedWeight += chosenExercise.weight;
 	}
 
 	return result;
 }
 
-export function useDeterministicRange<T>(array: NotEmpty<T>, salt: string): T {
+export function useDeterministicRange<T>(
+	array: Readonly<NotEmpty<Readonly<T>>>,
+	salt: Readonly<string>,
+): T {
 	const [el, setEl] = useState<T>(getOne(array, salt));
 
 	useEffect(() => {
@@ -197,9 +199,9 @@ export function useDeterministicRange<T>(array: NotEmpty<T>, salt: string): T {
 }
 
 export function useDeterministicSample<T extends () => ReactElement>(
-	array: NotEmpty<WithWeight<T>>,
-	maxWeight: number,
-	salt: string,
+	array: Readonly<NotEmpty<Readonly<WithWeight<T>>>>,
+	maxWeight: Readonly<number>,
+	salt: Readonly<string>,
 ): WithWeight<T>[] {
 	const [els, setEls] = useState<WithWeight<T>[]>(
 		getMany(array, maxWeight, salt),
