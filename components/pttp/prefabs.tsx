@@ -55,6 +55,7 @@ export function TurkishGetUp(): ReactElement {
 			label="TGU"
 			storageKey="turkish-get-up"
 			scheme="1 rep, 10 rounds EMOM"
+			leftRightLabels={['right', 'left']}
 		/>
 	);
 }

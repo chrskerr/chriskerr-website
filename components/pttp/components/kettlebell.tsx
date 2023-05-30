@@ -8,6 +8,11 @@ type KettlebellExerciseProps = {
 	label: string;
 	storageKey: string;
 	scheme: string;
+
+	/**
+	 * defaults to ['left', 'right']
+	 */
+	leftRightLabels?: [string, string] | null;
 };
 
 export function KettlebellExerciseBlock(props: KettlebellExerciseProps) {
@@ -61,7 +66,7 @@ export function KettlebellExerciseBlock(props: KettlebellExerciseProps) {
 					Deload
 				</button>
 
-				<Interval />
+				<Interval leftRightLabels={props.leftRightLabels} />
 			</div>
 		</Container>
 	);
