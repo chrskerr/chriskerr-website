@@ -13,11 +13,11 @@ import {
 	Rowing,
 } from 'components/pttp';
 import { useDeterministicSample } from 'components/pttp/hooks';
-import { NotEmpty, WithWeight } from 'components/pttp/types';
+import { DeepReadonly, NotEmpty, WithWeight } from 'components/pttp/types';
 
 const title = 'Training tracker';
 
-const options: NotEmpty<WithWeight<() => ReactElement>> = [
+const options: DeepReadonly<NotEmpty<WithWeight<() => ReactElement>>> = [
 	{ weight: 20, component: Deadlift },
 	{ weight: 10, component: TurkishGetUp },
 	{ weight: 15, component: Bench },

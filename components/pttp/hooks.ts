@@ -6,7 +6,7 @@ import {
 	useState,
 } from 'react';
 import { createTimeString } from './helpers/createTimeString';
-import { NotEmpty, WithWeight } from './types';
+import { DeepReadonly, NotEmpty, WithWeight } from './types';
 
 export function useLocalStorageState(
 	storageKey: string,
@@ -151,17 +151,20 @@ function getSeed(salt: Readonly<string>): number {
 	);
 }
 
-function getOne<T>(array: Readonly<NotEmpty<T>>, salt: string): T {
+function getOne<T>(
+	array: DeepReadonly<NotEmpty<T>>,
+	salt: string,
+): DeepReadonly<T> {
 	return array[getSeed(salt) % array.length];
 }
 
 function getMany<T extends { weight: number }>(
-	array: Readonly<NotEmpty<Readonly<T>>>,
+	array: DeepReadonly<NotEmpty<T>>,
 	maxWeight: Readonly<number>,
 	salt: Readonly<string>,
-): T[] {
+): DeepReadonly<T>[] {
 	let tmpArray = [...array];
-	const result: T[] = [];
+	const result: DeepReadonly<T>[] = [];
 
 	let allocatedWeight = 0;
 
@@ -186,10 +189,10 @@ function getMany<T extends { weight: number }>(
 }
 
 export function useDeterministicRange<T>(
-	array: Readonly<NotEmpty<Readonly<T>>>,
+	array: DeepReadonly<NotEmpty<T>>,
 	salt: Readonly<string>,
-): T {
-	const [el, setEl] = useState<T>(getOne(array, salt));
+): DeepReadonly<T> {
+	const [el, setEl] = useState<DeepReadonly<T>>(getOne(array, salt));
 
 	useEffect(() => {
 		setEl(getOne(array, salt));
@@ -199,11 +202,11 @@ export function useDeterministicRange<T>(
 }
 
 export function useDeterministicSample<T extends () => ReactElement>(
-	array: Readonly<NotEmpty<Readonly<WithWeight<T>>>>,
+	array: DeepReadonly<NotEmpty<WithWeight<T>>>,
 	maxWeight: Readonly<number>,
 	salt: Readonly<string>,
-): WithWeight<T>[] {
-	const [els, setEls] = useState<WithWeight<T>[]>(
+): DeepReadonly<Array<WithWeight<T>>> {
+	const [els, setEls] = useState<DeepReadonly<Array<WithWeight<T>>>>(
 		getMany(array, maxWeight, salt),
 	);
 
