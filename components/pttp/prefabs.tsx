@@ -18,6 +18,7 @@ export function Deadlift(): ReactElement {
 			storageKey="deadlift"
 			tempo="0030"
 			potentialReps={deadliftReps}
+			mode="pyramid"
 		/>
 	);
 }
@@ -32,13 +33,14 @@ export function Bench(): ReactElement {
 			storageKey="bench"
 			tempo="3030"
 			potentialReps={benchReps}
+			mode="pyramid"
 		/>
 	);
 }
 
 const curlsReps: NotEmpty<Reps> = [6, 8, 12, 15];
 
-export function Curls(): ReactElement {
+export function DbCurls(): ReactElement {
 	return (
 		<BarbellDUPBlock
 			label="Dumbbell curls"
@@ -47,6 +49,20 @@ export function Curls(): ReactElement {
 			tempo="3030"
 			potentialReps={curlsReps}
 			min={5}
+			mode="straight"
+		/>
+	);
+}
+
+export function CableCurls(): ReactElement {
+	return (
+		<BarbellDUPBlock
+			label="Cable curls"
+			storageKey="cable-curl"
+			tempo="3030"
+			potentialReps={curlsReps}
+			min={5}
+			mode="straight"
 		/>
 	);
 }

@@ -83,9 +83,20 @@ export function BarbellBasicBlock(
 }
 
 export function BarbellDUPBlock(
-	props: BarbellExerciseProps & { potentialReps: NotEmpty<Reps> },
+	props: BarbellExerciseProps & {
+		potentialReps: NotEmpty<Reps>;
+		mode: 'pyramid' | 'straight';
+	},
 ) {
-	const { label, notes, tempo, storageKey, potentialReps, min = 20 } = props;
+	const {
+		label,
+		notes,
+		tempo,
+		storageKey,
+		potentialReps,
+		min = 20,
+		mode,
+	} = props;
 
 	const [dailyMin, setDailyMin] = useLocalStorageState(storageKey, min);
 	const [comfortablyHitDailyMinCount, setComfortablyHitDailyMinCount] =
@@ -122,17 +133,22 @@ export function BarbellDUPBlock(
 			<p>Structure:</p>
 			<ul className="mt-2 mb-4 ml-6 list-disc">
 				<li className="mb-1">
-					Work up to daily max (a weight which is the best non-grind
-					value you can lift today, and will always exceed daily min)
+					Work up to daily max (must not be a grind)
 				</li>
-				<li className="mb-1">Do 1 set here</li>
-				<li className="mb-1">
-					Drop the weight by 10-20%, then do back-off sets until tired
-				</li>
-				<li className="mb-1">
-					Increase daily min when confident that the new one will
-					always be achievable
-				</li>
+				{mode === 'pyramid' && (
+					<>
+						<li className="mb-1">Do 1 set here</li>
+						<li className="mb-1">
+							Drop the weight by 10-20%, then do back-off sets
+							until tired
+						</li>
+					</>
+				)}
+				{mode === 'straight' && (
+					<>
+						<li className="mb-1">Do 3 sets here</li>
+					</>
+				)}
 				<li className="mb-1">Tempo: {tempo}</li>
 			</ul>
 

@@ -4,7 +4,8 @@ import { NextSeo } from 'next-seo';
 
 import {
 	Bench,
-	Curls,
+	DbCurls,
+	CableCurls,
 	Deadlift,
 	Timer,
 	TurkishGetUp,
@@ -21,7 +22,8 @@ const options: DeepReadonly<NotEmpty<WithWeight<() => ReactElement>>> = [
 	{ weight: 20, component: Deadlift },
 	{ weight: 10, component: TurkishGetUp },
 	{ weight: 15, component: Bench },
-	{ weight: 10, component: Curls },
+	{ weight: 5, component: DbCurls },
+	{ weight: 5, component: CableCurls },
 	{ weight: 20, component: AssaultBike },
 	{ weight: 10, component: Rowing },
 ];
