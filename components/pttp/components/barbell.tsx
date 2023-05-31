@@ -1,6 +1,8 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useContext } from 'react';
 
-import { useDeterministicRange, useLocalStorageState } from '../hooks';
+import { useDeterministicRange } from '../hooks/randomness';
+
+import { DisableClickConstraintContext } from '../hooks/context';
 import { Timer } from '../timing';
 
 import {
@@ -10,6 +12,7 @@ import {
 import { createWeightsData } from '../helpers/createWeightsData';
 import { Container } from './container';
 import { NotEmpty } from '../types';
+import { useLocalStorageState } from '../hooks/storage';
 
 type BarbellExerciseProps = {
 	label: string;
@@ -27,9 +30,11 @@ export function BarbellBasicBlock(
 
 	const [weight, setWeight] = useLocalStorageState(storageKey, 20);
 	const [hasPressedButton, setHasPressedButton] = useState(false);
+	const disableClickConstraint = useContext(DisableClickConstraintContext);
+	const isButtonDisabled = hasPressedButton && !disableClickConstraint;
 
 	const handleProgress = () => {
-		// setHasPressedButton(true);
+		setHasPressedButton(true);
 		setWeight(currentDailyMin => currentDailyMin + 2.5);
 	};
 
@@ -65,14 +70,14 @@ export function BarbellBasicBlock(
 				<button
 					className="button"
 					onClick={handleProgress}
-					disabled={hasPressedButton}
+					disabled={isButtonDisabled}
 				>
 					Progress (+2.5kg)
 				</button>
 				<button
 					className="button"
 					onClick={handleDeload}
-					disabled={hasPressedButton}
+					disabled={isButtonDisabled}
 				>
 					Deload (-2.5kg)
 				</button>
@@ -102,6 +107,8 @@ export function BarbellDUPBlock(
 	const [comfortablyHitDailyMinCount, setComfortablyHitDailyMinCount] =
 		useLocalStorageState(`${storageKey}-count`, 0);
 	const [hasPressedButton, setHasPressedButton] = useState(false);
+	const disableClickConstraint = useContext(DisableClickConstraintContext);
+	const isButtonDisabled = hasPressedButton && !disableClickConstraint;
 
 	const handleYes = () => {
 		setHasPressedButton(true);
@@ -189,14 +196,14 @@ export function BarbellDUPBlock(
 					<button
 						className="button"
 						onClick={handleYes}
-						disabled={hasPressedButton}
+						disabled={isButtonDisabled}
 					>
 						Yes
 					</button>
 					<button
 						className="button"
 						onClick={handleNo}
-						disabled={hasPressedButton}
+						disabled={isButtonDisabled}
 					>
 						No
 					</button>
@@ -204,7 +211,7 @@ export function BarbellDUPBlock(
 				<button
 					className="button"
 					onClick={handleDeload}
-					disabled={hasPressedButton}
+					disabled={isButtonDisabled}
 				>
 					Deload (-5kg)
 				</button>

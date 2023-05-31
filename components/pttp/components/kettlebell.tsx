@@ -1,4 +1,4 @@
-import { useLocalStorageState } from '../hooks';
+import { useLocalStorageState } from '../hooks/storage';
 import { Interval } from '../timing';
 
 import { availableKettlebells } from '../helpers/availableKettlebells';

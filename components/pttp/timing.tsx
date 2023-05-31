@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import { useInterval, useTimer } from './hooks';
+import { useInterval, useTimer } from './hooks/timing';
 
 type TimerProps = {
 	showControls?: boolean;

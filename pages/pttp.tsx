@@ -7,14 +7,15 @@ import {
 	DbCurls,
 	CableCurls,
 	Deadlift,
-	Timer,
 	TurkishGetUp,
 	Warmup,
 	AssaultBike,
 	Rowing,
-} from 'components/pttp';
-import { useDeterministicSample } from 'components/pttp/hooks';
+} from 'components/pttp/prefabs/chris';
+import { Timer } from 'components/pttp/timing';
+import { useDeterministicSample } from 'components/pttp/hooks/randomness';
 import { DeepReadonly, NotEmpty, WithWeight } from 'components/pttp/types';
+import { DisableClickConstraintContextProvider } from 'components/pttp/hooks/context';
 
 const title = 'Training tracker';
 
@@ -25,7 +26,7 @@ const options: DeepReadonly<NotEmpty<WithWeight<() => ReactElement>>> = [
 	{ weight: 5, component: DbCurls },
 	{ weight: 5, component: CableCurls },
 	{ weight: 20, component: AssaultBike },
-	{ weight: 10, component: Rowing },
+	{ weight: 15, component: Rowing },
 ];
 
 export default function Pttp(): ReactElement {
@@ -47,9 +48,11 @@ export default function Pttp(): ReactElement {
 
 			<Warmup />
 
-			{exercises.map(({ component: Exercise }, i) => (
-				<Exercise key={i} />
-			))}
+			<DisableClickConstraintContextProvider>
+				{exercises.map(({ component: Exercise }, i) => (
+					<Exercise key={i} />
+				))}
+			</DisableClickConstraintContextProvider>
 		</>
 	);
 }

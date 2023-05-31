@@ -13,10 +13,12 @@ import {
 	RdlRehab,
 	SingleLegCalfRaises,
 	Squats,
-	Timer,
-} from 'components/pttp';
+} from 'components/pttp/prefabs/kate';
+import { Timer } from 'components/pttp/timing';
+
 import { DeepReadonly, NotEmpty, WithWeight } from 'components/pttp/types';
-import { useDeterministicSample } from 'components/pttp/hooks';
+import { useDeterministicSample } from 'components/pttp/hooks/randomness';
+import { DisableClickConstraintContextProvider } from 'components/pttp/hooks/context';
 
 const title = 'Strong 🥒';
 
@@ -56,13 +58,15 @@ export default function Pttp(): ReactElement {
 			</div>
 			<div className="display-width divider-before" />
 
-			{rehabs.map(({ component: Exercise }, i) => (
-				<Exercise key={i} />
-			))}
+			<DisableClickConstraintContextProvider>
+				{rehabs.map(({ component: Exercise }, i) => (
+					<Exercise key={i} />
+				))}
 
-			{mains.map(({ component: Exercise }, i) => (
-				<Exercise key={i} />
-			))}
+				{mains.map(({ component: Exercise }, i) => (
+					<Exercise key={i} />
+				))}
+			</DisableClickConstraintContextProvider>
 		</>
 	);
 }
