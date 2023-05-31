@@ -151,6 +151,20 @@ function getSeed(salt: Readonly<string>): number {
 	);
 }
 
+/**
+ * Park-Miller PRNG
+ * @returns {number} 0 to 1 (not inclusive)
+ */
+function getSeedFunc(salt: Readonly<string>): () => number {
+	const seed = getSeed(salt);
+	let currentSeed = seed % 2147483647;
+
+	return () => {
+		currentSeed = (currentSeed * 16807) % 2147483647;
+		return (currentSeed - 1) / 2147483646;
+	};
+}
+
 function getOne<T>(
 	array: DeepReadonly<NotEmpty<T>>,
 	salt: string,
@@ -168,6 +182,8 @@ function getMany<T extends { weight: number }>(
 
 	let allocatedWeight = 0;
 
+	const seedFunc = getSeedFunc(salt);
+
 	while (allocatedWeight < maxWeight) {
 		const remainingWeight = maxWeight - allocatedWeight;
 		if (remainingWeight <= 0) break;
@@ -175,10 +191,8 @@ function getMany<T extends { weight: number }>(
 		tmpArray = tmpArray.filter(curr => curr.weight <= remainingWeight);
 		if (!tmpArray.length) break;
 
-		const chosenExercise = tmpArray.splice(
-			getSeed(salt) % tmpArray.length,
-			1,
-		)[0];
+		const index = Math.floor(seedFunc() * tmpArray.length);
+		const chosenExercise = tmpArray.splice(index, 1)[0];
 		if (!chosenExercise) break;
 
 		result.push(chosenExercise);

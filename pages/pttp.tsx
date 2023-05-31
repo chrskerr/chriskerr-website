@@ -47,8 +47,8 @@ export default function Pttp(): ReactElement {
 
 			<Warmup />
 
-			{exercises.map((Exercise, i) => (
-				<Exercise.component key={i} />
+			{exercises.map(({ component: Exercise }, i) => (
+				<Exercise key={i} />
 			))}
 		</>
 	);

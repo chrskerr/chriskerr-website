@@ -23,7 +23,7 @@ export function Deadlift(): ReactElement {
 	);
 }
 
-const benchReps: NotEmpty<Reps> = [3, 4, 5, 5, 6, 8, 15, 20];
+const benchReps: NotEmpty<Reps> = [3, 5, 5, 6, 8, 12, 20];
 
 export function Bench(): ReactElement {
 	return (
@@ -165,7 +165,7 @@ export function RdlRehab(): ReactElement {
 		<BarbellBasicBlock
 			label="Romanian Deadlift"
 			storageKey={key}
-			sets={2}
+			sets={3}
 			tempo={tempo}
 			reps={reps}
 		/>
@@ -180,7 +180,7 @@ export function GoodmorningRehab(): ReactElement {
 		<BarbellBasicBlock
 			label="Goodmorning"
 			storageKey={key}
-			sets={2}
+			sets={3}
 			tempo={tempo}
 			reps={reps}
 		/>
@@ -195,10 +195,81 @@ export function GluteHamRaiseRehab(): ReactElement {
 		<BarbellBasicBlock
 			label="Glute Ham Raises"
 			storageKey={key}
-			sets={2}
+			sets={3}
 			tempo={tempo}
 			reps={reps}
 			min={0}
+		/>
+	);
+}
+
+const squatsReps: NotEmpty<Reps> = [5, 5, 6, 8, 12];
+
+export function Squats(): ReactElement {
+	return (
+		<BarbellDUPBlock
+			label="Barbell Back Squat"
+			storageKey="bb-back-squat"
+			tempo="3030"
+			potentialReps={squatsReps}
+			mode="pyramid"
+		/>
+	);
+}
+
+const pullUpReps: NotEmpty<Reps> = [3, 5, 5, 6, 8, 12];
+
+export function PullUps(): ReactElement {
+	return (
+		<BarbellDUPBlock
+			label="Pull Up"
+			notes={['Include bodyweight (60kg) in daily min']}
+			storageKey="pull-ups"
+			tempo="20X0"
+			potentialReps={pullUpReps}
+			mode="pyramid"
+			min={60}
+		/>
+	);
+}
+
+const overheadPressReps: NotEmpty<Reps> = [3, 5, 5, 6, 8, 12];
+
+export function OverheadPress(): ReactElement {
+	return (
+		<BarbellDUPBlock
+			label="Barbell Ovehead Press"
+			storageKey="bb-ohp"
+			tempo="3030"
+			potentialReps={overheadPressReps}
+			mode="pyramid"
+			min={60}
+		/>
+	);
+}
+
+export function SingleLegCalfRaises(): ReactElement {
+	return (
+		<BarbellBasicBlock
+			label="Single leg calf raises"
+			storageKey="sl-calf-raise"
+			tempo="3030"
+			reps={1000}
+			min={0}
+			sets={3}
+		/>
+	);
+}
+
+export function MachineCalfRaises(): ReactElement {
+	return (
+		<BarbellBasicBlock
+			label="Machine calf raises"
+			storageKey="machine-calf-raise"
+			tempo="3030"
+			reps={20}
+			min={0}
+			sets={3}
 		/>
 	);
 }
