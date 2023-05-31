@@ -8,7 +8,7 @@ function getCodePointProduct(str: Readonly<string>): number {
 }
 
 /**
- * @returns {number} 0 to 1 (not inclusive)
+ * @returns {number} A random number between 0 and 127
  */
 function getSeedFunc(salt: Readonly<string>): () => number {
 	const base = 128;
@@ -19,11 +19,7 @@ function getSeedFunc(salt: Readonly<string>): () => number {
 
 	return () => {
 		currentSeed = (currentSeed * offset) % base;
-		const result = Math.max(
-			Math.min((currentSeed - 1) / base, 0.9999999999),
-			0,
-		);
-		return result;
+		return currentSeed;
 	};
 }
 
@@ -31,7 +27,7 @@ function getOne<T>(
 	array: DeepReadonly<NotEmpty<T>>,
 	salt: string,
 ): DeepReadonly<T> {
-	return array[Math.floor(getSeedFunc(salt)() * array.length)];
+	return array[getSeedFunc(salt)() % array.length];
 }
 
 function getMany<T extends { weight: number }>(
@@ -53,7 +49,7 @@ function getMany<T extends { weight: number }>(
 		tmpArray = tmpArray.filter(curr => curr.weight <= remainingWeight);
 		if (!tmpArray.length) break;
 
-		const index = Math.floor(seedFunc() * tmpArray.length);
+		const index = seedFunc() % tmpArray.length;
 
 		const chosenExercise = tmpArray.splice(index, 1)[0];
 		if (!chosenExercise) break;
