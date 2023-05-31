@@ -21,12 +21,22 @@ type BarbellExerciseProps = {
 	storageKey: string;
 	min?: number;
 	sets?: number;
+	step?: number;
 };
 
 export function BarbellBasicBlock(
 	props: BarbellExerciseProps & { reps: number },
 ) {
-	const { label, notes, tempo, storageKey, reps, min = 20, sets } = props;
+	const {
+		label,
+		notes,
+		tempo,
+		storageKey,
+		reps,
+		min = 20,
+		sets,
+		step = 2.5,
+	} = props;
 
 	const [weight, setWeight] = useLocalStorageState(storageKey, 20);
 	const [hasPressedButton, setHasPressedButton] = useState(false);
@@ -35,12 +45,12 @@ export function BarbellBasicBlock(
 
 	const handleProgress = () => {
 		setHasPressedButton(true);
-		setWeight(currentDailyMin => currentDailyMin + 2.5);
+		setWeight(currentDailyMin => currentDailyMin + step);
 	};
 
 	const handleDeload = () => {
 		setHasPressedButton(true);
-		setWeight(currentDailyMin => Math.max(currentDailyMin - 2.5, min));
+		setWeight(currentDailyMin => Math.max(currentDailyMin - step, min));
 	};
 
 	return (
@@ -72,14 +82,14 @@ export function BarbellBasicBlock(
 					onClick={handleProgress}
 					disabled={isButtonDisabled}
 				>
-					Progress (+2.5kg)
+					Progress (+{step}kg)
 				</button>
 				<button
 					className="button"
 					onClick={handleDeload}
 					disabled={isButtonDisabled}
 				>
-					Deload (-2.5kg)
+					Deload (-{step}kg)
 				</button>
 			</div>
 			<Timer showControls />
@@ -101,6 +111,7 @@ export function BarbellDUPBlock(
 		potentialReps,
 		min = 20,
 		mode,
+		step = 5,
 	} = props;
 
 	const [dailyMin, setDailyMin] = useLocalStorageState(storageKey, min);
@@ -114,7 +125,7 @@ export function BarbellDUPBlock(
 		setHasPressedButton(true);
 		const newCount = comfortablyHitDailyMinCount + 1;
 		if (newCount >= 5) {
-			setDailyMin(currentDailyMin => currentDailyMin + 5);
+			setDailyMin(currentDailyMin => currentDailyMin + step);
 			setComfortablyHitDailyMinCount(0);
 		} else {
 			setComfortablyHitDailyMinCount(newCount);
@@ -129,7 +140,7 @@ export function BarbellDUPBlock(
 	const handleDeload = () => {
 		setHasPressedButton(true);
 		setComfortablyHitDailyMinCount(0);
-		setDailyMin(currentDailyMin => Math.max(currentDailyMin - 5, min));
+		setDailyMin(currentDailyMin => Math.max(currentDailyMin - step, min));
 	};
 
 	const reps = useDeterministicRange(potentialReps, storageKey);
@@ -213,7 +224,7 @@ export function BarbellDUPBlock(
 					onClick={handleDeload}
 					disabled={isButtonDisabled}
 				>
-					Deload (-5kg)
+					Deload (-{step}kg)
 				</button>
 			</div>
 			<Timer showControls />
@@ -222,7 +233,7 @@ export function BarbellDUPBlock(
 }
 
 export function BarbellExercisePttpBlock(
-	props: BarbellExerciseProps & { steps: number[] },
+	props: Omit<BarbellExerciseProps, 'step'> & { steps: number[] },
 ) {
 	const { label, notes, tempo, storageKey, steps } = props;
 	const [value, setValue] = useLocalStorageState(storageKey, 20);

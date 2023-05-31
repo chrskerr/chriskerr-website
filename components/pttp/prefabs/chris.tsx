@@ -50,6 +50,7 @@ export function DbCurls(): ReactElement {
 			potentialReps={curlsReps}
 			min={5}
 			mode="straight"
+			step={2.5}
 		/>
 	);
 }
@@ -63,6 +64,7 @@ export function CableCurls(): ReactElement {
 			potentialReps={curlsReps}
 			min={5}
 			mode="straight"
+			step={2.5}
 		/>
 	);
 }
