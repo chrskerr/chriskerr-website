@@ -9,7 +9,7 @@ import { NotEmpty } from '../types';
 
 // Chris
 
-const deadliftReps: NotEmpty<Reps> = [3, 4, 5, 6, 8, 12];
+const deadliftReps: NotEmpty<Reps> = [3, 5, 6, 8];
 
 export function Deadlift(): ReactElement {
 	return (
@@ -23,7 +23,7 @@ export function Deadlift(): ReactElement {
 	);
 }
 
-const benchReps: NotEmpty<Reps> = [3, 5, 5, 6, 8, 12, 20];
+const benchReps: NotEmpty<Reps> = [3, 5, 8, 12, 15];
 
 export function Bench(): ReactElement {
 	return (
