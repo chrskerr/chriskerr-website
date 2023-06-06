@@ -121,8 +121,8 @@ const squatsReps: NotEmpty<Reps> = [5, 5, 6, 8, 12];
 export function Squats(): ReactElement {
 	return (
 		<BarbellDUPBlock
-			label="Barbell Back Squat"
-			storageKey="bb-back-squat"
+			label="Barbell Front Squat"
+			storageKey="bb-front-squat"
 			tempo="3030"
 			potentialReps={squatsReps}
 			mode="pyramid"

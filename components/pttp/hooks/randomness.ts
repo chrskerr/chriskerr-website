@@ -1,31 +1,26 @@
 import { ReactElement, useEffect, useState } from 'react';
 import { DeepReadonly, NotEmpty, WithWeight } from '../types';
 
-const sortKey = 'ac89asd8';
-
 function getMany<T extends { weight: number }>(
 	array: DeepReadonly<NotEmpty<T>>,
 	maxWeight: Readonly<number>,
 ): number[] {
-	const tmpArray = array
-		.map((el, i) => ({ ...el, originalIndex: i, [sortKey]: Math.random() }))
-		.sort((a, b) => a[sortKey] - b[sortKey]);
+	let tmpArray = array.map((el, i) => ({ ...el, originalIndex: i }));
 
 	const result: number[] = [];
 
 	let allocatedWeight = 0;
-	let i = 0;
 
 	while (allocatedWeight < maxWeight) {
 		const remainingWeight = maxWeight - allocatedWeight;
 		if (remainingWeight <= 0) break;
 
-		const chosenExercise = tmpArray[i++];
-		if (!chosenExercise) break;
+		tmpArray = tmpArray.filter(curr => curr.weight <= remainingWeight);
+		if (!tmpArray.length) break;
 
-		if (chosenExercise.weight > remainingWeight) {
-			continue;
-		}
+		const index = Math.floor(Math.random() * tmpArray.length);
+		const chosenExercise = tmpArray.splice(index, 1)[0];
+		if (!chosenExercise) break;
 
 		result.push(chosenExercise.originalIndex);
 		allocatedWeight += chosenExercise.weight;
