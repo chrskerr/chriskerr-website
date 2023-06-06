@@ -1,13 +1,16 @@
 import { ReactElement, useEffect, useState } from 'react';
 import { DeepReadonly, NotEmpty, WithWeight } from '../types';
 
+const sortKey = 'ac89asd8';
+
 function getMany<T extends { weight: number }>(
 	array: DeepReadonly<NotEmpty<T>>,
 	maxWeight: Readonly<number>,
 ): number[] {
 	const tmpArray = array
-		.map((el, i) => ({ ...el, originalIndex: i }))
-		.sort(() => Math.random() - 0.5);
+		.map((el, i) => ({ ...el, originalIndex: i, [sortKey]: Math.random() }))
+		.sort((a, b) => a[sortKey] - b[sortKey]);
+
 	const result: number[] = [];
 
 	let allocatedWeight = 0;
