@@ -1,46 +1,14 @@
 import { ReactElement, useEffect, useState } from 'react';
 import { DeepReadonly, NotEmpty, WithWeight } from '../types';
 
-function getCodePointProduct(str: Readonly<string>): number {
-	return str
-		.split('')
-		.reduce<number>((acc, curr) => acc + (curr.codePointAt(0) ?? 0), 0);
-}
-
-/**
- * @returns {number} A random number between 0 and 127
- */
-function getSeedFunc(salt: Readonly<string>): () => number {
-	const base = 128;
-	const offset = getCodePointProduct(salt);
-	const seed = Math.floor((Date.now() + 36_000_000) / 86_400_000) % offset;
-
-	let currentSeed = seed % base;
-
-	return () => {
-		currentSeed = (currentSeed * offset) % base;
-		return currentSeed;
-	};
-}
-
-function getOne<T>(
-	array: DeepReadonly<NotEmpty<T>>,
-	salt: string,
-): DeepReadonly<T> {
-	return array[getSeedFunc(salt)() % array.length];
-}
-
 function getMany<T extends { weight: number }>(
 	array: DeepReadonly<NotEmpty<T>>,
 	maxWeight: Readonly<number>,
-	salt: Readonly<string>,
-): DeepReadonly<T>[] {
+): number[] {
 	let tmpArray = [...array];
-	const result: DeepReadonly<T>[] = [];
+	const result: number[] = [];
 
 	let allocatedWeight = 0;
-
-	const seedFunc = getSeedFunc(salt);
 
 	while (allocatedWeight < maxWeight) {
 		const remainingWeight = maxWeight - allocatedWeight;
@@ -49,43 +17,79 @@ function getMany<T extends { weight: number }>(
 		tmpArray = tmpArray.filter(curr => curr.weight <= remainingWeight);
 		if (!tmpArray.length) break;
 
-		const index = seedFunc() % tmpArray.length;
-
+		const index = Math.floor(Math.random() * tmpArray.length);
 		const chosenExercise = tmpArray.splice(index, 1)[0];
 		if (!chosenExercise) break;
 
-		result.push(chosenExercise);
+		result.push(index);
 		allocatedWeight += chosenExercise.weight;
 	}
 
 	return result;
 }
 
+type StoredValue<T> = {
+	savedOn: string;
+	value: T;
+};
+
+const salt = 'randoms';
+
 export function useDeterministicRange<T>(
 	array: DeepReadonly<NotEmpty<T>>,
-	salt: Readonly<string>,
+	storageKey: Readonly<string>,
 ): DeepReadonly<T> {
-	const [el, setEl] = useState<DeepReadonly<T>>(getOne(array, salt));
+	const [index, setIndex] = useState(0);
 
 	useEffect(() => {
-		setEl(getOne(array, salt));
-	}, [array, salt]);
+		const storedValue = localStorage.getItem(storageKey + salt);
+		if (storedValue) {
+			const parsedValue = JSON.parse(storedValue) as StoredValue<number>;
+			if (parsedValue.savedOn === new Date().toDateString()) {
+				setIndex(parsedValue.value);
+				return;
+			}
+		}
 
-	return el;
+		const newIndex = Math.floor(Math.random() * array.length);
+		setIndex(newIndex);
+		const toStore: StoredValue<number> = {
+			savedOn: new Date().toDateString(),
+			value: newIndex,
+		};
+		localStorage.setItem(storageKey + salt, JSON.stringify(toStore));
+	}, []);
+
+	return array[index];
 }
 
 export function useDeterministicSample<T extends () => ReactElement>(
 	array: DeepReadonly<NotEmpty<WithWeight<T>>>,
 	maxWeight: Readonly<number>,
-	salt: Readonly<string>,
-): DeepReadonly<Array<WithWeight<T>>> {
-	const [els, setEls] = useState<DeepReadonly<Array<WithWeight<T>>>>(
-		getMany(array, maxWeight, salt),
-	);
+	storageKey: Readonly<string>,
+): DeepReadonly<Array<number>> {
+	const [indexes, setIndexes] = useState<number[]>([]);
 
 	useEffect(() => {
-		setEls(getMany(array, maxWeight, salt));
-	}, [salt, maxWeight, array]);
+		const storedValue = localStorage.getItem(storageKey + salt);
+		if (storedValue) {
+			const parsedValue = JSON.parse(storedValue) as StoredValue<
+				number[]
+			>;
+			if (parsedValue.savedOn === new Date().toDateString()) {
+				setIndexes(parsedValue.value);
+				return;
+			}
+		}
 
-	return els;
+		const newIndexes = getMany(array, maxWeight);
+		setIndexes(newIndexes);
+		const toStore: StoredValue<number[]> = {
+			savedOn: new Date().toDateString(),
+			value: newIndexes,
+		};
+		localStorage.setItem(storageKey + salt, JSON.stringify(toStore));
+	}, []);
+
+	return indexes;
 }

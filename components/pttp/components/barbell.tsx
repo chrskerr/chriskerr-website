@@ -199,10 +199,7 @@ export function BarbellDUPBlock(
 						<span className="font-bold">{adjustedWeight}kg</span>
 					</p>
 				</div>
-				<p>
-					Did you hit daily min comfortably? (current count:{' '}
-					{comfortablyHitDailyMinCount})
-				</p>
+				<p>Did you hit daily min comfortably?</p>
 				<div className="grid grid-cols-2 gap-4">
 					<button
 						className="button"

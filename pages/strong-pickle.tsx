@@ -59,13 +59,16 @@ export default function Pttp(): ReactElement {
 			<div className="display-width divider-before" />
 
 			<DisableClickConstraintContextProvider>
-				{rehabs.map(({ component: Exercise }, i) => (
-					<Exercise key={i} />
-				))}
-
-				{mains.map(({ component: Exercise }, i) => (
-					<Exercise key={i} />
-				))}
+				{rehabs.map(index => {
+					const Component = rehabOptions[index].component;
+					if (!Component) return false;
+					return <Component key={index} />;
+				})}
+				{mains.map(index => {
+					const Component = mainOptions[index].component;
+					if (!Component) return false;
+					return <Component key={index} />;
+				})}
 			</DisableClickConstraintContextProvider>
 		</>
 	);

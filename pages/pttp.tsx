@@ -11,6 +11,7 @@ import {
 	Warmup,
 	AssaultBike,
 	Rowing,
+	DbBench,
 } from 'components/pttp/prefabs/chris';
 import { Timer } from 'components/pttp/timing';
 import { useDeterministicSample } from 'components/pttp/hooks/randomness';
@@ -27,6 +28,7 @@ const options: DeepReadonly<NotEmpty<WithWeight<() => ReactElement>>> = [
 	{ weight: 5, component: CableCurls },
 	{ weight: 20, component: AssaultBike },
 	{ weight: 15, component: Rowing },
+	{ weight: 15, component: DbBench },
 ];
 
 export default function Pttp(): ReactElement {
@@ -49,9 +51,11 @@ export default function Pttp(): ReactElement {
 			<Warmup />
 
 			<DisableClickConstraintContextProvider>
-				{exercises.map(({ component: Exercise }, i) => (
-					<Exercise key={i} />
-				))}
+				{exercises.map(index => {
+					const Component = options[index].component;
+					if (!Component) return false;
+					return <Component key={index} />;
+				})}
 			</DisableClickConstraintContextProvider>
 		</>
 	);

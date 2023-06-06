@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createTimeString } from '../helpers/createTimeString';
 
 type TimerData = {
@@ -9,16 +9,32 @@ type TimerData = {
 	restart: () => void;
 };
 
-export function useTimer(): TimerData {
+export function useTimer(beepEvery?: number): TimerData {
 	const [timeElapsed, setTimeElapsed] = useState(0);
 	const [intervalData, setIntervalData] = useState<number | undefined>(
 		undefined,
 	);
+	const [beep, setBeep] = useState<(() => void) | null>(null);
+	useEffect(() => {
+		import('./beep').then(r => setBeep(() => r.beep));
+	}, []);
 
 	function start() {
 		const startedAt = Date.now();
+
+		let prevSeconds = 0;
 		const timerCallback = () => {
-			setTimeElapsed(Math.floor((Date.now() - startedAt) / 1000));
+			const nowSeconds = Math.floor((Date.now() - startedAt) / 1000);
+			if (
+				beepEvery &&
+				nowSeconds !== prevSeconds &&
+				nowSeconds % beepEvery === 0
+			) {
+				beep?.();
+			}
+			prevSeconds = nowSeconds;
+
+			setTimeElapsed(nowSeconds);
 		};
 		setIntervalData(window.setInterval(timerCallback, 250));
 	}
@@ -61,11 +77,16 @@ type IntervalData = {
 export function useInterval(
 	totalIntervals: number,
 	intervalDuration: number,
+	beepAt?: number,
 ): IntervalData {
 	const [timeElapsed, setTimeElapsed] = useState(0);
 	const [intervalData, setIntervalData] = useState<number | undefined>(
 		undefined,
 	);
+	const [beep, setBeep] = useState<(() => void) | null>(null);
+	useEffect(() => {
+		import('./beep').then(r => setBeep(() => r.beep));
+	}, []);
 
 	const maxDuration = totalIntervals * intervalDuration;
 
@@ -81,10 +102,25 @@ export function useInterval(
 
 	function start() {
 		const startedAt = Date.now() - 1500;
+
+		let prevSeconds = 0;
 		const timerCallback = () => {
 			const timeElapsed = Math.floor((Date.now() - startedAt) / 1000);
-			if (timeElapsed >= maxDuration) stop();
-			else setTimeElapsed(timeElapsed);
+			if (timeElapsed >= maxDuration) {
+				stop();
+			} else {
+				if (
+					beepAt &&
+					timeElapsed !== prevSeconds &&
+					timeElapsed % intervalDuration ===
+						intervalDuration - beepAt - 1
+				) {
+					beep?.();
+				}
+				prevSeconds = timeElapsed;
+
+				setTimeElapsed(timeElapsed);
+			}
 		};
 		setIntervalData(window.setInterval(timerCallback, 250));
 	}

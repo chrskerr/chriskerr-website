@@ -7,7 +7,7 @@ type TimerProps = {
 };
 
 export function Timer({ showControls = false }: TimerProps) {
-	const { timeString, isRunning, start, restart, startStop } = useTimer();
+	const { timeString, isRunning, start, restart, startStop } = useTimer(30);
 
 	useEffect(() => {
 		if (!showControls && !isRunning) start();
@@ -55,7 +55,7 @@ export function Interval({
 	count = 10,
 }: IntervalProps) {
 	const { timeString, isRunning, intervalsRemaining, startStop } =
-		useInterval(count, durationSeconds);
+		useInterval(count, durationSeconds, 5);
 
 	return (
 		<div>

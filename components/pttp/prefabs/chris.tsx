@@ -38,6 +38,21 @@ export function Bench(): ReactElement {
 	);
 }
 
+const dbBenchReps: NotEmpty<Reps> = [3, 5, 8, 12, 15];
+
+export function DbBench(): ReactElement {
+	return (
+		<BarbellDUPBlock
+			label="Dumbbell Bench"
+			notes={['Ensure elbow lockout at top of press']}
+			storageKey="db-bench"
+			tempo="3030"
+			potentialReps={dbBenchReps}
+			mode="pyramid"
+		/>
+	);
+}
+
 const curlsReps: NotEmpty<Reps> = [6, 8, 12, 15];
 
 export function DbCurls(): ReactElement {

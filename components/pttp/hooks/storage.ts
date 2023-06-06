@@ -7,14 +7,16 @@ export function useLocalStorageState(
 	const [value, setValue] = useState(fallbackValue);
 
 	useEffect(() => {
-		const newValue = localStorage.getItem(storageKey);
-		if (newValue && !isNaN(Number(newValue))) {
-			setValue(Number(newValue));
+		const newValue = Number(localStorage.getItem(storageKey));
+		if (newValue) {
+			setValue(newValue);
 		}
 	}, []);
 
 	useEffect(() => {
-		localStorage.setItem(storageKey, String(value));
+		if (value !== fallbackValue) {
+			localStorage.setItem(storageKey, String(value));
+		}
 	}, [value]);
 
 	return [value, setValue];
