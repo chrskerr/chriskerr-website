@@ -51,10 +51,10 @@ export default function Pttp(): ReactElement {
 			<Warmup />
 
 			<DisableClickConstraintContextProvider>
-				{exercises.map(index => {
+				{exercises.map((index, i) => {
 					const Component = options[index].component;
 					if (!Component) return false;
-					return <Component key={index} />;
+					return <Component key={i} />;
 				})}
 			</DisableClickConstraintContextProvider>
 		</>
