@@ -1,12 +1,10 @@
 const myAudioContext = new AudioContext();
 
 export function beep() {
-	console.log('beep');
-
 	// Set default duration if not provided
 	const duration = 200;
 	const frequency = 440;
-	const volume = 75;
+	const volume = 25;
 
 	const oscillatorNode = myAudioContext.createOscillator();
 	const gainNode = myAudioContext.createGain();
