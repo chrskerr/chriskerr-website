@@ -119,12 +119,16 @@ export function Swings(): ReactElement {
 
 export function Warmup(): ReactElement {
 	return (
-		<Container label="Aerobic">
-			<p>20 minutes of:</p>
-			<ul className="mt-2 ml-6 list-disc">
-				<li>Stair stepper</li>
-				<li>Running (outside ideally)</li>
-			</ul>
+		<Container label="Warmup">
+			<p>5-10 minutes jog</p>
+		</Container>
+	);
+}
+
+export function StairStepper(): ReactElement {
+	return (
+		<Container label="Stair stepper">
+			<p>15 minutes aerobic stepping</p>
 		</Container>
 	);
 }

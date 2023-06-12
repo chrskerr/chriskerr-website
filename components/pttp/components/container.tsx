@@ -5,7 +5,7 @@ export function Container({
 	children,
 }: {
 	label: string;
-	children: ReactNode[];
+	children: ReactNode;
 }) {
 	return (
 		<details className="mb-8" open>
