@@ -8,7 +8,7 @@ export function Container({
 	children: ReactNode[];
 }) {
 	return (
-		<details className="mb-8 display-width" open>
+		<details className="mb-8" open>
 			<summary className="mb-2 text-2xl">{label}</summary>
 			{children}
 		</details>

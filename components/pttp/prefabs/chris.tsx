@@ -119,12 +119,11 @@ export function Swings(): ReactElement {
 
 export function Warmup(): ReactElement {
 	return (
-		<Container label="Warmup">
-			<p>Ideas:</p>
+		<Container label="Aerobic">
+			<p>20 minutes of:</p>
 			<ul className="mt-2 ml-6 list-disc">
-				{' '}
-				<li>Deep squats with KB to pry open thighs</li>
-				<li>Def write some more...</li>
+				<li>Stair stepper</li>
+				<li>Running (outside ideally)</li>
 			</ul>
 		</Container>
 	);

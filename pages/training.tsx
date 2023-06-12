@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 
 import { NextSeo } from 'next-seo';
 
@@ -9,7 +9,6 @@ import {
 	Deadlift,
 	TurkishGetUp,
 	Warmup,
-	AssaultBike,
 	Rowing,
 	DbBench,
 } from 'components/pttp/prefabs/chris';
@@ -26,37 +25,52 @@ const options: DeepReadonly<NotEmpty<WithWeight<() => ReactElement>>> = [
 	{ weight: 15, component: Bench },
 	{ weight: 5, component: DbCurls },
 	{ weight: 5, component: CableCurls },
-	{ weight: 20, component: AssaultBike },
 	{ weight: 15, component: Rowing },
 	{ weight: 15, component: DbBench },
 ];
 
-export default function Pttp(): ReactElement {
-	const exercises = useDeterministicSample(options, 55, 'pttp');
+const weightsDays = [1, 3, 5];
+
+export default function Training(): ReactElement {
+	const [dayOfWeek, set] = useState(new Date().getDay());
+	const exercises = useDeterministicSample(options, 35, 'pttp');
+
+	useEffect(() => {
+		const onFocus = () => {
+			set(new Date().getDay());
+		};
+		window.addEventListener('focus', onFocus);
+
+		return () => {
+			window.removeEventListener('focus', onFocus);
+		};
+	}, []);
 
 	return (
 		<>
 			<NextSeo
 				title={title}
 				description={title}
-				canonical="https://www.chriskerr.dev/pttp"
+				canonical="https://www.chriskerr.dev/training"
 				noindex
 			/>
 			<div className="-mb-8 display-width">
 				<h2 className="mb-4 text-3xl">{title}</h2>
 				<Timer />
 			</div>
-			<div className="display-width divider-before" />
-
-			<Warmup />
-
-			<DisableClickConstraintContextProvider>
-				{exercises.map((index, i) => {
-					const Component = options[index].component;
-					if (!Component) return false;
-					return <Component key={i} />;
-				})}
-			</DisableClickConstraintContextProvider>
+			{weightsDays.includes(dayOfWeek) ? (
+				<DisableClickConstraintContextProvider>
+					<Warmup />
+					{exercises.map((index, i) => {
+						const Component = options[index].component;
+						return Component ? <Component key={i} /> : false;
+					})}
+				</DisableClickConstraintContextProvider>
+			) : (
+				<div className="display-width divider-before">
+					<p>Run day</p>
+				</div>
+			)}
 		</>
 	);
 }

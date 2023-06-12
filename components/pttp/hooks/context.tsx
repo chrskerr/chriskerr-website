@@ -15,7 +15,7 @@ export function DisableClickConstraintContextProvider({ children }: Props) {
 
 	return (
 		<DisableClickConstraintContext.Provider value={state}>
-			{children}
+			<div className="display-width divider-before">{children}</div>
 			<div className="display-width divider-before">
 				<label>
 					Disable the single click constraint?{' '}
