@@ -36,7 +36,7 @@ const options: DeepReadonly<NotEmpty<WithWeight<() => ReactElement>>> = [
 ];
 
 export default function Training(): ReactElement {
-	const exercises = useDeterministicSample(options, 35, 'pttp');
+	const exercises = useDeterministicSample(options, 40, 'pttp');
 
 	return (
 		<>

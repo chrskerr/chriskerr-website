@@ -2,7 +2,7 @@ import { useMemo, useState, useContext } from 'react';
 
 import { useDeterministicRange } from '../hooks/randomness';
 
-import { DisableClickConstraintContext } from '../hooks/context';
+import { DisableClickConstraintContext } from '../context/disableClickConstraint';
 import { Timer } from '../timing';
 
 import {
