@@ -12,6 +12,8 @@ import {
 	Rowing,
 	DbBench,
 	StairStepper,
+	SingleLegCalfRaises,
+	LungeWalking,
 } from 'components/pttp/prefabs/chris';
 import { Timer } from 'components/pttp/timing';
 import { useDeterministicSample } from 'components/pttp/hooks/randomness';
@@ -24,14 +26,14 @@ const options: DeepReadonly<NotEmpty<WithWeight<() => ReactElement>>> = [
 	{ weight: 20, component: Deadlift },
 	{ weight: 10, component: TurkishGetUp },
 	{ weight: 15, component: Bench },
-	{ weight: 5, component: DbCurls },
-	{ weight: 5, component: CableCurls },
+	{ weight: 10, component: DbCurls },
+	{ weight: 10, component: CableCurls },
 	{ weight: 15, component: Rowing },
 	{ weight: 15, component: DbBench },
 	{ weight: 15, component: StairStepper },
+	{ weight: 10, component: SingleLegCalfRaises },
+	{ weight: 10, component: LungeWalking },
 ];
-
-// TODO add calf raises
 
 export default function Training(): ReactElement {
 	const exercises = useDeterministicSample(options, 35, 'pttp');

@@ -1,5 +1,5 @@
 import { ReactElement } from 'react';
-import { BarbellDUPBlock } from '../components/barbell';
+import { BarbellBasicBlock, BarbellDUPBlock } from '../components/barbell';
 import { Container } from '../components/container';
 import { HIITExerciseBlock } from '../components/hiit';
 import { KettlebellExerciseBlock } from '../components/kettlebell';
@@ -156,6 +156,32 @@ export function Rowing(): ReactElement {
 			leftRightLabels={null}
 			intervalDurationSeconds={90}
 			intervalCount={8}
+		/>
+	);
+}
+
+export function SingleLegCalfRaises(): ReactElement {
+	return (
+		<BarbellBasicBlock
+			label="Single leg calf raises"
+			storageKey="sl-calf-raise"
+			tempo="3030"
+			reps={20}
+			min={0}
+			sets={3}
+		/>
+	);
+}
+
+export function LungeWalking(): ReactElement {
+	return (
+		<BarbellBasicBlock
+			label="DB lunge walking (reps = steps)"
+			storageKey="db-lunge-walk"
+			tempo="1010"
+			reps={20}
+			min={0}
+			sets={3}
 		/>
 	);
 }
