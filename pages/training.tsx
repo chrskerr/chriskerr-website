@@ -16,7 +16,7 @@ import {
 import { Timer } from 'components/pttp/timing';
 import { useDeterministicSample } from 'components/pttp/hooks/randomness';
 import { DeepReadonly, NotEmpty, WithWeight } from 'components/pttp/types';
-import { DisableClickConstraintContextProvider } from 'components/pttp/hooks/context';
+import { DisableClickConstraintContextProvider } from 'components/pttp/context/disableClickConstraint';
 
 const title = 'Training tracker';
 

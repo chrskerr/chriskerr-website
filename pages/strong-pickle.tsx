@@ -18,7 +18,7 @@ import { Timer } from 'components/pttp/timing';
 
 import { DeepReadonly, NotEmpty, WithWeight } from 'components/pttp/types';
 import { useDeterministicSample } from 'components/pttp/hooks/randomness';
-import { DisableClickConstraintContextProvider } from 'components/pttp/hooks/context';
+import { DisableClickConstraintContextProvider } from 'components/pttp/context/disableClickConstraint';
 
 const title = 'Strong 🥒';
 
