@@ -31,6 +31,8 @@ const options: DeepReadonly<NotEmpty<WithWeight<() => ReactElement>>> = [
 	{ weight: 15, component: StairStepper },
 ];
 
+// TODO add calf raises
+
 export default function Training(): ReactElement {
 	const exercises = useDeterministicSample(options, 35, 'pttp');
 

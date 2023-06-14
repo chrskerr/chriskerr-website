@@ -77,13 +77,15 @@ type IntervalData = {
 export function useInterval(
 	totalIntervals: number,
 	intervalDuration: number,
-	beepAt?: number,
+	beepAts?: number[],
 ): IntervalData {
 	const [timeElapsed, setTimeElapsed] = useState(0);
 	const [intervalData, setIntervalData] = useState<number | undefined>(
 		undefined,
 	);
-	const [beep, setBeep] = useState<(() => void) | null>(null);
+	const [beep, setBeep] = useState<((duration?: number) => void) | null>(
+		null,
+	);
 	useEffect(() => {
 		import('./beep').then(r => setBeep(() => r.beep));
 	}, []);
@@ -109,13 +111,17 @@ export function useInterval(
 			if (timeElapsed >= maxDuration) {
 				stop();
 			} else {
-				if (
-					beepAt &&
-					timeElapsed !== prevSeconds &&
-					timeElapsed % intervalDuration ===
-						intervalDuration - beepAt - 1
-				) {
-					beep?.();
+				if (beep && beepAts?.length && timeElapsed !== prevSeconds) {
+					const secondsRemaining =
+						(timeElapsed - 1) % intervalDuration;
+					for (const beepAt of beepAts) {
+						if (secondsRemaining === intervalDuration - beepAt) {
+							beep();
+						}
+					}
+					if (timeElapsed > 5 && secondsRemaining === 0) {
+						beep(500);
+					}
 				}
 				prevSeconds = timeElapsed;
 

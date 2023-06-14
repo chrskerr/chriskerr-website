@@ -55,7 +55,7 @@ export function Interval({
 	count = 10,
 }: IntervalProps) {
 	const { timeString, isRunning, intervalsRemaining, startStop } =
-		useInterval(count, durationSeconds, 5);
+		useInterval(count, durationSeconds, [3, 2, 1]);
 
 	return (
 		<div>
