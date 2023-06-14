@@ -3,13 +3,7 @@ import { BarbellBasicBlock, BarbellDUPBlock } from '../components/barbell';
 import { Container } from '../components/container';
 import { HIITExerciseBlock } from '../components/hiit';
 import { KettlebellExerciseBlock } from '../components/kettlebell';
-import { Reps } from '../helpers/estimateRepsAdjustedWeight';
 import { useDeterministicRange } from '../hooks/randomness';
-import { NotEmpty } from '../types';
-
-// Chris
-
-const deadliftReps: NotEmpty<Reps> = [4, 5, 8];
 
 export function Deadlift(): ReactElement {
 	return (
@@ -17,13 +11,11 @@ export function Deadlift(): ReactElement {
 			label="Deadlift"
 			storageKey="deadlift"
 			tempo="0030"
-			potentialReps={deadliftReps}
+			potentialReps={[4, 5, 8]}
 			mode="pyramid"
 		/>
 	);
 }
-
-const benchReps: NotEmpty<Reps> = [5, 8, 12, 15];
 
 export function Bench(): ReactElement {
 	return (
@@ -32,13 +24,11 @@ export function Bench(): ReactElement {
 			notes={['Ensure elbow lockout at top of press']}
 			storageKey="bench"
 			tempo="3030"
-			potentialReps={benchReps}
+			potentialReps={[5, 8, 12, 15]}
 			mode="pyramid"
 		/>
 	);
 }
-
-const dbBenchReps: NotEmpty<Reps> = [5, 8, 12, 15];
 
 export function DbBench(): ReactElement {
 	return (
@@ -47,13 +37,11 @@ export function DbBench(): ReactElement {
 			notes={['Ensure elbow lockout at top of press']}
 			storageKey="db-bench"
 			tempo="3030"
-			potentialReps={dbBenchReps}
+			potentialReps={[5, 8, 12, 15]}
 			mode="pyramid"
 		/>
 	);
 }
-
-const curlsReps: NotEmpty<Reps> = [6, 8, 12, 15];
 
 export function DbCurls(): ReactElement {
 	return (
@@ -62,7 +50,7 @@ export function DbCurls(): ReactElement {
 			notes={['Weight per db']}
 			storageKey="dumbbell-curl"
 			tempo="3030"
-			potentialReps={curlsReps}
+			potentialReps={[6, 8, 12, 15]}
 			min={5}
 			mode="straight"
 			step={2.5}
@@ -76,7 +64,7 @@ export function CableCurls(): ReactElement {
 			label="Cable curls"
 			storageKey="cable-curl"
 			tempo="3030"
-			potentialReps={curlsReps}
+			potentialReps={[6, 8, 12, 15]}
 			min={5}
 			mode="straight"
 			step={2.5}
@@ -89,8 +77,9 @@ export function TurkishGetUp(): ReactElement {
 		<KettlebellExerciseBlock
 			label="TGU"
 			storageKey="turkish-get-up"
-			scheme="1 rep, 10 rounds EMOM"
+			scheme="2 rep, 6 rounds EMOM"
 			leftRightLabels={['right', 'left']}
+			intervalDurationSeconds={90}
 		/>
 	);
 }

@@ -4,10 +4,13 @@ import { useInterval, useTimer } from './hooks/timing';
 
 type TimerProps = {
 	showControls?: boolean;
+	noBeep?: boolean;
 };
 
-export function Timer({ showControls = false }: TimerProps) {
-	const { timeString, isRunning, start, restart, startStop } = useTimer(30);
+export function Timer({ showControls = false, noBeep = false }: TimerProps) {
+	const { timeString, isRunning, start, restart, startStop } = useTimer(
+		noBeep ? undefined : 30,
+	);
 
 	useEffect(() => {
 		if (!showControls && !isRunning) start();

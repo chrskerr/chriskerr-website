@@ -7,6 +7,7 @@ type TimerData = {
 	start: () => void;
 	startStop: () => void;
 	restart: () => void;
+	stop: () => void;
 };
 
 export function useTimer(beepEvery?: number): TimerData {
@@ -64,6 +65,7 @@ export function useTimer(beepEvery?: number): TimerData {
 		restart,
 		startStop,
 		start,
+		stop,
 	};
 }
 

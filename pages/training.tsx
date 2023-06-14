@@ -48,7 +48,7 @@ export default function Training(): ReactElement {
 			/>
 			<div className="-mb-8 display-width">
 				<h2 className="mb-4 text-3xl">{title}</h2>
-				<Timer />
+				<Timer noBeep />
 			</div>
 			{[0, 2, 4, 6].includes(new Date().getDay()) && (
 				<div className="display-width divider-before">
