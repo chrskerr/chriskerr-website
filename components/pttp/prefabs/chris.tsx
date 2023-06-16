@@ -109,7 +109,7 @@ export function Swings(): ReactElement {
 export function Warmup(): ReactElement {
 	return (
 		<Container label="Warmup">
-			<ul className="mt-2 ml-6 list-disc">
+			<ul className="ml-6 list-disc">
 				<li>POSE skill runthroughs</li>
 				<li>5-10 minutes jog</li>
 			</ul>
@@ -120,7 +120,10 @@ export function Warmup(): ReactElement {
 export function StairStepper(): ReactElement {
 	return (
 		<Container label="Stair stepper">
-			<p>15 minutes aerobic stepping</p>
+			<ul className="ml-6 list-disc">
+				<li>15 minutes aerobic (z2) stepping</li>
+				<li>Breath holds every 2 mins</li>
+			</ul>
 		</Container>
 	);
 }
