@@ -80,6 +80,7 @@ export function TurkishGetUp(): ReactElement {
 			scheme="2 rep, 6 rounds EMOM"
 			leftRightLabels={['right', 'left']}
 			intervalDurationSeconds={90}
+			intervalCount={6}
 		/>
 	);
 }
@@ -174,6 +175,19 @@ export function LungeWalking(): ReactElement {
 			reps={20}
 			min={0}
 			sets={3}
+		/>
+	);
+}
+
+export function PlateSitup(): ReactElement {
+	return (
+		<BarbellDUPBlock
+			label="Plate sit-up"
+			storageKey="db-lunge-walk"
+			tempo="1010"
+			potentialReps={[8, 12, 15]}
+			min={0}
+			mode="straight"
 		/>
 	);
 }

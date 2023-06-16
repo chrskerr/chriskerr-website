@@ -15,6 +15,7 @@ type KettlebellExerciseProps = {
 	leftRightLabels?: [string, string] | null;
 
 	intervalDurationSeconds?: number;
+	intervalCount?: number;
 };
 
 export function KettlebellExerciseBlock(props: KettlebellExerciseProps) {
@@ -70,7 +71,8 @@ export function KettlebellExerciseBlock(props: KettlebellExerciseProps) {
 
 				<Interval
 					leftRightLabels={props.leftRightLabels}
-					durationSeconds={props.intervalDurationSeconds ?? 60}
+					durationSeconds={props.intervalDurationSeconds}
+					count={props.intervalCount}
 				/>
 			</div>
 		</Container>

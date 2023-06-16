@@ -14,6 +14,7 @@ import {
 	StairStepper,
 	SingleLegCalfRaises,
 	LungeWalking,
+	PlateSitup,
 } from 'components/pttp/prefabs/chris';
 import { Timer } from 'components/pttp/timing';
 import { useDeterministicSample } from 'components/pttp/hooks/randomness';
@@ -33,6 +34,7 @@ const options: DeepReadonly<NotEmpty<WithWeight<() => ReactElement>>> = [
 	{ weight: 15, component: StairStepper },
 	{ weight: 10, component: SingleLegCalfRaises },
 	{ weight: 10, component: LungeWalking },
+	{ weight: 10, component: PlateSitup },
 ];
 
 export default function Training(): ReactElement {
