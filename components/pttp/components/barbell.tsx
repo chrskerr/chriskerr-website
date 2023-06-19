@@ -1,6 +1,6 @@
 import { useMemo, useState, useContext } from 'react';
 
-import { useDeterministicRange } from '../hooks/randomness';
+import { useDeterministicPick } from '../hooks/randomness';
 
 import { DisableClickConstraintContext } from '../context/disableClickConstraint';
 import { Timer } from '../timing';
@@ -143,7 +143,7 @@ export function BarbellDUPBlock(
 		setDailyMin(currentDailyMin => Math.max(currentDailyMin - step, min));
 	};
 
-	const reps = useDeterministicRange(potentialReps, storageKey);
+	const reps = useDeterministicPick(potentialReps, storageKey);
 	const adjustedWeight = estimateRepsAdjustedWeight(dailyMin, reps);
 
 	return (

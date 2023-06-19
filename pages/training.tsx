@@ -10,35 +10,31 @@ import {
 	TurkishGetUp,
 	Warmup,
 	Rowing,
-	DbBench,
-	StairStepper,
-	SingleLegCalfRaises,
+	CalfRaiseMachine,
 	LungeWalking,
 	PlateSitup,
+	PullUps,
+	Swings,
 } from 'components/pttp/prefabs/chris';
 import { Timer } from 'components/pttp/timing';
-import { useDeterministicSample } from 'components/pttp/hooks/randomness';
-import { DeepReadonly, NotEmpty, WithWeight } from 'components/pttp/types';
+import { useDeterministicPick } from 'components/pttp/hooks/randomness';
+import { DeepReadonly, NotEmpty } from 'components/pttp/types';
 import { DisableClickConstraintContextProvider } from 'components/pttp/context/disableClickConstraint';
 
 const title = 'Training tracker';
 
-const options: DeepReadonly<NotEmpty<WithWeight<() => ReactElement>>> = [
-	{ weight: 20, component: Deadlift },
-	{ weight: 10, component: TurkishGetUp },
-	{ weight: 15, component: Bench },
-	{ weight: 10, component: DbCurls },
-	{ weight: 10, component: CableCurls },
-	{ weight: 15, component: Rowing },
-	{ weight: 15, component: DbBench },
-	{ weight: 15, component: StairStepper },
-	{ weight: 10, component: SingleLegCalfRaises },
-	{ weight: 10, component: LungeWalking },
-	{ weight: 10, component: PlateSitup },
-];
+type Exercises = DeepReadonly<NotEmpty<() => ReactElement>>;
+
+const hinge: Exercises = [Deadlift, Swings];
+const upper: Exercises = [Bench, PullUps];
+const vanity: Exercises = [DbCurls, CableCurls, TurkishGetUp];
+const prehab: Exercises = [Rowing, CalfRaiseMachine, LungeWalking, PlateSitup];
 
 export default function Training(): ReactElement {
-	const exercises = useDeterministicSample(options, 40, 'pttp');
+	const hingeExercises = useDeterministicPick(hinge, 'hinge');
+	const upperExercises = useDeterministicPick(upper, 'upper');
+	const vanityExercises = useDeterministicPick(vanity, 'vanity');
+	const prehabExercises = useDeterministicPick(prehab, 'prehab');
 
 	return (
 		<>
@@ -52,16 +48,28 @@ export default function Training(): ReactElement {
 				<h2 className="mb-4 text-3xl">{title}</h2>
 				<Timer noBeep />
 			</div>
-			{[0, 2, 4, 6].includes(new Date().getDay()) && (
-				<div className="display-width divider-before">
-					<p>Today is a running day, do that if possible.</p>
-				</div>
-			)}
+			{/* {[0, 2, 4, 6].includes(new Date().getDay()) && ( */}
+			<div className="display-width divider-before">
+				<p>
+					Today is an aerobic day, do at least 30 mins z1 / z2. Ideas:
+				</p>
+				<ul className="mt-4 ml-6 list-disc">
+					<li>Go for a run</li>
+					<li>Cycle</li>
+					<li>High incline treadmill walking</li>
+					<li>Stair stepper</li>
+				</ul>
+			</div>
+			{/* )} */}
 			<DisableClickConstraintContextProvider>
 				<Warmup />
-				{exercises.map((index, i) => {
-					const Component = options[index].component;
-					return Component ? <Component key={i} /> : false;
+				{[
+					hingeExercises,
+					upperExercises,
+					vanityExercises,
+					prehabExercises,
+				].map((Component, i) => {
+					return <Component key={i} />;
 				})}
 			</DisableClickConstraintContextProvider>
 		</>

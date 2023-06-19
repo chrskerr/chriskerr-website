@@ -3,7 +3,7 @@ import { BarbellBasicBlock, BarbellDUPBlock } from '../components/barbell';
 import { Container } from '../components/container';
 import { HIITExerciseBlock } from '../components/hiit';
 import { KettlebellExerciseBlock } from '../components/kettlebell';
-import { useDeterministicRange } from '../hooks/randomness';
+import { useDeterministicPick } from '../hooks/randomness';
 
 export function Deadlift(): ReactElement {
 	return (
@@ -26,6 +26,19 @@ export function Bench(): ReactElement {
 			tempo="3030"
 			potentialReps={[5, 8, 12, 15]}
 			mode="pyramid"
+		/>
+	);
+}
+
+export function PullUps(): ReactElement {
+	return (
+		<BarbellBasicBlock
+			label="Pullups"
+			notes={['Build to target reps, no sets to failure']}
+			storageKey="pull-ups"
+			tempo="3131"
+			reps={8}
+			sets={3}
 		/>
 	);
 }
@@ -86,7 +99,7 @@ export function TurkishGetUp(): ReactElement {
 }
 
 export function Swings(): ReactElement {
-	const isOneHanded = useDeterministicRange([true, false], 'swings');
+	const isOneHanded = useDeterministicPick([true, false], 'swings');
 
 	if (isOneHanded) {
 		return (
@@ -111,18 +124,19 @@ export function Warmup(): ReactElement {
 	return (
 		<Container label="Warmup">
 			<ul className="ml-6 list-disc">
+				<li>High rep, slow tempo calf raises</li>
 				<li>POSE skill runthroughs</li>
-				<li>5-10 minutes jog</li>
+				<li>5-10 minutes jog/cycle/incline walk</li>
 			</ul>
 		</Container>
 	);
 }
 
-export function StairStepper(): ReactElement {
+export function InclineWalking(): ReactElement {
 	return (
-		<Container label="Stair stepper">
+		<Container label="Incline treadmill walking">
 			<ul className="ml-6 list-disc">
-				<li>15 minutes aerobic (z2) stepping</li>
+				<li>15 minutes aerobic (z1 - z2) steep walking</li>
 				<li>Breath holds every 2 mins</li>
 			</ul>
 		</Container>
@@ -153,11 +167,11 @@ export function Rowing(): ReactElement {
 	);
 }
 
-export function SingleLegCalfRaises(): ReactElement {
+export function CalfRaiseMachine(): ReactElement {
 	return (
 		<BarbellBasicBlock
-			label="Single leg calf raises"
-			storageKey="sl-calf-raise"
+			label="Calf raise manchine"
+			storageKey="calf-raise-machine"
 			tempo="3030"
 			reps={20}
 			min={0}
@@ -172,9 +186,9 @@ export function LungeWalking(): ReactElement {
 			label="DB lunge walking (reps = steps)"
 			storageKey="db-lunge-walk"
 			tempo="1010"
-			reps={20}
+			reps={40}
 			min={0}
-			sets={3}
+			sets={2}
 		/>
 	);
 }

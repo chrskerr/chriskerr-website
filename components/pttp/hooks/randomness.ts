@@ -40,7 +40,7 @@ function fetchStorage<T>(storageKey: string): T | null {
 	const storedValue = localStorage.getItem(storageKey + salt);
 	if (storedValue) {
 		const parsedValue = JSON.parse(storedValue) as StoredValue<T>;
-		if (parsedValue.savedOn === new Date().toDateString()) {
+		if (parsedValue.savedOn === new Date().toISOString()) {
 			return parsedValue.value;
 		}
 	}
@@ -71,7 +71,7 @@ function getOrSetStorage<T>(
 	}
 }
 
-export function useDeterministicRange<T>(
+export function useDeterministicPick<T>(
 	array: DeepReadonly<NotEmpty<T>>,
 	storageKey: Readonly<string>,
 ): DeepReadonly<T> {
@@ -92,7 +92,7 @@ export function useDeterministicSample<T extends () => ReactElement>(
 	array: DeepReadonly<NotEmpty<WithWeight<T>>>,
 	maxWeight: Readonly<number>,
 	storageKey: Readonly<string>,
-): DeepReadonly<Array<number>> {
+): DeepReadonly<Array<T>> {
 	const [indexes, setIndexes] = useState<number[]>([]);
 
 	useEffect(() => {
@@ -103,5 +103,5 @@ export function useDeterministicSample<T extends () => ReactElement>(
 		);
 	}, []);
 
-	return indexes;
+	return indexes.map(i => array[i].component);
 }

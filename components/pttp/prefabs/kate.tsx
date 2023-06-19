@@ -2,7 +2,7 @@ import { ReactElement } from 'react';
 import { BarbellBasicBlock, BarbellDUPBlock } from '../components/barbell';
 import { Container } from '../components/container';
 import { Reps } from '../helpers/estimateRepsAdjustedWeight';
-import { useDeterministicRange } from '../hooks/randomness';
+import { useDeterministicPick } from '../hooks/randomness';
 import { NotEmpty } from '../types';
 
 const benchReps: NotEmpty<Reps> = [3, 5, 5, 6, 8, 12, 20];
@@ -72,7 +72,7 @@ const availableRehabCombos: NotEmpty<Combo> = [
 
 export function RdlRehab(): ReactElement {
 	const key = 'rdl-rehab';
-	const { reps, tempo } = useDeterministicRange(availableRehabCombos, key);
+	const { reps, tempo } = useDeterministicPick(availableRehabCombos, key);
 
 	return (
 		<BarbellBasicBlock
@@ -87,7 +87,7 @@ export function RdlRehab(): ReactElement {
 
 export function GoodmorningRehab(): ReactElement {
 	const key = 'goodmorning-rehab';
-	const { reps, tempo } = useDeterministicRange(availableRehabCombos, key);
+	const { reps, tempo } = useDeterministicPick(availableRehabCombos, key);
 
 	return (
 		<BarbellBasicBlock
@@ -102,7 +102,7 @@ export function GoodmorningRehab(): ReactElement {
 
 export function GluteHamRaiseRehab(): ReactElement {
 	const key = 'glute-ham-raise-rehab';
-	const { reps, tempo } = useDeterministicRange(availableRehabCombos, key);
+	const { reps, tempo } = useDeterministicPick(availableRehabCombos, key);
 
 	return (
 		<BarbellBasicBlock

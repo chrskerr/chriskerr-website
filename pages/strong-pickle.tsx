@@ -57,12 +57,7 @@ export default function Pttp(): ReactElement {
 				<Timer />
 			</div>
 			<DisableClickConstraintContextProvider>
-				{rehabs.map((index, i) => {
-					const Component = rehabOptions[index].component;
-					return Component ? <Component key={i} /> : false;
-				})}
-				{mains.map((index, i) => {
-					const Component = mainOptions[index].component;
+				{[...rehabs, ...mains].map((Component, i) => {
 					return Component ? <Component key={i} /> : false;
 				})}
 			</DisableClickConstraintContextProvider>
