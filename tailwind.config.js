@@ -13,20 +13,10 @@ module.exports = {
 				'brand-maroon': 'var(--brand-maroon)',
 				'brand-maroon-dark': 'var(--brand-maroon-dark)',
 			},
-			transitionTimingFunction: {
-				'back-out': 'cubic-bezier(0.34, 1.56, 0.64, 1)',
-			},
 		},
 	},
 	plugins: [
 		require('@tailwindcss/typography'),
-		require('@tailwindcss/line-clamp'),
 		require('@tailwindcss/forms'),
 	],
-	future: {
-		removeDeprecatedGapUtilities: true,
-		purgeLayersByDefault: true,
-		defaultLineHeights: true,
-		standardFontWeights: true,
-	},
 };

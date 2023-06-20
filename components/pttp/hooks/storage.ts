@@ -4,20 +4,22 @@ export function useLocalStorageState(
 	storageKey: string,
 	fallbackValue: number,
 ): [number, Dispatch<SetStateAction<number>>] {
-	const [value, setValue] = useState(fallbackValue);
+	const [value, set] = useState(fallbackValue);
 
 	useEffect(() => {
 		const newValue = Number(localStorage.getItem(storageKey));
 		if (newValue) {
-			setValue(newValue);
+			set(newValue);
 		}
 	}, []);
 
-	useEffect(() => {
-		if (value !== fallbackValue) {
-			localStorage.setItem(storageKey, String(value));
-		}
-	}, [value]);
+	const setValue: Dispatch<SetStateAction<number>> = cb => {
+		set(state => {
+			const newValue = typeof cb === 'function' ? cb(state) : cb;
+			localStorage.setItem(storageKey, String(newValue));
+			return newValue;
+		});
+	};
 
 	return [value, setValue];
 }
