@@ -40,7 +40,7 @@ function fetchStorage<T>(storageKey: string): T | null {
 	const storedValue = localStorage.getItem(storageKey + salt);
 	if (storedValue) {
 		const parsedValue = JSON.parse(storedValue) as StoredValue<T>;
-		if (parsedValue.savedOn === new Date().toISOString()) {
+		if (parsedValue.savedOn === new Date().toDateString()) {
 			return parsedValue.value;
 		}
 	}
