@@ -39,6 +39,7 @@ export function PullUps(): ReactElement {
 			tempo="3131"
 			reps={8}
 			sets={3}
+			min={0}
 		/>
 	);
 }
@@ -116,6 +117,7 @@ export function Swings(): ReactElement {
 			label="Swings"
 			storageKey="kettlebell-swing"
 			scheme="10 reps, 10 rounds EMOM"
+			leftRightLabels={['both', 'both']}
 		/>
 	);
 }

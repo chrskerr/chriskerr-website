@@ -63,7 +63,12 @@ export function Interval({
 	return (
 		<div>
 			{!!leftRightLabels && (
-				<p>Next: {leftRightLabels[intervalsRemaining % 2]}</p>
+				<p>
+					Next:{' '}
+					{intervalsRemaining > 0
+						? leftRightLabels[intervalsRemaining % 2]
+						: 'finish'}
+				</p>
 			)}
 			<p>{intervalsRemaining} rounds remaining</p>
 			<div className="flex items-center">
