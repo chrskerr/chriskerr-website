@@ -61,18 +61,14 @@ function setStorage<T>(value: T, storageKey: string) {
 	localStorage.setItem(storageKey + salt, JSON.stringify(toStore));
 }
 
-function getOrSetStorage<T>(
-	storageKey: string,
-	createNewValue: () => T,
-	setValue: (value: T) => void,
-) {
+function getOrSetStorage<T>(storageKey: string, createNewValue: () => T): T {
 	const storedValue = fetchStorage<T>(storageKey);
 	if (storedValue) {
-		setValue(storedValue);
+		return storedValue;
 	} else {
 		const newValue = createNewValue();
-		setValue(newValue);
 		setStorage(newValue, storageKey);
+		return newValue;
 	}
 }
 
@@ -83,10 +79,10 @@ export function useDeterministicPick<T>(
 	const [index, setIndex] = useState(0);
 
 	useEffect(() => {
-		getOrSetStorage(
-			storageKey,
-			() => Math.floor(Math.random() * array.length),
-			setIndex,
+		setIndex(
+			getOrSetStorage(storageKey, () =>
+				Math.floor(Math.random() * array.length),
+			),
 		);
 	}, []);
 
@@ -101,10 +97,8 @@ export function useDeterministicSample<T extends () => ReactElement>(
 	const [indexes, setIndexes] = useState<number[]>([]);
 
 	useEffect(() => {
-		getOrSetStorage(
-			storageKey,
-			() => getMany(array, maxWeight),
-			setIndexes,
+		setIndexes(
+			getOrSetStorage(storageKey, () => getMany(array, maxWeight)),
 		);
 	}, []);
 
