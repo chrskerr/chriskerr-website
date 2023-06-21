@@ -1,5 +1,10 @@
 import { ReactElement, useEffect, useState } from 'react';
 import { DeepReadonly, NotEmpty, WithWeight } from '../types';
+import { format } from 'date-fns';
+
+function toDateString(date = new Date()): string {
+	return format(date, 'yyyymmdd');
+}
 
 function getMany<T extends { weight: number }>(
 	array: DeepReadonly<NotEmpty<T>>,
@@ -40,7 +45,7 @@ function fetchStorage<T>(storageKey: string): T | null {
 	const storedValue = localStorage.getItem(storageKey + salt);
 	if (storedValue) {
 		const parsedValue = JSON.parse(storedValue) as StoredValue<T>;
-		if (parsedValue.savedOn === new Date().toDateString()) {
+		if (parsedValue.savedOn === toDateString()) {
 			return parsedValue.value;
 		}
 	}
@@ -50,7 +55,7 @@ function fetchStorage<T>(storageKey: string): T | null {
 
 function setStorage<T>(value: T, storageKey: string) {
 	const toStore: StoredValue<T> = {
-		savedOn: new Date().toDateString(),
+		savedOn: toDateString(),
 		value,
 	};
 	localStorage.setItem(storageKey + salt, JSON.stringify(toStore));

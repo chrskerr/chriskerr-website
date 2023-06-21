@@ -16,7 +16,6 @@ import {
 	PullUps,
 	Swings,
 } from 'components/pttp/prefabs/chris';
-import { Timer } from 'components/pttp/timing';
 import { useDeterministicPick } from 'components/pttp/hooks/randomness';
 import { DeepReadonly, NotEmpty } from 'components/pttp/types';
 import { DisableClickConstraintContextProvider } from 'components/pttp/context/disableClickConstraint';
@@ -46,7 +45,6 @@ export default function Training(): ReactElement {
 			/>
 			<div className="-mb-8 display-width">
 				<h2 className="mb-4 text-3xl">{title}</h2>
-				<Timer noBeep />
 			</div>
 			{/* {[0, 2, 4, 6].includes(new Date().getDay()) && ( */}
 			<div className="display-width divider-before">
