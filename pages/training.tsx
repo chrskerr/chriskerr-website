@@ -25,9 +25,16 @@ const title = 'Training tracker';
 type Exercises = DeepReadonly<NotEmpty<() => ReactElement>>;
 
 const hinge: Exercises = [Deadlift, Swings];
-const upper: Exercises = [Bench, PullUps];
+const upper: Exercises = [Bench, Bench, PullUps];
 const vanity: Exercises = [DbCurls, CableCurls, TurkishGetUp];
-const prehab: Exercises = [Rowing, CalfRaiseMachine, LungeWalking, PlateSitup];
+const prehab: Exercises = [
+	Rowing,
+	CalfRaiseMachine,
+	CalfRaiseMachine,
+	LungeWalking,
+	LungeWalking,
+	PlateSitup,
+];
 
 export default function TrainingWrapper(): ReactElement {
 	const [render, setRender] = useState(false);
@@ -44,19 +51,6 @@ export default function TrainingWrapper(): ReactElement {
 				canonical="https://www.chriskerr.dev/training"
 				noindex
 			/>
-			{render && <Training />}
-		</>
-	);
-}
-
-function Training(): ReactElement {
-	const hingeExercises = useDeterministicPick(hinge, 'hinge-');
-	const upperExercises = useDeterministicPick(upper, 'upper-');
-	const vanityExercises = useDeterministicPick(vanity, 'vanity-');
-	const prehabExercises = useDeterministicPick(prehab, 'prehab-');
-
-	return (
-		<>
 			<div className="-mb-8 display-width">
 				<h2 className="mb-4 text-3xl">{title}</h2>
 			</div>
@@ -75,15 +69,24 @@ function Training(): ReactElement {
 			{/* )} */}
 			<DisableClickConstraintContextProvider>
 				<Warmup />
-				{[
-					hingeExercises,
-					upperExercises,
-					vanityExercises,
-					prehabExercises,
-				].map((Component, i) => {
-					return <Component key={i} />;
-				})}
+				{render && <Training />}
 			</DisableClickConstraintContextProvider>
+		</>
+	);
+}
+
+function Training(): ReactElement {
+	const Hinge = useDeterministicPick(hinge, 'hinge-');
+	const Upper = useDeterministicPick(upper, 'upper-');
+	const Vanity = useDeterministicPick(vanity, 'vanity-');
+	const Prehab = useDeterministicPick(prehab, 'prehab-');
+
+	return (
+		<>
+			<Hinge />
+			<Upper />
+			<Vanity />
+			<Prehab />
 		</>
 	);
 }

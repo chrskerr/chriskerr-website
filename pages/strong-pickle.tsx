@@ -55,7 +55,13 @@ export default function StrongPickleWrapper(): ReactElement {
 				canonical="https://www.chriskerr.dev/strong-pickle"
 				noindex
 			/>
-			{render && <StrongPickle />}
+			<div className="-mb-8 display-width">
+				<h2 className="mb-4 text-3xl">{title}</h2>
+				<Timer />
+			</div>
+			<DisableClickConstraintContextProvider>
+				{render && <StrongPickle />}
+			</DisableClickConstraintContextProvider>
 		</>
 	);
 }
@@ -65,15 +71,9 @@ function StrongPickle(): ReactElement {
 
 	return (
 		<>
-			<div className="-mb-8 display-width">
-				<h2 className="mb-4 text-3xl">{title}</h2>
-				<Timer />
-			</div>
-			<DisableClickConstraintContextProvider>
-				{[...rehabs, ...mains].map((Component, i) => {
-					return Component ? <Component key={i} /> : false;
-				})}
-			</DisableClickConstraintContextProvider>
+			{[...rehabs, ...mains].map((Component, i) => {
+				return Component ? <Component key={i} /> : false;
+			})}
 		</>
 	);
 }
