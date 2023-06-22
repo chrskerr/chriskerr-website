@@ -50,10 +50,10 @@ export default function TrainingWrapper(): ReactElement {
 }
 
 function Training(): ReactElement {
-	const hingeExercises = useDeterministicPick(hinge, 'hinge');
-	const upperExercises = useDeterministicPick(upper, 'upper');
-	const vanityExercises = useDeterministicPick(vanity, 'vanity');
-	const prehabExercises = useDeterministicPick(prehab, 'prehab');
+	const hingeExercises = useDeterministicPick(hinge, 'hinge-');
+	const upperExercises = useDeterministicPick(upper, 'upper-');
+	const vanityExercises = useDeterministicPick(vanity, 'vanity-');
+	const prehabExercises = useDeterministicPick(prehab, 'prehab-');
 
 	return (
 		<>

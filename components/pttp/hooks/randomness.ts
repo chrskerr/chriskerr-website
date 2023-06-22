@@ -63,7 +63,7 @@ function setStorage<T>(value: T, storageKey: string) {
 
 function getOrSetStorage<T>(storageKey: string, createNewValue: () => T): T {
 	const storedValue = fetchStorage<T>(storageKey);
-	if (storedValue) {
+	if (storedValue !== null) {
 		return storedValue;
 	} else {
 		const newValue = createNewValue();
