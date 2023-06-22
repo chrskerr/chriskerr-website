@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 
 import { NextSeo } from 'next-seo';
 
@@ -29,11 +29,12 @@ const upper: Exercises = [Bench, PullUps];
 const vanity: Exercises = [DbCurls, CableCurls, TurkishGetUp];
 const prehab: Exercises = [Rowing, CalfRaiseMachine, LungeWalking, PlateSitup];
 
-export default function Training(): ReactElement {
-	const hingeExercises = useDeterministicPick(hinge, 'hinge');
-	const upperExercises = useDeterministicPick(upper, 'upper');
-	const vanityExercises = useDeterministicPick(vanity, 'vanity');
-	const prehabExercises = useDeterministicPick(prehab, 'prehab');
+export default function TrainingWrapper(): ReactElement {
+	const [render, setRender] = useState(false);
+
+	useEffect(() => {
+		setRender(true);
+	}, []);
 
 	return (
 		<>
@@ -43,6 +44,19 @@ export default function Training(): ReactElement {
 				canonical="https://www.chriskerr.dev/training"
 				noindex
 			/>
+			{render && <Training />}
+		</>
+	);
+}
+
+function Training(): ReactElement {
+	const hingeExercises = useDeterministicPick(hinge, 'hinge');
+	const upperExercises = useDeterministicPick(upper, 'upper');
+	const vanityExercises = useDeterministicPick(vanity, 'vanity');
+	const prehabExercises = useDeterministicPick(prehab, 'prehab');
+
+	return (
+		<>
 			<div className="-mb-8 display-width">
 				<h2 className="mb-4 text-3xl">{title}</h2>
 			</div>

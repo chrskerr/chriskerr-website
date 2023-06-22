@@ -1,17 +1,12 @@
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 
 export function useLocalStorageState(
 	storageKey: string,
 	fallbackValue: number,
 ): [number, Dispatch<SetStateAction<number>>] {
-	const [value, set] = useState(fallbackValue);
-
-	useEffect(() => {
-		const newValue = Number(localStorage.getItem(storageKey));
-		if (newValue) {
-			set(newValue);
-		}
-	}, []);
+	const [value, set] = useState(
+		Number(localStorage.getItem(storageKey) || fallbackValue),
+	);
 
 	const setValue: Dispatch<SetStateAction<number>> = cb => {
 		set(state => {

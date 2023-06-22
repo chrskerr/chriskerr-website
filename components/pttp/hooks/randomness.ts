@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useState } from 'react';
 import { DeepReadonly, NotEmpty, WithWeight } from '../types';
 import { format } from 'date-fns';
 
@@ -76,15 +76,11 @@ export function useDeterministicPick<T>(
 	array: DeepReadonly<NotEmpty<T>>,
 	storageKey: Readonly<string>,
 ): DeepReadonly<T> {
-	const [index, setIndex] = useState(0);
-
-	useEffect(() => {
-		setIndex(
-			getOrSetStorage(storageKey, () =>
-				Math.floor(Math.random() * array.length),
-			),
-		);
-	}, []);
+	const [index] = useState(
+		getOrSetStorage(storageKey, () =>
+			Math.floor(Math.random() * array.length),
+		),
+	);
 
 	return array[index];
 }
@@ -94,13 +90,9 @@ export function useDeterministicSample<T extends () => ReactElement>(
 	maxWeight: Readonly<number>,
 	storageKey: Readonly<string>,
 ): DeepReadonly<Array<T>> {
-	const [indexes, setIndexes] = useState<number[]>([]);
-
-	useEffect(() => {
-		setIndexes(
-			getOrSetStorage(storageKey, () => getMany(array, maxWeight)),
-		);
-	}, []);
+	const [indexes] = useState<number[]>(
+		getOrSetStorage(storageKey, () => getMany(array, maxWeight)),
+	);
 
 	return indexes.map(i => array[i].component);
 }

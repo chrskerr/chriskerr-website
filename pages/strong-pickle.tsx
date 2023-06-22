@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 
 import { NextSeo } from 'next-seo';
 
@@ -40,9 +40,12 @@ const mainOptions: Exercises = [
 	{ weight: 10, component: DbCurls },
 ];
 
-export default function Pttp(): ReactElement {
-	const rehabs = useDeterministicSample(rehabOptions, 10, 'rehab');
-	const mains = useDeterministicSample(mainOptions, 45, 'mains');
+export default function StrongPickleWrapper(): ReactElement {
+	const [render, setRender] = useState(false);
+
+	useEffect(() => {
+		setRender(true);
+	}, []);
 
 	return (
 		<>
@@ -52,6 +55,16 @@ export default function Pttp(): ReactElement {
 				canonical="https://www.chriskerr.dev/strong-pickle"
 				noindex
 			/>
+			{render && <StrongPickle />}
+		</>
+	);
+}
+function StrongPickle(): ReactElement {
+	const rehabs = useDeterministicSample(rehabOptions, 10, 'rehab');
+	const mains = useDeterministicSample(mainOptions, 45, 'mains');
+
+	return (
+		<>
 			<div className="-mb-8 display-width">
 				<h2 className="mb-4 text-3xl">{title}</h2>
 				<Timer />
