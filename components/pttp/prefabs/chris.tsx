@@ -10,7 +10,7 @@ export function Deadlift(): ReactElement {
 		<BarbellDUPBlock
 			label="Deadlift"
 			storageKey="deadlift"
-			tempo="0030"
+			tempo="0020"
 			potentialReps={[4, 5, 8]}
 			mode="pyramid"
 		/>
@@ -23,7 +23,7 @@ export function Bench(): ReactElement {
 			label="Bench"
 			notes={['Ensure elbow lockout at top of press']}
 			storageKey="bench"
-			tempo="3030"
+			tempo="31X0"
 			potentialReps={[5, 8, 12, 15]}
 			mode="pyramid"
 		/>
@@ -36,7 +36,7 @@ export function PullUps(): ReactElement {
 			label="Pullups"
 			notes={['Build to target reps, no sets to failure']}
 			storageKey="pull-ups"
-			tempo="3131"
+			tempo="31X1"
 			reps={8}
 			sets={3}
 			min={0}
@@ -50,7 +50,7 @@ export function DbBench(): ReactElement {
 			label="Dumbbell Bench"
 			notes={['Ensure elbow lockout at top of press']}
 			storageKey="db-bench"
-			tempo="3030"
+			tempo="31X0"
 			potentialReps={[5, 8, 12, 15]}
 			mode="pyramid"
 		/>
@@ -174,7 +174,7 @@ export function CalfRaiseMachine(): ReactElement {
 		<BarbellBasicBlock
 			label="Calf raise manchine"
 			storageKey="calf-raise-machine"
-			tempo="3030"
+			tempo="3131"
 			reps={20}
 			min={0}
 			sets={3}
