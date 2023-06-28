@@ -9,13 +9,13 @@ const multipliers: Record<Reps, number> = {
 	4: 0.885,
 	5: 0.86,
 	6: 0.83,
-	7: 0.81,
-	8: 0.77,
-	9: 0.76,
-	10: 0.73,
-	12: 0.67,
-	15: 0.625,
-	20: 0.5,
+	7: 0.8,
+	8: 0.75,
+	9: 0.74,
+	10: 0.7,
+	12: 0.62,
+	15: 0.55,
+	20: 0.45,
 };
 
 export function estimateRepsAdjustedWeight(oneRm: number, reps: Reps) {
