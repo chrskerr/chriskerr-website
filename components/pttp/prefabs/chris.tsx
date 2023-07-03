@@ -3,7 +3,6 @@ import { BarbellBasicBlock, BarbellDUPBlock } from '../components/barbell';
 import { Container } from '../components/container';
 import { HIITExerciseBlock } from '../components/hiit';
 import { KettlebellExerciseBlock } from '../components/kettlebell';
-import { useDeterministicPick } from '../hooks/randomness';
 
 export function Deadlift(): ReactElement {
 	return (
@@ -12,6 +11,18 @@ export function Deadlift(): ReactElement {
 			storageKey="deadlift"
 			tempo="0020"
 			potentialReps={[4, 5, 8]}
+			mode="pyramid"
+		/>
+	);
+}
+
+export function Squats(): ReactElement {
+	return (
+		<BarbellDUPBlock
+			label="Barbell Back Squat"
+			storageKey="barbell-back-squat"
+			tempo="3030"
+			potentialReps={[5, 8, 12]}
 			mode="pyramid"
 		/>
 	);
@@ -100,24 +111,22 @@ export function TurkishGetUp(): ReactElement {
 }
 
 export function Swings(): ReactElement {
-	const isOneHanded = useDeterministicPick([true, false], 'swings');
-
-	if (isOneHanded) {
-		return (
-			<KettlebellExerciseBlock
-				label="One handed swings"
-				storageKey="one-handed-kettlebell-swing"
-				scheme="10 reps, 10 rounds EMOM"
-			/>
-		);
-	}
-
 	return (
 		<KettlebellExerciseBlock
 			label="Swings"
 			storageKey="kettlebell-swing"
 			scheme="10 reps, 10 rounds EMOM"
 			leftRightLabels={['both', 'both']}
+		/>
+	);
+}
+
+export function OneHandedSwings(): ReactElement {
+	return (
+		<KettlebellExerciseBlock
+			label="One handed swings"
+			storageKey="one-handed-kettlebell-swing"
+			scheme="10 reps, 10 rounds EMOM"
 		/>
 	);
 }

@@ -15,6 +15,8 @@ import {
 	PlateSitup,
 	PullUps,
 	Swings,
+	OneHandedSwings,
+	Squats,
 } from 'components/pttp/prefabs/chris';
 import { useDeterministicPick } from 'components/pttp/hooks/randomness';
 import { DeepReadonly, NotEmpty } from 'components/pttp/types';
@@ -24,14 +26,13 @@ const title = 'Training tracker';
 
 type Exercises = DeepReadonly<NotEmpty<() => ReactElement>>;
 
-const hinge: Exercises = [Deadlift, Swings];
-const upper: Exercises = [Bench, Bench, PullUps];
-const vanity: Exercises = [DbCurls, CableCurls, TurkishGetUp];
+const hinge: Exercises = [Deadlift, Swings, OneHandedSwings, Squats];
+const upper: Exercises = [Bench, Bench, TurkishGetUp];
+const vanity: Exercises = [DbCurls, CableCurls, PullUps];
 const prehab: Exercises = [
 	Rowing,
 	CalfRaiseMachine,
 	CalfRaiseMachine,
-	LungeWalking,
 	LungeWalking,
 	PlateSitup,
 ];
