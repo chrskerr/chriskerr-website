@@ -41,16 +41,25 @@ type StoredValue<T> = {
 
 const salt = 'randoms';
 
-function fetchStorage<T>(storageKey: string): T | null {
+function fetchStorage<T>(storageKey: string):
+	| {
+			value: T;
+			prevValue: null;
+	  }
+	| {
+			value: null;
+			prevValue: T | null;
+	  } {
 	const storedValue = localStorage.getItem(storageKey + salt);
 	if (storedValue) {
 		const parsedValue = JSON.parse(storedValue) as StoredValue<T>;
 		if (parsedValue.savedOn === toDateString()) {
-			return parsedValue.value;
+			return { value: parsedValue.value, prevValue: null };
 		}
+		return { value: null, prevValue: parsedValue.value };
 	}
 
-	return null;
+	return { value: null, prevValue: null };
 }
 
 function setStorage<T>(value: T, storageKey: string) {
@@ -63,13 +72,22 @@ function setStorage<T>(value: T, storageKey: string) {
 
 function getOrSetStorage<T>(storageKey: string, createNewValue: () => T): T {
 	const storedValue = fetchStorage<T>(storageKey);
-	if (storedValue !== null) {
-		return storedValue;
-	} else {
-		const newValue = createNewValue();
-		setStorage(newValue, storageKey);
-		return newValue;
+	if (storedValue.value != null) {
+		return storedValue.value;
 	}
+	let newValue = createNewValue();
+	if (storedValue.prevValue != null) {
+		let attempt = 0;
+		while (attempt < 10 && newValue === storedValue.prevValue) {
+			// if the new value is the same as the previous, get a new newValue
+			// attempt up to 10 times to prevent infinite loop
+			newValue = createNewValue();
+			attempt++;
+		}
+	}
+
+	setStorage(newValue, storageKey);
+	return newValue;
 }
 
 export function useDeterministicPick<T>(
