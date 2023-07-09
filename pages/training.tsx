@@ -18,23 +18,32 @@ import {
 	OneHandedSwings,
 	Squats,
 } from 'components/pttp/prefabs/chris';
-import { useDeterministicPick } from 'components/pttp/hooks/randomness';
-import { DeepReadonly, NotEmpty } from 'components/pttp/types';
+import {
+	useDeterministicPick,
+	useDeterministicSample,
+	useRandomNumber,
+} from 'components/pttp/hooks/randomness';
+import { DeepReadonly, NotEmpty, WithWeight } from 'components/pttp/types';
 import { DisableClickConstraintContextProvider } from 'components/pttp/context/disableClickConstraint';
 
 const title = 'Training tracker';
 
 type Exercises = DeepReadonly<NotEmpty<() => ReactElement>>;
 
+type ExercisesWithWeight = DeepReadonly<
+	NotEmpty<WithWeight<() => ReactElement>>
+>;
+
 const hinge: Exercises = [Deadlift, Swings, OneHandedSwings, Squats];
 const upper: Exercises = [Bench, Bench, TurkishGetUp];
-const vanity: Exercises = [DbCurls, CableCurls, PullUps];
-const prehab: Exercises = [
-	Rowing,
-	CalfRaiseMachine,
-	CalfRaiseMachine,
-	LungeWalking,
-	PlateSitup,
+const otherStrength: ExercisesWithWeight = [
+	{ weight: 10, component: DbCurls },
+	{ weight: 10, component: CableCurls },
+	{ weight: 10, component: PullUps },
+	{ weight: 16, component: Rowing },
+	{ weight: 10, component: CalfRaiseMachine },
+	{ weight: 10, component: LungeWalking },
+	{ weight: 10, component: PlateSitup },
 ];
 
 export default function TrainingWrapper(): ReactElement {
@@ -55,39 +64,51 @@ export default function TrainingWrapper(): ReactElement {
 			<div className="-mb-8 display-width">
 				<h2 className="mb-4 text-3xl">{title}</h2>
 			</div>
-			{/* {[0, 2, 4, 6].includes(new Date().getDay()) && ( */}
-			<div className="display-width divider-before">
-				<p>
-					Today is an aerobic day, do at least 30 mins z1 / z2. Ideas:
-				</p>
-				<ul className="mt-4 ml-6 list-disc">
-					<li>Go for a run</li>
-					<li>Cycle</li>
-					<li>High incline treadmill walking</li>
-					<li>Stair stepper</li>
-				</ul>
-			</div>
-			{/* )} */}
-			<DisableClickConstraintContextProvider>
-				<Warmup />
-				{render && <Training />}
-			</DisableClickConstraintContextProvider>
+
+			{render && <Training />}
 		</>
 	);
 }
 
+const totalWorkoutTimeMins = 90;
+
 function Training(): ReactElement {
-	const Hinge = useDeterministicPick(hinge, 'hinge--');
-	const Upper = useDeterministicPick(upper, 'upper--');
-	const Vanity = useDeterministicPick(vanity, 'vanity--');
-	const Prehab = useDeterministicPick(prehab, 'prehab--');
+	const aerobicMins = useRandomNumber(30, 60, 'aerobic-mins--');
+	const aerobicType = useDeterministicPick(
+		['running', 'incline walking'],
+		'aerobic-type--',
+	);
+
+	const Hinge = useDeterministicPick(hinge, 'hinge--'); // 15 mins
+	const Upper = useDeterministicPick(upper, 'upper--'); // 15 mins
+
+	const remainingStrengthMins = Math.max(
+		totalWorkoutTimeMins - 15 - 15 - aerobicMins,
+		0,
+	);
+
+	const strength = useDeterministicSample(
+		otherStrength,
+		remainingStrengthMins,
+		'remaining-strength--',
+	);
 
 	return (
 		<>
-			<Hinge />
-			<Upper />
-			<Vanity />
-			<Prehab />
+			<div className="display-width divider-before">
+				<p>
+					Aerobic mins today: {aerobicMins} {aerobicType}
+				</p>
+			</div>
+
+			<DisableClickConstraintContextProvider>
+				<Warmup />
+				<Hinge />
+				<Upper />
+				{strength.map((Component, i) => (
+					<Component key={i} />
+				))}
+			</DisableClickConstraintContextProvider>
 		</>
 	);
 }

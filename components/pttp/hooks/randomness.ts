@@ -103,6 +103,21 @@ export function useDeterministicPick<T>(
 	return array[index];
 }
 
+export function useRandomNumber(
+	min: number,
+	max: number,
+	storageKey: Readonly<string>,
+): number {
+	const [number] = useState(
+		getOrSetStorage(
+			storageKey,
+			() => Math.floor(Math.random() * (max - min)) + min,
+		),
+	);
+
+	return number;
+}
+
 export function useDeterministicSample<T extends () => ReactElement>(
 	array: DeepReadonly<NotEmpty<WithWeight<T>>>,
 	maxWeight: Readonly<number>,
