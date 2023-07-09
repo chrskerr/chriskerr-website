@@ -35,7 +35,7 @@ export function Bench(): ReactElement {
 			notes={['Ensure elbow lockout at top of press']}
 			storageKey="bench"
 			tempo="31X0"
-			potentialReps={[5, 8, 12, 15]}
+			potentialReps={[4, 5, 8, 12]}
 			mode="pyramid"
 		/>
 	);
