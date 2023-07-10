@@ -3,20 +3,19 @@ import { ReactElement, useEffect, useState } from 'react';
 import { NextSeo } from 'next-seo';
 
 import {
+	AlternatingCableCurls,
 	Bench,
-	DbCurls,
-	CableCurls,
-	Deadlift,
-	TurkishGetUp,
-	Warmup,
-	Rowing,
 	CalfRaiseMachine,
+	Deadlift,
 	LungeWalking,
+	OneHandedSwings,
 	PlateSitup,
 	PullUps,
-	Swings,
-	OneHandedSwings,
+	Rowing,
 	Squats,
+	Swings,
+	TurkishGetUp,
+	Warmup,
 } from 'components/pttp/prefabs/chris';
 import {
 	useDeterministicPick,
@@ -37,8 +36,7 @@ type ExercisesWithWeight = DeepReadonly<
 const hinge: Exercises = [Deadlift, Swings, OneHandedSwings, Squats];
 const upper: Exercises = [Bench, Bench, TurkishGetUp];
 const otherStrength: ExercisesWithWeight = [
-	{ weight: 10, component: DbCurls },
-	{ weight: 10, component: CableCurls },
+	{ weight: 5, component: AlternatingCableCurls },
 	{ weight: 10, component: PullUps },
 	{ weight: 16, component: Rowing },
 	{ weight: 10, component: CalfRaiseMachine },
