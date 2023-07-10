@@ -100,8 +100,8 @@ export function CableCurls(): ReactElement {
 export function AlternatingCableCurls(): ReactElement {
 	return (
 		<BarbellDUPBlock
-			label="Alternating arm cable curls"
-			storageKey="alternating-cable-curl"
+			label="Single arm cable curls"
+			storageKey="single-cable-curl"
 			tempo="3030"
 			potentialReps={[6, 8, 12, 15]}
 			min={5}
