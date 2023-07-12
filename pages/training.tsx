@@ -73,7 +73,15 @@ const totalWorkoutTimeMins = 90;
 function Training(): ReactElement {
 	const aerobicMins = useRandomNumber(30, 60, 'aerobic-mins--');
 	const aerobicType = useDeterministicPick(
-		['running', 'incline walking'],
+		[
+			'incline walking',
+			'running',
+			'incline walking',
+			'running',
+			'incline walking',
+			'running',
+			'incline walking',
+		],
 		'aerobic-type--',
 	);
 
