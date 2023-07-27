@@ -6,6 +6,7 @@ import { Container } from './container';
 
 type KettlebellExerciseProps = {
 	label: string;
+	notes?: string[];
 	storageKey: string;
 	scheme: string;
 
@@ -19,7 +20,7 @@ type KettlebellExerciseProps = {
 };
 
 export function KettlebellExerciseBlock(props: KettlebellExerciseProps) {
-	const { label, storageKey, scheme } = props;
+	const { label, notes, storageKey, scheme } = props;
 
 	const [value, setValue] = useLocalStorageState(storageKey, 16);
 
@@ -48,6 +49,19 @@ export function KettlebellExerciseBlock(props: KettlebellExerciseProps) {
 	return (
 		<Container label={label}>
 			<p className="mb-4">{scheme}</p>
+
+			{!!notes && (
+				<>
+					<p>Notes:</p>
+					<ul className="mt-2 mb-4 ml-6 list-disc">
+						{notes.map((note, i) => (
+							<li key={i} className="mb-1">
+								{note}
+							</li>
+						))}
+					</ul>
+				</>
+			)}
 
 			<div className="flex flex-col items-start gap-4 mb-4 whitespace-pre">
 				<div>

@@ -127,10 +127,11 @@ export function TurkishGetUp(): ReactElement {
 export function Swings(): ReactElement {
 	return (
 		<KettlebellExerciseBlock
-			label="Swings"
+			label="Power swings"
 			storageKey="kettlebell-swing"
 			scheme="10 reps, 10 rounds EMOM"
 			leftRightLabels={['both', 'both']}
+			notes={['Accelerate bell towards the bottom of the swing.']}
 		/>
 	);
 }
@@ -138,9 +139,10 @@ export function Swings(): ReactElement {
 export function OneHandedSwings(): ReactElement {
 	return (
 		<KettlebellExerciseBlock
-			label="One handed swings"
+			label="One handed power swings"
 			storageKey="one-handed-kettlebell-swing"
 			scheme="10 reps, 10 rounds EMOM"
+			notes={['Accelerate bell towards the bottom of the swing.']}
 		/>
 	);
 }
@@ -208,7 +210,7 @@ export function CalfRaiseMachine(): ReactElement {
 export function LungeWalking(): ReactElement {
 	return (
 		<BarbellBasicBlock
-			label="DB lunge walking (reps = steps)"
+			label="One handed DB lunge walking (reps = steps)"
 			storageKey="db-lunge-walk"
 			tempo="1010"
 			reps={40}
