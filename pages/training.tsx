@@ -33,7 +33,7 @@ type ExercisesWithWeight = DeepReadonly<
 	NotEmpty<WithWeight<() => ReactElement>>
 >;
 
-const hinge: Exercises = [Deadlift, Swings, OneHandedSwings, Squats];
+const hinge: Exercises = [Swings, Squats, OneHandedSwings, Squats];
 const upper: Exercises = [Bench, Bench, TurkishGetUp];
 const otherStrength: ExercisesWithWeight = [
 	{ weight: 5, component: AlternatingCableCurls },
