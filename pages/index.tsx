@@ -12,7 +12,7 @@ const url = `${process.env.NEXT_PUBLIC_URL_BASE}`;
 type LinkData = [string, string][];
 
 const stuffLinkData: LinkData = [
-	['/editor', 'Collaborative Markdown Editor'],
+	// ['/editor', 'Collaborative Markdown Editor'],
 	['https://tasks.chriskerr.dev', 'Minimal Tasks / Reminders List'],
 	['/leo', 'Low Earth Orbit'],
 	['/emdr', 'EMDR Dot'],
