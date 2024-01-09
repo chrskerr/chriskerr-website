@@ -1,29 +1,43 @@
 ---
-import "./global.css";
+import './global.css';
 
-const title = "Chris Kerr";
+const title = 'Chris Kerr';
 ---
 
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content={Astro.generator} />
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
 
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+		<link
+			rel="apple-touch-icon"
+			sizes="180x180"
+			href="/apple-touch-icon.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="32x32"
+			href="/favicon-32x32.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="16x16"
+			href="/favicon-16x16.png"
+		/>
 
-    <title>{title}</title>
-  </head>
-  <body>
-    <div class="font-mono mx-auto py-8 px-8 max-w-5xl w-full">
-      <header class="mb-12">
-        <h1>Chris Kerr 🌵</h1>
-      </header>
-      <main>
-        <slot />
-      </main>
-    </div>
-  </body>
+		<title>{title}</title>
+	</head>
+	<body>
+		<div class="font-mono mx-auto py-8 px-8 max-w-5xl w-full">
+			<header class="mb-12">
+				<h1>{title}</h1>
+			</header>
+			<main>
+				<slot />
+			</main>
+		</div>
+	</body>
 </html>
