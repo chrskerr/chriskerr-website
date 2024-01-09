@@ -73,4 +73,5 @@ section > h5 {
 
 a {
 	text-decoration: underline;
+	cursor: pointer;
 }

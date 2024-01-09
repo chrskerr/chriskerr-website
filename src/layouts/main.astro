@@ -1,5 +1,6 @@
 ---
 import './global.css';
+import '@fontsource/roboto-mono';
 
 const title = 'Chris Kerr';
 ---
@@ -32,8 +33,8 @@ const title = 'Chris Kerr';
 	</head>
 	<body>
 		<div class="font-mono mx-auto py-8 px-8 max-w-5xl w-full">
-			<header class="mb-12">
-				<h1>{title}</h1>
+			<header class="md:mb-12">
+				<h1 class="mb-0">{title}</h1>
 			</header>
 			<main>
 				<slot />
