@@ -1,0 +1,13 @@
+---
+type Props = {
+  text: string;
+};
+
+const { text } = Astro.props;
+---
+
+<span
+  class="text_small bg-sky-500 text-white rounded-full px-2 select-none cursor-default"
+>
+  {text}
+</span>

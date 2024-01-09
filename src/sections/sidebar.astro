@@ -1,0 +1,33 @@
+---
+import { Image } from "astro:assets";
+import chris from "../assets/chris.jpeg";
+
+import { employment_history } from "data/employment_history";
+import Tag from "components/tag.astro";
+
+const tags = [
+  ...new Set(employment_history.flatMap((history) => history.tags)),
+];
+---
+
+<section>
+  <h2 class="mb-8">Web Developer</h2>
+
+  <Image
+    class="rounded-full w-[250px] aspect-square object-cover mb-8"
+    src={chris}
+    alt="Image of Chris"
+    width={300}
+    format="webp"
+  />
+
+  <div class="mb-8">
+    <p class="mb-0">Sunshine Coast, Australia</p>
+    <a href="mailto:chriskerr@me.com">chriskerr@me.com</a>
+    <a href="https://github.com/chrskerr">github.com/chrskerr</a>
+  </div>
+
+  <div class="flex flex-wrap gap-2 items-start">
+    {tags.map((tag) => <Tag text={tag} />)}
+  </div>
+</section>
