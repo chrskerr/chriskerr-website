@@ -4,11 +4,12 @@ enum Tag {
 	SVELTE_KIT = 'SvelteKit',
 	TYPESCRIPT = 'Typescript',
 	JAVASCRIPT = 'Javascript',
+	SERVICE_WORKERS = 'Service workers',
 	NODE = 'Node',
 	GRAPHQL = 'GraphQL',
 	POSTGRES = 'Postgres',
 	NEXT = 'Next',
-	THREEJS = 'Three.js',
+	THREE_JS = 'Three.js',
 	STRIPE = 'Stripe',
 }
 
@@ -26,10 +27,10 @@ export const employment_history: Employment[] = [
 		start: 'April 2023',
 		title: 'Software Engineer',
 		business: 'Canva',
-		tags: [Tag.REACT, Tag.TYPESCRIPT],
+		tags: [Tag.TYPESCRIPT, Tag.REACT, Tag.SERVICE_WORKERS],
 		description: [
-			'Frontend developer working on building Canva.',
-			'Working in React & Typescript, on both in-browser features and in the service worker.',
+			'Frontend developer for Canva.',
+			'We are working to bring Offline functionality to the Canva suite, allowing users to continue working while temporarily offline.',
 		],
 	},
 	{
@@ -55,7 +56,7 @@ export const employment_history: Employment[] = [
 		start: 'February 2021',
 		end: 'October 2021',
 		title: 'Software Developer & travelling',
-		tags: [Tag.TYPESCRIPT, Tag.NEXT, Tag.STRIPE, Tag.THREEJS],
+		tags: [Tag.TYPESCRIPT, Tag.NEXT, Tag.STRIPE, Tag.THREE_JS],
 		description: [
 			'My partner and I worked as contractors during this period while we travelling around east coast Australia living our van 🚚.',
 		],
