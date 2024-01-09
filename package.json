@@ -1,30 +1,21 @@
 {
-  "name": "chriskerr_resume",
-  "type": "module",
-  "version": "0.0.1",
-  "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
-    "build": "astro check && astro build",
-    "preview": "astro preview",
-    "astro": "astro"
-  },
-  "dependencies": {
-    "@astrojs/check": "^0.4.0",
-    "@astrojs/preact": "^3.1.0",
-    "@astrojs/react": "^3.0.9",
-    "@astrojs/tailwind": "^5.1.0",
-    "@primer/react": "^36.5.0",
-    "@types/react": "^18.2.47",
-    "@types/react-dom": "^18.2.18",
-    "astro": "^4.1.1",
-    "preact": "^10.19.3",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5.3.3"
-  },
-  "devDependencies": {
-    "daisyui": "^4.5.0"
-  }
+	"name": "chriskerr_resume",
+	"type": "module",
+	"version": "0.0.1",
+	"scripts": {
+		"dev": "astro dev",
+		"start": "astro dev",
+		"build": "astro check && astro build",
+		"preview": "astro preview",
+		"astro": "astro"
+	},
+	"dependencies": {
+		"@astrojs/check": "^0.4.0",
+		"@astrojs/tailwind": "^5.1.0",
+		"astro": "^4.1.1",
+		"astro-purgecss": "^4.0.0",
+		"purgecss": "^5.0.0",
+		"tailwindcss": "^3.4.1",
+		"typescript": "^5.3.3"
+	}
 }

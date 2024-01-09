@@ -1,7 +1,7 @@
-import { defineConfig } from "astro/config";
-import tailwindcss from "@astrojs/tailwind";
+import { defineConfig } from 'astro/config';
+import tailwindcss from '@astrojs/tailwind';
+import purgecss from 'astro-purgecss';
 
-// https://astro.build/config
 export default defineConfig({
-  integrations: [tailwindcss()],
+	integrations: [tailwindcss(), purgecss()],
 });
