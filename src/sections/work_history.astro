@@ -1,7 +1,30 @@
 ---
 import Card from 'components/card.astro';
 import Tag from 'components/tag.astro';
-import { employment_history } from 'data/employment_history';
+import { work_history, type Dateish } from 'data/work';
+
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import relativeTime from 'dayjs/plugin/relativeTime';
+dayjs.extend(customParseFormat);
+dayjs.extend(relativeTime);
+
+function parseDate(date: Dateish | undefined): dayjs.Dayjs {
+	return date ? dayjs(date, 'MM/YYYY') : dayjs();
+}
+
+function toDateString(date: Dateish): string {
+	return parseDate(date).format('MMMM YYYY');
+}
+
+function getDurationStr(
+	start: Dateish | null,
+	end: Dateish | undefined,
+): string {
+	return `(${(
+		parseDate(end).diff(parseDate(start ?? '01/2006'), 'days') / 365
+	).toFixed(1)} years)`;
+}
 ---
 
 <section>
@@ -9,11 +32,13 @@ import { employment_history } from 'data/employment_history';
 
 	<div class="flex flex-col gap-12">
 		{
-			employment_history.map(
+			work_history.map(
 				({ start, end, title, business, description, tags }) => (
 					<Card>
 						<small class="uppercase">
-							{start} - {end ?? 'Current'}
+							{start ? toDateString(start) : 'init'} -{' '}
+							{end ? toDateString(end) : 'Current'}
+							{getDurationStr(start, end)}
 						</small>
 						<hgroup class="mb-4">
 							<h3>{title}</h3>
@@ -22,11 +47,13 @@ import { employment_history } from 'data/employment_history';
 						{description.map(text => (
 							<p>{text}</p>
 						))}
-						<div class="flex gap-2 flex-wrap pt-2">
-							{tags.map(tag => (
-								<Tag text={tag} />
-							))}
-						</div>
+						{!!tags.length && (
+							<div class="flex gap-2 flex-wrap pt-2">
+								{tags.sort().map(tag => (
+									<Tag text={tag} />
+								))}
+							</div>
+						)}
 					</Card>
 				),
 			)
