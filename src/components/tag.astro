@@ -1,20 +1,19 @@
 ---
-import { colours, type TagName } from 'data/employment_history';
+import { tagToCssClass, type TagName } from 'data/tag_names';
 
 type Props = {
 	text: TagName;
 };
-const { text } = Astro.props;
 
-const colour = colours.get(text);
-if (!colour) {
-	throw new Error(`Colour ${text} missing from colours`);
-}
+const { text } = Astro.props;
 ---
 
-<span
-	style={`background-color: ${colour}`}
-	class="text_small text-white rounded-full px-2 select-none cursor-default"
->
+<small class:list={{ [tagToCssClass(text)]: true }} class="tag">
 	{text}
-</span>
+</small>
+
+<style>
+	.tag {
+		@apply text-white rounded-full px-2 select-none cursor-default;
+	}
+</style>

@@ -2,6 +2,8 @@
 import './global.css';
 import '@fontsource/roboto-mono';
 
+import { tagsCss } from 'data/tag_names';
+
 const title = 'Chris Kerr';
 ---
 
@@ -43,3 +45,5 @@ const title = 'Chris Kerr';
 		</div>
 	</body>
 </html>
+
+<style is:global set:html={tagsCss}></style>

@@ -1,25 +1,4 @@
-export enum TagName {
-	REACT = 'React',
-	SVELTE = 'Svelte',
-	SVELTE_KIT = 'SvelteKit',
-	TYPESCRIPT = 'Typescript',
-	JAVASCRIPT = 'Javascript',
-	SERVICE_WORKERS = 'Service workers',
-	NODE = 'Node',
-	GRAPHQL = 'GraphQL',
-	POSTGRES = 'Postgres',
-	NEXT = 'Next',
-	THREE_JS = 'Three.js',
-	STRIPE = 'Stripe',
-}
-
-const colourNames = Object.values(TagName);
-export const colours = new Map(
-	colourNames.map((color, i) => [
-		color as string,
-		`hsl(${Math.floor((360 * i) / colourNames.length)}deg 32.5% 45%)`,
-	]),
-);
+import { TagName } from './tag_names';
 
 type Employment = {
 	start: string;
