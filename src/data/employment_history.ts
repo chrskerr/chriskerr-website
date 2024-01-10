@@ -17,7 +17,7 @@ const colourNames = Object.values(TagName);
 export const colours = new Map(
 	colourNames.map((color, i) => [
 		color as string,
-		`hsl(${(360 * i) / colourNames.length}deg 32.5% 45%)`,
+		`hsl(${Math.floor((360 * i) / colourNames.length)}deg 32.5% 45%)`,
 	]),
 );
 

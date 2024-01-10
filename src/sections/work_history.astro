@@ -5,7 +5,7 @@ import { employment_history } from 'data/employment_history';
 ---
 
 <section>
-	<h3>Work history</h3>
+	<h2>Work history</h2>
 
 	<div class="flex flex-col gap-12">
 		{
@@ -16,8 +16,8 @@ import { employment_history } from 'data/employment_history';
 							{start} - {end ?? 'Current'}
 						</small>
 						<hgroup class="mb-4">
-							<h4>{title}</h4>
-							{!!business && <h5>@ {business}</h5>}
+							<h3>{title}</h3>
+							{!!business && <p class="text-xl">@ {business}</p>}
 						</hgroup>
 						{description.map(text => (
 							<p>{text}</p>
