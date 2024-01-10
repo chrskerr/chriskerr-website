@@ -38,7 +38,7 @@ function getDurationStr(
 						<small class="uppercase">
 							{start ? toDateString(start) : 'init'} -{' '}
 							{end ? toDateString(end) : 'Current'}
-							{getDurationStr(start, end)}
+							{!!end && getDurationStr(start, end)}
 						</small>
 						<hgroup class="mb-4">
 							<h3>{title}</h3>

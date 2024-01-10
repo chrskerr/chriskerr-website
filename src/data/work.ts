@@ -3,7 +3,7 @@ import { TagName } from './tag_names';
 export type Dateish = `${number}${number}/${number}${number}${number}${number}`;
 
 type Work = {
-	start: Dateish | null;
+	start: Dateish;
 	end?: Dateish;
 	title: string;
 	business?: string;
@@ -99,7 +99,7 @@ export const work_history: Work[] = [
 		tags: [],
 		description: [
 			'🎒🌏',
-			'Travelled through Asia, Europe and a little USA.',
+			'Travelled through Asia, Europe and a little bit of USA.',
 		],
 	},
 	{
@@ -111,27 +111,6 @@ export const work_history: Work[] = [
 		description: [
 			'Partner Account Manager: March 2015 - October 2016',
 			'Partner Enablement: September 2013 - March 2015',
-		],
-	},
-	{
-		start: '02/2013',
-		end: '09/2013',
-		title: 'Account Executive',
-		business: 'Citrix',
-		tags: [],
-		description: [],
-	},
-	{
-		start: null,
-		end: '02/2013',
-		title: 'Various',
-		tags: [],
-		description: [
-			'Includes:',
-			'- Sales (tech)',
-			'- Relationship management (finance)',
-			'- Customer service (finance)',
-			'- School',
 		],
 	},
 ];
