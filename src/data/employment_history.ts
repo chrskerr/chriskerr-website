@@ -1,4 +1,4 @@
-enum Tag {
+export enum TagName {
 	REACT = 'React',
 	SVELTE = 'Svelte',
 	SVELTE_KIT = 'SvelteKit',
@@ -13,13 +13,21 @@ enum Tag {
 	STRIPE = 'Stripe',
 }
 
+const colourNames = Object.values(TagName);
+export const colours = new Map(
+	colourNames.map((color, i) => [
+		color as string,
+		`hsl(${(360 * i) / colourNames.length}deg 32.5% 45%)`,
+	]),
+);
+
 type Employment = {
 	start: string;
 	end?: string;
 	title: string;
 	business?: string;
 	description: string[];
-	tags: [Tag, ...Tag[]];
+	tags: [TagName, ...TagName[]];
 };
 
 export const employment_history: Employment[] = [
@@ -27,7 +35,7 @@ export const employment_history: Employment[] = [
 		start: 'April 2023',
 		title: 'Software Engineer',
 		business: 'Canva',
-		tags: [Tag.TYPESCRIPT, Tag.REACT, Tag.SERVICE_WORKERS],
+		tags: [TagName.TYPESCRIPT, TagName.REACT, TagName.SERVICE_WORKERS],
 		description: [
 			'Frontend developer for Canva.',
 			'We are working to bring Offline functionality to the Canva suite, allowing users to continue working while temporarily offline.',
@@ -39,12 +47,12 @@ export const employment_history: Employment[] = [
 		title: 'Software Engineer',
 		business: 'Functionly',
 		tags: [
-			Tag.SVELTE,
-			Tag.SVELTE_KIT,
-			Tag.TYPESCRIPT,
-			Tag.NODE,
-			Tag.GRAPHQL,
-			Tag.POSTGRES,
+			TagName.SVELTE,
+			TagName.SVELTE_KIT,
+			TagName.TYPESCRIPT,
+			TagName.NODE,
+			TagName.GRAPHQL,
+			TagName.POSTGRES,
 		],
 		description: [
 			'I was a fullstack software engineer at Functionly, developing a web application that helps businesses optimise their organisational structure.',
@@ -56,7 +64,12 @@ export const employment_history: Employment[] = [
 		start: 'February 2021',
 		end: 'October 2021',
 		title: 'Software Developer & travelling',
-		tags: [Tag.TYPESCRIPT, Tag.NEXT, Tag.STRIPE, Tag.THREE_JS],
+		tags: [
+			TagName.TYPESCRIPT,
+			TagName.NEXT,
+			TagName.STRIPE,
+			TagName.THREE_JS,
+		],
 		description: [
 			'My partner and I worked as contractors during this period while we travelling around east coast Australia living our van 🚚.',
 		],
@@ -66,7 +79,13 @@ export const employment_history: Employment[] = [
 		end: 'February 2021',
 		title: 'Software Developer',
 		business: 'Sportility',
-		tags: [Tag.REACT, Tag.POSTGRES, Tag.GRAPHQL, Tag.NODE, Tag.JAVASCRIPT],
+		tags: [
+			TagName.REACT,
+			TagName.POSTGRES,
+			TagName.GRAPHQL,
+			TagName.NODE,
+			TagName.JAVASCRIPT,
+		],
 		description: [
 			'I worked as a software developer with an organised sports team uniforms/gear startup.',
 			'We managed a customer facing React application, which enabled customers to 3d design their uniforms, share, purchase and plan their seasons; and an internal dashboard (also React) which was used to manage leads, sales, operations, customer service, financial reporting, and most of the remaining business process.',

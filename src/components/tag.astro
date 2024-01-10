@@ -1,13 +1,20 @@
 ---
-type Props = {
-	text: string;
-};
+import { colours, type TagName } from 'data/employment_history';
 
+type Props = {
+	text: TagName;
+};
 const { text } = Astro.props;
+
+const colour = colours.get(text);
+if (!colour) {
+	throw new Error(`Colour ${text} missing from colours`);
+}
 ---
 
 <span
-	class="text_small bg-sky-500 text-white rounded-full px-2 select-none cursor-default"
+	style={`background-color: ${colour}`}
+	class="text_small text-white rounded-full px-2 select-none cursor-default"
 >
 	{text}
 </span>

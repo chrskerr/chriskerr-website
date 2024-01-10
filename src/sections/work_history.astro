@@ -7,22 +7,22 @@ import { employment_history } from 'data/employment_history';
 <section>
 	<h3>Work history</h3>
 
-	<div class="flex flex-col gap-8">
+	<div class="flex flex-col gap-12">
 		{
 			employment_history.map(
 				({ start, end, title, business, description, tags }) => (
 					<Card>
+						<small class="uppercase">
+							{start} - {end ?? 'Current'}
+						</small>
 						<hgroup class="mb-4">
 							<h4>{title}</h4>
 							{!!business && <h5>@ {business}</h5>}
-							<small>
-								{start} - {end ?? 'Current'}
-							</small>
 						</hgroup>
 						{description.map(text => (
 							<p>{text}</p>
 						))}
-						<div class="flex gap-2 flex-wrap">
+						<div class="flex gap-2 flex-wrap pt-2">
 							{tags.map(tag => (
 								<Tag text={tag} />
 							))}
