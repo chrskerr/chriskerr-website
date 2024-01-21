@@ -55,7 +55,7 @@ export const work_history: Work[] = [
 			TagName.JAVASCRIPT,
 		],
 		description: [
-			'My partner and I worked as contractors during this period while we travelling around east coast Australia living our van 🚚.',
+			'I worked as a freelance Typescript Dev while travelling around east coast Australia living our van 🚚.',
 		],
 	},
 	{

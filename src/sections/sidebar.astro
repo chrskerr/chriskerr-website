@@ -2,23 +2,10 @@
 import { Image } from 'astro:assets';
 import chris from '../assets/chris.jpeg';
 
-import { work_history } from 'data/work';
 import Tag from 'components/tag.astro';
 import { TagName } from 'data/tag_names';
 
-const tags = (
-	Object.entries(
-		work_history.reduce<Partial<Record<TagName, number>>>(
-			(acc, curr, i) => {
-				for (const tag of curr.tags) {
-					acc[tag] = (acc[tag] ?? 0) + 1 + 1 / i;
-				}
-				return acc;
-			},
-			{},
-		),
-	) as [TagName, number][]
-).sort((a, b) => b[1] - a[1]);
+const tags = Object.values(TagName);
 ---
 
 <section>
@@ -44,6 +31,6 @@ const tags = (
 	</div>
 
 	<div class="flex flex-wrap gap-2 items-start">
-		{tags.map(tag => <Tag text={tag[0]} />)}
+		{tags.map(tag => <Tag text={tag} />)}
 	</div>
 </section>
