@@ -27,7 +27,7 @@ const tagValues = Object.values(TagName).sort((a, b) => {
 
 function createHsl(index: number): string {
 	const hue = Math.floor((360 * index) / tagValues.length);
-	return `hsl(${hue}deg 32.5% 45%)`;
+	return `hsl(${hue}deg 35% 45%)`;
 }
 
 export const tagsCss = tagValues

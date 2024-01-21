@@ -7,6 +7,7 @@ type Work = {
 	end?: Dateish;
 	title: string;
 	business?: string;
+	business_href?: string;
 	description: string[];
 	tags: TagName[];
 };
@@ -16,6 +17,7 @@ export const work_history: Work[] = [
 		start: '04/2023',
 		title: 'Software Engineer',
 		business: 'Canva',
+		business_href: 'https://www.canva.com',
 		tags: [TagName.TYPESCRIPT, TagName.REACT, TagName.SERVICE_WORKERS],
 		description: [
 			'Frontend developer for Canva.',
@@ -27,6 +29,7 @@ export const work_history: Work[] = [
 		end: '03/2023',
 		title: 'Software Engineer',
 		business: 'Functionly',
+		business_href: 'https://www.functionly.com',
 		tags: [
 			TagName.SVELTE,
 			TagName.SVELTE_KIT,
@@ -82,13 +85,14 @@ export const work_history: Work[] = [
 		title: 'Student',
 		business: 'General Assembly',
 		tags: [TagName.REACT, TagName.JAVASCRIPT, TagName.NODE],
-		description: ['Learnt how to program.'],
+		description: ['Learnt Javascript, React, Node, and Ruby.'],
 	},
 	{
 		start: '11/2017',
 		end: '09/2019',
 		title: 'Account Manager',
 		business: 'Hewlett Packard Enterprise',
+		business_href: 'https://www.hpe.com',
 		tags: [],
 		description: [],
 	},
@@ -107,6 +111,7 @@ export const work_history: Work[] = [
 		end: '10/2016',
 		title: 'Partner Account Manager & Partner Enablement',
 		business: 'Cisco',
+		business_href: 'https://www.cisco.com',
 		tags: [],
 		description: [
 			'Partner Account Manager: March 2015 - October 2016',

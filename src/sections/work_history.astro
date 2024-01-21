@@ -33,7 +33,15 @@ function getDurationStr(
 	<div class="flex flex-col gap-12">
 		{
 			work_history.map(
-				({ start, end, title, business, description, tags }) => (
+				({
+					start,
+					end,
+					title,
+					business,
+					business_href,
+					description,
+					tags,
+				}) => (
 					<Card>
 						<small class="uppercase">
 							{start ? toDateString(start) : 'init'} -{' '}
@@ -42,7 +50,16 @@ function getDurationStr(
 						</small>
 						<hgroup class="mb-4">
 							<h3>{title}</h3>
-							{!!business && <p class="text-xl">@ {business}</p>}
+							{!!business && (
+								<p class="text-xl">
+									@{' '}
+									{business_href ? (
+										<a href={business_href}>{business}</a>
+									) : (
+										business
+									)}
+								</p>
+							)}
 						</hgroup>
 						{description.map(text => (
 							<p>{text}</p>
