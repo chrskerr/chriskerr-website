@@ -1,10 +1,14 @@
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@astrojs/tailwind';
-import { splitVendorChunkPlugin } from 'vite';
+import browserslistToEsbuild from 'browserslist-to-esbuild';
 
 export default defineConfig({
 	integrations: [tailwindcss()],
 	vite: {
+		minify: 'terser',
+		target: browserslistToEsbuild(),
+		cssMinify: 'lightningcss',
+		cssTarget: browserslistToEsbuild(),
 		build: {
 			rollupOptions: {
 				output: {
