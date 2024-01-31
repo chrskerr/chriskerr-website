@@ -21,7 +21,8 @@ export const work_history: Work[] = [
 		tags: [TagName.TYPESCRIPT, TagName.REACT, TagName.SERVICE_WORKERS],
 		description: [
 			'Frontend developer for Canva.',
-			'We are working to bring Offline functionality to the Canva suite, allowing users to continue working while temporarily offline.',
+			'I am working to bring Offline functionality to the Canva suite, allowing users to continue working while temporarily offline. We are doing this by developing frontend and service worker functionality which enables local cache supported app loading.',
+			'Due to the scale of Canva, my work is largely planned and executed through technical design documents. These are often shared across relevant teams, so being able to balance priorities and stakeholders is critical to my feature delivery.',
 		],
 	},
 	{
@@ -39,9 +40,9 @@ export const work_history: Work[] = [
 			TagName.POSTGRES,
 		],
 		description: [
-			'I was a fullstack software engineer at Functionly, developing a web application that helps businesses optimise their organisational structure.',
-			'In my role, I lead new feature planning and releases, drive innovation, shape architecture, and conduct rigorous testing. My expertise allows for successful deployment and consistent maintenance of our platform while ensuring great user experiences. I quickly and efficiently address bugs and breakage issues to maintain operational efficiency.',
-			'In order to give back to the Svelte community I also worked in my own time to create a handful of patch contributions back into the Svelte ecosystem, enabling all users of the framework to benefit from work that I had done to enable advanced needs at Functionly.',
+			'I was a fullstack software engineer at Functionly, developing a web application that helps businesses to optimise their organisational structure.',
+			'In the role, I led new feature planning and releases, drove innovation, shaped architecture, and conducted rigorous testing.',
+			'In order to give back to the Svelte community I also worked in my own time to create a handful of patch contributions back into the Svelte ecosystem.',
 		],
 	},
 	{
@@ -75,7 +76,7 @@ export const work_history: Work[] = [
 		],
 		description: [
 			'I worked as a software developer with an organised sports team uniforms/gear startup.',
-			'We managed a customer facing React application, which enabled customers to 3d design their uniforms, share, purchase and plan their seasons; and an internal dashboard (also React) which was used to manage leads, sales, operations, customer service, financial reporting, and most of the remaining business process.',
+			'We managed a customer facing React application, which enabled customers to 3d design their uniforms, share, purchase and plan their seasons; and an internal dashboard which was used to manage leads, sales, operations, customer service, financial reporting, and most of the remaining business process.',
 			'We primarily used Hasura Graphql as our backend, with node services as custom resolvers for any specific business logic required.',
 		],
 	},
@@ -85,7 +86,7 @@ export const work_history: Work[] = [
 		title: 'Student',
 		business: 'General Assembly',
 		tags: [TagName.REACT, TagName.JAVASCRIPT, TagName.NODE],
-		description: ['Learnt Javascript, React, Node, and Ruby.'],
+		description: ['I studied Javascript, React, Node, and Ruby.'],
 	},
 	{
 		start: '11/2017',
