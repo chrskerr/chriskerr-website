@@ -1,9 +1,12 @@
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@astrojs/tailwind';
 import browserslistToEsbuild from 'browserslist-to-esbuild';
+import vercel from '@astrojs/vercel/serverless';
 
+// https://astro.build/config
 export default defineConfig({
 	integrations: [tailwindcss()],
+	output: 'hybrid',
 	vite: {
 		minify: 'terser',
 		target: browserslistToEsbuild(),
@@ -16,7 +19,6 @@ export default defineConfig({
 						if (typeof id !== 'string') {
 							return;
 						}
-
 						if (id.includes('@fontsource')) {
 							return 'font_source';
 						}
@@ -25,4 +27,5 @@ export default defineConfig({
 			},
 		},
 	},
+	adapter: vercel(),
 });
