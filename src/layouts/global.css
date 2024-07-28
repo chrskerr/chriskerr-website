@@ -74,4 +74,5 @@ section > h5 {
 a {
 	text-decoration: underline;
 	cursor: pointer;
+	color: hsl(249deg 35% 45%);
 }

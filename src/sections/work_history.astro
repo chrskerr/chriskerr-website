@@ -30,7 +30,7 @@ function getDurationStr(
 <section>
 	<h2>Work history</h2>
 
-	<div class="flex flex-col gap-12">
+	<div class="flex flex-col gap-16">
 		{
 			work_history.map(
 				({
@@ -49,10 +49,9 @@ function getDurationStr(
 							{!!end && getDurationStr(start, end)}
 						</small>
 						<hgroup class="mb-4">
-							<h3>{title}</h3>
+							<h3 class="mb-1">{title}</h3>
 							{!!business && (
 								<p class="text-xl">
-									@{' '}
 									{business_href ? (
 										<a href={business_href}>{business}</a>
 									) : (
