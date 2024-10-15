@@ -1,32 +1,31 @@
 {
-  "name": "chriskerr_resume",
-  "type": "module",
-  "version": "0.0.1",
-  "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
-    "check": "astro check",
-    "build": "astro check && astro build",
-    "preview": "astro preview",
-    "astro": "astro"
-  },
-  "dependencies": {
-    "@astrojs/check": "^0.7.0",
-    "@astrojs/tailwind": "^5.1.0",
-    "@astrojs/vercel": "^7.7.1",
-    "@floating-ui/dom": "^1.6.5",
-    "@fontsource-variable/roboto-mono": "^5.0.19",
-    "@fontsource/roboto-mono": "^5.0.18",
-    "astro": "^4.10.3",
-    "browserslist": "^4.23.1",
-    "browserslist-to-esbuild": "^2.1.1",
-    "dayjs": "^1.11.11",
-    "lightningcss": "^1.25.1",
-    "tailwindcss": "^3.4.4",
-    "terser": "^5.31.1",
-    "typescript": "^5.4.5"
-  },
-  "browserslist": [
-    "defaults"
-  ]
+	"name": "chriskerr_resume",
+	"type": "module",
+	"version": "0.0.1",
+	"scripts": {
+		"dev": "astro dev",
+		"start": "astro dev",
+		"check": "astro check",
+		"build": "astro check && astro build",
+		"preview": "astro preview",
+		"astro": "astro"
+	},
+	"dependencies": {
+		"@astrojs/check": "^0.7.0",
+		"@astrojs/tailwind": "^5.1.2",
+		"@astrojs/vercel": "^7.8.1",
+		"@floating-ui/dom": "^1.6.11",
+		"@fontsource/roboto-mono": "^5.1.0",
+		"astro": "^4.16.4",
+		"browserslist": "^4.24.0",
+		"browserslist-to-esbuild": "^2.1.1",
+		"dayjs": "^1.11.13",
+		"lightningcss": "^1.27.0",
+		"tailwindcss": "^3.4.13",
+		"terser": "^5.34.1",
+		"typescript": "^5.6.3"
+	},
+	"browserslist": [
+		"defaults"
+	]
 }

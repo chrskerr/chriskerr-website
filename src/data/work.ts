@@ -15,14 +15,14 @@ type Work = {
 export const work_history: Work[] = [
 	{
 		start: '04/2023',
-		title: 'Software Engineer',
+		title: 'Software Engineer (frontend)',
 		business: 'Canva',
 		business_href: 'https://www.canva.com',
 		tags: [TagName.TYPESCRIPT, TagName.REACT, TagName.SERVICE_WORKERS],
 		description: [
-			'Frontend developer for Canva.',
-			'I am working to bring Offline functionality to the Canva suite, allowing users to continue working while temporarily offline. We are doing this by developing frontend and service worker functionality which enables local cache supported app loading.',
-			'Due to the scale of Canva, my work is largely planned and executed through technical design documents. These are often shared across relevant teams, so being able to balance priorities and stakeholders is critical to my feature delivery.',
+			'I am working to enable the use of Canva while offline.',
+			'This has required touching most aspects of the Canva platform, such as: how the app is bundled; how Javascript, CSS, images, etc, are cached; how user data is cached (and their privacy protected); offline page loading using a service worker; analysing the performance of our features; and much more.',
+			'This has been a research heavy project due to the complexity of the problem and the breadth of features within Canva.',
 		],
 	},
 	{
