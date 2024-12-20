@@ -1,12 +1,12 @@
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@astrojs/tailwind';
 import browserslistToEsbuild from 'browserslist-to-esbuild';
-import vercel from '@astrojs/vercel/serverless';
+import vercel from '@astrojs/vercel';
 
 // https://astro.build/config
 export default defineConfig({
 	integrations: [tailwindcss()],
-	output: 'hybrid',
+	output: 'server',
 	vite: {
 		minify: 'terser',
 		target: browserslistToEsbuild(),
