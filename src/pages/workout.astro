@@ -1,0 +1,92 @@
+---
+import { XORShift } from 'src/lib/td/xorshift';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import isoWeek from 'dayjs/plugin/isoWeek';
+import Main from '../layouts/main.astro';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(isoWeek);
+
+const exercisesByValidFromWeekYear: [number, Exercises][] = [
+	[
+		0,
+		{
+			warmup: ['Lunges', 'Kettlebell swings'],
+			lower: [
+				'Barbell back squat',
+				'barbell front squat',
+				'Barbell overhead squat',
+				'Goblet squat',
+				'Weighted jump squat',
+			],
+			upper: [
+				'Kettlebell overhead press',
+				'Dumbbell overhead press',
+				'Single-arm half-kneeling press',
+			],
+			core: [
+				'Turkish get up',
+				'Ab wheel',
+				'Single arm farmers walks',
+				'Hanging toes to bar, twist to alternative sides',
+			],
+		},
+	],
+] as const;
+
+function getExercises(weekYear: number): Exercises {
+	const exercisesTuple = exercisesByValidFromWeekYear
+		.sort(([a], [b]) => b - a)
+		.find(([validFrom]) => validFrom <= weekYear);
+	if (!exercisesTuple) {
+		throw new Error('No matched exercises');
+	}
+
+	return exercisesTuple[1];
+}
+
+function takeExercise(
+	xorShift: XORShift,
+	exercises: [string, ...string[]],
+): string {
+	const rand = xorShift.randomInt(0, exercises.length - 1);
+	const index = rand % exercises.length;
+	return exercises.splice(index, 1)[0]!;
+}
+
+const now = dayjs()
+	.add(2, 'days') // iso week is mon-sun, so add 2 days so that sat becomes mon
+	.add(10, 'hours'); // vercel is in UTC, so add 10 hours so that 6am is actually after midnight in UTC
+
+const weekYear = Number(`${now.isoWeek()}${now.isoWeekYear()}`); // number in format MMYYYY
+const weekXorShift = new XORShift(weekYear);
+
+const dayYear = Number(`${now.date()}${now.month()}${now.year()}`);
+const dayXorsShift = new XORShift(dayYear);
+
+const exercises = getExercises(weekYear);
+
+const warmup1 = takeExercise(dayXorsShift, exercises.warmup);
+const warmup2 = takeExercise(dayXorsShift, exercises.warmup);
+const lower = takeExercise(weekXorShift, exercises.lower);
+const upper = takeExercise(weekXorShift, exercises.upper);
+const core = takeExercise(weekXorShift, exercises.core);
+
+type Exercises = {
+	warmup: [string, string, ...string[]];
+	lower: [string, ...string[]];
+	upper: [string, ...string[]];
+	core: [string, ...string[]];
+};
+---
+
+<Main>
+	<h1>Week/Year - {weekYear}</h1>
+	<p><b>Warmup:</b> {warmup1}, and {warmup2}</p>
+	<p><b>Squat:</b> {lower}</p>
+	<p><b>Overhead:</b> {upper}</p>
+	<p><b>Core:</b> {core}</p>
+</Main>
