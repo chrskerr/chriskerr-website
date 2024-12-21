@@ -32,7 +32,7 @@ const exercisesByValidFromWeekYear: [number, Exercises][] = [
 				{ title: 'Kettlebell swings' },
 				{ title: 'Skipping' },
 				{ title: 'Echo bike with breath holds' },
-				{ title: 'Something to do with jump & landing' },
+				{ title: 'Something to do with jumping & landing' },
 			],
 			squat: [
 				{ title: 'Barbell back squat' },
@@ -85,13 +85,13 @@ const now = dayjs()
 	.add(2, 'days') // iso week is mon-sun, so add 2 days so that sat becomes mon
 	.add(10, 'hours'); // vercel is in UTC, so add 10 hours so that 6am is actually after midnight in UTC
 
-const weekYear = Number(`${now.isoWeek()}${now.isoWeekYear()}`); // number in format MMYYYY
-const weekXorShift = new XORShift(weekYear);
+const yearWeek = Number(`${now.isoWeekYear()}${now.isoWeek()}`); // number in format YYYYMM
+const weekXorShift = new XORShift(yearWeek);
 
 const dayYear = Number(`${now.date()}${now.month()}${now.year()}`);
 const dayXorsShift = new XORShift(dayYear);
 
-const exercises = getExercises(weekYear);
+const exercises = getExercises(yearWeek);
 
 const warmup1 = takeExercise(dayXorsShift, exercises.warmup);
 const warmup2 = takeExercise(dayXorsShift, exercises.warmup);
@@ -101,7 +101,7 @@ const core = takeExercise(weekXorShift, exercises.core);
 ---
 
 <Main>
-	<h1>Week/Year - {weekYear}</h1>
+	<h1>YearWeek - {yearWeek}</h1>
 
 	<h2>Warmup</h2>
 	<ul>
