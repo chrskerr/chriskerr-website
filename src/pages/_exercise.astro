@@ -1,0 +1,17 @@
+---
+type Props = {
+	exercise: {
+		title: string;
+		description?: string;
+	};
+};
+
+const {
+	exercise: { title, description },
+} = Astro.props;
+---
+
+<li class="mb-4 ml-8 list-disc">
+	<b>{title}</b>
+	{description != null && <p>{description}</p>}
+</li>

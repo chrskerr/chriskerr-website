@@ -5,33 +5,50 @@ import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import isoWeek from 'dayjs/plugin/isoWeek';
 import Main from '../layouts/main.astro';
+import Exercise from './_exercise.astro';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(isoWeek);
 
+type Exercise = {
+	title: string;
+	description?: string;
+};
+
+type Exercises = {
+	warmup: [Exercise, Exercise, ...Exercise[]];
+	squat: [Exercise, ...Exercise[]];
+	overhead: [Exercise, ...Exercise[]];
+	core: [Exercise, ...Exercise[]];
+};
+
 const exercisesByValidFromWeekYear: [number, Exercises][] = [
 	[
 		0,
 		{
-			warmup: ['Lunges', 'Kettlebell swings'],
-			lower: [
-				'Barbell back squat',
-				'barbell front squat',
-				'Barbell overhead squat',
-				'Goblet squat',
-				'Weighted jump squat',
+			warmup: [
+				{ title: 'Lunges', description: 'test' },
+				{ title: 'Kettlebell swings' },
+				{ title: 'Push ups', description: 'strict' },
 			],
-			upper: [
-				'Kettlebell overhead press',
-				'Dumbbell overhead press',
-				'Single-arm half-kneeling press',
+			squat: [
+				{ title: 'Barbell back squat' },
+				{ title: 'barbell front squat' },
+				{ title: 'Barbell overhead squat' },
+				{ title: 'Goblet squat' },
+				{ title: 'Weighted jump squat' },
+			],
+			overhead: [
+				{ title: 'Kettlebell overhead press' },
+				{ title: 'Dumbbell overhead press' },
+				{ title: 'Single-arm half-kneeling press' },
 			],
 			core: [
-				'Turkish get up',
-				'Ab wheel',
-				'Single arm farmers walks',
-				'Hanging toes to bar, twist to alternative sides',
+				{ title: 'Turkish get up' },
+				{ title: 'Ab wheel' },
+				{ title: 'Single arm farmers walks' },
+				{ title: 'Hanging toes to bar, twist to alternative sides' },
 			],
 		},
 	],
@@ -50,8 +67,8 @@ function getExercises(weekYear: number): Exercises {
 
 function takeExercise(
 	xorShift: XORShift,
-	exercises: [string, ...string[]],
-): string {
+	exercises: [Exercise, ...Exercise[]],
+): Exercise {
 	const rand = xorShift.randomInt(0, exercises.length - 1);
 	const index = rand % exercises.length;
 	return exercises.splice(index, 1)[0]!;
@@ -71,22 +88,38 @@ const exercises = getExercises(weekYear);
 
 const warmup1 = takeExercise(dayXorsShift, exercises.warmup);
 const warmup2 = takeExercise(dayXorsShift, exercises.warmup);
-const lower = takeExercise(weekXorShift, exercises.lower);
-const upper = takeExercise(weekXorShift, exercises.upper);
+const squat = takeExercise(weekXorShift, exercises.squat);
+const overhead = takeExercise(weekXorShift, exercises.overhead);
 const core = takeExercise(weekXorShift, exercises.core);
-
-type Exercises = {
-	warmup: [string, string, ...string[]];
-	lower: [string, ...string[]];
-	upper: [string, ...string[]];
-	core: [string, ...string[]];
-};
 ---
 
 <Main>
 	<h1>Week/Year - {weekYear}</h1>
-	<p><b>Warmup:</b> {warmup1}, and {warmup2}</p>
-	<p><b>Squat:</b> {lower}</p>
-	<p><b>Overhead:</b> {upper}</p>
-	<p><b>Core:</b> {core}</p>
+
+	<h2>Warmup</h2>
+	<ul>
+		<Exercise exercise={warmup1} />
+		<Exercise exercise={warmup2} />
+	</ul>
+
+	<h2>Squat</h2>
+	<ul>
+		<Exercise exercise={squat} />
+	</ul>
+
+	<h2>Overhead</h2>
+	<ul>
+		<Exercise exercise={overhead} />
+	</ul>
+
+	<h2>Core</h2>
+	<ul>
+		<Exercise exercise={core} />
+	</ul>
 </Main>
+
+<style>
+	h2 {
+		@apply mt-8;
+	}
+</style>
