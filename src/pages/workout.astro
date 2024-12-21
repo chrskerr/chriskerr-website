@@ -28,27 +28,34 @@ const exercisesByValidFromWeekYear: [number, Exercises][] = [
 		0,
 		{
 			warmup: [
-				{ title: 'Lunges', description: 'test' },
+				{ title: 'Lunges' },
 				{ title: 'Kettlebell swings' },
-				{ title: 'Push ups', description: 'strict' },
+				{ title: 'Skipping' },
+				{ title: 'Echo bike with breath holds' },
+				{ title: 'Something to do with jump & landing' },
 			],
 			squat: [
 				{ title: 'Barbell back squat' },
 				{ title: 'barbell front squat' },
 				{ title: 'Barbell overhead squat' },
 				{ title: 'Goblet squat' },
-				{ title: 'Weighted jump squat' },
+				{ title: 'Zercher squat' },
+				{ title: 'Box squat' },
 			],
 			overhead: [
-				{ title: 'Kettlebell overhead press' },
-				{ title: 'Dumbbell overhead press' },
+				{ title: 'Barbell overhead press' },
+				{ title: 'Double Kettlebell overhead press' },
+				{ title: 'Double Dumbbell overhead press' },
 				{ title: 'Single-arm half-kneeling press' },
+				{ title: 'Pull ups' }, // 2x
+				{ title: 'Pull ups' }, // 2x
 			],
 			core: [
 				{ title: 'Turkish get up' },
 				{ title: 'Ab wheel' },
 				{ title: 'Single arm farmers walks' },
 				{ title: 'Hanging toes to bar, twist to alternative sides' },
+				{ title: 'L-sit holds' },
 			],
 		},
 	],
@@ -98,6 +105,8 @@ const core = takeExercise(weekXorShift, exercises.core);
 
 	<h2>Warmup</h2>
 	<ul>
+		<Exercise exercise={{ title: 'Practice air squats' }} />
+		<Exercise exercise={{ title: 'Practice push ups' }} />
 		<Exercise exercise={warmup1} />
 		<Exercise exercise={warmup2} />
 	</ul>
