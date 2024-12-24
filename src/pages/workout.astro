@@ -32,7 +32,6 @@ const exercisesByValidFromWeekYear: [number, Exercises][] = [
 				{ title: 'Kettlebell swings' },
 				{ title: 'Skipping' },
 				{ title: 'Echo bike with breath holds' },
-				{ title: 'Something to do with jumping & landing' },
 			],
 			squat: [
 				{ title: 'Barbell back squat' },
@@ -82,7 +81,7 @@ function takeExercise(
 }
 
 const now = dayjs()
-	.add(2, 'days') // iso week is mon-sun, so add 2 days so that sat becomes mon
+	// .add(2, 'days') // iso week is mon-sun, so add 2 days so that sat becomes mon
 	.add(10, 'hours'); // vercel is in UTC, so add 10 hours so that 6am is actually after midnight in UTC
 
 const yearWeek = Number(`${now.isoWeekYear()}${now.isoWeek()}`); // number in format YYYYMM
@@ -116,6 +115,8 @@ const core = takeExercise(weekXorShift, exercises.core);
 	<ul>
 		<Exercise exercise={{ title: 'Practice air squats' }} />
 		<Exercise exercise={{ title: 'Practice push ups' }} />
+		<Exercise exercise={{ title: 'Practice box jumps' }} />
+		<Exercise exercise={{ title: 'Practice single leg skipping' }} />
 		<Exercise exercise={warmup1} />
 		<Exercise exercise={warmup2} />
 	</ul>
