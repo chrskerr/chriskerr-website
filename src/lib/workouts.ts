@@ -1,13 +1,10 @@
 //
 
-import type { XORShift } from "./xorshift"
-
 type Workout = {
-	content: string,
-	from?: number,
-	to?: number,
-}
-
+	content: string;
+	from?: number;
+	to?: number;
+};
 
 // Touch the following shapes at least once per workout, at any intensity.
 // - Skills
@@ -38,6 +35,7 @@ type Workout = {
 // - Hip hinge
 //   - Deadlift
 //   - Kettlebell swing
+//   - Single arm kettlebell swing
 //   - Kettlebell snatch
 //   - Kettlebell clean and press
 // - Rotate / Anti-rotate
@@ -45,11 +43,11 @@ type Workout = {
 //   - Hanging leg raise
 //   - Turkish get ups
 //   - Single arm farmers walk
+//   - Single arm kettlebell swing
 
 // Structure
 // - Warmup of a skill and then 3-4 of the above movements
-// - Main workout of the remainder of the above movements 
-
+// - Main workout of the remainder of the above movements
 
 const workouts: Workout[] = [
 	{
@@ -61,13 +59,44 @@ const workouts: Workout[] = [
 ## Main
 - Dips
 - Dumbbell lunges
-- Kettlebell snatch - 3 sets of 8, each arm`
-	}
-]
+- Kettlebell snatch`,
+	},
+	{
+		content: `
+## Warm-up
+- Jumping & landing
+- Push ups
 
+## Main
+- Overhead press
+- Pull up
+- Deadlift
 
-export function getWorkout(yearWeek: number, xorShift: XORShift): Workout{
-	const filtered = workouts.filter(w => (w.from == null || w.from >= yearWeek) && (w.to == null || w.to <= yearWeek))
-	const index = xorShift.randomInt(0, filtered.length);
-	return filtered[index]!
-} 
+## Finisher
+- Single arms farmers walk (do at end)`,
+	},
+	{
+		content: `
+## Warm-up
+- Single leg skipping
+- Handstand holds
+- Band pull aparts
+- Single arm kettlebell swing
+
+## Main
+- Barbell bench press
+- Barbell back squat`,
+	},
+];
+
+export function getWorkout(
+	yearWeek: number,
+	getRandomIndex: (maxIndex: number) => number,
+): Workout {
+	const filtered = workouts.filter(
+		w =>
+			(w.from == null || w.from >= yearWeek) &&
+			(w.to == null || w.to <= yearWeek),
+	);
+	return filtered[getRandomIndex(filtered.length)]!;
+}

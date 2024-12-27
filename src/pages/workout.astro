@@ -8,8 +8,6 @@ import { marked } from 'marked';
 
 dayjs.extend(isoWeek);
 
-
-
 const now = dayjs()
 	// .add(2, 'days') // iso week is mon-sun, so add 2 days so that sat becomes mon
 	.add(10, 'hours'); // vercel is in UTC, so add 10 hours so that 6am is actually after midnight in UTC
@@ -17,10 +15,10 @@ const now = dayjs()
 const yearWeek = Number(`${now.isoWeekYear()}${now.isoWeek()}`); // number in format YYYYMM
 const weekXorShift = new XORShift(yearWeek);
 
-
-const workout = getWorkout(yearWeek, weekXorShift)
+const workout = getWorkout(yearWeek, (max: number) =>
+	weekXorShift.randomInt(0, max),
+);
 const content = marked.parse(workout.content);
-
 ---
 
 <Main>
