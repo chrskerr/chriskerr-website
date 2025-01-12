@@ -87,6 +87,18 @@ const workouts: Workout[] = [
 - Barbell bench press
 - Barbell back squat`,
 	},
+	{
+		content: `
+## Warmup
+- Jumping & landing
+- Single arm kettlebell clean and press
+	
+## Main
+- Lunges
+- Barbell bench press
+- Barbell row`,
+		from: 202504,
+	},
 ];
 
 export function getWorkout(
