@@ -12,7 +12,9 @@ const now = dayjs()
 	// .add(2, 'days') // iso week is mon-sun, so add 2 days so that sat becomes mon
 	.add(10, 'hours'); // vercel is in UTC, so add 10 hours so that 6am is actually after midnight in UTC
 
-const yearWeek = Number(`${now.isoWeekYear()}${now.isoWeek()}`); // number in format YYYYMM
+const yearWeek = Number(
+	`${now.isoWeekYear()}${now.isoWeek().toString().padStart(2, '0')}`,
+); // number in format YYYYMM
 const weekXorShift = new XORShift(yearWeek);
 
 const workout = getWorkout(yearWeek, (max: number) =>
