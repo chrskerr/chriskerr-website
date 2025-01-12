@@ -73,7 +73,7 @@ const workouts: Workout[] = [
 - Deadlift
 
 ## Finisher
-- Single arms farmers walk (do at end)`,
+- Single arms farmers walk`,
 	},
 	{
 		content: `
