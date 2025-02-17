@@ -110,5 +110,5 @@ export function getWorkout(
 			(w.from == null || w.from >= yearWeek) &&
 			(w.to == null || w.to <= yearWeek),
 	);
-	return filtered[getRandomIndex(filtered.length)]!;
+	return filtered[getRandomIndex(filtered.length - 1)]!;
 }
