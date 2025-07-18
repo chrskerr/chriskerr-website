@@ -1,17 +1,19 @@
 import { defineConfig } from 'astro/config';
-import tailwindcss from '@astrojs/tailwind';
 import browserslistToEsbuild from 'browserslist-to-esbuild';
 import vercel from '@astrojs/vercel';
+import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-	integrations: [tailwindcss()],
 	output: 'server',
 	vite: {
 		minify: 'terser',
 		target: browserslistToEsbuild(),
 		cssMinify: 'lightningcss',
 		cssTarget: browserslistToEsbuild(),
+
+		plugins: [tailwindcss()],
+
 		build: {
 			rollupOptions: {
 				output: {

@@ -3,18 +3,11 @@
 	"compilerOptions": {
 		"baseUrl": ".",
 		"paths": {
-			"components/*": [
-				"./src/components/*"
-			],
-			"data/*": [
-				"./src/data/*"
-			],
-			"layouts/*": [
-				"./src/layouts/*"
-			],
-			"sections/*": [
-				"./src/sections/*"
-			]
-		}
+			"components/*": ["./src/components/*"],
+			"data/*": ["./src/data/*"],
+			"layouts/*": ["./src/layouts/*"],
+			"sections/*": ["./src/sections/*"]
+		},
+		"allowSyntheticDefaultImports": true
 	}
 }

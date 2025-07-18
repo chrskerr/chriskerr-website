@@ -8,12 +8,9 @@ type Props = {
 const { text } = Astro.props;
 ---
 
-<small class:list={{ [tagToCssClass(text)]: true }} class="tag">
+<small
+	class:list={{ [tagToCssClass(text)]: true }}
+	class="text-white rounded-full px-2 select-none cursor-default"
+>
 	{text}
 </small>
-
-<style>
-	.tag {
-		@apply text-white rounded-full px-2 select-none cursor-default;
-	}
-</style>

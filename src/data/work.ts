@@ -1,10 +1,8 @@
 import { TagName } from './tag_names';
 
-export type Dateish = `${number}${number}/${number}${number}${number}${number}`;
-
 type Work = {
-	start: Dateish;
-	end?: Dateish;
+	start: string;
+	end?: string;
 	title: string;
 	business?: string;
 	business_href?: string;
@@ -14,8 +12,8 @@ type Work = {
 
 export const work_history: Work[] = [
 	{
-		start: '04/2023',
-		title: 'Software Engineer (frontend)',
+		start: 'April 2023',
+		title: 'Senior Software Engineer & Software Engineer',
 		business: 'Canva',
 		business_href: 'https://www.canva.com',
 		tags: [TagName.TYPESCRIPT, TagName.REACT, TagName.SERVICE_WORKERS],
@@ -26,8 +24,8 @@ export const work_history: Work[] = [
 		],
 	},
 	{
-		start: '10/2021',
-		end: '03/2023',
+		start: 'October 2021',
+		end: 'March 2023',
 		title: 'Software Engineer',
 		business: 'Functionly',
 		business_href: 'https://www.functionly.com',
@@ -46,8 +44,8 @@ export const work_history: Work[] = [
 		],
 	},
 	{
-		start: '02/2021',
-		end: '10/2021',
+		start: 'February 2021',
+		end: 'October 2021',
 		title: 'Software Developer & travelling',
 		tags: [
 			TagName.TYPESCRIPT,
@@ -59,12 +57,12 @@ export const work_history: Work[] = [
 			TagName.JAVASCRIPT,
 		],
 		description: [
-			'I worked as a freelance Typescript Dev while travelling around east coast Australia living our van 🚚.',
+			'I worked as a freelance Typescript Dev while travelling around east coast Australia living in our van 🚚.',
 		],
 	},
 	{
-		start: '01/2020',
-		end: '02/2021',
+		start: 'January 2020',
+		end: 'February 2021',
 		title: 'Software Developer',
 		business: 'Sportility',
 		tags: [
@@ -81,16 +79,16 @@ export const work_history: Work[] = [
 		],
 	},
 	{
-		start: '09/2019',
-		end: '01/2020',
+		start: 'September 2019',
+		end: 'January 2020',
 		title: 'Student',
 		business: 'General Assembly',
 		tags: [TagName.REACT, TagName.JAVASCRIPT, TagName.NODE],
 		description: ['I studied Javascript, React, Node, and Ruby.'],
 	},
 	{
-		start: '11/2017',
-		end: '09/2019',
+		start: 'November 2017',
+		end: 'September 2019',
 		title: 'Account Manager',
 		business: 'Hewlett Packard Enterprise',
 		business_href: 'https://www.hpe.com',
@@ -98,8 +96,8 @@ export const work_history: Work[] = [
 		description: [],
 	},
 	{
-		start: '10/2016',
-		end: '11/2017',
+		start: 'October 2016',
+		end: 'November 2017',
 		title: 'Backpacker',
 		tags: [],
 		description: [
@@ -108,8 +106,8 @@ export const work_history: Work[] = [
 		],
 	},
 	{
-		start: '09/2013',
-		end: '10/2016',
+		start: 'September 2013',
+		end: 'October 2016',
 		title: 'Partner Account Manager & Partner Enablement',
 		business: 'Cisco',
 		business_href: 'https://www.cisco.com',

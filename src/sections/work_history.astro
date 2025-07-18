@@ -1,30 +1,7 @@
 ---
 import Card from 'components/card.astro';
 import Tag from 'components/tag.astro';
-import { work_history, type Dateish } from 'data/work';
-
-import dayjs from 'dayjs';
-import customParseFormat from 'dayjs/plugin/customParseFormat';
-import relativeTime from 'dayjs/plugin/relativeTime';
-dayjs.extend(customParseFormat);
-dayjs.extend(relativeTime);
-
-function parseDate(date: Dateish | undefined): dayjs.Dayjs {
-	return date ? dayjs(date, 'MM/YYYY') : dayjs();
-}
-
-function toDateString(date: Dateish): string {
-	return parseDate(date).format('MMMM YYYY');
-}
-
-function getDurationStr(
-	start: Dateish | null,
-	end: Dateish | undefined,
-): string {
-	return `(${(
-		parseDate(end).diff(parseDate(start ?? '01/2006'), 'days') / 365
-	).toFixed(1)} years)`;
-}
+import { work_history } from 'data/work';
 ---
 
 <section>
@@ -44,9 +21,7 @@ function getDurationStr(
 				}) => (
 					<Card>
 						<small class="uppercase">
-							{start ? toDateString(start) : 'init'} -{' '}
-							{end ? toDateString(end) : 'Current'}
-							{!!end && getDurationStr(start, end)}
+							{start} - {end ?? 'Current'}
 						</small>
 						<hgroup class="mb-4">
 							<h3 class="mb-1">{title}</h3>

@@ -1,5 +1,12 @@
 /* https://web.archive.org/web/20231102131009/https://typescale.com/ */
 
+@import 'tailwindcss';
+
+@theme {
+	--font-mono: 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, Monaco,
+		Consolas, 'Liberation Mono', 'Courier New', monospace;
+}
+
 html {
 	font-size: 16px;
 }
