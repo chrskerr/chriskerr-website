@@ -16,11 +16,18 @@ export const work_history: Work[] = [
 		title: 'Senior Software Engineer & Software Engineer',
 		business: 'Canva',
 		business_href: 'https://www.canva.com',
-		tags: [TagName.TYPESCRIPT, TagName.REACT, TagName.SERVICE_WORKERS],
+		tags: [
+			TagName.TYPESCRIPT,
+			TagName.REACT,
+			TagName.SERVICE_WORKERS,
+			TagName.AI,
+			TagName.JAVA,
+			TagName.PYTHON,
+		],
 		description: [
-			'I am working to enable the use of Canva while offline.',
-			'This has required touching most aspects of the Canva platform, such as: how the app is bundled; how Javascript, CSS, images, etc, are cached; how user data is cached (and their privacy protected); offline page loading using a service worker; analysing the performance of our features; and much more.',
-			'This has been a research heavy project due to the complexity of the problem and the breadth of features within Canva.',
+			'I am building features which use AI generated HTML within Canva designs.',
+			'This requires working across the whole stack to build AI tools, and contribute to backend and frontend services; plus aligning with the broader Canva AI experience across product, UI and technical requirements.',
+			'I previously worked in another team, which was enabling the use of Canva while offline.',
 		],
 	},
 	{
