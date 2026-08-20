@@ -28,13 +28,13 @@ const tagValues = Object.values(TagName).sort((a, b) => {
 	return a.localeCompare(b);
 });
 
-function createHsl(index: number): string {
-	const hue = Math.floor((360 * index) / tagValues.length);
-	return `hsl(${hue}deg 60% 40%)`;
+function createOklch(index: number): string {
+	const hue = (360 * index) / tagValues.length;
+	return `oklch(0.65 0.15 ${hue})`;
 }
 
 export const tagsCss = tagValues
 	.map((tag, i) => {
-		return `.${tagToCssClass(tag)} {background-color: ${createHsl(i)}}`;
+		return `.${tagToCssClass(tag)} {background-color: ${createOklch(i)}}`;
 	})
 	.join('\n');
