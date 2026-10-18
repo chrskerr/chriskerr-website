@@ -2,7 +2,7 @@
 	"name": "chriskerr_resume",
 	"type": "module",
 	"version": "0.0.1",
-	"packageManager": "pnpm@11.21.0",
+	"packageManager": "pnpm@12.14.0",
 	"scripts": {
 		"dev": "astro dev",
 		"start": "astro dev",
@@ -13,19 +13,19 @@
 	},
 	"dependencies": {
 		"@astrojs/check": "^0.9.10",
-		"@astrojs/vercel": "^11.0.10",
+		"@astrojs/vercel": "^11.0.14",
 		"@fontsource/ibm-plex-sans": "^5.3.0",
 		"@tailwindcss/vite": "^4.3.3",
-		"astro": "^7.3.2",
-		"browserslist": "^4.29.0",
+		"astro": "^7.3.8",
+		"browserslist": "^4.29.3",
 		"browserslist-to-esbuild": "^2.1.1",
 		"dayjs": "^1.11.23",
 		"lightningcss": "^1.33.0",
-		"marked": "^18.0.13",
-		"sharp": "^0.35.4",
+		"marked": "^18.1.1",
+		"sharp": "^0.35.5",
 		"tailwindcss": "^4.3.3",
 		"terser": "^5.51.2",
-		"typescript": "^6.0.2"
+		"typescript": "^6.0.3"
 	},
 	"browserslist": [
 		"defaults"
