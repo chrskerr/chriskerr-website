@@ -2,6 +2,12 @@
 import Card from 'components/card.astro';
 import Tag from 'components/tag.astro';
 import { work_history } from 'data/work';
+
+const MS_PER_YEAR = 1000 * 60 * 60 * 24 * 365.25;
+
+// Duration in years to 1 decimal place, for roles with a fixed end date.
+const yearsBetween = (from: string, to: string) =>
+	((new Date(to).getTime() - new Date(from).getTime()) / MS_PER_YEAR).toFixed(1);
 ---
 
 <section>
@@ -21,7 +27,21 @@ import { work_history } from 'data/work';
 				}) => (
 					<Card>
 						<small class="uppercase">
-							{start} - {end ?? 'Current'}
+							{start} -{' '}
+							{end ? (
+								<>{end} ({yearsBetween(start, end)} yrs)</>
+							) : (
+								<>
+									Current<script
+										is:inline
+										data-start={new Date(start).getTime()}
+									>
+										const start = Number(document.currentScript.dataset.start);
+										const years = ((Date.now() - start) / (1000 * 60 * 60 * 24 * 365.25)).toFixed(1);
+										document.currentScript.replaceWith(' (' + years + ' yrs)');
+									</script>
+								</>
+							)}
 						</small>
 						<hgroup class="mb-4">
 							<h3 class="mb-1">{title}</h3>
